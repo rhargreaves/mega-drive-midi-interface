@@ -1,0 +1,4 @@
+#!/bin/bash -e
+IMAGE_NAME=mega-drive-midi-sequencer
+docker build -t $IMAGE_NAME .
+docker run --rm -v $(pwd):/app -w /app -i -t $IMAGE_NAME make "$@"

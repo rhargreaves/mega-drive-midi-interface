@@ -1,0 +1,6 @@
+*.bin
+.vscode/
+*.o
+*.code-workspace
+tests/cmocka/
+tests/test_main

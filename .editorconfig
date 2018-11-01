@@ -1,0 +1,18 @@
+root = true
+
+[*]
+charset = utf-8
+trim_trailing_whitespace = true
+end_of_line = lf
+insert_final_newline = true
+
+[*.asm]
+indent_style = tab
+indent_size = 8
+
+[Makefile]
+indent_style = tab
+
+[*.{c,h,cpp,hpp}]
+indent_size = 4
+indent_style = space
