@@ -5,6 +5,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Make output directory
+          command: mkdir bin
+      - run:
           name: Test
           command: ./docker-make test
       - run:
