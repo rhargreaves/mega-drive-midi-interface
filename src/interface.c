@@ -1,7 +1,9 @@
+#include <comm.h>
 #include <interface.h>
 #include <midi.h>
 
 void interface_tick(void)
 {
-    midi_process(10);
+    u8 data = comm_read();
+    midi_process(data);
 }

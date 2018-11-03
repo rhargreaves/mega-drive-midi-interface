@@ -3,9 +3,15 @@
 #include <stddef.h>
 
 #include <cmocka.h>
+#include <comm.h>
 #include <foo.h>
 #include <interface.h>
 #include <midi.h>
+
+u8 __wrap_comm_read(void)
+{
+    return mock_type(u8);
+}
 
 void __wrap_midi_process(u16 message)
 {
@@ -14,7 +20,11 @@ void __wrap_midi_process(u16 message)
 
 static void interface_tick_passes_message_to_midi_processor(void** state)
 {
-    expect_value(__wrap_midi_process, message, 10);
+    u8 expected_message = 5;
+
+    will_return(__wrap_comm_read, expected_message);
+
+    expect_value(__wrap_midi_process, message, expected_message);
 
     interface_tick();
 }
