@@ -12,7 +12,7 @@ See also [Stretch Goals](#stretch-goals).
 
 ### Requirements
 
-- Mega EverDrive X7 cart
+- [Mega EverDrive X7 cart](https://krikzz.com/store/home/33-mega-everdrive-v2.html)
 - A MIDI-to-Serial virtual device (such as [Hairless MIDI<->Serial Bridge](http://projectgus.github.io/hairless-midiserial/))
 
 ## Build & Test
