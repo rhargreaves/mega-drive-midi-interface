@@ -4,9 +4,13 @@
 
 #include <cmocka.h>
 #include <comm.h>
-#include <foo.h>
 #include <interface.h>
 #include <midi.h>
+
+void __wrap_synth_noteOn(u8 channel)
+{
+    check_expected(channel);
+}
 
 u8 __wrap_comm_read(void)
 {
@@ -16,6 +20,15 @@ u8 __wrap_comm_read(void)
 void __wrap_midi_process(Message* message)
 {
     check_expected(message);
+}
+
+static void midi_triggers_synth_note_on(void** state)
+{
+    Message noteOn = { 0b10010000, 0x40, 127 };
+
+    expect_value(__wrap_synth_noteOn, channel, 0);
+
+    __real_midi_process(&noteOn);
 }
 
 static void interface_tick_passes_message_to_midi_processor(void** state)
@@ -34,17 +47,11 @@ static void interface_tick_passes_message_to_midi_processor(void** state)
     interface_tick();
 }
 
-static void adds_two_integers(void** state)
-{
-    int result = add(2, 2);
-    assert_int_equal(4, result);
-}
-
 int main(void)
 {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(interface_tick_passes_message_to_midi_processor),
-        cmocka_unit_test(adds_two_integers),
+        cmocka_unit_test(midi_triggers_synth_note_on)
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
