@@ -1,8 +1,5 @@
 #include <genesis.h>
-
-#ifndef BUILD
-#define BUILD "*Dev Build*"
-#endif
+#include <main.h>
 
 static const u16 MAX_X = 40;
 static const char HEADER[] = "Sega Mega Drive MIDI Interface";

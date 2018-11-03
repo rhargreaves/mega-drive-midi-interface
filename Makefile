@@ -23,7 +23,7 @@ NM = nm
 BUILD := $(if $(CIRCLE_BUILD_NUM),Build $(CIRCLE_BUILD_NUM),Dev $(shell date '+%Y-%m-%d %H:%M:%S'))
 
 OPTION = -std=c11 -fno-builtin
-INCS = -I. -I$(GENDEV)/sgdk/inc -I$(GENDEV)/m86k-elf/include -I$(GENDEV)/sgdk/res -Isrc -Ires
+INCS = -I. -Iinc -I$(GENDEV)/sgdk/inc -I$(GENDEV)/m86k-elf/include -I$(GENDEV)/sgdk/res -Isrc -Ires
 CCFLAGS = $(OPTION) -DBUILD='"$(BUILD)"' -m68000 -Wall -O3 -c -fomit-frame-pointer
 Z80FLAGS = -vb2
 ASFLAGS = -m68000 --register-prefix-optional
