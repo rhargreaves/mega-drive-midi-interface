@@ -1,5 +1,5 @@
-# Sega Mega Drive MIDI Sequencer
-Sequencing the YM2612 FM synth chip with MIDI
+# Sega Mega Drive MIDI Interface
+Exposes the YM2612 FM synth chip as a MIDI interface
 
 ## Getting Started
 
