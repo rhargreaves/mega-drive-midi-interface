@@ -1,4 +1,4 @@
-# Sega Mega Drive MIDI Interface
+# Sega Mega Drive MIDI Interface [![CircleCI](https://circleci.com/gh/rhargreaves/mega-drive-midi-interface.svg?style=svg)](https://circleci.com/gh/rhargreaves/mega-drive-midi-interface)
 Exposes the YM2612 FM synth chip as a MIDI interface
 
 ## Getting Started
