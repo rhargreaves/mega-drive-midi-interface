@@ -17,7 +17,9 @@ CFLAGS=$(INCLUDE_DIRS)
 MOCKS=mock_test \
 	midi_process \
 	comm_read \
-	synth_noteOn
+	synth_noteOn \
+	fm_writeReg \
+	synth_init
 
 LDFLAGS=-ffreestanding -l cmocka -L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src
 LDFLAGS+=$(foreach MOCK,$(MOCKS),-Wl,--wrap=$(MOCK))

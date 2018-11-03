@@ -22,13 +22,38 @@ void __wrap_midi_process(Message* message)
     check_expected(message);
 }
 
+void __wrap_fm_writeReg(u16 part, u8 reg, u8 data)
+{
+    check_expected(part);
+    check_expected(reg);
+    check_expected(data);
+}
+
 static void midi_triggers_synth_note_on(void** state)
 {
-    Message noteOn = { 0b10010000, 0x40, 127 };
-
     expect_value(__wrap_synth_noteOn, channel, 0);
 
+    Message noteOn = { 0b10010000, 0x40, 127 };
+
     __real_midi_process(&noteOn);
+}
+
+static void synth_init_sets_initial_registers(void** state)
+{
+    expect_any_count(__wrap_fm_writeReg, part, 35);
+    expect_any_count(__wrap_fm_writeReg, reg, 35);
+    expect_any_count(__wrap_fm_writeReg, data, 35);
+
+    __real_synth_init();
+}
+
+static void synth_writes_fm_reg(void** state)
+{
+    expect_value(__wrap_fm_writeReg, part, 0);
+    expect_value(__wrap_fm_writeReg, reg, 0x28);
+    expect_value(__wrap_fm_writeReg, data, 0xF0);
+
+    __real_synth_noteOn(0);
 }
 
 static void interface_tick_passes_message_to_midi_processor(void** state)
@@ -51,7 +76,9 @@ int main(void)
 {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(interface_tick_passes_message_to_midi_processor),
-        cmocka_unit_test(midi_triggers_synth_note_on)
+        cmocka_unit_test(midi_triggers_synth_note_on),
+        cmocka_unit_test(synth_init_sets_initial_registers),
+        cmocka_unit_test(synth_writes_fm_reg)
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
