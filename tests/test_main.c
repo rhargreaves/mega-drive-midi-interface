@@ -1,13 +1,18 @@
+#include <setjmp.h>
 #include <stdarg.h>
 #include <stddef.h>
-#include <setjmp.h>
+
 #include <cmocka.h>
 #include <foo.h>
+#include <interface.h>
 
-static void adds_two_integers(void **state)
+static void interface_tick_does_nothing(void** state)
 {
-    (void)state; /* unused */
-    
+    interface_tick();
+}
+
+static void adds_two_integers(void** state)
+{
     int result = add(2, 2);
     assert_int_equal(4, result);
 }
@@ -15,6 +20,7 @@ static void adds_two_integers(void **state)
 int main(void)
 {
     const struct CMUnitTest tests[] = {
+        cmocka_unit_test(interface_tick_does_nothing),
         cmocka_unit_test(adds_two_integers),
     };
 
