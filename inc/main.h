@@ -1,8 +1,4 @@
-#ifndef MAIN_H
-#define MAIN_H
-
+#pragma once
 #ifndef BUILD
 #define BUILD "*Dev Build*"
 #endif
-
-#endif // MAIN_H
