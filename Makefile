@@ -127,6 +127,7 @@ test:
 .PHONY: test
 
 clean:
+	$(MAKE) -C tests clean-target
 	$(RM) $(RESOURCES)
 	$(RM) *.o *.bin *.elf *.map *.iso
 	$(RM) boot/*.o boot/*.bin

@@ -13,7 +13,7 @@ INCLUDE_DIRS+=-I$(CMOCKA_DIR)/include
 
 CFLAGS=$(INCLUDE_DIRS)
 
-MOCKS=mock_test # list of function signature to mock
+MOCKS=mock_test midi_process # list of function signature to mock
 LDFLAGS=-ffreestanding -l cmocka -L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src
 LDFLAGS+=$(foreach MOCK,$(MOCKS),-Wl,--wrap=$(MOCK))
 
@@ -49,5 +49,8 @@ $(CMOCKA_DIR):
 	mkdir -p $@/build
 	@(cd $@/build && cmake ../ && make -s)
 
-clean:
-	rm -rf $(TARGET) $(OBJ_DIR) $(CMOCKA_DIR)
+clean-target:
+	rm -rf $(TARGET) $(OBJ_DIR)
+
+clean: clean-target
+	rm -rf $(CMOCKA_DIR)

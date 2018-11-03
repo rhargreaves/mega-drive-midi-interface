@@ -5,9 +5,17 @@
 #include <cmocka.h>
 #include <foo.h>
 #include <interface.h>
+#include <midi.h>
 
-static void interface_tick_does_nothing(void** state)
+void __wrap_midi_process(u16 message)
 {
+    check_expected(message);
+}
+
+static void interface_tick_passes_message_to_midi_processor(void** state)
+{
+    expect_value(__wrap_midi_process, message, 10);
+
     interface_tick();
 }
 
@@ -20,7 +28,7 @@ static void adds_two_integers(void** state)
 int main(void)
 {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(interface_tick_does_nothing),
+        cmocka_unit_test(interface_tick_passes_message_to_midi_processor),
         cmocka_unit_test(adds_two_integers),
     };
 
