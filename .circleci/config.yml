@@ -9,10 +9,13 @@ jobs:
           command: ./docker-make test
       - run:
           name: Build
-          command: ./docker-make all
+          command: |
+            ./docker-make all
+            echo ${CIRCLE_BUILD_NUM} > bin/build-num.txt
       - persist_to_workspace:
           root: bin
           paths:
+            - build-num.txt
             - out.bin
   publish-github-release:
     docker:
@@ -23,7 +26,7 @@ jobs:
       - run:
           name: "Publish Release on GitHub"
           command: |
-            VERSION=$CIRCLE_BUILD_NUM
+            VERSION=$(cat ./bin/build-num.txt)
             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./bin/out.bin
 workflows:
   version: 2
@@ -33,7 +36,7 @@ workflows:
       - hold:
           type: approval
           requires:
-            - build   
+            - build
       - publish-github-release:
           requires:
             - hold
