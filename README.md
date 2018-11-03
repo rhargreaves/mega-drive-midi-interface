@@ -25,7 +25,7 @@ Docker:
 ./docker-make all
 ```
 
-Linux (requires `cmake`):
+Linux (requires `cmake` & [gendev](https://github.com/kubilus1/gendev)):
 
 ```sh
 make all
