@@ -1,6 +1,12 @@
 #include <comm.h>
 #include <interface.h>
 #include <midi.h>
+#include <synth.h>
+
+void interface_init(void)
+{
+    synth_init();
+}
 
 void interface_tick(void)
 {

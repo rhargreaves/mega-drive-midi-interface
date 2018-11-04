@@ -7,6 +7,11 @@
 #include <interface.h>
 #include <midi.h>
 
+void __wrap_synth_init(void)
+{
+    function_called();
+}
+
 void __wrap_synth_noteOn(u8 channel)
 {
     check_expected(channel);
@@ -72,9 +77,17 @@ static void interface_tick_passes_message_to_midi_processor(void** state)
     interface_tick();
 }
 
+static void interface_initialises_synth(void** state)
+{
+    expect_function_call(__wrap_synth_init);
+
+    interface_init();
+}
+
 int main(void)
 {
     const struct CMUnitTest tests[] = {
+        cmocka_unit_test(interface_initialises_synth),
         cmocka_unit_test(interface_tick_passes_message_to_midi_processor),
         cmocka_unit_test(midi_triggers_synth_note_on),
         cmocka_unit_test(synth_init_sets_initial_registers),
