@@ -10,11 +10,11 @@
 int main(void)
 {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(interface_initialises_synth),
-        cmocka_unit_test(interface_tick_passes_message_to_midi_processor),
-        cmocka_unit_test(midi_triggers_synth_note_on),
-        cmocka_unit_test(synth_init_sets_initial_registers),
-        cmocka_unit_test(synth_writes_fm_reg)
+        cmocka_unit_test(test_interface_initialises_synth),
+        cmocka_unit_test(test_interface_tick_passes_message_to_midi_processor),
+        cmocka_unit_test(test_midi_triggers_synth_note_on),
+        cmocka_unit_test(test_synth_init_sets_initial_registers),
+        cmocka_unit_test(test_synth_writes_fm_reg)
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);

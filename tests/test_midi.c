@@ -5,7 +5,7 @@
 #include <cmocka.h>
 #include <midi.h>
 
-static void midi_triggers_synth_note_on(void** state)
+static void test_midi_triggers_synth_note_on(void** state)
 {
     expect_value(__wrap_synth_noteOn, channel, 0);
 

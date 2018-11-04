@@ -8,7 +8,7 @@
 #include <types.h>
 #include <wraps.h>
 
-static void interface_tick_passes_message_to_midi_processor(void** state)
+static void test_interface_tick_passes_message_to_midi_processor(void** state)
 {
     u8 expectedStatus = 1;
     u8 expectedData = 2;
@@ -24,7 +24,7 @@ static void interface_tick_passes_message_to_midi_processor(void** state)
     interface_tick();
 }
 
-static void interface_initialises_synth(void** state)
+static void test_interface_initialises_synth(void** state)
 {
     expect_function_call(__wrap_synth_init);
 

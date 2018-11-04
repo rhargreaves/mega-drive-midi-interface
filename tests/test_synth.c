@@ -5,7 +5,7 @@
 #include <cmocka.h>
 #include <types.h>
 
-static void synth_init_sets_initial_registers(void** state)
+static void test_synth_init_sets_initial_registers(void** state)
 {
     u16 count = 39;
     expect_any_count(__wrap_fm_writeReg, part, count);
@@ -15,7 +15,7 @@ static void synth_init_sets_initial_registers(void** state)
     __real_synth_init();
 }
 
-static void synth_writes_fm_reg(void** state)
+static void test_synth_writes_fm_reg(void** state)
 {
     expect_value(__wrap_fm_writeReg, part, 0);
     expect_value(__wrap_fm_writeReg, reg, 0x28);
