@@ -32,3 +32,16 @@ static void test_synth_sets_note_off_fm_reg(void** state)
 
     __real_synth_noteOff(0);
 }
+
+static void test_synth_sets_octave_and_freq_reg(void** state)
+{
+    expect_value(__wrap_fm_writeReg, part, 0);
+    expect_value(__wrap_fm_writeReg, reg, 0xA4);
+    expect_value(__wrap_fm_writeReg, data, 0x22);
+
+    expect_value(__wrap_fm_writeReg, part, 0);
+    expect_value(__wrap_fm_writeReg, reg, 0xA0);
+    expect_value(__wrap_fm_writeReg, data, 0x8D);
+
+    __real_synth_pitch(4, 653);
+}
