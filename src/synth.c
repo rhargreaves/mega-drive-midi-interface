@@ -38,6 +38,10 @@ void synth_init(void)
     fm_writeReg(0, 0x94, 0);
     fm_writeReg(0, 0x98, 0);
     fm_writeReg(0, 0x9C, 0);
+    fm_writeReg(0, 0xB0, 0x32); // feedback/algor
+    fm_writeReg(0, 0xB4, 0xC0);
+    fm_writeReg(0, 0xA4, 0x22); // freq
+    fm_writeReg(0, 0xA0, 0x69);
 }
 
 void synth_noteOn(u8 channel)

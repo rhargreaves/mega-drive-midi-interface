@@ -45,9 +45,10 @@ static void midi_triggers_synth_note_on(void** state)
 
 static void synth_init_sets_initial_registers(void** state)
 {
-    expect_any_count(__wrap_fm_writeReg, part, 35);
-    expect_any_count(__wrap_fm_writeReg, reg, 35);
-    expect_any_count(__wrap_fm_writeReg, data, 35);
+    u16 count = 39;
+    expect_any_count(__wrap_fm_writeReg, part, count);
+    expect_any_count(__wrap_fm_writeReg, reg, count);
+    expect_any_count(__wrap_fm_writeReg, data, count);
 
     __real_synth_init();
 }
