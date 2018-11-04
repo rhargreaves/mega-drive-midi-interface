@@ -53,3 +53,7 @@ void synth_noteOff(u8 channel)
 {
     fm_writeReg(0, 0x28, 0);
 }
+
+void synth_pitch(u8 octave, u16 freqNumber)
+{
+}

@@ -20,6 +20,12 @@ void __wrap_synth_noteOff(u8 channel)
     check_expected(channel);
 }
 
+void __wrap_synth_pitch(u8 octave, u16 freqNumber)
+{
+    check_expected(octave);
+    check_expected(freqNumber);
+}
+
 u8 __wrap_comm_read(void)
 {
     return mock_type(u8);
