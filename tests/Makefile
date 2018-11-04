@@ -18,6 +18,7 @@ MOCKS=midi_process \
 	comm_read \
 	synth_init \
 	synth_noteOn \
+	synth_noteOff \
 	fm_writeReg \
 	YM2612_writeReg
 

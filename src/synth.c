@@ -48,3 +48,7 @@ void synth_noteOn(u8 channel)
 {
     fm_writeReg(0, 0x28, 0xF0);
 }
+
+void synth_noteOff(u8 channel)
+{
+}

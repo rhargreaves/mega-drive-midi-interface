@@ -15,6 +15,11 @@ void __wrap_synth_noteOn(u8 channel)
     check_expected(channel);
 }
 
+void __wrap_synth_noteOff(u8 channel)
+{
+    check_expected(channel);
+}
+
 u8 __wrap_comm_read(void)
 {
     return mock_type(u8);
