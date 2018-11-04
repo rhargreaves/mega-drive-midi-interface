@@ -19,7 +19,7 @@ void midi_process(Message* message)
 
 static u8 midi_getOctave(u8 pitch)
 {
-    return ((pitch - 21) / 12);
+    return ((pitch - 23) / 12);
 }
 
 static u16 midi_getFreqNumber(u8 pitch)

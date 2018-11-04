@@ -41,7 +41,7 @@ static void test_midi_sets_pitch(void** state)
 static void test_midi_sets_pitch_2(void** state)
 {
     expect_value(__wrap_synth_noteOn, channel, 0);
-    expect_value(__wrap_synth_pitch, octave, 7);
+    expect_value(__wrap_synth_pitch, octave, 6);
     expect_value(__wrap_synth_pitch, freqNumber, 1164);
 
     const u16 A_SHARP = 106;
