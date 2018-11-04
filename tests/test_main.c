@@ -15,7 +15,8 @@ int main(void)
         cmocka_unit_test(test_midi_triggers_synth_note_on),
         cmocka_unit_test(test_midi_triggers_synth_note_off),
         cmocka_unit_test(test_synth_init_sets_initial_registers),
-        cmocka_unit_test(test_synth_writes_fm_reg)
+        cmocka_unit_test(test_synth_sets_note_on_fm_reg),
+        cmocka_unit_test(test_synth_sets_note_off_fm_reg)
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
