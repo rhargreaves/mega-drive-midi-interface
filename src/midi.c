@@ -21,15 +21,27 @@ static const u16 FREQ_NUMBERS[] = {
     1164 // A#
 };
 
+void midi_noteOn(u8 pitch, u8 velocity)
+{
+    synth_noteOn(0);
+    synth_pitch(
+        midi_getOctave(pitch),
+        midi_getFreqNumber(pitch));
+}
+
+void midi_noteOff(void)
+{
+    synth_noteOff(0);
+}
+
 void midi_process(Message* message)
 {
     if (message->status == 0x90) {
-        synth_noteOn(0);
-        synth_pitch(
-            midi_getOctave(message->data),
-            midi_getFreqNumber(message->data));
+        midi_noteOn(
+            message->data,
+            message->data2);
     } else if (message->status == 0x80) {
-        synth_noteOff(0);
+        midi_noteOff();
     }
 }
 
