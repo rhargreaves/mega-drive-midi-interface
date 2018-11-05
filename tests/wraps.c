@@ -36,6 +36,17 @@ void __wrap_midi_process(Message* message)
     check_expected(message);
 }
 
+void __wrap_midi_noteOff(void)
+{
+    function_called();
+}
+
+void __wrap_midi_noteOn(u8 pitch, u8 velocity)
+{
+    check_expected(pitch);
+    check_expected(velocity);
+}
+
 void __wrap_fm_writeReg(u16 part, u8 reg, u8 data)
 {
     check_expected(part);

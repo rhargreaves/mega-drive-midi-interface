@@ -11,8 +11,15 @@ void interface_init(void)
 void interface_tick(void)
 {
     u8 status = comm_read();
-    u8 data = comm_read();
-    u8 data2 = comm_read();
-    Message message = { status, data, data2 };
-    midi_process(&message);
+    if (status == 0x90) {
+        u8 pitch = comm_read();
+        u8 velocity = comm_read();
+        midi_noteOn(
+            pitch,
+            velocity);
+    } else if (status == 0x80) {
+        u8 pitch = comm_read();
+        u8 velocity = comm_read();
+        midi_noteOff();
+    }
 }

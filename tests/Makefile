@@ -21,7 +21,9 @@ MOCKS=midi_process \
 	synth_noteOff \
 	synth_pitch \
 	fm_writeReg \
-	YM2612_writeReg
+	YM2612_writeReg \
+	midi_noteOff \
+	midi_noteOn
 
 LDFLAGS=-ffreestanding -l cmocka -L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src
 LDFLAGS+=$(foreach MOCK,$(MOCKS),-Wl,--wrap=$(MOCK))
