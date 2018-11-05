@@ -34,17 +34,6 @@ void midi_noteOff(void)
     synth_noteOff(0);
 }
 
-void midi_process(Message* message)
-{
-    if (message->status == 0x90) {
-        midi_noteOn(
-            message->data,
-            message->data2);
-    } else if (message->status == 0x80) {
-        midi_noteOff();
-    }
-}
-
 static u8 midi_getOctave(u8 pitch)
 {
     return (pitch - MIN_MIDI_PITCH) / SEMITONES;

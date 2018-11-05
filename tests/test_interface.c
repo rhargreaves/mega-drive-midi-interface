@@ -13,7 +13,6 @@ static void test_interface_tick_passes_note_on_to_midi_processor(void** state)
     u8 expectedStatus = 0x90;
     u8 expectedData = 60;
     u8 expectedData2 = 127;
-    Message expectedMessage = { expectedStatus, expectedData, expectedData2 };
 
     will_return(__wrap_comm_read, expectedStatus);
     will_return(__wrap_comm_read, expectedData);
@@ -30,7 +29,6 @@ static void test_interface_tick_passes_note_off_to_midi_processor(void** state)
     u8 expectedStatus = 0x80;
     u8 expectedData = 60;
     u8 expectedData2 = 127;
-    Message expectedMessage = { expectedStatus, expectedData, expectedData2 };
 
     will_return(__wrap_comm_read, expectedStatus);
     will_return(__wrap_comm_read, expectedData);
@@ -38,6 +36,38 @@ static void test_interface_tick_passes_note_off_to_midi_processor(void** state)
 
     expect_function_call(__wrap_midi_noteOff);
 
+    interface_tick();
+}
+
+static void test_interface_does_nothing_for_channel_non_zero(void** state)
+{
+    for (int i = 1; i < 7; i++) {
+        u8 expectedStatus = 0b10010000 + i;
+        u8 expectedData = 106;
+        u8 expectedData2 = 127;
+
+        will_return(__wrap_comm_read, expectedStatus);
+        will_return(__wrap_comm_read, expectedData);
+        will_return(__wrap_comm_read, expectedData2);
+
+        interface_tick();
+        interface_tick();
+        interface_tick();
+    }
+}
+
+static void test_interface_does_nothing_for_control_change(void** state)
+{
+    u8 expectedStatus = 0xA0;
+    u8 expectedData = 106;
+    u8 expectedData2 = 127;
+
+    will_return(__wrap_comm_read, expectedStatus);
+    will_return(__wrap_comm_read, expectedData);
+    will_return(__wrap_comm_read, expectedData2);
+
+    interface_tick();
+    interface_tick();
     interface_tick();
 }
 
