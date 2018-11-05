@@ -9,7 +9,7 @@ jobs:
           command: mkdir bin
       - run:
           name: Test
-          command: ./docker-make test
+          command: CMOCKA_MESSAGE_OUTPUT=xml CMOCKA_XML_FILE=bin/cmocka.xml ./docker-make test
       - run:
           name: Build
           command: |
@@ -20,6 +20,10 @@ jobs:
           paths:
             - build-num.txt
             - out.bin
+            - cmocka.xml
+      - store_test_results:
+          path: bin
+
   publish-github-release:
     docker:
       - image: cibuilds/github:0.10
