@@ -8,12 +8,9 @@ jobs:
           name: Make output directory
           command: mkdir bin
       - run:
-          name: Test
-          command: CMOCKA_MESSAGE_OUTPUT=xml CMOCKA_XML_FILE=bin/cmocka.xml ./docker-make test
-      - run:
-          name: Build
+          name: Build & Test
           command: |
-            ./docker-make all
+            CMOCKA_MESSAGE_OUTPUT=xml CMOCKA_XML_FILE=../bin/cmocka.xml ./docker-make all
             echo ${CIRCLE_BUILD_NUM} > bin/build-num.txt
       - persist_to_workspace:
           root: bin
