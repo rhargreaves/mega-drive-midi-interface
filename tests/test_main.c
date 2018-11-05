@@ -19,6 +19,7 @@ int main(void)
         cmocka_unit_test(test_synth_sets_note_off_fm_reg),
         cmocka_unit_test(test_midi_sets_pitch),
         cmocka_unit_test(test_midi_sets_pitch_2),
+        cmocka_unit_test(test_process_does_nothing_for_channel_non_zero),
         cmocka_unit_test(test_synth_sets_octave_and_freq_reg)
     };
 

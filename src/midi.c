@@ -23,12 +23,12 @@ static const u16 FREQ_NUMBERS[] = {
 
 void midi_process(Message* message)
 {
-    if ((message->status & 0b10010000) == 0b10010000) {
+    if ((message->status & 0x9F) == 0x90) {
         synth_noteOn(0);
         synth_pitch(
             midi_getOctave(message->data),
             midi_getFreqNumber(message->data));
-    } else if ((message->status & 0b10000000) == 0b10000000) {
+    } else if ((message->status & 0x8F) == 0x80) {
         synth_noteOff(0);
     }
 }

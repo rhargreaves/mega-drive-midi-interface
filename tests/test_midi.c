@@ -50,3 +50,12 @@ static void test_midi_sets_pitch_2(void** state)
 
     __real_midi_process(&noteOn);
 }
+
+static void test_process_does_nothing_for_channel_non_zero(void** state)
+{
+    for (int i = 1; i < 7; i++) {
+        Message noteOn = { 0b10010000 + i, 106, 127 };
+
+        __real_midi_process(&noteOn);
+    }
+}
