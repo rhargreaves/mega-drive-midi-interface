@@ -59,3 +59,10 @@ static void test_process_does_nothing_for_channel_non_zero(void** state)
         __real_midi_process(&noteOn);
     }
 }
+
+static void test_process_does_nothing_for_control_change(void** state)
+{
+    Message noteOn = { 0xA0, 106, 127 };
+
+    __real_midi_process(&noteOn);
+}

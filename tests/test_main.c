@@ -20,7 +20,8 @@ int main(void)
         cmocka_unit_test(test_midi_sets_pitch),
         cmocka_unit_test(test_midi_sets_pitch_2),
         cmocka_unit_test(test_process_does_nothing_for_channel_non_zero),
-        cmocka_unit_test(test_synth_sets_octave_and_freq_reg)
+        cmocka_unit_test(test_synth_sets_octave_and_freq_reg),
+        cmocka_unit_test(test_process_does_nothing_for_control_change)
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
