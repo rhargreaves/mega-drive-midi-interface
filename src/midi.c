@@ -40,6 +40,5 @@ static u8 midi_getOctave(u8 pitch)
 
 static u16 midi_getFreqNumber(u8 pitch)
 {
-
     return FREQ_NUMBERS[((u8)(pitch - MIN_MIDI_PITCH)) % SEMITONES];
 }
