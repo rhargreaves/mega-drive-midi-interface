@@ -4,3 +4,4 @@
 *.code-workspace
 tests/cmocka/
 tests/test_main
+out/

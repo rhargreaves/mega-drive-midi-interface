@@ -2,6 +2,7 @@ GENDEV?=/opt/gendev
 GCC_VER?=6.3.0
 MAKE?=make
 LIB?=lib
+ASSEMBLY_OUT?=out
 GENGCC_BIN=$(GENDEV)/bin
 GENBIN=$(GENDEV)/bin
 CC = $(GENGCC_BIN)/m68k-elf-gcc
@@ -74,8 +75,11 @@ bin/%.bin: %.elf
 %.c: %.o80
 	$(BINTOS) $<
 
-%.o: %.c
-	$(CC) $(CCFLAGS) $(INCS) -c $< -o $@
+$(ASSEMBLY_OUT):
+	mkdir -p $(ASSEMBLY_OUT)
+
+%.o: %.c $(ASSEMBLY_OUT)
+	$(CC) $(CCFLAGS) $(INCS) -c -Wa,-aln=$(ASSEMBLY_OUT)/$(notdir $(@:.o=.s)) $< -o $@
 
 %.o: %.s
 	$(AS) $(ASFLAGS) $< -o $@
