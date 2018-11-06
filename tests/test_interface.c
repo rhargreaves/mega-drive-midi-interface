@@ -10,7 +10,7 @@
 
 static void test_interface_tick_passes_note_on_to_midi_processor(void** state)
 {
-    for (int chan = 0; chan < 6; chan++) {
+    for (int chan = 0; chan < MAX_MIDI_CHANS; chan++) {
         u8 expectedStatus = 0x90 + chan;
         u8 expectedData = 60;
         u8 expectedData2 = 127;
