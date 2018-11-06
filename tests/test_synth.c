@@ -7,7 +7,7 @@
 
 static void test_synth_init_sets_initial_registers(void** state)
 {
-    u16 count = 39;
+    u16 count = 179;
     expect_any_count(__wrap_fm_writeReg, part, count);
     expect_any_count(__wrap_fm_writeReg, reg, count);
     expect_any_count(__wrap_fm_writeReg, data, count);

@@ -1,49 +1,47 @@
 #include <fm.h>
 #include <synth.h>
 
+static void synth_writeFm(u8 channel, u8 baseReg, u8 data);
 static u8 synth_keyOnOffRegOffset(u8 channel);
 
 void synth_init(void)
 {
     fm_writeReg(0, 0x27, 0); // Ch 3 Normal
-    fm_writeReg(0, 0x28, 0); // All channels off
-    fm_writeReg(0, 0x28, 1);
-    fm_writeReg(0, 0x28, 2);
-    fm_writeReg(0, 0x28, 4);
-    fm_writeReg(0, 0x28, 5);
-    fm_writeReg(0, 0x28, 6);
-    fm_writeReg(0, 0x30, 0x71); // DT1/MUL
-    fm_writeReg(0, 0x34, 0x0D);
-    fm_writeReg(0, 0x38, 0x33);
-    fm_writeReg(0, 0x3C, 0x01);
-    fm_writeReg(0, 0x40, 0x23); // Total Level
-    fm_writeReg(0, 0x44, 0x2D);
-    fm_writeReg(0, 0x48, 0x26);
-    fm_writeReg(0, 0x4C, 0x00);
-    fm_writeReg(0, 0x50, 0x5F); // RS/AR
-    fm_writeReg(0, 0x54, 0x99);
-    fm_writeReg(0, 0x58, 0x5F);
-    fm_writeReg(0, 0x5C, 0x99);
-    fm_writeReg(0, 0x60, 5); // AM/D1R
-    fm_writeReg(0, 0x64, 5);
-    fm_writeReg(0, 0x68, 5);
-    fm_writeReg(0, 0x6C, 7);
-    fm_writeReg(0, 0x70, 2); // D2R
-    fm_writeReg(0, 0x74, 2);
-    fm_writeReg(0, 0x78, 2);
-    fm_writeReg(0, 0x7C, 2);
-    fm_writeReg(0, 0x80, 0x11); // D1L/RR
-    fm_writeReg(0, 0x84, 0x11);
-    fm_writeReg(0, 0x88, 0x11);
-    fm_writeReg(0, 0x8C, 0xA6);
+    for (u8 chan; chan < MAX_SYNTH_CHANS; chan++) {
+        synth_noteOff(chan);
+        synth_writeFm(chan, 0x30, 0x71); // DT1/MUL
+        synth_writeFm(chan, 0x34, 0x0D);
+        synth_writeFm(chan, 0x38, 0x33);
+        synth_writeFm(chan, 0x3C, 0x01);
+        synth_writeFm(chan, 0x40, 0x23); // Total Level
+        synth_writeFm(chan, 0x44, 0x2D);
+        synth_writeFm(chan, 0x48, 0x26);
+        synth_writeFm(chan, 0x4C, 0x00);
+        synth_writeFm(chan, 0x50, 0x5F); // RS/AR
+        synth_writeFm(chan, 0x54, 0x99);
+        synth_writeFm(chan, 0x58, 0x5F);
+        synth_writeFm(chan, 0x5C, 0x99);
+        synth_writeFm(chan, 0x60, 5); // AM/D1R
+        synth_writeFm(chan, 0x64, 5);
+        synth_writeFm(chan, 0x68, 5);
+        synth_writeFm(chan, 0x6C, 7);
+        synth_writeFm(chan, 0x70, 2); // D2R
+        synth_writeFm(chan, 0x74, 2);
+        synth_writeFm(chan, 0x78, 2);
+        synth_writeFm(chan, 0x7C, 2);
+        synth_writeFm(chan, 0x80, 0x11); // D1L/RR
+        synth_writeFm(chan, 0x84, 0x11);
+        synth_writeFm(chan, 0x88, 0x11);
+        synth_writeFm(chan, 0x8C, 0xA6);
+        synth_writeFm(chan, 0xB0, 0x32); // feedback/algor
+        synth_writeFm(chan, 0xB4, 0xC0);
+        synth_writeFm(chan, 0xA4, 0x22); // freq
+        synth_writeFm(chan, 0xA0, 0x69);
+    }
     fm_writeReg(0, 0x90, 0); // Proprietary
     fm_writeReg(0, 0x94, 0);
     fm_writeReg(0, 0x98, 0);
     fm_writeReg(0, 0x9C, 0);
-    fm_writeReg(0, 0xB0, 0x32); // feedback/algor
-    fm_writeReg(0, 0xB4, 0xC0);
-    fm_writeReg(0, 0xA4, 0x22); // freq
-    fm_writeReg(0, 0xA0, 0x69);
 }
 
 static void synth_writeFm(u8 channel, u8 baseReg, u8 data)

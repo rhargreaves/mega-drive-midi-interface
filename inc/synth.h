@@ -1,5 +1,7 @@
 #include <types.h>
 
+#define MAX_SYNTH_CHANS 6
+
 void synth_init(void);
 void synth_noteOn(u8 channel);
 void synth_noteOff(u8 channel);
