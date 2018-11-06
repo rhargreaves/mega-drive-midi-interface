@@ -1,6 +1,8 @@
 #include <fm.h>
 #include <synth.h>
 
+static u8 synth_keyOnOffRegOffset(u8 channel);
+
 void synth_init(void)
 {
     fm_writeReg(0, 0x27, 0); // Ch 3 Normal
@@ -44,16 +46,19 @@ void synth_init(void)
     fm_writeReg(0, 0xA0, 0x69);
 }
 
+static u8 synth_keyOnOffRegOffset(u8 channel)
+{
+    return (channel < 3) ? channel : (channel + 1);
+}
+
 void synth_noteOn(u8 channel)
 {
-    u8 reg = 0xF0 + ((channel < 3) ? channel : (channel + 1));
-    fm_writeReg(0, 0x28, reg);
+    fm_writeReg(0, 0x28, 0xF0 + synth_keyOnOffRegOffset(channel));
 }
 
 void synth_noteOff(u8 channel)
 {
-    u8 reg = ((channel < 3) ? channel : (channel + 1));
-    fm_writeReg(0, 0x28, reg);
+    fm_writeReg(0, 0x28, synth_keyOnOffRegOffset(channel));
 }
 
 void synth_pitch(u8 octave, u16 freqNumber)
