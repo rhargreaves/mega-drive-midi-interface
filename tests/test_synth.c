@@ -59,15 +59,19 @@ static void test_synth_sets_note_off_fm_reg_chan_3_to_5(void** state)
     }
 }
 
-static void test_synth_sets_octave_and_freq_reg(void** state)
+static void test_synth_sets_octave_and_freq_reg_chan(void** state)
 {
-    expect_value(__wrap_fm_writeReg, part, 0);
-    expect_value(__wrap_fm_writeReg, reg, 0xA4);
-    expect_value(__wrap_fm_writeReg, data, 0x22);
+    for (u8 chan = 0; chan < 6; chan++) {
+        u8 regOffset = chan % 3;
+        u8 regPart = chan < 3 ? 0 : 1;
+        expect_value(__wrap_fm_writeReg, part, regPart);
+        expect_value(__wrap_fm_writeReg, reg, 0xA4 + regOffset);
+        expect_value(__wrap_fm_writeReg, data, 0x22);
 
-    expect_value(__wrap_fm_writeReg, part, 0);
-    expect_value(__wrap_fm_writeReg, reg, 0xA0);
-    expect_value(__wrap_fm_writeReg, data, 0x8D);
+        expect_value(__wrap_fm_writeReg, part, regPart);
+        expect_value(__wrap_fm_writeReg, reg, 0xA0 + regOffset);
+        expect_value(__wrap_fm_writeReg, data, 0x8D);
 
-    __real_synth_pitch(4, 653);
+        __real_synth_pitch(chan, 4, 653);
+    }
 }

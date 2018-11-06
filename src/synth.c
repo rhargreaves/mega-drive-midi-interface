@@ -46,6 +46,11 @@ void synth_init(void)
     fm_writeReg(0, 0xA0, 0x69);
 }
 
+static void synth_writeFm(u8 channel, u8 baseReg, u8 data)
+{
+    fm_writeReg(channel > 2 ? 1 : 0, baseReg + (channel % 3), data);
+}
+
 static u8 synth_keyOnOffRegOffset(u8 channel)
 {
     return (channel < 3) ? channel : (channel + 1);
@@ -61,8 +66,8 @@ void synth_noteOff(u8 channel)
     fm_writeReg(0, 0x28, synth_keyOnOffRegOffset(channel));
 }
 
-void synth_pitch(u8 octave, u16 freqNumber)
+void synth_pitch(u8 channel, u8 octave, u16 freqNumber)
 {
-    fm_writeReg(0, 0xA4, (freqNumber >> 8) | (octave << 3));
-    fm_writeReg(0, 0xA0, freqNumber);
+    synth_writeFm(channel, 0xA4, (freqNumber >> 8) | (octave << 3));
+    synth_writeFm(channel, 0xA0, freqNumber);
 }
