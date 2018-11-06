@@ -31,13 +31,14 @@ u8 __wrap_comm_read(void)
     return mock_type(u8);
 }
 
-void __wrap_midi_noteOff(void)
+void __wrap_midi_noteOff(u8 chan)
 {
-    function_called();
+    check_expected(chan);
 }
 
-void __wrap_midi_noteOn(u8 pitch, u8 velocity)
+void __wrap_midi_noteOn(u8 chan, u8 pitch, u8 velocity)
 {
+    check_expected(chan);
     check_expected(pitch);
     check_expected(velocity);
 }

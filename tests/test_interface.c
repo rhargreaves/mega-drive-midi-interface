@@ -10,18 +10,21 @@
 
 static void test_interface_tick_passes_note_on_to_midi_processor(void** state)
 {
-    u8 expectedStatus = 0x90;
-    u8 expectedData = 60;
-    u8 expectedData2 = 127;
+    for (int chan = 0; chan < 6; chan++) {
+        u8 expectedStatus = 0x90 + chan;
+        u8 expectedData = 60;
+        u8 expectedData2 = 127;
 
-    will_return(__wrap_comm_read, expectedStatus);
-    will_return(__wrap_comm_read, expectedData);
-    will_return(__wrap_comm_read, expectedData2);
+        will_return(__wrap_comm_read, expectedStatus);
+        will_return(__wrap_comm_read, expectedData);
+        will_return(__wrap_comm_read, expectedData2);
 
-    expect_value(__wrap_midi_noteOn, pitch, expectedData);
-    expect_value(__wrap_midi_noteOn, velocity, expectedData2);
+        expect_value(__wrap_midi_noteOn, chan, chan);
+        expect_value(__wrap_midi_noteOn, pitch, expectedData);
+        expect_value(__wrap_midi_noteOn, velocity, expectedData2);
 
-    interface_tick();
+        interface_tick();
+    }
 }
 
 static void test_interface_tick_passes_note_off_to_midi_processor(void** state)
@@ -34,26 +37,9 @@ static void test_interface_tick_passes_note_off_to_midi_processor(void** state)
     will_return(__wrap_comm_read, expectedData);
     will_return(__wrap_comm_read, expectedData2);
 
-    expect_function_call(__wrap_midi_noteOff);
+    expect_value(__wrap_midi_noteOff, chan, 0);
 
     interface_tick();
-}
-
-static void test_interface_does_nothing_for_channel_non_zero(void** state)
-{
-    for (int i = 1; i < 7; i++) {
-        u8 expectedStatus = 0b10010000 + i;
-        u8 expectedData = 106;
-        u8 expectedData2 = 127;
-
-        will_return(__wrap_comm_read, expectedStatus);
-        will_return(__wrap_comm_read, expectedData);
-        will_return(__wrap_comm_read, expectedData2);
-
-        interface_tick();
-        interface_tick();
-        interface_tick();
-    }
 }
 
 static void test_interface_does_nothing_for_control_change(void** state)

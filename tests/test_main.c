@@ -13,7 +13,6 @@ int main(void)
         cmocka_unit_test(test_interface_initialises_synth),
         cmocka_unit_test(test_interface_tick_passes_note_on_to_midi_processor),
         cmocka_unit_test(test_interface_tick_passes_note_off_to_midi_processor),
-        cmocka_unit_test(test_interface_does_nothing_for_channel_non_zero),
         cmocka_unit_test(test_interface_does_nothing_for_control_change),
         cmocka_unit_test(test_midi_triggers_synth_note_on),
         cmocka_unit_test(test_midi_triggers_synth_note_on_2),
