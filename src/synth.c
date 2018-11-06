@@ -46,12 +46,14 @@ void synth_init(void)
 
 void synth_noteOn(u8 channel)
 {
-    fm_writeReg(0, 0x28, 0xF0);
+    u8 reg = 0xF0 + ((channel < 3) ? channel : (channel + 1));
+    fm_writeReg(0, 0x28, reg);
 }
 
 void synth_noteOff(u8 channel)
 {
-    fm_writeReg(0, 0x28, 0);
+    u8 reg = ((channel < 3) ? channel : (channel + 1));
+    fm_writeReg(0, 0x28, reg);
 }
 
 void synth_pitch(u8 octave, u16 freqNumber)

@@ -15,22 +15,48 @@ static void test_synth_init_sets_initial_registers(void** state)
     __real_synth_init();
 }
 
-static void test_synth_sets_note_on_fm_reg(void** state)
+static void test_synth_sets_note_on_fm_reg_chan_0_to_2(void** state)
 {
-    expect_value(__wrap_fm_writeReg, part, 0);
-    expect_value(__wrap_fm_writeReg, reg, 0x28);
-    expect_value(__wrap_fm_writeReg, data, 0xF0);
+    for (u8 chan = 0; chan < 3; chan++) {
+        expect_value(__wrap_fm_writeReg, part, 0);
+        expect_value(__wrap_fm_writeReg, reg, 0x28);
+        expect_value(__wrap_fm_writeReg, data, 0xF0 + chan);
 
-    __real_synth_noteOn(0);
+        __real_synth_noteOn(chan);
+    }
 }
 
-static void test_synth_sets_note_off_fm_reg(void** state)
+static void test_synth_sets_note_on_fm_reg_chan_3_to_5(void** state)
 {
-    expect_value(__wrap_fm_writeReg, part, 0);
-    expect_value(__wrap_fm_writeReg, reg, 0x28);
-    expect_value(__wrap_fm_writeReg, data, 0x00);
+    for (u8 chan = 3; chan < 6; chan++) {
+        expect_value(__wrap_fm_writeReg, part, 0);
+        expect_value(__wrap_fm_writeReg, reg, 0x28);
+        expect_value(__wrap_fm_writeReg, data, 0xF0 + 1 + chan);
 
-    __real_synth_noteOff(0);
+        __real_synth_noteOn(chan);
+    }
+}
+
+static void test_synth_sets_note_off_fm_reg_chan_0_to_2(void** state)
+{
+    for (u8 chan = 0; chan < 3; chan++) {
+        expect_value(__wrap_fm_writeReg, part, 0);
+        expect_value(__wrap_fm_writeReg, reg, 0x28);
+        expect_value(__wrap_fm_writeReg, data, chan);
+
+        __real_synth_noteOff(chan);
+    }
+}
+
+static void test_synth_sets_note_off_fm_reg_chan_3_to_5(void** state)
+{
+    for (u8 chan = 3; chan < 6; chan++) {
+        expect_value(__wrap_fm_writeReg, part, 0);
+        expect_value(__wrap_fm_writeReg, reg, 0x28);
+        expect_value(__wrap_fm_writeReg, data, 1 + chan);
+
+        __real_synth_noteOff(chan);
+    }
 }
 
 static void test_synth_sets_octave_and_freq_reg(void** state)
