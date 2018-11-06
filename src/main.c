@@ -13,6 +13,5 @@ int main(void)
     interface_init();
     while (TRUE) {
         interface_tick();
-        VDP_waitVSync();
     }
 }

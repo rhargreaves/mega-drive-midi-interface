@@ -60,6 +60,5 @@ static void test_interface_does_nothing_for_control_change(void** state)
 static void test_interface_initialises_synth(void** state)
 {
     expect_function_call(__wrap_synth_init);
-
     interface_init();
 }
