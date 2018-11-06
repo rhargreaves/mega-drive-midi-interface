@@ -23,7 +23,7 @@ static const u16 FREQ_NUMBERS[] = {
 
 void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
 {
-    synth_noteOn(0);
+    synth_noteOn(chan);
     synth_pitch(
         midi_getOctave(pitch),
         midi_getFreqNumber(pitch));
@@ -31,7 +31,7 @@ void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
 
 void midi_noteOff(u8 chan)
 {
-    synth_noteOff(0);
+    synth_noteOff(chan);
 }
 
 static u8 midi_getOctave(u8 pitch)
