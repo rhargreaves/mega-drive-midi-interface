@@ -57,6 +57,17 @@ static void test_interface_does_nothing_for_control_change(void** state)
     interface_tick();
 }
 
+static void test_interface_sets_unknown_event_for_system_messages(void** state)
+{
+    u8 expectedStatus = 0xF0;
+
+    will_return(__wrap_comm_read, expectedStatus);
+
+    interface_tick();
+
+    assert_string_equal(interface_lastError(), "Unknown Status F0");
+}
+
 static void test_interface_initialises_synth(void** state)
 {
     expect_function_call(__wrap_synth_init);
