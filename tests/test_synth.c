@@ -75,3 +75,16 @@ static void test_synth_sets_octave_and_freq_reg_chan(void** state)
         __real_synth_pitch(chan, 4, 653);
     }
 }
+
+static void test_synth_sets_total_level_reg_chan(void** state)
+{
+    for (u8 chan = 0; chan < 6; chan++) {
+        u8 regOffset = chan % 3;
+        u8 regPart = chan < 3 ? 0 : 1;
+        expect_value(__wrap_fm_writeReg, part, regPart);
+        expect_value(__wrap_fm_writeReg, reg, 0x4C + regOffset);
+        expect_value(__wrap_fm_writeReg, data, 0);
+
+        __real_synth_totalLevel(chan, 0);
+    }
+}
