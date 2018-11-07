@@ -69,3 +69,7 @@ void synth_pitch(u8 channel, u8 octave, u16 freqNumber)
     synth_writeFm(channel, 0xA4, (freqNumber >> 8) | (octave << 3));
     synth_writeFm(channel, 0xA0, freqNumber);
 }
+
+void synth_totalLevel(u8 channel, u8 totalLevel)
+{
+}

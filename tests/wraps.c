@@ -27,6 +27,12 @@ void __wrap_synth_pitch(u8 channel, u8 octave, u16 freqNumber)
     check_expected(freqNumber);
 }
 
+void __wrap_synth_totalLevel(u8 channel, u8 totalLevel)
+{
+    check_expected(channel);
+    check_expected(totalLevel);
+}
+
 u8 __wrap_comm_read(void)
 {
     return mock_type(u8);
