@@ -43,7 +43,7 @@ void ssf_init()
 
 void ssf_set_rom_bank(u8 bank, u8 val)
 {
-    SSF_REG16(REG_SSF_CTRL + bank * 2) = val;
+    SSF_REG16(REG_SSF_CTRL + (u32)bank * 2) = val;
 }
 
 void ssf_led_off()
