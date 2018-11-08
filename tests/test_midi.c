@@ -5,6 +5,9 @@
 #include <cmocka.h>
 #include <midi.h>
 
+extern void __real_midi_noteOn(u8 chan, u8 pitch, u8 velocity);
+extern void __real_midi_noteOff(u8 chan);
+
 static void test_midi_triggers_synth_note_on(void** state)
 {
     for (int chan = 0; chan < MAX_MIDI_CHANS; chan++) {
@@ -22,7 +25,7 @@ static void test_midi_triggers_synth_note_off(void** state)
     for (int chan = 0; chan < MAX_MIDI_CHANS; chan++) {
         expect_value(__wrap_synth_noteOff, channel, chan);
 
-        __real_midi_noteOff(chan, 60, 127);
+        __real_midi_noteOff(chan);
     }
 }
 

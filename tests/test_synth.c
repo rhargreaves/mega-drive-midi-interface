@@ -5,6 +5,12 @@
 #include <cmocka.h>
 #include <types.h>
 
+extern void __real_synth_init(void);
+extern void __real_synth_noteOn(u8 channel);
+extern void __real_synth_noteOff(u8 channel);
+extern void __real_synth_pitch(u8 channel, u8 octave, u16 freqNumber);
+extern void __real_synth_totalLevel(u8 channel, u8 totalLevel);
+
 static void test_synth_init_sets_initial_registers(void** state)
 {
     u16 count = 179;
