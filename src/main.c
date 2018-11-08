@@ -1,3 +1,4 @@
+#include <comm.h>
 #include <genesis.h>
 #include <interface.h>
 #include <main.h>
@@ -26,5 +27,17 @@ void vsync(void)
         VDP_setTextPalette(PAL1);
         VDP_drawText(lastError, 1, 5);
         interface_clearError();
+    }
+
+    static u8 frame = 0;
+    if (frame == 0) {
+        static char idleTimeText[10];
+        sprintf(idleTimeText, "Idle Time: %d     ", comm_idle());
+        VDP_setTextPalette(PAL1);
+        VDP_drawText(idleTimeText, 1, 7);
+    }
+    frame++;
+    if (frame > 50) {
+        frame = 0;
     }
 }

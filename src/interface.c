@@ -25,8 +25,8 @@ void interface_tick(void)
             velocity);
     } else if ((status & 0xF0) == 0x80) {
         u8 chan = status & 0x0F;
-        u8 pitch = comm_read();
-        u8 velocity = comm_read();
+        comm_read();
+        comm_read();
         midi_noteOff(chan);
     } else {
         lastUnknownStatus = status;

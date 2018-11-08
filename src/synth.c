@@ -7,7 +7,7 @@ static u8 synth_keyOnOffRegOffset(u8 channel);
 void synth_init(void)
 {
     fm_writeReg(0, 0x27, 0); // Ch 3 Normal
-    for (u8 chan; chan < MAX_SYNTH_CHANS; chan++) {
+    for (u8 chan = 0; chan < MAX_SYNTH_CHANS; chan++) {
         synth_noteOff(chan);
         synth_writeFm(chan, 0x30, 0x71); // DT1/MUL
         synth_writeFm(chan, 0x34, 0x0D);
