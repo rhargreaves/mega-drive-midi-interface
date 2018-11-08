@@ -24,7 +24,8 @@ int main(void)
         cmocka_unit_test(test_synth_sets_note_off_fm_reg_chan_3_to_5),
         cmocka_unit_test(test_synth_sets_octave_and_freq_reg_chan),
         cmocka_unit_test(test_synth_sets_total_level_reg_chan),
-        cmocka_unit_test(test_interface_sets_unknown_event_for_system_messages)
+        cmocka_unit_test(test_interface_sets_unknown_event_for_system_messages),
+        cmocka_unit_test(test_interface_clears_error)
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);

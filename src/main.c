@@ -23,7 +23,8 @@ void vsync(void)
 {
     char* lastError = interface_lastError();
     if (lastError != NULL) {
-        VDP_setTextPalette(PAL3);
+        VDP_setTextPalette(PAL1);
         VDP_drawText(lastError, 1, 5);
+        interface_clearError();
     }
 }

@@ -4,7 +4,8 @@
 #include <string.h>
 #include <synth.h>
 
-static char lastError[20];
+static char lastUnknownStatusText[20];
+static u8 lastUnknownStatus = 0;
 
 void interface_init(void)
 {
@@ -28,15 +29,20 @@ void interface_tick(void)
         u8 velocity = comm_read();
         midi_noteOff(chan);
     } else {
-        strcpy(lastError, "Unknown Status F0");
+        lastUnknownStatus = status;
     }
 }
 
 char* interface_lastError(void)
 {
-    return &lastError[0];
+    if (lastUnknownStatus != 0) {
+        sprintf(lastUnknownStatusText, "Unknown Status %02X", lastUnknownStatus);
+        return lastUnknownStatusText;
+    }
+    return NULL;
 }
 
 void interface_clearError(void)
 {
+    lastUnknownStatus = 0;
 }
