@@ -50,6 +50,8 @@ static void controlChange(u8 status)
     u8 value = comm_read();
     if (controller == 0x7) {
         midi_channelVolume(chan, value);
+    } else if (controller == 0xA) {
+        midi_pan(chan, value);
     } else {
         lastUnknownControlChange.controller = controller;
         lastUnknownControlChange.value = value;

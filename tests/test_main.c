@@ -14,6 +14,7 @@ int main(void)
         cmocka_unit_test(test_interface_tick_passes_note_on_to_midi_processor),
         cmocka_unit_test(test_interface_tick_passes_note_off_to_midi_processor),
         cmocka_unit_test(test_interface_does_nothing_for_control_change),
+        cmocka_unit_test(test_interface_sets_pan),
         cmocka_unit_test(test_midi_triggers_synth_note_on),
         cmocka_unit_test(test_midi_triggers_synth_note_on_2),
         cmocka_unit_test(test_midi_triggers_synth_note_off),
@@ -30,6 +31,7 @@ int main(void)
         cmocka_unit_test(test_interface_sets_channel_volume),
         cmocka_unit_test(test_midi_channel_volume_sets_total_level),
         cmocka_unit_test(test_midi_pan_sets_synth_stereo_mode_right),
+        cmocka_unit_test(test_midi_pan_sets_synth_stereo_mode_left),
         cmocka_unit_test(test_interface_does_not_set_unknown_CC_for_known_CC)
     };
 

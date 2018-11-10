@@ -122,6 +122,22 @@ static void test_interface_sets_channel_volume(void** state)
     interface_tick();
 }
 
+static void test_interface_sets_pan(void** state)
+{
+    u8 expectedStatus = 0xB0;
+    u8 expectedController = 0x0A;
+    u8 expectedValue = 0xFF;
+
+    will_return(__wrap_comm_read, expectedStatus);
+    will_return(__wrap_comm_read, expectedController);
+    will_return(__wrap_comm_read, expectedValue);
+
+    expect_value(__wrap_midi_pan, chan, 0);
+    expect_value(__wrap_midi_pan, pan, expectedValue);
+
+    interface_tick();
+}
+
 static void test_interface_initialises_synth(void** state)
 {
     expect_function_call(__wrap_synth_init);

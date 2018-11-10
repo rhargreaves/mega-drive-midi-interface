@@ -58,3 +58,11 @@ static void test_midi_pan_sets_synth_stereo_mode_right(void** state)
 
     __real_midi_pan(0, 127);
 }
+
+static void test_midi_pan_sets_synth_stereo_mode_left(void** state)
+{
+    expect_value(__wrap_synth_stereo, channel, 0);
+    expect_value(__wrap_synth_stereo, mode, 2);
+
+    __real_midi_pan(0, 0);
+}

@@ -55,6 +55,12 @@ void __wrap_midi_channelVolume(u8 chan, u8 volume)
     check_expected(volume);
 }
 
+void __wrap_midi_pan(u8 chan, u8 pan)
+{
+    check_expected(chan);
+    check_expected(pan);
+}
+
 void __wrap_midi_noteOn(u8 chan, u8 pitch, u8 velocity)
 {
     check_expected(chan);
