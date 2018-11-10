@@ -74,3 +74,7 @@ void synth_totalLevel(u8 channel, u8 totalLevel)
 {
     synth_writeFm(channel, 0x4C, totalLevel);
 }
+
+void synth_stereo(u8 channel, u8 mode)
+{
+}

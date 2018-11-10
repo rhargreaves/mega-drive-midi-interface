@@ -21,6 +21,7 @@ MOCKS=midi_process \
 	synth_noteOff \
 	synth_pitch \
 	synth_totalLevel \
+	synth_stereo \
 	fm_writeReg \
 	SYS_setVIntCallback \
 	VDP_setTextPalette \
@@ -29,7 +30,8 @@ MOCKS=midi_process \
 	VDP_clearText \
 	midi_noteOff \
 	midi_noteOn \
-	midi_channelVolume
+	midi_channelVolume \
+	midi_pan
 
 LDFLAGS=-ffreestanding -l cmocka -L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src
 LDFLAGS+=$(foreach MOCK,$(MOCKS),-Wl,--wrap=$(MOCK))

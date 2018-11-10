@@ -33,6 +33,12 @@ void __wrap_synth_totalLevel(u8 channel, u8 totalLevel)
     check_expected(totalLevel);
 }
 
+void __wrap_synth_stereo(u8 channel, u8 mode)
+{
+    check_expected(channel);
+    check_expected(mode);
+}
+
 u8 __wrap_comm_read(void)
 {
     return mock_type(u8);

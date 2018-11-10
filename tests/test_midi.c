@@ -7,6 +7,8 @@
 
 extern void __real_midi_noteOn(u8 chan, u8 pitch, u8 velocity);
 extern void __real_midi_noteOff(u8 chan);
+extern void __real_midi_channelVolume(u8 chan, u8 volume);
+extern void __real_midi_pan(u8 chan, u8 pan);
 
 static void test_midi_triggers_synth_note_on(void** state)
 {
@@ -47,4 +49,12 @@ static void test_midi_channel_volume_sets_total_level(void** state)
     expect_value(__wrap_synth_totalLevel, totalLevel, 12);
 
     __real_midi_channelVolume(0, 60);
+}
+
+static void test_midi_pan_sets_synth_stereo_mode_right(void** state)
+{
+    expect_value(__wrap_synth_stereo, channel, 0);
+    expect_value(__wrap_synth_stereo, mode, 1);
+
+    __real_midi_pan(0, 127);
 }

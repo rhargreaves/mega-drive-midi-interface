@@ -51,6 +51,11 @@ void midi_channelVolume(u8 chan, u8 volume)
     synth_totalLevel(chan, TOTAL_LEVELS[volume]);
 }
 
+void midi_pan(u8 chan, u8 pan)
+{
+    synth_stereo(chan, 1);
+}
+
 static u8 midi_getOctave(u8 pitch)
 {
     return (pitch - MIN_MIDI_PITCH) / SEMITONES;
