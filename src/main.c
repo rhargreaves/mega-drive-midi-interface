@@ -1,6 +1,5 @@
 #include "interface.h"
 #include "ui.h"
-#include <genesis.h>
 
 int main(void)
 {
