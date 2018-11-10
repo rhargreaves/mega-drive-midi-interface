@@ -43,10 +43,14 @@ ControlChange* interface_lastUnknownCC(void)
     return &lastUnknownControlChange;
 }
 
-static void controlChange(u8 status) 
+static void controlChange(u8 status)
 {
+    u8 chan = status & 0x0F;
     u8 controller = comm_read();
     u8 value = comm_read();
+    if (controller == 0x7) {
+        midi_channelVolume(chan, value);
+    }
     lastUnknownControlChange.controller = controller;
     lastUnknownControlChange.value = value;
 }
@@ -61,7 +65,6 @@ static void noteOn(u8 status)
         pitch,
         velocity);
 }
-
 
 static void noteOff(u8 status)
 {

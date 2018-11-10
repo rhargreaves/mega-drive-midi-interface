@@ -1,5 +1,5 @@
 #include "ssf.h"
-#include "types.h"
+#include <types.h>
 
 #define SSF_REG16(reg) *((volatile u16*)(0xA13000 + reg))
 

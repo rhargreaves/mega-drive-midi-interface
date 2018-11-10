@@ -43,6 +43,12 @@ void __wrap_midi_noteOff(u8 chan)
     check_expected(chan);
 }
 
+void __wrap_midi_channelVolume(u8 chan, u8 volume)
+{
+    check_expected(chan);
+    check_expected(volume);
+}
+
 void __wrap_midi_noteOn(u8 chan, u8 pitch, u8 velocity)
 {
     check_expected(chan);
@@ -72,7 +78,6 @@ void __wrap_SYS_setVIntCallback(_voidCallback* CB)
 void __wrap_VDP_setTextPalette(u16 palette)
 {
 }
-
 
 void __wrap_VDP_clearText(u16 x, u16 y, u16 w)
 {

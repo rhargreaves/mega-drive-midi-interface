@@ -71,7 +71,7 @@ static void test_interface_sets_unknown_event_for_system_messages(void** state)
 static void test_interface_sets_unknown_CC(void** state)
 {
     u8 expectedStatus = 0xB0;
-    u8 expectedController = 0x07;
+    u8 expectedController = 0x9;
     u8 expectedValue = 0x50;
 
     will_return(__wrap_comm_read, expectedStatus);
@@ -84,6 +84,22 @@ static void test_interface_sets_unknown_CC(void** state)
 
     assert_int_equal(cc->controller, expectedController);
     assert_int_equal(cc->value, expectedValue);
+}
+
+static void test_interface_sets_channel_volume(void** state)
+{
+    u8 expectedStatus = 0xB0;
+    u8 expectedController = 0x7;
+    u8 expectedValue = 0x50;
+
+    will_return(__wrap_comm_read, expectedStatus);
+    will_return(__wrap_comm_read, expectedController);
+    will_return(__wrap_comm_read, expectedValue);
+
+    expect_value(__wrap_midi_channelVolume, chan, 0);
+    expect_value(__wrap_midi_channelVolume, volume, expectedValue);
+
+    interface_tick();
 }
 
 static void test_interface_initialises_synth(void** state)

@@ -61,9 +61,7 @@ static void printLastError(void)
 
     static ControlChange lastCc;
     ControlChange* cc = interface_lastUnknownCC();
-    if(cc->controller != lastCc.controller ||
-        cc->value != lastCc.value &&
-        (cc->controller != 0 || cc->value != 0)) {
+    if ((cc->controller != lastCc.controller || cc->value != lastCc.value) && (cc->controller != 0 || cc->value != 0)) {
         sprintf(text, "Unknown CC %02X Value %02X", cc->controller, cc->value);
         printErrorText(text);
         lastCc.controller = cc->controller;

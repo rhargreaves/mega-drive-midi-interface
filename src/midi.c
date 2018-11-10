@@ -34,6 +34,11 @@ void midi_noteOff(u8 chan)
     synth_noteOff(chan);
 }
 
+void midi_channelVolume(u8 chan, u8 volume)
+{
+    // synth_totalLevel(chan, volume);
+}
+
 static u8 midi_getOctave(u8 pitch)
 {
     return (pitch - MIN_MIDI_PITCH) / SEMITONES;

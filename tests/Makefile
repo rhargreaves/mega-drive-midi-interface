@@ -28,7 +28,8 @@ MOCKS=midi_process \
 	VDP_drawText \
 	VDP_clearText \
 	midi_noteOff \
-	midi_noteOn
+	midi_noteOn \
+	midi_channelVolume
 
 LDFLAGS=-ffreestanding -l cmocka -L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src
 LDFLAGS+=$(foreach MOCK,$(MOCKS),-Wl,--wrap=$(MOCK))
