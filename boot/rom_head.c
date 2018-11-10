@@ -38,6 +38,6 @@ const struct
     0x00200000,
     0x002001FF,
     "            ",
-    "DEMONSTRATION PROGRAM                   ",
+    "                                        ",
     "JUE             "
 };
