@@ -21,6 +21,10 @@ See also [stretch goals](#stretch-goals).
 - A MIDI-to-Serial virtual device (such as [Hairless MIDI<->Serial Bridge](http://projectgus.github.io/hairless-midiserial/))
 - Optional: MIDI loop device (so software running on the same PC as the USB connection can use the MIDI interface). In macOS this is possible via the use of a ["IAC Device Bus" creatable from the Audio MIDI Setup utility](https://help.ableton.com/hc/en-us/articles/209774225-Using-virtual-MIDI-buses).
 
+### Download
+
+You can download pre-built ROMs from [releases](https://github.com/rhargreaves/mega-drive-midi-interface/releases). Alternatively you can download the source and compile the ROM yourself (see [Build & Test](#build--test))
+
 ## Progress
 
 In summary, support for:
