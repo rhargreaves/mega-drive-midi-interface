@@ -10,6 +10,7 @@ extern void __real_synth_noteOn(u8 channel);
 extern void __real_synth_noteOff(u8 channel);
 extern void __real_synth_pitch(u8 channel, u8 octave, u16 freqNumber);
 extern void __real_synth_totalLevel(u8 channel, u8 totalLevel);
+extern void __real_synth_stereo(u8 channel, u8 stereo);
 
 static void test_synth_init_sets_initial_registers(void** state)
 {
@@ -92,5 +93,19 @@ static void test_synth_sets_total_level_reg_chan(void** state)
         expect_value(__wrap_fm_writeReg, data, 0);
 
         __real_synth_totalLevel(chan, 0);
+    }
+}
+
+static void test_synth_sets_stereo_reg_chan(void** state)
+{
+    u8 stereo = 1;
+    for (u8 chan = 0; chan < 6; chan++) {
+        u8 regOffset = chan % 3;
+        u8 regPart = chan < 3 ? 0 : 1;
+        expect_value(__wrap_fm_writeReg, part, regPart);
+        expect_value(__wrap_fm_writeReg, reg, 0xB4 + regOffset);
+        expect_value(__wrap_fm_writeReg, data, stereo << 6);
+
+        __real_synth_stereo(chan, stereo);
     }
 }
