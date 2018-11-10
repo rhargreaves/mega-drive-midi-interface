@@ -54,11 +54,11 @@ void midi_channelVolume(u8 chan, u8 volume)
 void midi_pan(u8 chan, u8 pan)
 {
     if (pan > 96) {
-        synth_stereo(chan, 1);
+        synth_stereo(chan, STEREO_MODE_RIGHT);
     } else if (pan > 31) {
-        synth_stereo(chan, 3);
+        synth_stereo(chan, STEREO_MODE_CENTRE);
     } else {
-        synth_stereo(chan, 2);
+        synth_stereo(chan, STEREO_MODE_LEFT);
     }
 }
 
