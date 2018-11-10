@@ -24,10 +24,10 @@ void interface_loop(void)
 void interface_tick(void)
 {
     u8 status = comm_read();
-    u8 upperStatus = status & 0xF0;
-    if (upperStatus == 0x90) {
+    u8 upperStatus = status >> 4;
+    if (upperStatus == 0x9) {
         noteOn(status);
-    } else if (upperStatus == 0x80) {
+    } else if (upperStatus == 0x8) {
         noteOff(status);
     } else {
         lastUnknownStatus = status;
