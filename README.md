@@ -12,6 +12,15 @@ The main goal of this project is to allow the Mega Drive's FM synthesis chip & P
 
 See also [stretch goals](#stretch-goals).
 
+## Getting Started
+
+### Requirements
+
+- Mega Drive/Genesis Console (PAL or NTSC)
+- [Mega EverDrive X7 cart](https://krikzz.com/store/home/33-mega-everdrive-v2.html)
+- A MIDI-to-Serial virtual device (such as [Hairless MIDI<->Serial Bridge](http://projectgus.github.io/hairless-midiserial/))
+- Optional: MIDI loop device (so software running on the same PC as the USB connection can use the MIDI interface). In macOS this is possible via the use of a ["IAC Device Bus" creatable from the Audio MIDI Setup utility](https://help.ableton.com/hc/en-us/articles/209774225-Using-virtual-MIDI-buses).
+
 ## Progress
 
 In summary, support for:
@@ -27,16 +36,6 @@ Check out the [development board](https://github.com/rhargreaves/mega-drive-midi
 |----|-------------|-----------|--------|
 | 7  | Channel Volume | Op 4 Total Level | [Logarithmic](src/midi.c#L24) |
 | 10 | Panning     | Stereo    | 0 - 31: Left<br>32 - 96: Centre<br>97 - 127: Right |
-
-
-## Getting Started
-
-### Requirements
-
-- Mega Drive/Genesis Console (PAL or NTSC)
-- [Mega EverDrive X7 cart](https://krikzz.com/store/home/33-mega-everdrive-v2.html)
-- A MIDI-to-Serial virtual device (such as [Hairless MIDI<->Serial Bridge](http://projectgus.github.io/hairless-midiserial/))
-- Optional: MIDI loop device (so software running on the same PC as the USB connection can use the MIDI interface). In macOS this is possible via the use of a ["IAC Device Bus" creatable from the Audio MIDI Setup utility](https://help.ableton.com/hc/en-us/articles/209774225-Using-virtual-MIDI-buses).
 
 ## Build & Test
 
