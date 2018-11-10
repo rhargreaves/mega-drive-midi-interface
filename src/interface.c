@@ -12,10 +12,18 @@ void interface_init(void)
     synth_init();
 }
 
+void interface_loop(void)
+{
+    while (TRUE) {
+        interface_tick();
+    }
+}
+
 void interface_tick(void)
 {
     u8 status = comm_read();
-    if ((status & 0xF0) == 0x90) {
+    u8 upperStatus = status & 0xF0;
+    if (upperStatus == 0x90) {
         u8 chan = status & 0x0F;
         u8 pitch = comm_read();
         u8 velocity = comm_read();
@@ -23,7 +31,7 @@ void interface_tick(void)
             chan,
             pitch,
             velocity);
-    } else if ((status & 0xF0) == 0x80) {
+    } else if (upperStatus == 0x80) {
         u8 chan = status & 0x0F;
         comm_read();
         comm_read();

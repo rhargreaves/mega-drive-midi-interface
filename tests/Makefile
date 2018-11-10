@@ -22,7 +22,10 @@ MOCKS=midi_process \
 	synth_pitch \
 	synth_totalLevel \
 	fm_writeReg \
+	SYS_setVIntCallback \
+	VDP_setTextPalette \
 	YM2612_writeReg \
+	VDP_drawText \
 	midi_noteOff \
 	midi_noteOn
 

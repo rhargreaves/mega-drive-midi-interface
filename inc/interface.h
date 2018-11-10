@@ -1,5 +1,6 @@
 #pragma once
 
+void interface_loop(void);
 void interface_tick(void);
 void interface_init(void);
 char* interface_lastError(void);

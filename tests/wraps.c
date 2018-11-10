@@ -60,3 +60,15 @@ void __wrap_fm_writeReg(u16 part, u8 reg, u8 data)
 void __wrap_YM2612_writeReg(const u16 part, const u8 reg, const u8 data)
 {
 }
+
+void __wrap_VDP_drawText(const char* str, u16 x, u16 y)
+{
+}
+
+void __wrap_SYS_setVIntCallback(_voidCallback* CB)
+{
+}
+
+void __wrap_VDP_setTextPalette(u16 palette)
+{
+}
