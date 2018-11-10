@@ -2,6 +2,10 @@
 
 Exposes the YM2612 FM synth chip as a MIDI interface
 
+<p align="center">
+    <img src="https://github.com/rhargreaves/mega-drive-midi-interface/raw/master/docs/screenshot.png" width="600" />
+</p>
+
 ## Goal
 
 The main goal of this project is to allow the Mega Drive's FM synthesis chip & PSG to be controlled via MIDI over a serial link (such as the USB interface provided by the Mega EverDrive X7 flash cart) so that it can be sequenced by a modern DAW like Albeton Live.
@@ -12,7 +16,7 @@ See also [stretch goals](#stretch-goals).
 
 In summary:
 
-* Support for Note On/Off events on MIDI channels 1-6, using a fixed voice.
+- Support for Note On/Off events on MIDI channels 1-6, using a fixed voice.
 
 Check out the [development board](https://github.com/rhargreaves/mega-drive-midi-interface/projects/1) for a snapshot view of what's in progress.
 
