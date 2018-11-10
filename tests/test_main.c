@@ -32,6 +32,7 @@ int main(void)
         cmocka_unit_test(test_midi_channel_volume_sets_total_level),
         cmocka_unit_test(test_midi_pan_sets_synth_stereo_mode_right),
         cmocka_unit_test(test_midi_pan_sets_synth_stereo_mode_left),
+        cmocka_unit_test(test_midi_pan_sets_synth_stereo_mode_centre),
         cmocka_unit_test(test_interface_does_not_set_unknown_CC_for_known_CC)
     };
 

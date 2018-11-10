@@ -53,8 +53,13 @@ void midi_channelVolume(u8 chan, u8 volume)
 
 void midi_pan(u8 chan, u8 pan)
 {
-    u8 mode = pan > 64 ? 1 : 2;
-    synth_stereo(chan, mode);
+    if (pan > 96) {
+        synth_stereo(chan, 1);
+    } else if (pan > 31) {
+        synth_stereo(chan, 3);
+    } else {
+        synth_stereo(chan, 2);
+    }
 }
 
 static u8 midi_getOctave(u8 pitch)
