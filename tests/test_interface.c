@@ -68,6 +68,24 @@ static void test_interface_sets_unknown_event_for_system_messages(void** state)
     assert_int_equal(interface_lastUnknownStatus(), expectedStatus);
 }
 
+static void test_interface_sets_unknown_CC(void** state)
+{
+    u8 expectedStatus = 0xB0;
+    u8 expectedController = 0x07;
+    u8 expectedValue = 0x50;
+
+    will_return(__wrap_comm_read, expectedStatus);
+    will_return(__wrap_comm_read, expectedController);
+    will_return(__wrap_comm_read, expectedValue);
+
+    interface_tick();
+
+    ControlChange* cc = interface_lastUnknownCC();
+
+    assert_int_equal(cc->controller, expectedController);
+    assert_int_equal(cc->value, expectedValue);
+}
+
 static void test_interface_initialises_synth(void** state)
 {
     expect_function_call(__wrap_synth_init);

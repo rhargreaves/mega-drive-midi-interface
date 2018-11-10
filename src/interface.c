@@ -5,9 +5,11 @@
 #include <synth.h>
 
 static u8 lastUnknownStatus = 0;
+static ControlChange lastUnknownControlChange;
 
 static void noteOn(u8 status);
 static void noteOff(u8 status);
+static void controlChange(u8 status);
 
 void interface_init(void)
 {
@@ -29,9 +31,24 @@ void interface_tick(void)
         noteOn(status);
     } else if (upperStatus == 0x8) {
         noteOff(status);
+    } else if (upperStatus == 0xB) {
+        controlChange(status);
     } else {
         lastUnknownStatus = status;
     }
+}
+
+ControlChange* interface_lastUnknownCC(void)
+{
+    return &lastUnknownControlChange;
+}
+
+static void controlChange(u8 status) 
+{
+    u8 controller = comm_read();
+    u8 value = comm_read();
+    lastUnknownControlChange.controller = controller;
+    lastUnknownControlChange.value = value;
 }
 
 static void noteOn(u8 status)
@@ -44,6 +61,7 @@ static void noteOn(u8 status)
         pitch,
         velocity);
 }
+
 
 static void noteOff(u8 status)
 {

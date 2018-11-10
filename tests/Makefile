@@ -26,6 +26,7 @@ MOCKS=midi_process \
 	VDP_setTextPalette \
 	YM2612_writeReg \
 	VDP_drawText \
+	VDP_clearText \
 	midi_noteOff \
 	midi_noteOn
 

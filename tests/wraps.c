@@ -72,3 +72,8 @@ void __wrap_SYS_setVIntCallback(_voidCallback* CB)
 void __wrap_VDP_setTextPalette(u16 palette)
 {
 }
+
+
+void __wrap_VDP_clearText(u16 x, u16 y, u16 w)
+{
+}
