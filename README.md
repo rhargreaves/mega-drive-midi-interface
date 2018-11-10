@@ -17,9 +17,17 @@ See also [stretch goals](#stretch-goals).
 In summary, support for:
 
 - Note On/Off events on MIDI channels 1-6, using a fixed voice.
-- CC 7 (Channel volume)
+- A handful of CCs.
 
 Check out the [development board](https://github.com/rhargreaves/mega-drive-midi-interface/projects/1) for a snapshot view of what's in progress.
+
+## Supported Control Changes
+
+| CC | Description | FM Effect | Values |
+|----|-------------|-----------|--------|
+| 7  | Channel Volume | Op 4 Total Level | [Logarithmic](src/midi.c#L24) |
+| 10 | Panning     | Stereo    | 0 - 31: Left<br>32 - 96: Centre<br>97 - 127: Right |
+
 
 ## Getting Started
 
