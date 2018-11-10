@@ -4,7 +4,6 @@
 #include <string.h>
 #include <synth.h>
 
-static char lastUnknownStatusText[20];
 static u8 lastUnknownStatus = 0;
 
 void interface_init(void)
@@ -41,16 +40,7 @@ void interface_tick(void)
     }
 }
 
-char* interface_lastError(void)
+u8 interface_lastUnknownStatus(void)
 {
-    if (lastUnknownStatus != 0) {
-        sprintf(lastUnknownStatusText, "Unknown Status %02X", lastUnknownStatus);
-        return lastUnknownStatusText;
-    }
-    return NULL;
-}
-
-void interface_clearError(void)
-{
-    lastUnknownStatus = 0;
+    return lastUnknownStatus;
 }

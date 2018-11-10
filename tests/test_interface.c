@@ -65,19 +65,7 @@ static void test_interface_sets_unknown_event_for_system_messages(void** state)
 
     interface_tick();
 
-    assert_string_equal(interface_lastError(), "Unknown Status F0");
-}
-
-static void test_interface_clears_error(void** state)
-{
-    u8 expectedStatus = 0xF0;
-
-    will_return(__wrap_comm_read, expectedStatus);
-
-    interface_tick();
-    interface_clearError();
-
-    assert_null(interface_lastError());
+    assert_int_equal(interface_lastUnknownStatus(), expectedStatus);
 }
 
 static void test_interface_initialises_synth(void** state)

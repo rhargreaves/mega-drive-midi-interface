@@ -1,7 +1,7 @@
 #pragma once
+#include <types.h>
 
 void interface_loop(void);
 void interface_tick(void);
 void interface_init(void);
-char* interface_lastError(void);
-void interface_clearError(void);
+u8 interface_lastUnknownStatus(void);
