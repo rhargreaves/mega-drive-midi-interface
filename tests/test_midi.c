@@ -40,3 +40,11 @@ static void test_midi_triggers_synth_note_on_2(void** state)
 
     __real_midi_noteOn(0, A_SHARP, 127);
 }
+
+static void test_midi_channel_volume_sets_total_level(void** state)
+{
+    expect_value(__wrap_synth_totalLevel, channel, 0);
+    expect_value(__wrap_synth_totalLevel, totalLevel, 12);
+
+    __real_midi_channelVolume(0, 60);
+}
