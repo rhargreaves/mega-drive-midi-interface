@@ -14,9 +14,10 @@ See also [stretch goals](#stretch-goals).
 
 ## Progress
 
-In summary:
+In summary, support for:
 
-- Support for Note On/Off events on MIDI channels 1-6, using a fixed voice.
+- Note On/Off events on MIDI channels 1-6, using a fixed voice.
+- CC 7 (Channel volume)
 
 Check out the [development board](https://github.com/rhargreaves/mega-drive-midi-interface/projects/1) for a snapshot view of what's in progress.
 
