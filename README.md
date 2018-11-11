@@ -29,10 +29,16 @@ You can download pre-built ROMs from [releases](https://github.com/rhargreaves/m
 
 In summary, support for:
 
-- Note On/Off events on MIDI channels 1-6, using a fixed voice.
+- Note On/Off events.
 - A handful of CCs.
 
 Check out the [development board](https://github.com/rhargreaves/mega-drive-midi-interface/projects/1) for a snapshot view of what's in progress.
+
+## MIDI Channels
+
+* 1 to 6 are assigned to the YM2612's respective FM channels.
+* 7 to 9 are assigned to the PSG's respective tone channels.
+* 10 is assigned to the PSG's noise channel.
 
 ## Supported Control Changes
 
