@@ -45,8 +45,8 @@ static void test_midi_triggers_synth_note_on_2(void** state)
 
 static void test_midi_triggers_psg_note_on(void** state)
 {
-    u8 midiKeys[] = { 69 };
-    u16 freqs[] = { 440 };
+    const u8 midiKeys[] = { 36, 69, 108 };
+    const u16 freqs[] = { 65, 440, 4186 };
 
     for (u8 i = 0; i < sizeof(midiKeys); i++) {
         for (u8 chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN; chan++) {
