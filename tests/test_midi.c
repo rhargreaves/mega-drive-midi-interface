@@ -63,6 +63,15 @@ static void test_midi_triggers_psg_note_on(void** state)
     }
 }
 
+static void test_midi_triggers_psg_note_off(void** state)
+{
+    for (u8 chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN; chan++) {
+        expect_value(__wrap_psg_noteOff, channel, chan - MIN_PSG_CHAN);
+
+        __real_midi_noteOff(chan);
+    }
+}
+
 static void test_midi_channel_volume_sets_total_level(void** state)
 {
     expect_value(__wrap_synth_totalLevel, channel, 0);

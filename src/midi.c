@@ -56,7 +56,11 @@ void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
 
 void midi_noteOff(u8 chan)
 {
-    synth_noteOff(chan);
+    if (chan < MIN_PSG_CHAN) {
+        synth_noteOff(chan);
+    } else {
+        psg_noteOff(chan - MIN_PSG_CHAN);
+    }
 }
 
 void midi_channelVolume(u8 chan, u8 volume)

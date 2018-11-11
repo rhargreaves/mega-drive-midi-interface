@@ -20,6 +20,7 @@ int main(void)
         cmocka_unit_test(test_midi_triggers_synth_note_on_2),
         cmocka_unit_test(test_midi_triggers_synth_note_off),
         cmocka_unit_test(test_midi_triggers_psg_note_on),
+        cmocka_unit_test(test_midi_triggers_psg_note_off),
         cmocka_unit_test(test_synth_init_sets_initial_registers),
         cmocka_unit_test(test_synth_sets_note_on_fm_reg_chan_0_to_2),
         cmocka_unit_test(test_synth_sets_note_on_fm_reg_chan_3_to_5),
@@ -36,7 +37,8 @@ int main(void)
         cmocka_unit_test(test_midi_pan_sets_synth_stereo_mode_left),
         cmocka_unit_test(test_midi_pan_sets_synth_stereo_mode_centre),
         cmocka_unit_test(test_interface_does_not_set_unknown_CC_for_known_CC),
-        cmocka_unit_test(test_psg_chip_sets_note_on_psg)
+        cmocka_unit_test(test_psg_chip_sets_note_on_psg),
+        cmocka_unit_test(test_psg_chip_sets_note_off_psg)
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
