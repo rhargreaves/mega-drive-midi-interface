@@ -75,6 +75,13 @@ void __wrap_fm_writeReg(u16 part, u8 reg, u8 data)
     check_expected(data);
 }
 
+void __wrap_psg_noteOn(u8 channel, u16 freq, u8 attenuation)
+{
+    check_expected(channel);
+    check_expected(freq);
+    check_expected(attenuation);
+}
+
 void __wrap_YM2612_writeReg(const u16 part, const u8 reg, const u8 data)
 {
 }
@@ -93,4 +100,16 @@ void __wrap_VDP_setTextPalette(u16 palette)
 
 void __wrap_VDP_clearText(u16 x, u16 y, u16 w)
 {
+}
+
+void __wrap_PSG_setEnvelope(u8 channel, u8 value)
+{
+    check_expected(channel);
+    check_expected(value);
+}
+
+void __wrap_PSG_setFrequency(u8 channel, u16 value)
+{
+    check_expected(channel);
+    check_expected(value);
 }

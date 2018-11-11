@@ -23,11 +23,14 @@ MOCKS=midi_process \
 	synth_totalLevel \
 	synth_stereo \
 	fm_writeReg \
+	psg_noteOn \
 	SYS_setVIntCallback \
 	VDP_setTextPalette \
 	YM2612_writeReg \
 	VDP_drawText \
 	VDP_clearText \
+	PSG_setEnvelope \
+	PSG_setFrequency \
 	midi_noteOff \
 	midi_noteOn \
 	midi_channelVolume \

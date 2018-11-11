@@ -2,8 +2,8 @@
 #include <stdarg.h>
 #include <stddef.h>
 
+#include "midi.h"
 #include <cmocka.h>
-#include <midi.h>
 
 extern void __real_midi_noteOn(u8 chan, u8 pitch, u8 velocity);
 extern void __real_midi_noteOff(u8 chan);
@@ -41,6 +41,17 @@ static void test_midi_triggers_synth_note_on_2(void** state)
     const u16 A_SHARP = 106;
 
     __real_midi_noteOn(0, A_SHARP, 127);
+}
+
+static void test_midi_triggers_psg_note_on(void** state)
+{
+    for (u8 chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN; chan++) {
+        expect_value(__wrap_psg_noteOn, channel, chan - MIN_PSG_CHAN);
+        expect_value(__wrap_psg_noteOn, freq, 440);
+        expect_value(__wrap_psg_noteOn, attenuation, 0);
+
+        __real_midi_noteOn(chan, 60, 127);
+    }
 }
 
 static void test_midi_channel_volume_sets_total_level(void** state)

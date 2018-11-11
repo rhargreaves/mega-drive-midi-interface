@@ -1,5 +1,6 @@
-#include <midi.h>
-#include <synth.h>
+#include "midi.h"
+#include "psg_chip.h"
+#include "synth.h"
 
 static u8 midi_getOctave(u8 pitch);
 static u16 midi_getFreqNumber(u8 pitch);
@@ -35,10 +36,14 @@ static const u8 TOTAL_LEVELS[] = {
 
 void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
 {
-    synth_pitch(chan,
-        midi_getOctave(pitch),
-        midi_getFreqNumber(pitch));
-    synth_noteOn(chan);
+    if (chan < MIN_PSG_CHAN) {
+        synth_pitch(chan,
+            midi_getOctave(pitch),
+            midi_getFreqNumber(pitch));
+        synth_noteOn(chan);
+    } else {
+        psg_noteOn(chan - MIN_PSG_CHAN, 440, 0);
+    }
 }
 
 void midi_noteOff(u8 chan)
