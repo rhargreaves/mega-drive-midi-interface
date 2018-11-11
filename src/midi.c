@@ -42,6 +42,16 @@ static const u8 TOTAL_LEVELS[] = { 126, 122, 117, 113, 108, 104, 100, 97, 93,
     3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
+static const u8 ATTENUATIONS[] = {
+    15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
+    14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14,
+    14, 14, 14, 14, 14, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13,
+    13, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 11, 11, 11, 11, 11, 11,
+    11, 11, 11, 10, 10, 10, 10, 10, 10, 10, 10, 9, 9, 9, 9, 9, 9, 8, 8, 8, 8, 8,
+    8, 7, 7, 7, 7, 7, 6, 6, 6, 6, 6, 5, 5, 5, 5, 4, 4, 4, 4, 3, 3, 3, 2, 2, 2, 2,
+    1, 1, 1, 0
+};
+
 void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
 {
     if (chan < MIN_PSG_CHAN) {
@@ -68,7 +78,7 @@ void midi_channelVolume(u8 chan, u8 volume)
     if (chan < MIN_PSG_CHAN) {
         synth_totalLevel(chan, TOTAL_LEVELS[volume]);
     } else {
-        psg_attenuation(chan - MIN_PSG_CHAN, 15 - (volume / 8));
+        psg_attenuation(chan - MIN_PSG_CHAN, ATTENUATIONS[volume]);
     }
 }
 

@@ -82,7 +82,7 @@ static void test_midi_channel_volume_sets_total_level(void** state)
 static void test_midi_channel_volume_sets_psg_attenuation(void** state)
 {
     expect_value(__wrap_psg_attenuation, channel, 0);
-    expect_value(__wrap_psg_attenuation, attenuation, 3);
+    expect_value(__wrap_psg_attenuation, attenuation, 8);
 
     __real_midi_channelVolume(MIN_PSG_CHAN, 96);
 }
