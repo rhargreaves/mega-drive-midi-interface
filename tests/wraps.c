@@ -87,6 +87,12 @@ void __wrap_psg_noteOff(u8 channel)
     check_expected(channel);
 }
 
+void __wrap_psg_attenuation(u8 channel, u8 attenuation)
+{
+    check_expected(channel);
+    check_expected(attenuation);
+}
+
 void __wrap_YM2612_writeReg(const u16 part, const u8 reg, const u8 data)
 {
     check_expected(part);

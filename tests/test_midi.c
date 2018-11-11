@@ -80,6 +80,14 @@ static void test_midi_channel_volume_sets_total_level(void** state)
     __real_midi_channelVolume(0, 60);
 }
 
+static void test_midi_channel_volume_sets_psg_attenuation(void** state)
+{
+    expect_value(__wrap_psg_attenuation, channel, 0);
+    expect_value(__wrap_psg_attenuation, attenuation, 2);
+
+    __real_midi_channelVolume(MIN_PSG_CHAN, 60);
+}
+
 static void test_midi_pan_sets_synth_stereo_mode_right(void** state)
 {
     expect_value(__wrap_synth_stereo, channel, 0);

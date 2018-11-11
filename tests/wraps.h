@@ -11,6 +11,7 @@ u8 __wrap_comm_read(void);
 void __wrap_fm_writeReg(u16 part, u8 reg, u8 data);
 void __wrap_psg_noteOn(u8 channel, u16 freq, u8 attenuation);
 void __wrap_psg_noteOff(u8 channel);
+void __wrap_psg_attenuation(u8 channel, u8 attenuation);
 void __wrap_midi_noteOff(u8 chan);
 void __wrap_midi_noteOn(u8 chan, u8 pitch, u8 velocity);
 void __wrap_midi_channelVolume(u8 chan, u8 volume);

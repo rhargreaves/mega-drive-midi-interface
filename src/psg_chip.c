@@ -12,3 +12,7 @@ void psg_noteOn(u8 channel, u16 freq, u8 attenuation)
     PSG_setFrequency(channel, freq);
     PSG_setEnvelope(channel, attenuation);
 }
+
+void psg_attenuation(u8 channel, u8 attenuation)
+{
+}

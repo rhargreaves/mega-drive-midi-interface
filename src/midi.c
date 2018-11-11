@@ -65,7 +65,11 @@ void midi_noteOff(u8 chan)
 
 void midi_channelVolume(u8 chan, u8 volume)
 {
-    synth_totalLevel(chan, TOTAL_LEVELS[volume]);
+    if (chan < MIN_PSG_CHAN) {
+        synth_totalLevel(chan, TOTAL_LEVELS[volume]);
+    } else {
+        psg_attenuation(chan - MIN_PSG_CHAN, 2);
+    }
 }
 
 void midi_pan(u8 chan, u8 pan)

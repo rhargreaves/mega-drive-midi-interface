@@ -25,6 +25,7 @@ MOCKS=midi_process \
 	fm_writeReg \
 	psg_noteOn \
 	psg_noteOff \
+	psg_attenuation \
 	SYS_setVIntCallback \
 	VDP_setTextPalette \
 	YM2612_writeReg \
