@@ -7,6 +7,16 @@
 static u8 lastUnknownStatus = 0;
 static ControlChange lastUnknownControlChange;
 
+#define STATUS_CHANNEL(status) status & 0x0F
+#define STATUS_EVENT(status) status >> 4
+
+#define EVENT_NOTE_ON 0x9
+#define EVENT_NODE_OFF 0x8
+#define EVENT_CC 0xB
+
+#define CC_VOLUME 0x7
+#define CC_PAN 0xA
+
 static void noteOn(u8 status);
 static void noteOff(u8 status);
 static void controlChange(u8 status);
@@ -26,12 +36,12 @@ void interface_loop(void)
 void interface_tick(void)
 {
     u8 status = comm_read();
-    u8 upperStatus = status >> 4;
-    if (upperStatus == 0x9) {
+    u8 event = STATUS_EVENT(status);
+    if (event == EVENT_NOTE_ON) {
         noteOn(status);
-    } else if (upperStatus == 0x8) {
+    } else if (event == EVENT_NODE_OFF) {
         noteOff(status);
-    } else if (upperStatus == 0xB) {
+    } else if (event == EVENT_CC) {
         controlChange(status);
     } else {
         lastUnknownStatus = status;
@@ -45,12 +55,12 @@ ControlChange* interface_lastUnknownCC(void)
 
 static void controlChange(u8 status)
 {
-    u8 chan = status & 0x0F;
+    u8 chan = STATUS_CHANNEL(status);
     u8 controller = comm_read();
     u8 value = comm_read();
-    if (controller == 0x7) {
+    if (controller == CC_VOLUME) {
         midi_channelVolume(chan, value);
-    } else if (controller == 0xA) {
+    } else if (controller == CC_PAN) {
         midi_pan(chan, value);
     } else {
         lastUnknownControlChange.controller = controller;
@@ -60,7 +70,7 @@ static void controlChange(u8 status)
 
 static void noteOn(u8 status)
 {
-    u8 chan = status & 0x0F;
+    u8 chan = STATUS_CHANNEL(status);
     u8 pitch = comm_read();
     u8 velocity = comm_read();
     midi_noteOn(
@@ -71,7 +81,7 @@ static void noteOn(u8 status)
 
 static void noteOff(u8 status)
 {
-    u8 chan = status & 0x0F;
+    u8 chan = STATUS_CHANNEL(status);
     comm_read();
     comm_read();
     midi_noteOff(chan);
