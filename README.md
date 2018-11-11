@@ -42,10 +42,18 @@ Check out the [development board](https://github.com/rhargreaves/mega-drive-midi
 
 ## Supported Control Changes
 
+### FM Channels
+
 | CC | Description | FM Effect | Values |
 |----|-------------|-----------|--------|
-| 7  | Channel Volume | Op 4 Total Level | [Logarithmic](src/midi.c#L24) |
+| 7  | Channel Volume | Op 4 Total Level | 0 - 127: [Logarithmic](src/midi.c#L24) |
 | 10 | Panning     | Stereo    | 0 - 31: Left<br>32 - 96: Centre<br>97 - 127: Right |
+
+### PSG Channels
+
+| CC | Description | PSG Effect | Values |
+|----|-------------|-----------|--------|
+| 7  | Channel Volume | Attenuation | 0 - 127: [Logarithmic](src/midi.c#L45) |
 
 ## Build & Test
 
