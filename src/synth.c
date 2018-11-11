@@ -1,12 +1,12 @@
-#include <fm.h>
-#include <synth.h>
+#include "synth.h"
+#include <ym2612.h>
 
 static void synth_writeFm(u8 channel, u8 baseReg, u8 data);
 static u8 synth_keyOnOffRegOffset(u8 channel);
 
 void synth_init(void)
 {
-    fm_writeReg(0, 0x27, 0); // Ch 3 Normal
+    YM2612_writeReg(0, 0x27, 0); // Ch 3 Normal
     for (u8 chan = 0; chan < MAX_SYNTH_CHANS; chan++) {
         synth_noteOff(chan);
         synth_writeFm(chan, 0x30, 0x71); // DT1/MUL
@@ -38,15 +38,15 @@ void synth_init(void)
         synth_writeFm(chan, 0xA4, 0x22); // freq
         synth_writeFm(chan, 0xA0, 0x69);
     }
-    fm_writeReg(0, 0x90, 0); // Proprietary
-    fm_writeReg(0, 0x94, 0);
-    fm_writeReg(0, 0x98, 0);
-    fm_writeReg(0, 0x9C, 0);
+    YM2612_writeReg(0, 0x90, 0); // Proprietary
+    YM2612_writeReg(0, 0x94, 0);
+    YM2612_writeReg(0, 0x98, 0);
+    YM2612_writeReg(0, 0x9C, 0);
 }
 
 static void synth_writeFm(u8 channel, u8 baseReg, u8 data)
 {
-    fm_writeReg(channel > 2 ? 1 : 0, baseReg + (channel % 3), data);
+    YM2612_writeReg(channel > 2 ? 1 : 0, baseReg + (channel % 3), data);
 }
 
 static u8 synth_keyOnOffRegOffset(u8 channel)
@@ -56,12 +56,12 @@ static u8 synth_keyOnOffRegOffset(u8 channel)
 
 void synth_noteOn(u8 channel)
 {
-    fm_writeReg(0, 0x28, 0xF0 + synth_keyOnOffRegOffset(channel));
+    YM2612_writeReg(0, 0x28, 0xF0 + synth_keyOnOffRegOffset(channel));
 }
 
 void synth_noteOff(u8 channel)
 {
-    fm_writeReg(0, 0x28, synth_keyOnOffRegOffset(channel));
+    YM2612_writeReg(0, 0x28, synth_keyOnOffRegOffset(channel));
 }
 
 void synth_pitch(u8 channel, u8 octave, u16 freqNumber)

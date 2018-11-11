@@ -84,6 +84,9 @@ void __wrap_psg_noteOn(u8 channel, u16 freq, u8 attenuation)
 
 void __wrap_YM2612_writeReg(const u16 part, const u8 reg, const u8 data)
 {
+    check_expected(part);
+    check_expected(reg);
+    check_expected(data);
 }
 
 void __wrap_VDP_drawText(const char* str, u16 x, u16 y)
