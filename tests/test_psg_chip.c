@@ -42,3 +42,18 @@ static void test_psg_chip_sets_attenuation(void** state)
         __real_psg_attenuation(chan, 2);
     }
 }
+
+static void test_psg_chip_sets_note_on_psg_with_attenuation(void** state)
+{
+    for (u8 chan = 0; chan < 3; chan++) {
+        expect_value(__wrap_PSG_setEnvelope, channel, chan);
+        expect_value(__wrap_PSG_setEnvelope, value, 2);
+        expect_value(__wrap_PSG_setFrequency, channel, chan);
+        expect_value(__wrap_PSG_setFrequency, value, 440);
+        expect_value(__wrap_PSG_setEnvelope, channel, chan);
+        expect_value(__wrap_PSG_setEnvelope, value, 2);
+
+        __real_psg_attenuation(chan, 2);
+        __real_psg_noteOn(chan, 440);
+    }
+}
