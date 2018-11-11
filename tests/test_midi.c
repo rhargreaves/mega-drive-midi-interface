@@ -45,12 +45,21 @@ static void test_midi_triggers_synth_note_on_2(void** state)
 
 static void test_midi_triggers_psg_note_on(void** state)
 {
-    for (u8 chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN; chan++) {
-        expect_value(__wrap_psg_noteOn, channel, chan - MIN_PSG_CHAN);
-        expect_value(__wrap_psg_noteOn, freq, 440);
-        expect_value(__wrap_psg_noteOn, attenuation, 0);
+    u8 midiKeys[] = { 69 };
+    u16 freqs[] = { 440 };
 
-        __real_midi_noteOn(chan, 60, 127);
+    for (u8 i = 0; i < sizeof(midiKeys); i++) {
+        for (u8 chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN; chan++) {
+
+            u16 expectedFrequency = freqs[i];
+            u8 expectedMidiKey = midiKeys[i];
+
+            expect_value(__wrap_psg_noteOn, channel, chan - MIN_PSG_CHAN);
+            expect_value(__wrap_psg_noteOn, freq, expectedFrequency);
+            expect_value(__wrap_psg_noteOn, attenuation, 0);
+
+            __real_midi_noteOn(chan, expectedMidiKey, 127);
+        }
     }
 }
 
