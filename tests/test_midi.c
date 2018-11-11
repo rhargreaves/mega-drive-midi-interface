@@ -56,7 +56,6 @@ static void test_midi_triggers_psg_note_on(void** state)
 
             expect_value(__wrap_psg_noteOn, channel, chan - MIN_PSG_CHAN);
             expect_value(__wrap_psg_noteOn, freq, expectedFrequency);
-            expect_value(__wrap_psg_noteOn, attenuation, 0);
 
             __real_midi_noteOn(chan, expectedMidiKey, 127);
         }
@@ -83,9 +82,17 @@ static void test_midi_channel_volume_sets_total_level(void** state)
 static void test_midi_channel_volume_sets_psg_attenuation(void** state)
 {
     expect_value(__wrap_psg_attenuation, channel, 0);
-    expect_value(__wrap_psg_attenuation, attenuation, 2);
+    expect_value(__wrap_psg_attenuation, attenuation, 3);
 
-    __real_midi_channelVolume(MIN_PSG_CHAN, 60);
+    __real_midi_channelVolume(MIN_PSG_CHAN, 96);
+}
+
+static void test_midi_channel_volume_sets_psg_attenuation_2(void** state)
+{
+    expect_value(__wrap_psg_attenuation, channel, 0);
+    expect_value(__wrap_psg_attenuation, attenuation, 0);
+
+    __real_midi_channelVolume(MIN_PSG_CHAN, 127);
 }
 
 static void test_midi_pan_sets_synth_stereo_mode_right(void** state)

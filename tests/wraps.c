@@ -75,11 +75,10 @@ void __wrap_fm_writeReg(u16 part, u8 reg, u8 data)
     check_expected(data);
 }
 
-void __wrap_psg_noteOn(u8 channel, u16 freq, u8 attenuation)
+void __wrap_psg_noteOn(u8 channel, u16 freq)
 {
     check_expected(channel);
     check_expected(freq);
-    check_expected(attenuation);
 }
 
 void __wrap_psg_noteOff(u8 channel)

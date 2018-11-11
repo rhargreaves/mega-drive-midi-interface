@@ -50,7 +50,7 @@ void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
             midi_getFreqNumber(pitch));
         synth_noteOn(chan);
     } else {
-        psg_noteOn(chan - MIN_PSG_CHAN, FREQUENCIES[pitch], 0);
+        psg_noteOn(chan - MIN_PSG_CHAN, FREQUENCIES[pitch]);
     }
 }
 
@@ -68,7 +68,7 @@ void midi_channelVolume(u8 chan, u8 volume)
     if (chan < MIN_PSG_CHAN) {
         synth_totalLevel(chan, TOTAL_LEVELS[volume]);
     } else {
-        psg_attenuation(chan - MIN_PSG_CHAN, 2);
+        psg_attenuation(chan - MIN_PSG_CHAN, 15 - (volume / 8));
     }
 }
 
