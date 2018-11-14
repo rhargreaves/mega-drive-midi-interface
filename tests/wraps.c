@@ -45,6 +45,13 @@ void __wrap_synth_algorithm(u8 channel, u8 algorithm)
     check_expected(algorithm);
 }
 
+void __wrap_synth_operatorTotalLevel(u8 channel, u8 op, u8 totalLevel)
+{
+    check_expected(channel);
+    check_expected(op);
+    check_expected(totalLevel);
+}
+
 u8 __wrap_comm_read(void)
 {
     return mock_type(u8);

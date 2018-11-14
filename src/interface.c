@@ -14,6 +14,7 @@
 #define CC_VOLUME 0x7
 #define CC_PAN 0xA
 #define CC_GENMDM_ALGORITHM 0xE
+#define CC_GENMDM_TOTAL_LEVEL_OP1 16
 #define CC_ALL_NOTES_OFF 0x7B
 
 static u8 lastUnknownStatus = 0;
@@ -77,6 +78,9 @@ static void controlChange(u8 status)
         break;
     case CC_GENMDM_ALGORITHM:
         synth_algorithm(chan, value / 16);
+        break;
+    case CC_GENMDM_TOTAL_LEVEL_OP1:
+        synth_operatorTotalLevel(chan, 0, value);
         break;
     default:
         lastUnknownControlChange.controller = controller;
