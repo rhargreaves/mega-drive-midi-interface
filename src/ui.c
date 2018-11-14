@@ -6,6 +6,7 @@
 #define MAX_X 40
 #define MAX_ERROR_X 30
 #define ERROR_Y 9
+#define FRAMES_BEFORE_UPDATE 10
 
 static const char HEADER[] = "Sega Mega Drive MIDI Interface";
 
@@ -24,9 +25,10 @@ void ui_init(void)
 static void vsync(void)
 {
     static u8 frame = 0;
-    if (++frame % 20 == 0) {
+    if (++frame == FRAMES_BEFORE_UPDATE) {
         printLastError();
         printLoad();
+        frame = 0;
     }
 }
 
