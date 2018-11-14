@@ -55,7 +55,7 @@ Range determines how the possible 128 MIDI values are divided to give the respec
 MIDI_Value / (128 / Range) = Register_Value
 ```
 
-For example, a MIDI value of 32, with CC range of 8 translates into to a YM2612 register value of 2.
+For example: A MIDI value of 32, with CC range of 8 translates into to a YM2612 register value of 2.
 
 | CC  | Description    | Range  |
 |-----|----------------|--------|
