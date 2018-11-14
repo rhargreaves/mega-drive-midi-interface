@@ -45,7 +45,7 @@ You can download pre-built ROMs from [releases](https://github.com/rhargreaves/m
 |     |                | PSG: Attenuation        | 0 - 127: [Logarithmic](src/midi.c#L45) |
 | 10  | Panning        | Stereo                  | 0 - 31: Left<br>32 - 96: Centre<br>97 - 127: Right |
 | 123 | All Notes Off  | FM: Key Off             | 0 |
-|     |                | PSG: Max. Attenuation   |   |
+|     |                | PSG: Max. Attenuation   | 0 |
 
 ### GenMDM Compatibility
 
