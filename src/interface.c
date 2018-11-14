@@ -76,7 +76,7 @@ static void controlChange(u8 status)
         midi_noteOff(chan);
         break;
     case CC_GENMDM_ALGORITHM:
-        synth_algorithm(chan, value);
+        synth_algorithm(chan, value / 16);
         break;
     default:
         lastUnknownControlChange.controller = controller;

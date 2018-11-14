@@ -150,14 +150,13 @@ static void test_interface_sets_fm_algorithm(void** state)
 {
     u8 expectedStatus = STATUS_CC;
     u8 expectedController = 0x0E;
-    u8 expectedValue = 0x01;
 
     will_return(__wrap_comm_read, expectedStatus);
     will_return(__wrap_comm_read, expectedController);
-    will_return(__wrap_comm_read, expectedValue);
+    will_return(__wrap_comm_read, 20);
 
     expect_value(__wrap_synth_algorithm, channel, 0);
-    expect_value(__wrap_synth_algorithm, algorithm, expectedValue);
+    expect_value(__wrap_synth_algorithm, algorithm, 1);
 
     interface_tick();
 }
