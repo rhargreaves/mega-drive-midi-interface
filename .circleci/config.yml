@@ -36,7 +36,7 @@ jobs:
           name: "Publish Release on GitHub"
           command: |
             VERSION=$(cat ./bin/version.txt)
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./bin/out.bin
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -prerelease -delete v${VERSION} ./bin/out.bin
 workflows:
   version: 2
   build_and_release:
