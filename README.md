@@ -27,11 +27,13 @@ Check out the [development board](https://github.com/rhargreaves/mega-drive-midi
 
 You can download pre-built ROMs from [releases](https://github.com/rhargreaves/mega-drive-midi-interface/releases). Alternatively you can download the source and compile the ROM yourself (see [Build & Test](#build--test))
 
-## MIDI Channel Assignment
+## Channel Mapping
 
-* 1 to 6 are assigned to the YM2612's respective FM channels.
-* 7 to 9 are assigned to the PSG's respective tone channels.
-* 10 is assigned to the PSG's noise channel.
+| Channels | Assignment |
+|----------|------------|
+| 1 - 6    | YM2612 FM Synth |
+| 7 - 9    | PSG Square Wave Tone   |
+| 10       | PSG Noise  |
 
 ## Control Change Messages
 
