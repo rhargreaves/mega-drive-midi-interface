@@ -46,7 +46,8 @@ int main(void)
         cmocka_unit_test(test_psg_chip_sets_attenuation),
         cmocka_unit_test(test_psg_chip_sets_note_on_psg_with_attenuation),
         cmocka_unit_test(test_interface_sets_fm_algorithm),
-        cmocka_unit_test(test_interface_sets_operator_total_level)
+        cmocka_unit_test(test_interface_sets_operator_total_level),
+        cmocka_unit_test(test_synth_sets_operator_total_level)
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);

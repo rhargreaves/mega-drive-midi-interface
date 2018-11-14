@@ -12,6 +12,7 @@ extern void __real_synth_pitch(u8 channel, u8 octave, u16 freqNumber);
 extern void __real_synth_totalLevel(u8 channel, u8 totalLevel);
 extern void __real_synth_stereo(u8 channel, u8 stereo);
 extern void __real_synth_algorithm(u8 channel, u8 algorithm);
+extern void __real_synth_operatorTotalLevel(u8 channel, u8 op, u8 totalLevel);
 
 static void test_synth_init_sets_initial_registers(void** state)
 {
@@ -122,5 +123,21 @@ static void test_synth_sets_algorithm(void** state)
         expect_value(__wrap_YM2612_writeReg, data, algorithm);
 
         __real_synth_algorithm(chan, algorithm);
+    }
+}
+
+static void test_synth_sets_operator_total_level(void** state)
+{
+    u8 totalLevel = 50;
+    for (u8 chan = 0; chan < 6; chan++) {
+        u8 regOffset = chan % 3;
+        u8 regPart = chan < 3 ? 0 : 1;
+        for (u8 op = 0; op < 4; op++) {
+            expect_value(__wrap_YM2612_writeReg, part, regPart);
+            expect_value(__wrap_YM2612_writeReg, reg, 0x40 + regOffset + (op * 4));
+            expect_value(__wrap_YM2612_writeReg, data, totalLevel);
+
+            __real_synth_operatorTotalLevel(chan, op, totalLevel);
+        }
     }
 }
