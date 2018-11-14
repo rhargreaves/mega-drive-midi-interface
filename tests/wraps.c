@@ -39,6 +39,12 @@ void __wrap_synth_stereo(u8 channel, u8 mode)
     check_expected(mode);
 }
 
+void __wrap_synth_algorithm(u8 channel, u8 algorithm)
+{
+    check_expected(channel);
+    check_expected(algorithm);
+}
+
 u8 __wrap_comm_read(void)
 {
     return mock_type(u8);

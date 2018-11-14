@@ -22,6 +22,7 @@ MOCKS=midi_process \
 	synth_pitch \
 	synth_totalLevel \
 	synth_stereo \
+	synth_algorithm \
 	fm_writeReg \
 	psg_noteOn \
 	psg_noteOff \

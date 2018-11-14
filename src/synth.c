@@ -79,3 +79,7 @@ void synth_stereo(u8 channel, u8 mode)
 {
     synth_writeFm(channel, 0xB4, mode << 6);
 }
+
+void synth_algorithm(u8 channel, u8 algorithm)
+{
+}

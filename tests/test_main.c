@@ -42,7 +42,8 @@ int main(void)
         cmocka_unit_test(test_midi_channel_volume_sets_psg_attenuation),
         cmocka_unit_test(test_midi_channel_volume_sets_psg_attenuation_2),
         cmocka_unit_test(test_psg_chip_sets_attenuation),
-        cmocka_unit_test(test_psg_chip_sets_note_on_psg_with_attenuation)
+        cmocka_unit_test(test_psg_chip_sets_note_on_psg_with_attenuation),
+        cmocka_unit_test(test_interface_sets_fm_algorithm)
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);

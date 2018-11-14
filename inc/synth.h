@@ -12,3 +12,4 @@ void synth_noteOff(u8 channel);
 void synth_pitch(u8 channel, u8 octave, u16 freqNumber);
 void synth_totalLevel(u8 channel, u8 totalLevel);
 void synth_stereo(u8 channel, u8 mode);
+void synth_algorithm(u8 channel, u8 algorithm);

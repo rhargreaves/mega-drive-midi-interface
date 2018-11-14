@@ -7,6 +7,7 @@ void __wrap_synth_noteOff(u8 channel);
 void __wrap_synth_pitch(u8 channel, u8 octave, u16 freqNumber);
 void __wrap_synth_totalLevel(u8 channel, u8 totalLevel);
 void __wrap_synth_stereo(u8 channel, u8 mode);
+void __wrap_synth_algorithm(u8 channel, u8 algorithm);
 u8 __wrap_comm_read(void);
 void __wrap_fm_writeReg(u16 part, u8 reg, u8 data);
 void __wrap_psg_noteOn(u8 channel, u16 freq);

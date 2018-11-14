@@ -11,8 +11,8 @@ jobs:
           name: Build & Test
           command: |
             VERSION_MAJOR_MINOR=0.0
-            VERSION_BUILD=$CIRCLE_BUILD_NUM
-            VERSION=$VERSION_MAJOR_MINOR.$VERSION_BUILD
+            VERSION_BUILD=${CIRCLE_BUILD_NUM}
+            VERSION=${VERSION_MAJOR_MINOR}.${VERSION_BUILD}
             echo ${VERSION} > bin/version.txt
 
             CMOCKA_MESSAGE_OUTPUT=xml CMOCKA_XML_FILE=../bin/cmocka.xml ./docker-make all

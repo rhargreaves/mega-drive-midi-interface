@@ -8,6 +8,8 @@
 #include <types.h>
 #include <wraps.h>
 
+#define STATUS_CC 0xB0
+
 static void test_interface_tick_passes_note_on_to_midi_processor(void** state)
 {
     for (int chan = 0; chan < MAX_MIDI_CHANS; chan++) {
@@ -70,7 +72,7 @@ static void test_interface_sets_unknown_event_for_system_messages(void** state)
 
 static void test_interface_sets_unknown_CC(void** state)
 {
-    u8 expectedStatus = 0xB0;
+    u8 expectedStatus = STATUS_CC;
     u8 expectedController = 0x9;
     u8 expectedValue = 0x50;
 
@@ -88,7 +90,7 @@ static void test_interface_sets_unknown_CC(void** state)
 
 static void test_interface_does_not_set_unknown_CC_for_known_CC(void** state)
 {
-    u8 expectedStatus = 0xB0;
+    u8 expectedStatus = STATUS_CC;
     u8 expectedController = 0x7;
     u8 expectedValue = 0x80;
 
@@ -108,7 +110,7 @@ static void test_interface_does_not_set_unknown_CC_for_known_CC(void** state)
 
 static void test_interface_sets_channel_volume(void** state)
 {
-    u8 expectedStatus = 0xB0;
+    u8 expectedStatus = STATUS_CC;
     u8 expectedController = 0x7;
     u8 expectedValue = 0x50;
 
@@ -124,7 +126,7 @@ static void test_interface_sets_channel_volume(void** state)
 
 static void test_interface_sets_pan(void** state)
 {
-    u8 expectedStatus = 0xB0;
+    u8 expectedStatus = STATUS_CC;
     u8 expectedController = 0x0A;
     u8 expectedValue = 0xFF;
 
@@ -142,4 +144,20 @@ static void test_interface_initialises_synth(void** state)
 {
     expect_function_call(__wrap_synth_init);
     interface_init();
+}
+
+static void test_interface_sets_fm_algorithm(void** state)
+{
+    u8 expectedStatus = STATUS_CC;
+    u8 expectedController = 0x0E;
+    u8 expectedValue = 0x01;
+
+    will_return(__wrap_comm_read, expectedStatus);
+    will_return(__wrap_comm_read, expectedController);
+    will_return(__wrap_comm_read, expectedValue);
+
+    expect_value(__wrap_synth_algorithm, channel, 0);
+    expect_value(__wrap_synth_algorithm, algorithm, expectedValue);
+
+    interface_tick();
 }
