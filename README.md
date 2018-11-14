@@ -49,7 +49,8 @@ Check out the [development board](https://github.com/rhargreaves/mega-drive-midi
 | 7   | Channel Volume | FM: Op 4 Total Level    | 0 - 127: [Logarithmic](src/midi.c#L24) |
 |     |                | PSG: Attenuation        | 0 - 127: [Logarithmic](src/midi.c#L45) |
 | 10  | Panning        | Stereo                  | 0 - 31: Left<br>32 - 96: Centre<br>97 - 127: Right |
-| 123 | All Notes Off  | Key Off                 | 0 |
+| 123 | All Notes Off  | FM: Key Off             | 0 |
+|     |                | PSG: Max. Attenuation   |   |
 
 ### GenMDM Compatible
 
