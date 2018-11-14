@@ -109,3 +109,17 @@ static void test_synth_sets_stereo_reg_chan(void** state)
         __real_synth_stereo(chan, stereo);
     }
 }
+
+static void test_synth_sets_algorithm(void** state)
+{
+    u8 algorithm = 1;
+    for (u8 chan = 0; chan < 6; chan++) {
+        u8 regOffset = chan % 3;
+        u8 regPart = chan < 3 ? 0 : 1;
+        expect_value(__wrap_YM2612_writeReg, part, regPart);
+        expect_value(__wrap_YM2612_writeReg, reg, 0xB0 + regOffset);
+        expect_value(__wrap_YM2612_writeReg, data, algorithm);
+
+        __real_synth_algorithm(chan, algorithm);
+    }
+}
