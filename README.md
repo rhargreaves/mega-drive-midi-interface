@@ -10,7 +10,7 @@ Exposes the Mega Drive's YM2612 FM Synth and PSG chip as a MIDI interface
 
 The main goal of this project is to allow the Mega Drive's FM synthesis chip & PSG to be controlled via MIDI over a serial link (such as the USB interface provided by the Mega EverDrive X7 flash cart) so that it can be sequenced by a modern DAW like Albeton Live.
 
-The project will also support GenMDM-style CC messages for compatibility with existing GenMDM-based applications.
+The project will also support Gen/MDM-style CC messages for compatibility with existing Gen/MDM-based applications.
 
 Check out the [development board](https://github.com/rhargreaves/mega-drive-midi-interface/projects/1) for a snapshot view of what's in progress. See also [stretch goals](#stretch-goals).
 
@@ -47,7 +47,7 @@ You can download pre-built ROMs from [releases](https://github.com/rhargreaves/m
 | 123 | All Notes Off  | FM: Key Off             | 0 |
 |     |                | PSG: Max. Attenuation   | 0 |
 
-### GenMDM Compatibility
+### Gen/MDM Compatibility
 
 | CC  | Description    | Range  |
 |-----|----------------|--------|
