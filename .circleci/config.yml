@@ -10,12 +10,17 @@ jobs:
       - run:
           name: Build & Test
           command: |
+            VERSION_MAJOR_MINOR=0.0
+            VERSION_BUILD=$CIRCLE_BUILD_NUM
+            VERSION=$VERSION_MAJOR_MINOR.$VERSION_BUILD
+            echo ${VERSION} > bin/version.txt
+
             CMOCKA_MESSAGE_OUTPUT=xml CMOCKA_XML_FILE=../bin/cmocka.xml ./docker-make all
-            echo ${CIRCLE_BUILD_NUM} > bin/build-num.txt
+
       - persist_to_workspace:
           root: bin
           paths:
-            - build-num.txt
+            - version.txt
             - out.bin
             - cmocka.xml
       - store_test_results:
@@ -30,7 +35,7 @@ jobs:
       - run:
           name: "Publish Release on GitHub"
           command: |
-            VERSION=$(cat ./bin/build-num.txt)
+            VERSION=$(cat ./bin/version.txt)
             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./bin/out.bin
 workflows:
   version: 2

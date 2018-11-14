@@ -21,7 +21,7 @@ ASMZ80 = $(GENBIN)/zasm
 RM = rm -f
 NM = nm
 
-BUILD := $(if $(CIRCLE_BUILD_NUM),Build $(CIRCLE_BUILD_NUM),Dev $(shell date '+%Y-%m-%d %H:%M:%S'))
+BUILD := $(if $(VERSION),v$(VERSION),Dev $(shell date '+%Y-%m-%d %H:%M:%S'))
 
 OPTION = -std=c11 -fno-builtin
 INCS = -I. -Iinc -I$(GENDEV)/sgdk/inc -I$(GENDEV)/m86k-elf/include -I$(GENDEV)/sgdk/res -Isrc -Ires

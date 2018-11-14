@@ -2,7 +2,7 @@
 IMAGE_NAME=mega-drive-midi-interface
 docker build -t $IMAGE_NAME .
 docker run \
-    -e CIRCLE_BUILD_NUM \
+    -e VERSION \
     -e CMOCKA_MESSAGE_OUTPUT \
     -e CMOCKA_XML_FILE \
     --rm \
