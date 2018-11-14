@@ -7,12 +7,12 @@
 #define REG_STE 228 // status
 #define STE_USB_RD_RDY 4 // usb read ready bit
 
-u16 ssf_usb_rd_ready()
+u16 ssf_usb_rd_ready(void)
 {
     return SSF_REG16(REG_STE) & STE_USB_RD_RDY;
 }
 
-u8 ssf_usb_read()
+u8 ssf_usb_read(void)
 {
     return SSF_REG16(REG_USB);
 }
