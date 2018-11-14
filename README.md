@@ -40,20 +40,22 @@ Check out the [development board](https://github.com/rhargreaves/mega-drive-midi
 * 7 to 9 are assigned to the PSG's respective tone channels.
 * 10 is assigned to the PSG's noise channel.
 
-## Supported Control Changes
+## Control Change Messages
 
-### FM Channels
+### MIDI
 
-| CC | Description | FM Effect | Values |
-|----|-------------|-----------|--------|
-| 7  | Channel Volume | Op 4 Total Level | 0 - 127: [Logarithmic](src/midi.c#L24) |
-| 10 | Panning     | Stereo    | 0 - 31: Left<br>32 - 96: Centre<br>97 - 127: Right |
+| CC  | Description    | Effect                  | Values |
+|-----|----------------|-------------------------|--------|
+| 7   | Channel Volume | FM: Op 4 Total Level    | 0 - 127: [Logarithmic](src/midi.c#L24) |
+|     |                | PSG: Attenuation        | 0 - 127: [Logarithmic](src/midi.c#L45) |
+| 10  | Panning        | Stereo                  | 0 - 31: Left<br>32 - 96: Centre<br>97 - 127: Right |
+| 123 | All Notes Off  | Key Off                 | 0 |
 
-### PSG Channels
+### GenMDM Compatible
 
-| CC | Description | PSG Effect | Values |
-|----|-------------|-----------|--------|
-| 7  | Channel Volume | Attenuation | 0 - 127: [Logarithmic](src/midi.c#L45) |
+| CC  | Description    | Range  |
+|-----|----------------|--------|
+| 14  | FM Algorithm   | 8      |
 
 ## Build & Test
 
