@@ -49,9 +49,21 @@ You can download pre-built ROMs from [releases](https://github.com/rhargreaves/m
 
 ### Gen/MDM Compatibility
 
+Range determines how the possible 128 MIDI values are divided to give the respective YM2612 register value, using the formula:
+
+```
+MIDI_Value / (128 / Range) = Register_Value
+```
+
+For example, a MIDI value of 32, with CC range of 8 translates into to a YM2612 register value of 2.
+
 | CC  | Description    | Range  |
 |-----|----------------|--------|
 | 14  | FM Algorithm   | 8      |
+| 16  | FM Total Level OP1   | 128 |
+| 17  | FM Total Level OP2   | 128 |
+| 18  | FM Total Level OP3   | 128 |
+| 19  | FM Total Level OP4   | 128 |
 
 ## Build & Test
 
