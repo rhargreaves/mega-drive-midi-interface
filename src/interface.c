@@ -15,6 +15,9 @@
 #define CC_PAN 0xA
 #define CC_GENMDM_ALGORITHM 0xE
 #define CC_GENMDM_TOTAL_LEVEL_OP1 16
+#define CC_GENMDM_TOTAL_LEVEL_OP2 17
+#define CC_GENMDM_TOTAL_LEVEL_OP3 18
+#define CC_GENMDM_TOTAL_LEVEL_OP4 19
 #define CC_ALL_NOTES_OFF 0x7B
 
 static u8 lastUnknownStatus = 0;
@@ -81,6 +84,15 @@ static void controlChange(u8 status)
         break;
     case CC_GENMDM_TOTAL_LEVEL_OP1:
         synth_operatorTotalLevel(chan, 0, value);
+        break;
+    case CC_GENMDM_TOTAL_LEVEL_OP2:
+        synth_operatorTotalLevel(chan, 1, value);
+        break;
+    case CC_GENMDM_TOTAL_LEVEL_OP3:
+        synth_operatorTotalLevel(chan, 2, value);
+        break;
+    case CC_GENMDM_TOTAL_LEVEL_OP4:
+        synth_operatorTotalLevel(chan, 3, value);
         break;
     default:
         lastUnknownControlChange.controller = controller;

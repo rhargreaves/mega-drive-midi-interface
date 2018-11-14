@@ -179,16 +179,18 @@ static void test_interface_sets_all_notes_off(void** state)
 static void test_interface_sets_operator_total_level(void** state)
 {
     u8 expectedStatus = STATUS_CC;
-    u8 expectedController = 16;
     u8 expectedValue = 50;
 
-    will_return(__wrap_comm_read, expectedStatus);
-    will_return(__wrap_comm_read, expectedController);
-    will_return(__wrap_comm_read, expectedValue);
+    for (u8 cc = 16; cc <= 19; cc++) {
+        will_return(__wrap_comm_read, expectedStatus);
+        will_return(__wrap_comm_read, cc);
+        will_return(__wrap_comm_read, expectedValue);
 
-    expect_value(__wrap_synth_operatorTotalLevel, channel, 0);
-    expect_value(__wrap_synth_operatorTotalLevel, op, 0);
-    expect_value(__wrap_synth_operatorTotalLevel, totalLevel, expectedValue);
+        u8 expectedOp = cc - 16;
+        expect_value(__wrap_synth_operatorTotalLevel, channel, 0);
+        expect_value(__wrap_synth_operatorTotalLevel, op, expectedOp);
+        expect_value(__wrap_synth_operatorTotalLevel, totalLevel, expectedValue);
 
-    interface_tick();
+        interface_tick();
+    }
 }
