@@ -33,6 +33,7 @@ int main(void)
         cmocka_unit_test(test_interface_sets_unknown_event_for_system_messages),
         cmocka_unit_test(test_interface_sets_unknown_CC),
         cmocka_unit_test(test_interface_sets_channel_volume),
+        cmocka_unit_test(test_interface_sets_all_notes_off),
         cmocka_unit_test(test_midi_channel_volume_sets_total_level),
         cmocka_unit_test(test_midi_pan_sets_synth_stereo_mode_right),
         cmocka_unit_test(test_midi_pan_sets_synth_stereo_mode_left),

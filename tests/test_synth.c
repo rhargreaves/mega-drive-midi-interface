@@ -11,6 +11,7 @@ extern void __real_synth_noteOff(u8 channel);
 extern void __real_synth_pitch(u8 channel, u8 octave, u16 freqNumber);
 extern void __real_synth_totalLevel(u8 channel, u8 totalLevel);
 extern void __real_synth_stereo(u8 channel, u8 stereo);
+extern void __real_synth_algorithm(u8 channel, u8 algorithm);
 
 static void test_synth_init_sets_initial_registers(void** state)
 {

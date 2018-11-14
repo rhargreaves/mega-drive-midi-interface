@@ -14,6 +14,7 @@
 #define CC_VOLUME 0x7
 #define CC_PAN 0xA
 #define CC_GENMDM_ALGORITHM 0xE
+#define CC_ALL_NOTES_OFF 0x7B
 
 static u8 lastUnknownStatus = 0;
 static ControlChange lastUnknownControlChange;
@@ -70,6 +71,9 @@ static void controlChange(u8 status)
         break;
     case CC_PAN:
         midi_pan(chan, value);
+        break;
+    case CC_ALL_NOTES_OFF:
+        midi_noteOff(chan);
         break;
     case CC_GENMDM_ALGORITHM:
         synth_algorithm(chan, value);
