@@ -31,7 +31,7 @@ You can download pre-built ROMs from [releases](https://github.com/rhargreaves/m
 
 | Channels | Assignment |
 |----------|------------|
-| 1 - 6    | YM2612 FM Synth |
+| 1 - 6    | YM2612 FM Synthesis |
 | 7 - 9    | PSG Square Wave Tone   |
 | 10       | PSG Noise  |
 
