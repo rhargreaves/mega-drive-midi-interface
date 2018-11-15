@@ -1,36 +1,14 @@
 #include "midi.h"
+#include "midi_fm.h"
 #include "psg_chip.h"
 #include "synth.h"
 
-static u8 getOctave(u8 pitch);
-static u16 getFreqNumber(u8 pitch);
-
-static void midi_fm_noteOn(u8 chan, u8 pitch, u8 velocity);
-static void midi_fm_noteOff(u8 chan);
-static void midi_fm_channelVolume(u8 chan, u8 volume);
 static void midi_psg_noteOn(u8 chan, u8 pitch, u8 velocity);
 static void midi_psg_noteOff(u8 chan);
 static void midi_psg_channelVolume(u8 chan, u8 volume);
 static void midi_nop_noteOn(u8 chan, u8 pitch, u8 velocity);
 static void midi_nop_noteOff(u8 chan);
 static void midi_nop_channelVolume(u8 chan, u8 volume);
-
-static const u8 MIN_MIDI_PITCH = 23;
-static const u8 SEMITONES = 12;
-static const u16 FREQ_NUMBERS[] = {
-    617, // B
-    653,
-    692,
-    733,
-    777,
-    823,
-    872,
-    924,
-    979,
-    1037,
-    1099,
-    1164 // A#
-};
 
 static const u16 FREQUENCIES[] = {
     8, 9, 9, 10, 10, 11, 12, 12, 13, 14, 15, 15, 16, 17, 18, 19, 21, 22, 23, 25,
@@ -43,14 +21,6 @@ static const u16 FREQUENCIES[] = {
     3729, 3951, 4186, 4435, 4699, 4978, 5274, 5588, 5920, 6272, 6645, 7040,
     7459, 7902, 8372, 8870, 9397, 9956, 10548, 11175, 11840, 12544
 };
-
-static const u8 TOTAL_LEVELS[] = { 126, 122, 117, 113, 108, 104, 100, 97, 93,
-    89, 86, 83, 80, 77, 74, 71, 68, 66, 63, 61, 58, 56, 54, 52, 50, 48, 46, 44,
-    43, 41, 40, 38, 37, 35, 34, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21,
-    20, 19, 19, 18, 17, 17, 16, 15, 15, 14, 13, 13, 12, 12, 11, 11, 11, 10, 10,
-    9, 9, 9, 8, 8, 7, 7, 7, 7, 6, 6, 6, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 3, 3, 3,
-    3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 static const u8 ATTENUATIONS[] = {
     15, 14, 14, 14, 13, 13, 13, 13, 12, 12, 12, 11, 11, 11, 11, 10, 10, 10, 10,
@@ -118,24 +88,6 @@ static void midi_nop_channelVolume(u8 chan, u8 volume)
 {
 }
 
-static void midi_fm_noteOn(u8 chan, u8 pitch, u8 velocity)
-{
-    synth_pitch(chan,
-        getOctave(pitch),
-        getFreqNumber(pitch));
-    synth_noteOn(chan);
-}
-
-static void midi_fm_noteOff(u8 chan)
-{
-    synth_noteOff(chan);
-}
-
-static void midi_fm_channelVolume(u8 chan, u8 volume)
-{
-    synth_totalLevel(chan, TOTAL_LEVELS[volume]);
-}
-
 static void midi_psg_noteOn(u8 chan, u8 pitch, u8 velocity)
 {
     psg_noteOn(chan - MIN_PSG_CHAN, FREQUENCIES[pitch]);
@@ -175,14 +127,4 @@ void midi_pan(u8 chan, u8 pan)
     } else {
         synth_stereo(chan, STEREO_MODE_LEFT);
     }
-}
-
-static u8 getOctave(u8 pitch)
-{
-    return (pitch - MIN_MIDI_PITCH) / SEMITONES;
-}
-
-static u16 getFreqNumber(u8 pitch)
-{
-    return FREQ_NUMBERS[((u8)(pitch - MIN_MIDI_PITCH)) % SEMITONES];
 }
