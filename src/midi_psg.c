@@ -4,6 +4,8 @@
 #define MIN_PSG_CHAN 6
 #define MAX_PSG_CHAN 9
 
+static u8 psgChannel(u8 midiChannel);
+
 static const u16 FREQUENCIES[] = {
     8, 9, 9, 10, 10, 11, 12, 12, 13, 14, 15, 15, 16, 17, 18, 19, 21, 22, 23, 25,
     26, 28, 29, 31, 33, 35, 37, 39, 41, 44, 46, 49, 52, 55, 58, 62, 65, 69, 73,
@@ -25,17 +27,22 @@ static const u8 ATTENUATIONS[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
+static u8 psgChannel(u8 midiChannel)
+{
+    return midiChannel - MIN_PSG_CHAN;
+}
+
 void midi_psg_noteOn(u8 chan, u8 pitch, u8 velocity)
 {
-    psg_noteOn(chan - MIN_PSG_CHAN, FREQUENCIES[pitch]);
+    psg_noteOn(psgChannel(chan), FREQUENCIES[pitch]);
 }
 
 void midi_psg_noteOff(u8 chan)
 {
-    psg_noteOff(chan - MIN_PSG_CHAN);
+    psg_noteOff(psgChannel(chan));
 }
 
 void midi_psg_channelVolume(u8 chan, u8 volume)
 {
-    psg_attenuation(chan - MIN_PSG_CHAN, ATTENUATIONS[volume]);
+    psg_attenuation(psgChannel(chan), ATTENUATIONS[volume]);
 }
