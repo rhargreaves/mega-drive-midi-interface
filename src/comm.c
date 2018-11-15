@@ -4,14 +4,14 @@
 static u16 idle = 0;
 static u16 reads = 0;
 
-static void comm_waitForReady(void);
-static void comm_clampCounts(void);
+static void waitForReady(void);
+static void clampCounts(void);
 
 u8 comm_read(void)
 {
-    comm_waitForReady();
+    waitForReady();
     reads++;
-    comm_clampCounts();
+    clampCounts();
     return ssf_usb_read();
 }
 
@@ -31,14 +31,14 @@ void comm_resetCounts(void)
     reads = 0;
 }
 
-static void comm_waitForReady(void)
+static void waitForReady(void)
 {
     while (!ssf_usb_rd_ready()) {
         idle++;
     }
 }
 
-static void comm_clampCounts(void)
+static void clampCounts(void)
 {
     if (idle == 0xFFFF || reads == 0xFFFF) {
         comm_resetCounts();
