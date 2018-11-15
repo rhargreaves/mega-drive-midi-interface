@@ -2,11 +2,11 @@
 #include <stdarg.h>
 #include <stddef.h>
 
+#include "interface.h"
+#include "midi.h"
+#include "wraps.h"
 #include <cmocka.h>
-#include <interface.h>
-#include <midi.h>
 #include <types.h>
-#include <wraps.h>
 
 #define STATUS_CC 0xB0
 

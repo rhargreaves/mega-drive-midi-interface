@@ -51,9 +51,14 @@ static const u8 ATTENUATIONS[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
+static u8 isPsg(u8 chan)
+{
+    return chan < MIN_PSG_CHAN;
+}
+
 void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
 {
-    if (chan < MIN_PSG_CHAN) {
+    if (isPsg(chan)) {
         synth_pitch(chan,
             midi_getOctave(pitch),
             midi_getFreqNumber(pitch));
@@ -65,7 +70,7 @@ void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
 
 void midi_noteOff(u8 chan)
 {
-    if (chan < MIN_PSG_CHAN) {
+    if (isPsg(chan)) {
         synth_noteOff(chan);
     } else {
         psg_noteOff(chan - MIN_PSG_CHAN);
@@ -74,7 +79,7 @@ void midi_noteOff(u8 chan)
 
 void midi_channelVolume(u8 chan, u8 volume)
 {
-    if (chan < MIN_PSG_CHAN) {
+    if (isPsg(chan)) {
         synth_totalLevel(chan, TOTAL_LEVELS[volume]);
     } else {
         psg_attenuation(chan - MIN_PSG_CHAN, ATTENUATIONS[volume]);
