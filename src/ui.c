@@ -13,6 +13,7 @@ static const char HEADER[] = "Sega Mega Drive MIDI Interface";
 static void vsync(void);
 static void printHeader(void);
 static void printLoad(void);
+static u16 loadPercent(void);
 static void printLastError(void);
 static void printErrorText(const char* text);
 
@@ -38,13 +39,17 @@ static void printHeader(void)
     VDP_drawText(BUILD, (MAX_X - sizeof(BUILD)) / 2, 3);
 }
 
-static void printLoad(void)
+static u16 loadPercent(void)
 {
-    static char loadText[20];
     u16 idle = comm_idleCount();
     u16 busy = comm_busyCount();
-    u16 percent = (busy * 100) / (idle + busy);
-    sprintf(loadText, "Load %i%s  ", percent, "%");
+    return (busy * 100) / (idle + busy);
+}
+
+static void printLoad(void)
+{
+    static char loadText[16];
+    sprintf(loadText, "Load %i%s  ", loadPercent(), "%");
     comm_resetCounts();
     VDP_setTextPalette(PAL0);
     VDP_drawText(loadText, 1, 7);
