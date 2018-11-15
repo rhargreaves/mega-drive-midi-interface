@@ -12,7 +12,7 @@ extern void __real_midi_pan(u8 chan, u8 pan);
 
 static void test_midi_triggers_synth_note_on(void** state)
 {
-    for (int chan = 0; chan < MAX_MIDI_CHANS; chan++) {
+    for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         expect_value(__wrap_synth_pitch, channel, chan);
         expect_value(__wrap_synth_pitch, octave, 3);
         expect_value(__wrap_synth_pitch, freqNumber, 653);
@@ -24,7 +24,7 @@ static void test_midi_triggers_synth_note_on(void** state)
 
 static void test_midi_triggers_synth_note_off(void** state)
 {
-    for (int chan = 0; chan < MAX_MIDI_CHANS; chan++) {
+    for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         expect_value(__wrap_synth_noteOff, channel, chan);
 
         __real_midi_noteOff(chan);

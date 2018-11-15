@@ -1,9 +1,9 @@
 #pragma once
+#include "midi_fm.h"
+#include "midi_psg.h"
 #include <types.h>
 
-#define MAX_MIDI_CHANS 6
-#define MIN_PSG_CHAN 6
-#define MAX_PSG_CHAN 9
+#define MAX_MIDI_CHANS 9
 
 void midi_noteOn(u8 chan, u8 pitch, u8 velocity);
 void midi_noteOff(u8 chan);
