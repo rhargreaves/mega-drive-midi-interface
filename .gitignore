@@ -1,5 +1,4 @@
 *.bin
-.vscode/
 *.o
 *.code-workspace
 tests/cmocka/
