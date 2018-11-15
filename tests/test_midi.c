@@ -123,3 +123,10 @@ static void test_midi_pan_sets_synth_stereo_mode_centre(void** state)
 
     __real_midi_pan(0, 95);
 }
+
+static void test_midi_ignores_channels_above_10(void** state)
+{
+    for (int chan = 11; chan < 16; chan++) {
+        __real_midi_noteOn(chan, 60, 127);
+    }
+}

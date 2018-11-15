@@ -5,6 +5,16 @@
 static u8 getOctave(u8 pitch);
 static u16 getFreqNumber(u8 pitch);
 
+static void midi_fm_noteOn(u8 chan, u8 pitch, u8 velocity);
+static void midi_fm_noteOff(u8 chan);
+static void midi_fm_channelVolume(u8 chan, u8 volume);
+static void midi_psg_noteOn(u8 chan, u8 pitch, u8 velocity);
+static void midi_psg_noteOff(u8 chan);
+static void midi_psg_channelVolume(u8 chan, u8 volume);
+static void midi_nop_noteOn(u8 chan, u8 pitch, u8 velocity);
+static void midi_nop_noteOff(u8 chan);
+static void midi_nop_channelVolume(u8 chan, u8 volume);
+
 static const u8 MIN_MIDI_PITCH = 23;
 static const u8 SEMITONES = 12;
 static const u16 FREQ_NUMBERS[] = {
@@ -51,34 +61,109 @@ static const u8 ATTENUATIONS[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
+typedef struct VTable VTable;
+
+struct VTable {
+    void (*noteOn)(u8 chan, u8 pitch, u8 velocity);
+    void (*noteOff)(u8 chan);
+    void (*channelVolume)(u8 chan, u8 volume);
+};
+
+static const VTable PSG_VTable = {
+    midi_psg_noteOn,
+    midi_psg_noteOff,
+    midi_psg_channelVolume
+};
+
+static const VTable FM_VTable = {
+    midi_fm_noteOn,
+    midi_fm_noteOff,
+    midi_fm_channelVolume
+};
+
+static const VTable NOP_VTable = {
+    midi_nop_noteOn,
+    midi_nop_noteOff,
+    midi_nop_channelVolume
+};
+
+static const VTable* CHANNEL_OPS[16] = {
+    &FM_VTable,
+    &FM_VTable,
+    &FM_VTable,
+    &FM_VTable,
+    &FM_VTable,
+    &FM_VTable,
+    &PSG_VTable,
+    &PSG_VTable,
+    &PSG_VTable,
+    &PSG_VTable,
+    &NOP_VTable,
+    &NOP_VTable,
+    &NOP_VTable,
+    &NOP_VTable,
+    &NOP_VTable,
+    &NOP_VTable
+};
+
+static void midi_nop_noteOn(u8 chan, u8 pitch, u8 velocity)
+{
+}
+
+static void midi_nop_noteOff(u8 chan)
+{
+}
+
+static void midi_nop_channelVolume(u8 chan, u8 volume)
+{
+}
+
+static void midi_fm_noteOn(u8 chan, u8 pitch, u8 velocity)
+{
+    synth_pitch(chan,
+        getOctave(pitch),
+        getFreqNumber(pitch));
+    synth_noteOn(chan);
+}
+
+static void midi_fm_noteOff(u8 chan)
+{
+    synth_noteOff(chan);
+}
+
+static void midi_fm_channelVolume(u8 chan, u8 volume)
+{
+    synth_totalLevel(chan, TOTAL_LEVELS[volume]);
+}
+
+static void midi_psg_noteOn(u8 chan, u8 pitch, u8 velocity)
+{
+    psg_noteOn(chan - MIN_PSG_CHAN, FREQUENCIES[pitch]);
+}
+
+static void midi_psg_noteOff(u8 chan)
+{
+    psg_noteOff(chan - MIN_PSG_CHAN);
+}
+
+static void midi_psg_channelVolume(u8 chan, u8 volume)
+{
+    psg_attenuation(chan - MIN_PSG_CHAN, ATTENUATIONS[volume]);
+}
+
 void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
 {
-    if (isPsg(chan)) {
-        synth_pitch(chan,
-            getOctave(pitch),
-            getFreqNumber(pitch));
-        synth_noteOn(chan);
-    } else {
-        psg_noteOn(chan - MIN_PSG_CHAN, FREQUENCIES[pitch]);
-    }
+    CHANNEL_OPS[chan]->noteOn(chan, pitch, velocity);
 }
 
 void midi_noteOff(u8 chan)
 {
-    if (isPsg(chan)) {
-        synth_noteOff(chan);
-    } else {
-        psg_noteOff(chan - MIN_PSG_CHAN);
-    }
+    CHANNEL_OPS[chan]->noteOff(chan);
 }
 
 void midi_channelVolume(u8 chan, u8 volume)
 {
-    if (isPsg(chan)) {
-        synth_totalLevel(chan, TOTAL_LEVELS[volume]);
-    } else {
-        psg_attenuation(chan - MIN_PSG_CHAN, ATTENUATIONS[volume]);
-    }
+    CHANNEL_OPS[chan]->channelVolume(chan, volume);
 }
 
 void midi_pan(u8 chan, u8 pan)
@@ -90,11 +175,6 @@ void midi_pan(u8 chan, u8 pan)
     } else {
         synth_stereo(chan, STEREO_MODE_LEFT);
     }
-}
-
-static u8 isPsg(u8 chan)
-{
-    return chan < MIN_PSG_CHAN;
 }
 
 static u8 getOctave(u8 pitch)
