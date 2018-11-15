@@ -6,9 +6,7 @@ SGDK?=/opt/gendev/sgdk
 INCLUDE_DIRS+=-I$(SGDK)/inc
 INCLUDE_DIRS+=-I$(SGDK)/res
 INCLUDE_DIRS+=-I.
-INCLUDE_DIRS+=-I../inc
 INCLUDE_DIRS+=-I../src
-INCLUDE_DIRS+=-I../include
 INCLUDE_DIRS+=-I$(CMOCKA_DIR)/include
 
 CFLAGS=$(INCLUDE_DIRS) -Wno-builtin-declaration-mismatch
