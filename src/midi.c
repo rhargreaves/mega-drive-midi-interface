@@ -2,8 +2,8 @@
 #include "psg_chip.h"
 #include "synth.h"
 
-static u8 midi_getOctave(u8 pitch);
-static u16 midi_getFreqNumber(u8 pitch);
+static u8 getOctave(u8 pitch);
+static u16 getFreqNumber(u8 pitch);
 
 static const u8 MIN_MIDI_PITCH = 23;
 static const u8 SEMITONES = 12;
@@ -51,17 +51,12 @@ static const u8 ATTENUATIONS[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-static u8 isPsg(u8 chan)
-{
-    return chan < MIN_PSG_CHAN;
-}
-
 void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
 {
     if (isPsg(chan)) {
         synth_pitch(chan,
-            midi_getOctave(pitch),
-            midi_getFreqNumber(pitch));
+            getOctave(pitch),
+            getFreqNumber(pitch));
         synth_noteOn(chan);
     } else {
         psg_noteOn(chan - MIN_PSG_CHAN, FREQUENCIES[pitch]);
@@ -97,12 +92,17 @@ void midi_pan(u8 chan, u8 pan)
     }
 }
 
-static u8 midi_getOctave(u8 pitch)
+static u8 isPsg(u8 chan)
+{
+    return chan < MIN_PSG_CHAN;
+}
+
+static u8 getOctave(u8 pitch)
 {
     return (pitch - MIN_MIDI_PITCH) / SEMITONES;
 }
 
-static u16 midi_getFreqNumber(u8 pitch)
+static u16 getFreqNumber(u8 pitch)
 {
     return FREQ_NUMBERS[((u8)(pitch - MIN_MIDI_PITCH)) % SEMITONES];
 }
