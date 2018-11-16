@@ -14,6 +14,7 @@
 #define CC_VOLUME 0x7
 #define CC_PAN 0xA
 #define CC_GENMDM_ALGORITHM 0xE
+#define CC_GENMDM_FM_FEEDBACK 0xF
 #define CC_GENMDM_TOTAL_LEVEL_OP1 16
 #define CC_GENMDM_TOTAL_LEVEL_OP2 17
 #define CC_GENMDM_TOTAL_LEVEL_OP3 18
@@ -81,6 +82,9 @@ static void controlChange(u8 status)
         break;
     case CC_GENMDM_ALGORITHM:
         synth_algorithm(chan, value / 16);
+        break;
+    case CC_GENMDM_FM_FEEDBACK:
+        synth_feedback(chan, value / 16);
         break;
     case CC_GENMDM_TOTAL_LEVEL_OP1:
         synth_operatorTotalLevel(chan, 0, value);

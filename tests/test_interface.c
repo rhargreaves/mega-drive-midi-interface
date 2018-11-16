@@ -161,6 +161,23 @@ static void test_interface_sets_fm_algorithm(void** state)
     interface_tick();
 }
 
+static void test_interface_sets_fm_feedback(void** state)
+{
+    u8 expectedStatus = STATUS_CC;
+    u8 expectedController = 0x0F;
+    u8 midiValue = 33;
+    u8 expectedFeedback = 2;
+
+    will_return(__wrap_comm_read, expectedStatus);
+    will_return(__wrap_comm_read, expectedController);
+    will_return(__wrap_comm_read, midiValue);
+
+    expect_value(__wrap_synth_feedback, channel, 0);
+    expect_value(__wrap_synth_feedback, feedback, expectedFeedback);
+
+    interface_tick();
+}
+
 static void test_interface_sets_all_notes_off(void** state)
 {
     u8 expectedStatus = STATUS_CC;

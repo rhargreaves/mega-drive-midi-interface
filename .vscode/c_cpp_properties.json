@@ -7,7 +7,9 @@
                 "${workspaceFolder}/src",
                 "${workspaceFolder}/../SGDK/inc",
                 "${workspaceFolder}/../SGDK/res",
-                "${workspaceFolder}/tests/cmocka/include"
+                "${workspaceFolder}/tests/cmocka/include",
+                "/usr/include/linux",
+                "/usr/include/c++/7/tr1"
             ],
             "defines": [],
             "macFrameworkPath": [
