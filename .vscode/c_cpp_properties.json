@@ -13,7 +13,7 @@
             "macFrameworkPath": [
                 "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks"
             ],
-            "compilerPath": "${workspaceFolder}/docker-run /opt/gendev/bin/m68k-elf-gcc/gcc",
+            "compilerPath": "${workspaceFolder}/docker-run /opt/gendev/bin/m68k-elf-gcc",
             "cStandard": "c11",
             "cppStandard": "c++17",
             "intelliSenseMode": "gcc-x64"
