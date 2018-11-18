@@ -15,9 +15,9 @@ extern void __real_synth_algorithm(u8 channel, u8 algorithm);
 extern void __real_synth_feedback(u8 channel, u8 feedback);
 extern void __real_synth_operatorTotalLevel(u8 channel, u8 op, u8 totalLevel);
 
-static void test_synth_setup(void** state)
+static int test_synth_setup(void** state)
 {
-    u16 count = 179;
+    const u16 count = 179;
     expect_any_count(__wrap_YM2612_writeReg, part, count);
     expect_any_count(__wrap_YM2612_writeReg, reg, count);
     expect_any_count(__wrap_YM2612_writeReg, data, count);
@@ -27,7 +27,7 @@ static void test_synth_setup(void** state)
 
 static void test_synth_init_sets_initial_registers(void** state)
 {
-    u16 count = 179;
+    const u16 count = 179;
     expect_any_count(__wrap_YM2612_writeReg, part, count);
     expect_any_count(__wrap_YM2612_writeReg, reg, count);
     expect_any_count(__wrap_YM2612_writeReg, data, count);
