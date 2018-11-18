@@ -15,6 +15,16 @@ extern void __real_synth_algorithm(u8 channel, u8 algorithm);
 extern void __real_synth_feedback(u8 channel, u8 feedback);
 extern void __real_synth_operatorTotalLevel(u8 channel, u8 op, u8 totalLevel);
 
+static void test_synth_setup(void** state)
+{
+    u16 count = 179;
+    expect_any_count(__wrap_YM2612_writeReg, part, count);
+    expect_any_count(__wrap_YM2612_writeReg, reg, count);
+    expect_any_count(__wrap_YM2612_writeReg, data, count);
+
+    __real_synth_init();
+}
+
 static void test_synth_init_sets_initial_registers(void** state)
 {
     u16 count = 179;
@@ -115,13 +125,14 @@ static void test_synth_sets_stereo_reg_chan(void** state)
 
 static void test_synth_sets_algorithm(void** state)
 {
+    u8 defaultFeedback = 6;
     u8 algorithm = 1;
     for (u8 chan = 0; chan < 6; chan++) {
         u8 regOffset = chan % 3;
         u8 regPart = chan < 3 ? 0 : 1;
         expect_value(__wrap_YM2612_writeReg, part, regPart);
         expect_value(__wrap_YM2612_writeReg, reg, 0xB0 + regOffset);
-        expect_value(__wrap_YM2612_writeReg, data, algorithm);
+        expect_value(__wrap_YM2612_writeReg, data, (defaultFeedback << 3) + algorithm);
 
         __real_synth_algorithm(chan, algorithm);
     }
@@ -129,13 +140,36 @@ static void test_synth_sets_algorithm(void** state)
 
 static void test_synth_sets_feedback(void** state)
 {
+    u8 defaultAlgorithm = 2;
     u8 feedback = 1;
     for (u8 chan = 0; chan < 6; chan++) {
         u8 regOffset = chan % 3;
         u8 regPart = chan < 3 ? 0 : 1;
         expect_value(__wrap_YM2612_writeReg, part, regPart);
         expect_value(__wrap_YM2612_writeReg, reg, 0xB0 + regOffset);
-        expect_value(__wrap_YM2612_writeReg, data, feedback << 3);
+        expect_value(__wrap_YM2612_writeReg, data, (feedback << 3) + defaultAlgorithm);
+
+        __real_synth_feedback(chan, feedback);
+    }
+}
+
+static void test_synth_sets_feedback_and_algorithm(void** state)
+{
+    u8 defaultFeedback = 6;
+    u8 feedback = 1;
+    u8 algorithm = 1;
+    for (u8 chan = 0; chan < 6; chan++) {
+        u8 regOffset = chan % 3;
+        u8 regPart = chan < 3 ? 0 : 1;
+        expect_value(__wrap_YM2612_writeReg, part, regPart);
+        expect_value(__wrap_YM2612_writeReg, reg, 0xB0 + regOffset);
+        expect_value(__wrap_YM2612_writeReg, data, (defaultFeedback << 3) + algorithm);
+
+        __real_synth_algorithm(chan, feedback);
+
+        expect_value(__wrap_YM2612_writeReg, part, regPart);
+        expect_value(__wrap_YM2612_writeReg, reg, 0xB0 + regOffset);
+        expect_value(__wrap_YM2612_writeReg, data, (feedback << 3) + algorithm);
 
         __real_synth_feedback(chan, feedback);
     }

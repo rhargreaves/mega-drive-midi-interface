@@ -1,8 +1,12 @@
 #include "synth.h"
 #include <ym2612.h>
 
+static void updateAlgorithmAndFeedback(u8 channel);
 static void synth_writeFm(u8 channel, u8 baseReg, u8 data);
 static u8 synth_keyOnOffRegOffset(u8 channel);
+
+static u8 algorithms[6] = { 2, 2, 2, 2, 2, 2 };
+static u8 feedbacks[6] = { 6, 6, 6, 6, 6, 6 };
 
 void synth_init(void)
 {
@@ -33,7 +37,9 @@ void synth_init(void)
         synth_writeFm(chan, 0x84, 0x11);
         synth_writeFm(chan, 0x88, 0x11);
         synth_writeFm(chan, 0x8C, 0xA6);
-        synth_writeFm(chan, 0xB0, 0x32); // feedback/algor
+        algorithms[chan] = 2;
+        feedbacks[chan] = 6;
+        updateAlgorithmAndFeedback(chan);
         synth_writeFm(chan, 0xB4, 0xC0);
         synth_writeFm(chan, 0xA4, 0x22); // freq
         synth_writeFm(chan, 0xA0, 0x69);
@@ -82,15 +88,23 @@ void synth_stereo(u8 channel, u8 mode)
 
 void synth_algorithm(u8 channel, u8 algorithm)
 {
-    synth_writeFm(channel, 0xB0, algorithm);
+    algorithms[channel] = algorithm;
+    updateAlgorithmAndFeedback(channel);
 }
 
 void synth_feedback(u8 channel, u8 feedback)
 {
-    synth_writeFm(channel, 0xB0, feedback << 3);
+    feedbacks[channel] = feedback;
+    updateAlgorithmAndFeedback(channel);
 }
 
 void synth_operatorTotalLevel(u8 channel, u8 op, u8 totalLevel)
 {
     synth_writeFm(channel, 0x40 + (op * 4), totalLevel);
+}
+
+static void updateAlgorithmAndFeedback(u8 channel)
+{
+    synth_writeFm(channel, 0xB0,
+        (feedbacks[channel] << 3) + algorithms[channel]);
 }
