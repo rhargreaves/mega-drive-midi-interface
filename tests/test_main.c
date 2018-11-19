@@ -59,7 +59,9 @@ int main(void)
 
         cmocka_unit_test_setup(test_comm_reads_when_ready, test_comm_setup),
         cmocka_unit_test_setup(test_comm_idle_count_is_correct, test_comm_setup),
-        cmocka_unit_test_setup(test_comm_busy_count_is_correct, test_comm_setup)
+        cmocka_unit_test_setup(test_comm_busy_count_is_correct, test_comm_setup),
+        cmocka_unit_test_setup(test_comm_clamps_idle_count, test_comm_setup),
+        cmocka_unit_test_setup(test_comm_clamps_busy_count, test_comm_setup)
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);

@@ -55,3 +55,30 @@ static void test_comm_busy_count_is_correct(void** state)
 
     assert_int_equal(busy, 2);
 }
+
+static void test_comm_clamps_idle_count(void** state)
+{
+    for (int i = 0; i < 0xFFFF; i++) {
+        will_return(__wrap_ssf_usb_rd_ready, 0);
+    }
+    will_return(__wrap_ssf_usb_rd_ready, 1);
+    will_return(__wrap_ssf_usb_read, 50);
+
+    __real_comm_read();
+    u16 idle = __real_comm_idleCount();
+
+    assert_int_equal(idle, 0);
+}
+
+static void test_comm_clamps_busy_count(void** state)
+{
+    for (int i = 0; i < 0xFFFF; i++) {
+        will_return(__wrap_ssf_usb_rd_ready, 1);
+        will_return(__wrap_ssf_usb_read, 50);
+        __real_comm_read();
+    }
+
+    u16 busy = __real_comm_busyCount();
+
+    assert_int_equal(busy, 0);
+}
