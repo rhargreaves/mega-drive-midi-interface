@@ -29,23 +29,23 @@ You can download pre-built ROMs from [releases](https://github.com/rhargreaves/m
 
 ## Channel Mapping
 
-| Channels | Assignment |
-|----------|------------|
-| 1 - 6    | YM2612 FM Synthesis |
-| 7 - 9    | PSG Square Wave Tone   |
-| 10       | PSG Noise  |
+| Channels | Assignment           |
+| -------- | -------------------- |
+| 1 - 6    | YM2612 FM Synthesis  |
+| 7 - 9    | PSG Square Wave Tone |
+| 10       | PSG Noise            |
 
 ## Control Change Messages
 
 ### MIDI Specification
 
-| CC  | Description    | Effect                  | Values |
-|-----|----------------|-------------------------|--------|
-| 7   | Channel Volume | FM: Op 4 Total Level    | 0 - 127: [Logarithmic](src/midi.c#L24) |
-|     |                | PSG: Attenuation        | 0 - 127: [Logarithmic](src/midi.c#L45) |
-| 10  | Panning        | Stereo                  | 0 - 31: Left<br>32 - 96: Centre<br>97 - 127: Right |
-| 123 | All Notes Off  | FM: Key Off             | 0 |
-|     |                | PSG: Max. Attenuation   | 0 |
+| CC  | Description    | Effect                | Values                                             |
+| --- | -------------- | --------------------- | -------------------------------------------------- |
+| 7   | Channel Volume | FM: Op 4 Total Level  | 0 - 127: [Logarithmic](src/midi.c#L24)             |
+|     |                | PSG: Attenuation      | 0 - 127: [Logarithmic](src/midi.c#L45)             |
+| 10  | Panning        | Stereo                | 0 - 31: Left<br>32 - 96: Centre<br>97 - 127: Right |
+| 123 | All Notes Off  | FM: Key Off           | 0                                                  |
+|     |                | PSG: Max. Attenuation | 0                                                  |
 
 ### Gen/MDM Compatibility
 
@@ -57,14 +57,12 @@ MIDI_Value / (128 / Range) = Register_Value
 
 For example: A MIDI value of 32, with CC range of 8 translates into to a YM2612 register value of 2.
 
-| CC  | Description    | Range  |
-|-----|----------------|--------|
-| 14  | FM Algorithm   | 8      |
-| 15  | FM Feedback    | 8      |
-| 16  | FM Total Level OP1   | 128 |
-| 17  | FM Total Level OP2   | 128 |
-| 18  | FM Total Level OP3   | 128 |
-| 19  | FM Total Level OP4   | 128 |
+| CC    | Description          | Range |
+| ----- | -------------------- | ----- |
+| 14    | FM Algorithm         | 8     |
+| 15    | FM Feedback          | 8     |
+| 16-19 | FM Total Level OP1-4 | 128   |
+| 20-23 | FM Multiple OP1-4    | 16    |
 
 ## Build & Test
 

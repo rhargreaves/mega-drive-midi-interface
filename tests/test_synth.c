@@ -14,6 +14,7 @@ extern void __real_synth_stereo(u8 channel, u8 stereo);
 extern void __real_synth_algorithm(u8 channel, u8 algorithm);
 extern void __real_synth_feedback(u8 channel, u8 feedback);
 extern void __real_synth_operatorTotalLevel(u8 channel, u8 op, u8 totalLevel);
+extern void __real_synth_operatorMultiple(u8 channel, u8 op, u8 multiple);
 
 static int test_synth_setup(void** state)
 {
@@ -187,6 +188,22 @@ static void test_synth_sets_operator_total_level(void** state)
             expect_value(__wrap_YM2612_writeReg, data, totalLevel);
 
             __real_synth_operatorTotalLevel(chan, op, totalLevel);
+        }
+    }
+}
+
+static void test_synth_sets_operator_multiple(void** state)
+{
+    u8 multiple = 2;
+    for (u8 chan = 0; chan < 6; chan++) {
+        u8 regOffset = chan % 3;
+        u8 regPart = chan < 3 ? 0 : 1;
+        for (u8 op = 0; op < 4; op++) {
+            expect_value(__wrap_YM2612_writeReg, part, regPart);
+            expect_value(__wrap_YM2612_writeReg, reg, 0x30 + regOffset + (op * 4));
+            expect_value(__wrap_YM2612_writeReg, data, multiple);
+
+            __real_synth_operatorMultiple(chan, op, multiple);
         }
     }
 }
