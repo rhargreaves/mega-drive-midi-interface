@@ -47,8 +47,6 @@ void synth_init(void)
         channels[chan].feedback = 6;
         updateAlgorithmAndFeedback(chan);
         synth_writeFm(chan, 0xB4, 0xC0);
-        synth_writeFm(chan, 0xA4, 0x22); // freq
-        synth_writeFm(chan, 0xA0, 0x69);
     }
     YM2612_writeReg(0, 0x90, 0); // Proprietary
     YM2612_writeReg(0, 0x94, 0);
@@ -111,6 +109,6 @@ void synth_operatorTotalLevel(u8 channel, u8 op, u8 totalLevel)
 
 static void updateAlgorithmAndFeedback(u8 channel)
 {
-    synth_writeFm(channel, 0xB0,
-        (channels[channel].feedback << 3) + channels[channel].algorithm);
+    Channel* chan = &channels[channel];
+    synth_writeFm(channel, 0xB0, (chan->feedback << 3) + chan->algorithm);
 }
