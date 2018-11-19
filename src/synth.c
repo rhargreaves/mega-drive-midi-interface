@@ -107,6 +107,10 @@ void synth_operatorTotalLevel(u8 channel, u8 op, u8 totalLevel)
     synth_writeFm(channel, 0x40 + (op * 4), totalLevel);
 }
 
+void synth_operatorMultiple(u8 channel, u8 op, u8 multiple)
+{
+}
+
 static void updateAlgorithmAndFeedback(u8 channel)
 {
     Channel* chan = &channels[channel];

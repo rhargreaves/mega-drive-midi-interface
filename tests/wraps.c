@@ -58,6 +58,13 @@ void __wrap_synth_operatorTotalLevel(u8 channel, u8 op, u8 totalLevel)
     check_expected(totalLevel);
 }
 
+void __wrap_synth_operatorMultiple(u8 channel, u8 op, u8 multiple)
+{
+    check_expected(channel);
+    check_expected(op);
+    check_expected(multiple);
+}
+
 u8 __wrap_comm_read(void)
 {
     return mock_type(u8);

@@ -25,6 +25,7 @@ int main(void)
         cmocka_unit_test(test_interface_sets_fm_algorithm),
         cmocka_unit_test(test_interface_sets_fm_feedback),
         cmocka_unit_test(test_interface_sets_operator_total_level),
+        cmocka_unit_test(test_interface_sets_operator_multiple),
 
         cmocka_unit_test(test_midi_triggers_synth_note_on),
         cmocka_unit_test(test_midi_triggers_synth_note_on_2),
