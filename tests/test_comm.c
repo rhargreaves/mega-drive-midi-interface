@@ -40,3 +40,18 @@ static void test_comm_idle_count_is_correct(void** state)
 
     assert_int_equal(idle, 2);
 }
+
+static void test_comm_busy_count_is_correct(void** state)
+{
+    will_return(__wrap_ssf_usb_rd_ready, 0);
+    will_return(__wrap_ssf_usb_rd_ready, 1);
+    will_return(__wrap_ssf_usb_rd_ready, 1);
+    will_return(__wrap_ssf_usb_read, 50);
+    will_return(__wrap_ssf_usb_read, 50);
+
+    __real_comm_read();
+    __real_comm_read();
+    u16 busy = __real_comm_busyCount();
+
+    assert_int_equal(busy, 2);
+}
