@@ -145,3 +145,13 @@ void __wrap_PSG_setFrequency(u8 channel, u16 value)
     check_expected(channel);
     check_expected(value);
 }
+
+u8 __wrap_ssf_usb_read(void)
+{
+    return mock_type(u8);
+}
+
+u16 __wrap_ssf_usb_rd_ready(void)
+{
+    return mock_type(u16);
+}

@@ -37,7 +37,9 @@ MOCKS=midi_process \
 	midi_noteOff \
 	midi_noteOn \
 	midi_channelVolume \
-	midi_pan
+	midi_pan \
+	ssf_usb_read \
+    ssf_usb_rd_ready
 
 LDFLAGS=-ffreestanding -l cmocka -L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src
 LDFLAGS+=$(foreach MOCK,$(MOCKS),-Wl,--wrap=$(MOCK))
