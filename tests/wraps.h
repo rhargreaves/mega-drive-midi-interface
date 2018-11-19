@@ -11,6 +11,7 @@ void __wrap_synth_algorithm(u8 channel, u8 algorithm);
 void __wrap_synth_feedback(u8 channel, u8 feedback);
 void __wrap_synth_operatorTotalLevel(u8 channel, u8 op, u8 totalLevel);
 void __wrap_synth_operatorMultiple(u8 channel, u8 op, u8 multiple);
+void __wrap_synth_operatorDetune(u8 channel, u8 op, u8 detune);
 u8 __wrap_comm_read(void);
 void __wrap_fm_writeReg(u16 part, u8 reg, u8 data);
 void __wrap_psg_noteOn(u8 channel, u16 freq);

@@ -117,3 +117,7 @@ static void updateAlgorithmAndFeedback(u8 channel)
     Channel* chan = &channels[channel];
     synth_writeFm(channel, 0xB0, (chan->feedback << 3) + chan->algorithm);
 }
+
+void synth_operatorDetune(u8 channel, u8 op, u8 detune)
+{
+}

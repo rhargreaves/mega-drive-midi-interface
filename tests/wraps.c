@@ -65,6 +65,13 @@ void __wrap_synth_operatorMultiple(u8 channel, u8 op, u8 multiple)
     check_expected(multiple);
 }
 
+void __wrap_synth_operatorDetune(u8 channel, u8 op, u8 detune)
+{
+    check_expected(channel);
+    check_expected(op);
+    check_expected(detune);
+}
+
 u8 __wrap_comm_read(void)
 {
     return mock_type(u8);

@@ -230,3 +230,22 @@ static void test_interface_sets_operator_multiple(void** state)
         interface_tick();
     }
 }
+
+static void test_interface_sets_operator_detune(void** state)
+{
+    u8 expectedStatus = STATUS_CC;
+    u8 expectedValue = 2;
+
+    for (u8 cc = 24; cc <= 27; cc++) {
+        will_return(__wrap_comm_read, expectedStatus);
+        will_return(__wrap_comm_read, cc);
+        will_return(__wrap_comm_read, 32);
+
+        u8 expectedOp = cc - 24;
+        expect_value(__wrap_synth_operatorDetune, channel, 0);
+        expect_value(__wrap_synth_operatorDetune, op, expectedOp);
+        expect_value(__wrap_synth_operatorDetune, detune, expectedValue);
+
+        interface_tick();
+    }
+}
