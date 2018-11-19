@@ -14,6 +14,9 @@ CFLAGS=$(INCLUDE_DIRS) -Wno-builtin-declaration-mismatch
  # list of function signature to mock
 MOCKS=midi_process \
 	comm_read \
+	comm_idleCount \
+	comm_busyCount \
+	comm_resetCounts \
 	synth_init \
 	synth_noteOn \
 	synth_noteOff \

@@ -10,6 +10,13 @@ extern u16 __real_comm_idleCount(void);
 extern u16 __real_comm_busyCount(void);
 extern void __real_comm_resetCounts(void);
 
+static int test_comm_setup(void** state)
+{
+    __real_comm_resetCounts();
+
+    return 0;
+}
+
 static void test_comm_reads_when_ready(void** state)
 {
     will_return(__wrap_ssf_usb_rd_ready, 0);
@@ -19,4 +26,17 @@ static void test_comm_reads_when_ready(void** state)
     u8 read = __real_comm_read();
 
     assert_int_equal(read, 50);
+}
+
+static void test_comm_idle_count_is_correct(void** state)
+{
+    will_return(__wrap_ssf_usb_rd_ready, 0);
+    will_return(__wrap_ssf_usb_rd_ready, 0);
+    will_return(__wrap_ssf_usb_rd_ready, 1);
+    will_return(__wrap_ssf_usb_read, 50);
+
+    __real_comm_read();
+    u16 idle = __real_comm_idleCount();
+
+    assert_int_equal(idle, 2);
 }

@@ -63,6 +63,20 @@ u8 __wrap_comm_read(void)
     return mock_type(u8);
 }
 
+u16 __wrap_comm_idleCount(void)
+{
+    return mock_type(u16);
+}
+
+u16 __wrap_comm_busyCount(void)
+{
+    return mock_type(u16);
+}
+
+void __wrap_comm_resetCounts(void)
+{
+}
+
 void __wrap_midi_noteOff(u8 chan)
 {
     check_expected(chan);
