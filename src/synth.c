@@ -120,4 +120,5 @@ static void updateAlgorithmAndFeedback(u8 channel)
 
 void synth_operatorDetune(u8 channel, u8 op, u8 detune)
 {
+    synth_writeFm(channel, 0x30 + (op * 4), detune << 4);
 }
