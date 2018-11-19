@@ -60,6 +60,7 @@ For example: A MIDI value of 32, with CC range of 8 translates into to a YM2612 
 | CC  | Description    | Range  |
 |-----|----------------|--------|
 | 14  | FM Algorithm   | 8      |
+| 15  | FM Feedback    | 8      |
 | 16  | FM Total Level OP1   | 128 |
 | 17  | FM Total Level OP2   | 128 |
 | 18  | FM Total Level OP3   | 128 |
