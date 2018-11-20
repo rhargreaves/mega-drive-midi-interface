@@ -178,7 +178,7 @@ static void updateOperatorMultipleAndDetune(u8 channel, u8 operator)
     Channel* chan = &channels[channel];
     synth_writeFm(channel,
         0x30 + (operator* 4),
-        chan->operators[0].multiple + (chan->operators[0].detune << 4));
+        chan->operators[operator].multiple + (chan->operators[operator].detune << 4));
 }
 
 static void updateOperatorRateScalingAndAttackRate(u8 channel, u8 operator)
