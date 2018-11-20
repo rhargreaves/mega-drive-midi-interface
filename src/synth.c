@@ -141,6 +141,10 @@ void synth_operatorRateScaling(u8 channel, u8 op, u8 rateScaling)
     synth_writeFm(channel, 0x50 + (op * 4), rateScaling << 6);
 }
 
+void synth_operatorAttackRate(u8 channel, u8 op, u8 attackRate)
+{
+}
+
 static void updateAlgorithmAndFeedback(u8 channel)
 {
     Channel* chan = &channels[channel];

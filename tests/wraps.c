@@ -79,6 +79,13 @@ void __wrap_synth_operatorRateScaling(u8 channel, u8 op, u8 rateScaling)
     check_expected(rateScaling);
 }
 
+void __wrap_synth_operatorAttackRate(u8 channel, u8 op, u8 attackRate)
+{
+    check_expected(channel);
+    check_expected(op);
+    check_expected(attackRate);
+}
+
 u8 __wrap_comm_read(void)
 {
     return mock_type(u8);

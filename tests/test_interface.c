@@ -268,3 +268,22 @@ static void test_interface_sets_operator_rate_scaling(void** state)
         interface_tick();
     }
 }
+
+static void test_interface_sets_operator_attack_rate(void** state)
+{
+    u8 expectedStatus = STATUS_CC;
+    u8 expectedValue = 2;
+
+    for (u8 cc = 32; cc <= 35; cc++) {
+        will_return(__wrap_comm_read, expectedStatus);
+        will_return(__wrap_comm_read, cc);
+        will_return(__wrap_comm_read, 8);
+
+        u8 expectedOp = cc - 32;
+        expect_value(__wrap_synth_operatorAttackRate, channel, 0);
+        expect_value(__wrap_synth_operatorAttackRate, op, expectedOp);
+        expect_value(__wrap_synth_operatorAttackRate, attackRate, expectedValue);
+
+        interface_tick();
+    }
+}

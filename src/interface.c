@@ -33,6 +33,10 @@
 #define CC_GENMDM_RATE_SCALING_OP2 29
 #define CC_GENMDM_RATE_SCALING_OP3 30
 #define CC_GENMDM_RATE_SCALING_OP4 31
+#define CC_GENMDM_ATTACK_RATE_OP1 32
+#define CC_GENMDM_ATTACK_RATE_OP2 33
+#define CC_GENMDM_ATTACK_RATE_OP3 34
+#define CC_GENMDM_ATTACK_RATE_OP4 35
 
 #define CC_ALL_NOTES_OFF 123
 
@@ -128,6 +132,13 @@ static void controlChange(u8 status)
     case CC_GENMDM_RATE_SCALING_OP4:
         synth_operatorRateScaling(chan,
             controller - CC_GENMDM_RATE_SCALING_OP1, RANGE(value, 4));
+        break;
+    case CC_GENMDM_ATTACK_RATE_OP1:
+    case CC_GENMDM_ATTACK_RATE_OP2:
+    case CC_GENMDM_ATTACK_RATE_OP3:
+    case CC_GENMDM_ATTACK_RATE_OP4:
+        synth_operatorAttackRate(chan,
+            controller - CC_GENMDM_ATTACK_RATE_OP1, RANGE(value, 32));
         break;
     default:
         lastUnknownControlChange.controller = controller;

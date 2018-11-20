@@ -13,6 +13,7 @@ void __wrap_synth_operatorTotalLevel(u8 channel, u8 op, u8 totalLevel);
 void __wrap_synth_operatorMultiple(u8 channel, u8 op, u8 multiple);
 void __wrap_synth_operatorDetune(u8 channel, u8 op, u8 detune);
 void __wrap_synth_operatorRateScaling(u8 channel, u8 op, u8 rateScaling);
+void __wrap_synth_operatorAttackRate(u8 channel, u8 op, u8 attackRate);
 u8 __wrap_comm_read(void);
 void __wrap_fm_writeReg(u16 part, u8 reg, u8 data);
 void __wrap_psg_noteOn(u8 channel, u16 freq);
