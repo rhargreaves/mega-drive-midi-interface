@@ -255,12 +255,12 @@ static void test_interface_sets_operator_rate_scaling(void** state)
     u8 expectedStatus = STATUS_CC;
     u8 expectedValue = 2;
 
-    for (u8 cc = 28; cc <= 31; cc++) {
+    for (u8 cc = 39; cc <= 42; cc++) {
         will_return(__wrap_comm_read, expectedStatus);
         will_return(__wrap_comm_read, cc);
         will_return(__wrap_comm_read, 64);
 
-        u8 expectedOp = cc - 28;
+        u8 expectedOp = cc - 39;
         expect_value(__wrap_synth_operatorRateScaling, channel, 0);
         expect_value(__wrap_synth_operatorRateScaling, op, expectedOp);
         expect_value(__wrap_synth_operatorRateScaling, rateScaling, expectedValue);
@@ -274,12 +274,12 @@ static void test_interface_sets_operator_attack_rate(void** state)
     u8 expectedStatus = STATUS_CC;
     u8 expectedValue = 2;
 
-    for (u8 cc = 32; cc <= 35; cc++) {
+    for (u8 cc = 43; cc <= 46; cc++) {
         will_return(__wrap_comm_read, expectedStatus);
         will_return(__wrap_comm_read, cc);
         will_return(__wrap_comm_read, 8);
 
-        u8 expectedOp = cc - 32;
+        u8 expectedOp = cc - 43;
         expect_value(__wrap_synth_operatorAttackRate, channel, 0);
         expect_value(__wrap_synth_operatorAttackRate, op, expectedOp);
         expect_value(__wrap_synth_operatorAttackRate, attackRate, expectedValue);
