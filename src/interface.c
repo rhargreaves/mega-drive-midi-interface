@@ -7,14 +7,16 @@
 #define STATUS_CHANNEL(status) status & 0x0F
 #define STATUS_EVENT(status) status >> 4
 
+#define RANGE(value, range) value / (128 / range)
+
 #define EVENT_NOTE_ON 0x9
 #define EVENT_NODE_OFF 0x8
 #define EVENT_CC 0xB
 
-#define CC_VOLUME 0x7
-#define CC_PAN 0xA
-#define CC_GENMDM_FM_ALGORITHM 0xE
-#define CC_GENMDM_FM_FEEDBACK 0xF
+#define CC_VOLUME 7
+#define CC_PAN 10
+#define CC_GENMDM_FM_ALGORITHM 14
+#define CC_GENMDM_FM_FEEDBACK 15
 #define CC_GENMDM_TOTAL_LEVEL_OP1 16
 #define CC_GENMDM_TOTAL_LEVEL_OP2 17
 #define CC_GENMDM_TOTAL_LEVEL_OP3 18
@@ -27,7 +29,7 @@
 #define CC_GENMDM_DETUNE_OP2 25
 #define CC_GENMDM_DETUNE_OP3 26
 #define CC_GENMDM_DETUNE_OP4 27
-#define CC_ALL_NOTES_OFF 0x7B
+#define CC_ALL_NOTES_OFF 123
 
 static u8 lastUnknownStatus = 0;
 static ControlChange lastUnknownControlChange;
@@ -89,28 +91,31 @@ static void controlChange(u8 status)
         midi_noteOff(chan);
         break;
     case CC_GENMDM_FM_ALGORITHM:
-        synth_algorithm(chan, value / 16);
+        synth_algorithm(chan, RANGE(value, 8));
         break;
     case CC_GENMDM_FM_FEEDBACK:
-        synth_feedback(chan, value / 16);
+        synth_feedback(chan, RANGE(value, 8));
         break;
     case CC_GENMDM_TOTAL_LEVEL_OP1:
     case CC_GENMDM_TOTAL_LEVEL_OP2:
     case CC_GENMDM_TOTAL_LEVEL_OP3:
     case CC_GENMDM_TOTAL_LEVEL_OP4:
-        synth_operatorTotalLevel(chan, controller - CC_GENMDM_TOTAL_LEVEL_OP1, value);
+        synth_operatorTotalLevel(chan,
+            controller - CC_GENMDM_TOTAL_LEVEL_OP1, value);
         break;
     case CC_GENMDM_MULTIPLE_OP1:
     case CC_GENMDM_MULTIPLE_OP2:
     case CC_GENMDM_MULTIPLE_OP3:
     case CC_GENMDM_MULTIPLE_OP4:
-        synth_operatorMultiple(chan, controller - CC_GENMDM_MULTIPLE_OP1, value / 8);
+        synth_operatorMultiple(chan,
+            controller - CC_GENMDM_MULTIPLE_OP1, RANGE(value, 16));
         break;
     case CC_GENMDM_DETUNE_OP1:
     case CC_GENMDM_DETUNE_OP2:
     case CC_GENMDM_DETUNE_OP3:
     case CC_GENMDM_DETUNE_OP4:
-        synth_operatorDetune(chan, controller - CC_GENMDM_DETUNE_OP1, value / 16);
+        synth_operatorDetune(chan,
+            controller - CC_GENMDM_DETUNE_OP1, RANGE(value, 8));
         break;
     default:
         lastUnknownControlChange.controller = controller;
