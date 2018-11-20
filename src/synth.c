@@ -1,4 +1,5 @@
 #include "synth.h"
+#include <memory.h>
 #include <ym2612.h>
 
 static void updateOperatorMultipleAndDetune(u8 channel, u8 op);
@@ -26,30 +27,36 @@ struct Channel {
 
 static Channel channels[MAX_SYNTH_CHANS];
 
+static const Channel DEFAULT_CHANNEL = {
+    .algorithm = 2,
+    .feedback = 6,
+    .operators = {
+        { .multiple = 1,
+            .detune = 7,
+            .attackRate = 31,
+            .rateScaling = 1 },
+        { .multiple = 13,
+            .detune = 0,
+            .attackRate = 25,
+            .rateScaling = 2 },
+        { .multiple = 3,
+            .detune = 2,
+            .attackRate = 31,
+            .rateScaling = 1 },
+        { .multiple = 1,
+            .detune = 0,
+            .attackRate = 25,
+            .rateScaling = 2 },
+    }
+};
+
 void synth_init(void)
 {
     YM2612_writeReg(0, 0x27, 0); // Ch 3 Normal
     for (u8 chan = 0; chan < MAX_SYNTH_CHANS; chan++) {
         synth_noteOff(chan);
 
-        channels[chan].algorithm = 2;
-        channels[chan].feedback = 6;
-        channels[chan].operators[0].multiple = 1;
-        channels[chan].operators[0].detune = 7;
-        channels[chan].operators[0].attackRate = 31;
-        channels[chan].operators[0].rateScaling = 1;
-        channels[chan].operators[1].multiple = 13;
-        channels[chan].operators[1].detune = 0;
-        channels[chan].operators[1].attackRate = 25;
-        channels[chan].operators[1].rateScaling = 2;
-        channels[chan].operators[2].multiple = 3;
-        channels[chan].operators[2].detune = 3;
-        channels[chan].operators[2].attackRate = 31;
-        channels[chan].operators[2].rateScaling = 1;
-        channels[chan].operators[3].multiple = 1;
-        channels[chan].operators[3].detune = 0;
-        channels[chan].operators[3].attackRate = 25;
-        channels[chan].operators[3].rateScaling = 2;
+        memcpy(&channels[chan], &DEFAULT_CHANNEL, sizeof(Channel));
 
         updateAlgorithmAndFeedback(chan);
         for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
