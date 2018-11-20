@@ -62,8 +62,8 @@ For example: A MIDI value of 32, with CC range of 8 translates into to a YM2612 
 | 16-19 | FM Total Level OP1-4  | 128   |
 | 20-23 | FM Multiple OP1-4     | 16    |
 | 24-27 | FM Detune OP1-4       | 8     |
-| 28-31 | FM Rate Scaling OP1-4 | 4     |
-| 32-35 | FM Attack Rate OP1-4  | 32    |
+| 39-42 | FM Rate Scaling OP1-4 | 4     |
+| 43-46 | FM Attack Rate OP1-4  | 32    |
 
 ## Build & Test
 
