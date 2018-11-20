@@ -18,3 +18,4 @@ void synth_feedback(u8 channel, u8 feedback);
 void synth_operatorTotalLevel(u8 channel, u8 op, u8 totalLevel);
 void synth_operatorMultiple(u8 channel, u8 op, u8 multiple);
 void synth_operatorDetune(u8 channel, u8 op, u8 detune);
+void synth_operatorRateScaling(u8 channel, u8 op, u8 rateScaling);

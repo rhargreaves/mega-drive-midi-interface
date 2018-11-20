@@ -28,6 +28,7 @@ MOCKS=midi_process \
 	synth_operatorTotalLevel \
 	synth_operatorMultiple \
 	synth_operatorDetune \
+	synth_operatorRateScaling \
 	fm_writeReg \
 	psg_noteOn \
 	psg_noteOff \

@@ -72,6 +72,13 @@ void __wrap_synth_operatorDetune(u8 channel, u8 op, u8 detune)
     check_expected(detune);
 }
 
+void __wrap_synth_operatorRateScaling(u8 channel, u8 op, u8 rateScaling)
+{
+    check_expected(channel);
+    check_expected(op);
+    check_expected(rateScaling);
+}
+
 u8 __wrap_comm_read(void)
 {
     return mock_type(u8);

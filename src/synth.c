@@ -140,6 +140,10 @@ void synth_operatorDetune(u8 channel, u8 op, u8 detune)
     updateOperatorMultipleAndDetune(channel, op);
 }
 
+void synth_operatorRateScaling(u8 channel, u8 op, u8 rateScaling)
+{
+}
+
 static void updateAlgorithmAndFeedback(u8 channel)
 {
     Channel* chan = &channels[channel];

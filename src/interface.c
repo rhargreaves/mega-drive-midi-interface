@@ -29,6 +29,11 @@
 #define CC_GENMDM_DETUNE_OP2 25
 #define CC_GENMDM_DETUNE_OP3 26
 #define CC_GENMDM_DETUNE_OP4 27
+#define CC_GENMDM_RATE_SCALING_OP1 28
+#define CC_GENMDM_RATE_SCALING_OP2 29
+#define CC_GENMDM_RATE_SCALING_OP3 30
+#define CC_GENMDM_RATE_SCALING_OP4 31
+
 #define CC_ALL_NOTES_OFF 123
 
 static u8 lastUnknownStatus = 0;
@@ -116,6 +121,13 @@ static void controlChange(u8 status)
     case CC_GENMDM_DETUNE_OP4:
         synth_operatorDetune(chan,
             controller - CC_GENMDM_DETUNE_OP1, RANGE(value, 8));
+        break;
+    case CC_GENMDM_RATE_SCALING_OP1:
+    case CC_GENMDM_RATE_SCALING_OP2:
+    case CC_GENMDM_RATE_SCALING_OP3:
+    case CC_GENMDM_RATE_SCALING_OP4:
+        synth_operatorRateScaling(chan,
+            controller - CC_GENMDM_RATE_SCALING_OP1, RANGE(value, 4));
         break;
     default:
         lastUnknownControlChange.controller = controller;
