@@ -31,34 +31,37 @@ void synth_init(void)
     YM2612_writeReg(0, 0x27, 0); // Ch 3 Normal
     for (u8 chan = 0; chan < MAX_SYNTH_CHANS; chan++) {
         synth_noteOff(chan);
+
+        channels[chan].algorithm = 2;
+        channels[chan].feedback = 6;
         channels[chan].operators[0].multiple = 1;
         channels[chan].operators[0].detune = 7;
-        updateOperatorMultipleAndDetune(chan, 0);
-        channels[chan].operators[1].multiple = 0xD;
+        channels[chan].operators[0].attackRate = 31;
+        channels[chan].operators[0].rateScaling = 1;
+        channels[chan].operators[1].multiple = 13;
         channels[chan].operators[1].detune = 0;
-        updateOperatorMultipleAndDetune(chan, 1);
+        channels[chan].operators[1].attackRate = 25;
+        channels[chan].operators[1].rateScaling = 2;
         channels[chan].operators[2].multiple = 3;
         channels[chan].operators[2].detune = 3;
-        updateOperatorMultipleAndDetune(chan, 2);
+        channels[chan].operators[2].attackRate = 31;
+        channels[chan].operators[2].rateScaling = 1;
         channels[chan].operators[3].multiple = 1;
         channels[chan].operators[3].detune = 0;
-        updateOperatorMultipleAndDetune(chan, 3);
+        channels[chan].operators[3].attackRate = 25;
+        channels[chan].operators[3].rateScaling = 2;
+
+        updateAlgorithmAndFeedback(chan);
+        for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
+            updateOperatorMultipleAndDetune(chan, op);
+            updateOperatorRateScalingAndAttackRate(chan, op);
+        }
+
         synth_writeFm(chan, 0x40, 0x23); // Total Level
         synth_writeFm(chan, 0x44, 0x2D);
         synth_writeFm(chan, 0x48, 0x26);
         synth_writeFm(chan, 0x4C, 0x00);
-        channels[chan].operators[0].attackRate = 31;
-        channels[chan].operators[0].rateScaling = 1;
-        updateOperatorRateScalingAndAttackRate(chan, 0);
-        channels[chan].operators[1].attackRate = 25;
-        channels[chan].operators[1].rateScaling = 2;
-        updateOperatorRateScalingAndAttackRate(chan, 1);
-        channels[chan].operators[2].attackRate = 31;
-        channels[chan].operators[2].rateScaling = 1;
-        updateOperatorRateScalingAndAttackRate(chan, 2);
-        channels[chan].operators[3].attackRate = 25;
-        channels[chan].operators[3].rateScaling = 2;
-        updateOperatorRateScalingAndAttackRate(chan, 3);
+
         synth_writeFm(chan, 0x60, 5); // AM/D1R
         synth_writeFm(chan, 0x64, 5);
         synth_writeFm(chan, 0x68, 5);
@@ -71,9 +74,7 @@ void synth_init(void)
         synth_writeFm(chan, 0x84, 0x11);
         synth_writeFm(chan, 0x88, 0x11);
         synth_writeFm(chan, 0x8C, 0xA6);
-        channels[chan].algorithm = 2;
-        channels[chan].feedback = 6;
-        updateAlgorithmAndFeedback(chan);
+
         synth_writeFm(chan, 0xB4, 0xC0);
     }
     YM2612_writeReg(0, 0x90, 0); // Proprietary
