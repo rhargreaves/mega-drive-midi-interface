@@ -40,10 +40,6 @@ void synth_init(void)
         channels[chan].operators[3].multiple = 1;
         channels[chan].operators[3].detune = 0;
         updateOperatorMultipleAndDetune(chan, 3);
-        // synth_writeFm(chan, 0x30, 0x71); // DT1/MUL
-        // synth_writeFm(chan, 0x34, 0x0D);
-        // synth_writeFm(chan, 0x38, 0x33);
-        // synth_writeFm(chan, 0x3C, 0x01);
         synth_writeFm(chan, 0x40, 0x23); // Total Level
         synth_writeFm(chan, 0x44, 0x2D);
         synth_writeFm(chan, 0x48, 0x26);
@@ -142,6 +138,7 @@ void synth_operatorDetune(u8 channel, u8 op, u8 detune)
 
 void synth_operatorRateScaling(u8 channel, u8 op, u8 rateScaling)
 {
+    synth_writeFm(channel, 0x50 + (op * 4), rateScaling << 6);
 }
 
 static void updateAlgorithmAndFeedback(u8 channel)

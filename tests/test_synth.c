@@ -16,6 +16,7 @@ extern void __real_synth_feedback(u8 channel, u8 feedback);
 extern void __real_synth_operatorTotalLevel(u8 channel, u8 op, u8 totalLevel);
 extern void __real_synth_operatorMultiple(u8 channel, u8 op, u8 multiple);
 extern void __real_synth_operatorDetune(u8 channel, u8 op, u8 detune);
+extern void __real_synth_operatorRateScaling(u8 channel, u8 op, u8 rateScaling);
 
 static int test_synth_setup(void** state)
 {
@@ -228,6 +229,22 @@ static void test_synth_sets_operator_multiple_and_detune(void** state)
             expect_value(__wrap_YM2612_writeReg, data, (detune << 4) | multiple);
 
             __real_synth_operatorDetune(chan, op, detune);
+        }
+    }
+}
+
+static void test_synth_sets_operator_rate_scaling(void** state)
+{
+    u8 rateScaling = 2;
+    for (u8 chan = 0; chan < 6; chan++) {
+        u8 regOffset = chan % 3;
+        u8 regPart = chan < 3 ? 0 : 1;
+        for (u8 op = 0; op < 4; op++) {
+            expect_value(__wrap_YM2612_writeReg, part, regPart);
+            expect_value(__wrap_YM2612_writeReg, reg, 0x50 + regOffset + (op * 4));
+            expect_value(__wrap_YM2612_writeReg, data, rateScaling << 6);
+
+            __real_synth_operatorRateScaling(chan, op, rateScaling);
         }
     }
 }
