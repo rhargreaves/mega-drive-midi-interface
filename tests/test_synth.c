@@ -202,15 +202,16 @@ static void test_synth_sets_operator_multiple(void** state)
         for (u8 op = 0; op < 4; op++) {
             expect_value(__wrap_YM2612_writeReg, part, regPart);
             expect_value(__wrap_YM2612_writeReg, reg, 0x30 + regOffset + (op * 4));
-            expect_value(__wrap_YM2612_writeReg, data, multiple);
+            expect_any(__wrap_YM2612_writeReg, data);
 
             __real_synth_operatorMultiple(chan, op, multiple);
         }
     }
 }
 
-static void test_synth_sets_operator_detune(void** state)
+static void test_synth_sets_operator_multiple_and_detune(void** state)
 {
+    u8 multiple = 2;
     u8 detune = 2;
     for (u8 chan = 0; chan < 6; chan++) {
         u8 regOffset = chan % 3;
@@ -218,7 +219,13 @@ static void test_synth_sets_operator_detune(void** state)
         for (u8 op = 0; op < 4; op++) {
             expect_value(__wrap_YM2612_writeReg, part, regPart);
             expect_value(__wrap_YM2612_writeReg, reg, 0x30 + regOffset + (op * 4));
-            expect_value(__wrap_YM2612_writeReg, data, detune << 4);
+            expect_any(__wrap_YM2612_writeReg, data);
+
+            __real_synth_operatorMultiple(chan, op, detune);
+
+            expect_value(__wrap_YM2612_writeReg, part, regPart);
+            expect_value(__wrap_YM2612_writeReg, reg, 0x30 + regOffset + (op * 4));
+            expect_value(__wrap_YM2612_writeReg, data, (detune << 4) | multiple);
 
             __real_synth_operatorDetune(chan, op, detune);
         }
