@@ -51,7 +51,7 @@ You can download pre-built ROMs from [releases](https://github.com/rhargreaves/m
 
 Range determines how the possible 128 MIDI values are divided to give the respective YM2612 register value, using the formula:
 
-_MIDI-Value / (128 / Range) = Register-Value_
+_midiValue / (128 / range) = registerValue_
 
 For example: A MIDI value of 32, with CC range of 8 translates into to a YM2612 register value of 2.
 
