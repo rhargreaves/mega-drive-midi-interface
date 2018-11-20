@@ -3,6 +3,7 @@
 
 static void updateOperatorMultipleAndDetune(u8 channel, u8 op);
 static void updateAlgorithmAndFeedback(u8 channel);
+static void updateOperatorRateScalingAndAttackRate(u8 channel, u8 operator);
 static void synth_writeFm(u8 channel, u8 baseReg, u8 data);
 static u8 synth_keyOnOffRegOffset(u8 channel);
 
@@ -11,6 +12,8 @@ typedef struct Operator Operator;
 struct Operator {
     u8 multiple;
     u8 detune;
+    u8 attackRate;
+    u8 rateScaling;
 };
 
 typedef struct Channel Channel;
@@ -44,10 +47,18 @@ void synth_init(void)
         synth_writeFm(chan, 0x44, 0x2D);
         synth_writeFm(chan, 0x48, 0x26);
         synth_writeFm(chan, 0x4C, 0x00);
-        synth_writeFm(chan, 0x50, 0x5F); // RS/AR
-        synth_writeFm(chan, 0x54, 0x99);
-        synth_writeFm(chan, 0x58, 0x5F);
-        synth_writeFm(chan, 0x5C, 0x99);
+        channels[chan].operators[0].attackRate = 31;
+        channels[chan].operators[0].rateScaling = 1;
+        updateOperatorRateScalingAndAttackRate(chan, 0);
+        channels[chan].operators[1].attackRate = 25;
+        channels[chan].operators[1].rateScaling = 2;
+        updateOperatorRateScalingAndAttackRate(chan, 1);
+        channels[chan].operators[2].attackRate = 31;
+        channels[chan].operators[2].rateScaling = 1;
+        updateOperatorRateScalingAndAttackRate(chan, 2);
+        channels[chan].operators[3].attackRate = 25;
+        channels[chan].operators[3].rateScaling = 2;
+        updateOperatorRateScalingAndAttackRate(chan, 3);
         synth_writeFm(chan, 0x60, 5); // AM/D1R
         synth_writeFm(chan, 0x64, 5);
         synth_writeFm(chan, 0x68, 5);
@@ -138,12 +149,14 @@ void synth_operatorDetune(u8 channel, u8 op, u8 detune)
 
 void synth_operatorRateScaling(u8 channel, u8 op, u8 rateScaling)
 {
-    synth_writeFm(channel, 0x50 + (op * 4), rateScaling << 6);
+    channels[channel].operators[op].rateScaling = rateScaling;
+    updateOperatorRateScalingAndAttackRate(channel, op);
 }
 
 void synth_operatorAttackRate(u8 channel, u8 op, u8 attackRate)
 {
-    synth_writeFm(channel, 0x50 + (op * 4), attackRate);
+    channels[channel].operators[op].attackRate = attackRate;
+    updateOperatorRateScalingAndAttackRate(channel, op);
 }
 
 static void updateAlgorithmAndFeedback(u8 channel)
@@ -158,4 +171,12 @@ static void updateOperatorMultipleAndDetune(u8 channel, u8 operator)
     synth_writeFm(channel,
         0x30 + (operator* 4),
         chan->operators[0].multiple + (chan->operators[0].detune << 4));
+}
+
+static void updateOperatorRateScalingAndAttackRate(u8 channel, u8 operator)
+{
+    Channel* chan = &channels[channel];
+    synth_writeFm(channel,
+        0x50 + (operator* 4),
+        chan->operators[0].attackRate + (chan->operators[0].rateScaling << 6));
 }

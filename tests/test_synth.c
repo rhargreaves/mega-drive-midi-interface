@@ -195,22 +195,6 @@ static void test_synth_sets_operator_total_level(void** state)
     }
 }
 
-static void test_synth_sets_operator_multiple(void** state)
-{
-    u8 multiple = 2;
-    for (u8 chan = 0; chan < 6; chan++) {
-        u8 regOffset = chan % 3;
-        u8 regPart = chan < 3 ? 0 : 1;
-        for (u8 op = 0; op < 4; op++) {
-            expect_value(__wrap_YM2612_writeReg, part, regPart);
-            expect_value(__wrap_YM2612_writeReg, reg, 0x30 + regOffset + (op * 4));
-            expect_any(__wrap_YM2612_writeReg, data);
-
-            __real_synth_operatorMultiple(chan, op, multiple);
-        }
-    }
-}
-
 static void test_synth_sets_operator_multiple_and_detune(void** state)
 {
     u8 multiple = 2;
@@ -234,8 +218,9 @@ static void test_synth_sets_operator_multiple_and_detune(void** state)
     }
 }
 
-static void test_synth_sets_operator_rate_scaling(void** state)
+static void test_synth_sets_operator_attack_rate_and_rate_scaling(void** state)
 {
+    u8 attackRate = 2;
     u8 rateScaling = 2;
     for (u8 chan = 0; chan < 6; chan++) {
         u8 regOffset = chan % 3;
@@ -243,25 +228,15 @@ static void test_synth_sets_operator_rate_scaling(void** state)
         for (u8 op = 0; op < 4; op++) {
             expect_value(__wrap_YM2612_writeReg, part, regPart);
             expect_value(__wrap_YM2612_writeReg, reg, 0x50 + regOffset + (op * 4));
-            expect_value(__wrap_YM2612_writeReg, data, rateScaling << 6);
-
-            __real_synth_operatorRateScaling(chan, op, rateScaling);
-        }
-    }
-}
-
-static void test_synth_sets_operator_attack_rate(void** state)
-{
-    u8 attackRate = 2;
-    for (u8 chan = 0; chan < 6; chan++) {
-        u8 regOffset = chan % 3;
-        u8 regPart = chan < 3 ? 0 : 1;
-        for (u8 op = 0; op < 4; op++) {
-            expect_value(__wrap_YM2612_writeReg, part, regPart);
-            expect_value(__wrap_YM2612_writeReg, reg, 0x50 + regOffset + (op * 4));
-            expect_value(__wrap_YM2612_writeReg, data, attackRate);
+            expect_any(__wrap_YM2612_writeReg, data);
 
             __real_synth_operatorAttackRate(chan, op, attackRate);
+
+            expect_value(__wrap_YM2612_writeReg, part, regPart);
+            expect_value(__wrap_YM2612_writeReg, reg, 0x50 + regOffset + (op * 4));
+            expect_value(__wrap_YM2612_writeReg, data, attackRate | (rateScaling << 6));
+
+            __real_synth_operatorRateScaling(chan, op, rateScaling);
         }
     }
 }
