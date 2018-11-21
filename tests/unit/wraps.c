@@ -2,8 +2,8 @@
 #include <stdarg.h>
 #include <stddef.h>
 
+#include "wraps.h"
 #include <cmocka.h>
-#include <wraps.h>
 
 void __wrap_synth_init(void)
 {
