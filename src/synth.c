@@ -186,5 +186,5 @@ static void updateOperatorRateScalingAndAttackRate(u8 channel, u8 operator)
     Channel* chan = &channels[channel];
     synth_writeFm(channel,
         0x50 + (operator* 4),
-        chan->operators[0].attackRate + (chan->operators[0].rateScaling << 6));
+        chan->operators[operator].attackRate + (chan->operators[operator].rateScaling << 6));
 }

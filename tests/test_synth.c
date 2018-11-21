@@ -160,9 +160,10 @@ static void test_synth_sets_feedback(void** state)
 static void test_synth_sets_feedback_and_algorithm(void** state)
 {
     u8 defaultFeedback = 6;
-    u8 feedback = 1;
-    u8 algorithm = 1;
+
     for (u8 chan = 0; chan < 6; chan++) {
+        u8 feedback = 1;
+        u8 algorithm = 1;
         u8 regOffset = chan % 3;
         u8 regPart = chan < 3 ? 0 : 1;
         expect_value(__wrap_YM2612_writeReg, part, regPart);
@@ -176,6 +177,9 @@ static void test_synth_sets_feedback_and_algorithm(void** state)
         expect_value(__wrap_YM2612_writeReg, data, (feedback << 3) + algorithm);
 
         __real_synth_feedback(chan, feedback);
+
+        feedback++;
+        algorithm++;
     }
 }
 
@@ -223,9 +227,9 @@ static void test_synth_sets_operator_multiple_and_detune(void** state)
 
 static void test_synth_sets_operator_attack_rate_and_rate_scaling(void** state)
 {
-    u8 attackRate = 2;
-    u8 rateScaling = 2;
     for (u8 chan = 0; chan < 6; chan++) {
+        u8 attackRate = 0;
+        u8 rateScaling = 0;
         u8 regOffset = chan % 3;
         u8 regPart = chan < 3 ? 0 : 1;
         for (u8 op = 0; op < 4; op++) {
@@ -240,6 +244,9 @@ static void test_synth_sets_operator_attack_rate_and_rate_scaling(void** state)
             expect_value(__wrap_YM2612_writeReg, data, attackRate | (rateScaling << 6));
 
             __real_synth_operatorRateScaling(chan, op, rateScaling);
+
+            attackRate++;
+            rateScaling++;
         }
     }
 }
