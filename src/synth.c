@@ -167,6 +167,10 @@ void synth_operatorAttackRate(u8 channel, u8 op, u8 attackRate)
     updateOperatorRateScalingAndAttackRate(channel, op);
 }
 
+void synth_operatorFirstDecayRate(u8 channel, u8 op, u8 firstDecayRate)
+{
+}
+
 static void updateAlgorithmAndFeedback(u8 channel)
 {
     Channel* chan = &channels[channel];

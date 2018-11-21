@@ -20,3 +20,4 @@ void synth_operatorMultiple(u8 channel, u8 op, u8 multiple);
 void synth_operatorDetune(u8 channel, u8 op, u8 detune);
 void synth_operatorRateScaling(u8 channel, u8 op, u8 rateScaling);
 void synth_operatorAttackRate(u8 channel, u8 op, u8 attackRate);
+void synth_operatorFirstDecayRate(u8 channel, u8 op, u8 firstDecayRate);

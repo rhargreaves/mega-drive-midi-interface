@@ -86,6 +86,13 @@ void __wrap_synth_operatorAttackRate(u8 channel, u8 op, u8 attackRate)
     check_expected(attackRate);
 }
 
+void __wrap_synth_operatorFirstDecayRate(u8 channel, u8 op, u8 firstDecayRate)
+{
+    check_expected(channel);
+    check_expected(op);
+    check_expected(firstDecayRate);
+}
+
 u8 __wrap_comm_read(void)
 {
     return mock_type(u8);

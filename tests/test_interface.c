@@ -287,3 +287,22 @@ static void test_interface_sets_operator_attack_rate(void** state)
         interface_tick();
     }
 }
+
+static void test_interface_sets_operator_first_decay_rate(void** state)
+{
+    u8 expectedStatus = STATUS_CC;
+    u8 expectedValue = 2;
+
+    for (u8 cc = 47; cc <= 50; cc++) {
+        will_return(__wrap_comm_read, expectedStatus);
+        will_return(__wrap_comm_read, cc);
+        will_return(__wrap_comm_read, 8);
+
+        u8 expectedOp = cc - 47;
+        expect_value(__wrap_synth_operatorFirstDecayRate, channel, 0);
+        expect_value(__wrap_synth_operatorFirstDecayRate, op, expectedOp);
+        expect_value(__wrap_synth_operatorFirstDecayRate, firstDecayRate, expectedValue);
+
+        interface_tick();
+    }
+}
