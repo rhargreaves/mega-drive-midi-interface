@@ -55,15 +55,16 @@ _midiValue / (128 / range) = registerValue_
 
 For example: A MIDI value of 32, with CC range of 8 translates into to a YM2612 register value of 2.
 
-| CC    | Description           | Range |
-| ----- | --------------------- | ----- |
-| 14    | FM Algorithm          | 8     |
-| 15    | FM Feedback           | 8     |
-| 16-19 | FM Total Level OP1-4  | 128   |
-| 20-23 | FM Multiple OP1-4     | 16    |
-| 24-27 | FM Detune OP1-4       | 8     |
-| 39-42 | FM Rate Scaling OP1-4 | 4     |
-| 43-46 | FM Attack Rate OP1-4  | 32    |
+| CC    | Description               | Range |
+| ----- | ------------------------- | ----- |
+| 14    | FM Algorithm              | 8     |
+| 15    | FM Feedback               | 8     |
+| 16-19 | FM Total Level OP1-4      | 128   |
+| 20-23 | FM Multiple OP1-4         | 16    |
+| 24-27 | FM Detune OP1-4           | 8     |
+| 39-42 | FM Rate Scaling OP1-4     | 4     |
+| 43-46 | FM Attack Rate OP1-4      | 32    |
+| 47-50 | FM First Decay Rate OP1-4 | 32    |
 
 ## Build & Test
 
