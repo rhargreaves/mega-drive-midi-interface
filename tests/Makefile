@@ -52,7 +52,8 @@ MD_MOCKS=SYS_setVIntCallback \
 
 LDFLAGS=-ffreestanding -l cmocka -L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src
 LDFLAGS+=$(foreach MOCK,$(MD_MOCKS),-Wl,--wrap=$(MOCK))
-LDFLAGS+=$(foreach MOCK,$(MOCKS),-Wl,--wrap=$(MOCK))
+
+LDFLAGS_UNIT_TESTS=$(LDFLAGS) $(foreach MOCK,$(MOCKS),-Wl,--wrap=$(MOCK))
 
 SRC=$(shell find ../src/* -type f -name '*.c' ! -name '*main.c*' -printf '%f\n')
 TEST_SRC=$(shell find * -maxdepth 0 -type f -name '*.c' -print)
@@ -80,7 +81,7 @@ $(OBJ_DIR)/%.o: %.c
 
 $(UNIT_TESTS_TARGET): $(SRC_OBJ) $(TEST_OBJ)
 	mkdir -p $(BIN_DIR)
-	$(CC) -o $@ $^ $(LDFLAGS)
+	$(CC) -o $@ $^ $(LDFLAGS_UNIT_TESTS)
 
 $(CMOCKA_DIR):
 	mkdir -p $@
