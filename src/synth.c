@@ -175,16 +175,16 @@ static void updateAlgorithmAndFeedback(u8 channel)
 
 static void updateOperatorMultipleAndDetune(u8 channel, u8 operator)
 {
-    Channel* chan = &channels[channel];
+    Operator* op = &channels[channel].operators[operator];
     synth_writeFm(channel,
         0x30 + (operator* 4),
-        chan->operators[operator].multiple + (chan->operators[operator].detune << 4));
+        op->multiple + (op->detune << 4));
 }
 
 static void updateOperatorRateScalingAndAttackRate(u8 channel, u8 operator)
 {
-    Channel* chan = &channels[channel];
+    Operator* op = &channels[channel].operators[operator];
     synth_writeFm(channel,
         0x50 + (operator* 4),
-        chan->operators[operator].attackRate + (chan->operators[operator].rateScaling << 6));
+        op->attackRate + (op->rateScaling << 6));
 }
