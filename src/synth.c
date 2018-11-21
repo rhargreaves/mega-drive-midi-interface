@@ -169,6 +169,7 @@ void synth_operatorAttackRate(u8 channel, u8 op, u8 attackRate)
 
 void synth_operatorFirstDecayRate(u8 channel, u8 op, u8 firstDecayRate)
 {
+    synth_writeFm(channel, 0x60 + (op * 4), firstDecayRate);
 }
 
 static void updateAlgorithmAndFeedback(u8 channel)

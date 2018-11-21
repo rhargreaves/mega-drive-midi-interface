@@ -18,6 +18,7 @@ extern void __real_synth_operatorMultiple(u8 channel, u8 op, u8 multiple);
 extern void __real_synth_operatorDetune(u8 channel, u8 op, u8 detune);
 extern void __real_synth_operatorRateScaling(u8 channel, u8 op, u8 rateScaling);
 extern void __real_synth_operatorAttackRate(u8 channel, u8 op, u8 attackRate);
+extern void __real_synth_operatorFirstDecayRate(u8 channel, u8 op, u8 firstDecayRate);
 
 static int test_synth_setup(void** state)
 {
@@ -247,6 +248,22 @@ static void test_synth_sets_operator_attack_rate_and_rate_scaling(void** state)
 
             attackRate++;
             rateScaling++;
+        }
+    }
+}
+
+static void test_synth_sets_operator_first_decay_rate(void** state)
+{
+    u8 firstDecayRate = 16;
+    for (u8 chan = 0; chan < 6; chan++) {
+        u8 regOffset = chan % 3;
+        u8 regPart = chan < 3 ? 0 : 1;
+        for (u8 op = 0; op < 4; op++) {
+            expect_value(__wrap_YM2612_writeReg, part, regPart);
+            expect_value(__wrap_YM2612_writeReg, reg, 0x60 + regOffset + (op * 4));
+            expect_value(__wrap_YM2612_writeReg, data, firstDecayRate);
+
+            __real_synth_operatorFirstDecayRate(chan, op, firstDecayRate);
         }
     }
 }

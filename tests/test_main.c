@@ -29,6 +29,7 @@ int main(void)
         cmocka_unit_test(test_interface_sets_operator_detune),
         cmocka_unit_test(test_interface_sets_operator_rate_scaling),
         cmocka_unit_test(test_interface_sets_operator_attack_rate),
+        cmocka_unit_test(test_interface_sets_operator_first_decay_rate),
 
         cmocka_unit_test(test_midi_triggers_synth_note_on),
         cmocka_unit_test(test_midi_triggers_synth_note_on_2),
@@ -57,7 +58,7 @@ int main(void)
         cmocka_unit_test_setup(test_synth_sets_feedback_and_algorithm, test_synth_setup),
         cmocka_unit_test_setup(test_synth_sets_operator_multiple_and_detune, test_synth_setup),
         cmocka_unit_test_setup(test_synth_sets_operator_attack_rate_and_rate_scaling, test_synth_setup),
-        cmocka_unit_test(test_interface_sets_operator_first_decay_rate),
+        cmocka_unit_test(test_synth_sets_operator_first_decay_rate),
 
         cmocka_unit_test(test_psg_chip_sets_note_on_psg),
         cmocka_unit_test(test_psg_chip_sets_note_off_psg),
