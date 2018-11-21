@@ -35,21 +35,23 @@ MOCKS=midi_process \
 	psg_noteOn \
 	psg_noteOff \
 	psg_attenuation \
-	SYS_setVIntCallback \
+	midi_noteOff \
+	midi_noteOn \
+	midi_channelVolume \
+	midi_pan
+
+MD_MOCKS=SYS_setVIntCallback \
 	VDP_setTextPalette \
 	YM2612_writeReg \
 	VDP_drawText \
 	VDP_clearText \
 	PSG_setEnvelope \
 	PSG_setFrequency \
-	midi_noteOff \
-	midi_noteOn \
-	midi_channelVolume \
-	midi_pan \
 	ssf_usb_read \
     ssf_usb_rd_ready
 
 LDFLAGS=-ffreestanding -l cmocka -L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src
+LDFLAGS+=$(foreach MOCK,$(MD_MOCKS),-Wl,--wrap=$(MOCK))
 LDFLAGS+=$(foreach MOCK,$(MOCKS),-Wl,--wrap=$(MOCK))
 
 SRC=$(shell find ../src/* -type f -name '*.c' ! -name '*main.c*' -printf '%f\n')
@@ -63,10 +65,10 @@ OBJ_DIR=obj
 CMOCKA_TAR=cmocka-1.1.2.tar.xz
 CMOCKA_DIR=cmocka
 
-TARGET=$(BIN_DIR)/unit_tests
+UNIT_TESTS_TARGET=$(BIN_DIR)/unit_tests
 
-all: $(CMOCKA_DIR) $(TARGET)
-	./$(TARGET)
+all: $(CMOCKA_DIR) $(UNIT_TESTS_TARGET)
+	./$(UNIT_TESTS_TARGET)
 
 $(SRC_OBJ): | $(OBJ_DIR)
 
@@ -76,7 +78,7 @@ $(OBJ_DIR):
 $(OBJ_DIR)/%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(TARGET): $(SRC_OBJ) $(TEST_OBJ)
+$(UNIT_TESTS_TARGET): $(SRC_OBJ) $(TEST_OBJ)
 	mkdir -p $(BIN_DIR)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
