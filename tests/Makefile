@@ -52,17 +52,18 @@ MOCKS=midi_process \
 LDFLAGS=-ffreestanding -l cmocka -L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src
 LDFLAGS+=$(foreach MOCK,$(MOCKS),-Wl,--wrap=$(MOCK))
 
-TARGET=test_main
-
 SRC=$(shell find ../src/* -type f -name '*.c' ! -name '*main.c*' -printf '%f\n')
 TEST_SRC=$(shell find * -maxdepth 0 -type f -name '*.c' -print)
 
 SRC_OBJ=$(patsubst %.c,obj/%.o,$(SRC))
 TEST_OBJ=$(patsubst %.c,obj/%.o,$(TEST_SRC))
+BIN_DIR=bin
 OBJ_DIR=obj
 
 CMOCKA_TAR=cmocka-1.1.2.tar.xz
 CMOCKA_DIR=cmocka
+
+TARGET=$(BIN_DIR)/unit_tests
 
 all: $(CMOCKA_DIR) $(TARGET)
 	./$(TARGET)
@@ -76,6 +77,7 @@ $(OBJ_DIR)/%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(TARGET): $(SRC_OBJ) $(TEST_OBJ)
+	mkdir -p $(BIN_DIR)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 $(CMOCKA_DIR):

@@ -2,5 +2,5 @@
 *.o
 *.code-workspace
 tests/cmocka/
-tests/test_main
+tests/bin/
 out/
