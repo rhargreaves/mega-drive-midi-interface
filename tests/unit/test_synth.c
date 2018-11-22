@@ -115,7 +115,7 @@ static void test_synth_sets_feedback(void** state)
 {
     const u8 defaultAlgorithm = 2;
     const u8 feedback = 1;
-    for (u8 chan = 0; chan < 6; chan++) {
+    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         expect_ym2612_writeChannel(chan, 0xB0,
             (feedback << 3) + defaultAlgorithm);
         __real_synth_feedback(chan, feedback);
@@ -124,23 +124,17 @@ static void test_synth_sets_feedback(void** state)
 
 static void test_synth_sets_feedback_and_algorithm(void** state)
 {
-    u8 defaultFeedback = 6;
-
-    for (u8 chan = 0; chan < 6; chan++) {
+    const u8 baseReg = 0xB0;
+    const u8 defaultFeedback = 6;
+    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         u8 feedback = 1;
         u8 algorithm = 1;
-        u8 regOffset = chan % 3;
-        u8 regPart = chan < 3 ? 0 : 1;
-        expect_value(__wrap_YM2612_writeReg, part, regPart);
-        expect_value(__wrap_YM2612_writeReg, reg, 0xB0 + regOffset);
-        expect_value(__wrap_YM2612_writeReg, data, (defaultFeedback << 3) + algorithm);
 
+        expect_ym2612_writeChannel(chan, baseReg,
+            (defaultFeedback << 3) + algorithm);
         __real_synth_algorithm(chan, feedback);
-
-        expect_value(__wrap_YM2612_writeReg, part, regPart);
-        expect_value(__wrap_YM2612_writeReg, reg, 0xB0 + regOffset);
-        expect_value(__wrap_YM2612_writeReg, data, (feedback << 3) + algorithm);
-
+        expect_ym2612_writeChannel(chan, baseReg,
+            (feedback << 3) + algorithm);
         __real_synth_feedback(chan, feedback);
 
         feedback++;
@@ -150,15 +144,11 @@ static void test_synth_sets_feedback_and_algorithm(void** state)
 
 static void test_synth_sets_operator_total_level(void** state)
 {
-    u8 totalLevel = 50;
-    for (u8 chan = 0; chan < 6; chan++) {
-        u8 regOffset = chan % 3;
-        u8 regPart = chan < 3 ? 0 : 1;
-        for (u8 op = 0; op < 4; op++) {
-            expect_value(__wrap_YM2612_writeReg, part, regPart);
-            expect_value(__wrap_YM2612_writeReg, reg, 0x40 + regOffset + (op * 4));
-            expect_value(__wrap_YM2612_writeReg, data, totalLevel);
-
+    const u8 baseReg = 0x40;
+    const u8 totalLevel = 50;
+    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
+        for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
+            expect_ym2612_writeOperator(chan, op, baseReg, totalLevel);
             __real_synth_operatorTotalLevel(chan, op, totalLevel);
         }
     }
@@ -166,24 +156,15 @@ static void test_synth_sets_operator_total_level(void** state)
 
 static void test_synth_sets_operator_multiple_and_detune(void** state)
 {
-    for (u8 chan = 0; chan < 6; chan++) {
+    const u8 baseReg = 0x30;
+    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         u8 multiple = 0;
         u8 detune = 0;
-        u8 regOffset = chan % 3;
-        u8 regPart = chan < 3 ? 0 : 1;
-        for (u8 op = 0; op < 4; op++) {
-            expect_value(__wrap_YM2612_writeReg, part, regPart);
-            expect_value(__wrap_YM2612_writeReg, reg, 0x30 + regOffset + (op * 4));
-            expect_any(__wrap_YM2612_writeReg, data);
-
+        for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
+            expect_ym2612_writeOperator_any_data(chan, op, baseReg);
             __real_synth_operatorMultiple(chan, op, multiple);
-
-            expect_value(__wrap_YM2612_writeReg, part, regPart);
-            expect_value(__wrap_YM2612_writeReg, reg, 0x30 + regOffset + (op * 4));
-            expect_value(__wrap_YM2612_writeReg, data, (detune << 4) | multiple);
-
+            expect_ym2612_writeOperator(chan, op, baseReg, (detune << 4) | multiple);
             __real_synth_operatorDetune(chan, op, detune);
-
             multiple++;
             detune++;
         }
@@ -192,24 +173,16 @@ static void test_synth_sets_operator_multiple_and_detune(void** state)
 
 static void test_synth_sets_operator_attack_rate_and_rate_scaling(void** state)
 {
-    for (u8 chan = 0; chan < 6; chan++) {
+    const u8 baseReg = 0x50;
+    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         u8 attackRate = 0;
         u8 rateScaling = 0;
-        u8 regOffset = chan % 3;
-        u8 regPart = chan < 3 ? 0 : 1;
-        for (u8 op = 0; op < 4; op++) {
-            expect_value(__wrap_YM2612_writeReg, part, regPart);
-            expect_value(__wrap_YM2612_writeReg, reg, 0x50 + regOffset + (op * 4));
-            expect_any(__wrap_YM2612_writeReg, data);
-
+        for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
+            expect_ym2612_writeOperator_any_data(chan, op, baseReg);
             __real_synth_operatorAttackRate(chan, op, attackRate);
-
-            expect_value(__wrap_YM2612_writeReg, part, regPart);
-            expect_value(__wrap_YM2612_writeReg, reg, 0x50 + regOffset + (op * 4));
-            expect_value(__wrap_YM2612_writeReg, data, attackRate | (rateScaling << 6));
-
+            expect_ym2612_writeOperator(chan, op, baseReg,
+                attackRate | (rateScaling << 6));
             __real_synth_operatorRateScaling(chan, op, rateScaling);
-
             attackRate++;
             rateScaling++;
         }
@@ -218,15 +191,11 @@ static void test_synth_sets_operator_attack_rate_and_rate_scaling(void** state)
 
 static void test_synth_sets_operator_first_decay_rate(void** state)
 {
+    const u8 baseReg = 0x60;
     u8 firstDecayRate = 16;
-    for (u8 chan = 0; chan < 6; chan++) {
-        u8 regOffset = chan % 3;
-        u8 regPart = chan < 3 ? 0 : 1;
+    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         for (u8 op = 0; op < 4; op++) {
-            expect_value(__wrap_YM2612_writeReg, part, regPart);
-            expect_value(__wrap_YM2612_writeReg, reg, 0x60 + regOffset + (op * 4));
-            expect_value(__wrap_YM2612_writeReg, data, firstDecayRate);
-
+            expect_ym2612_writeOperator(chan, op, baseReg, firstDecayRate);
             __real_synth_operatorFirstDecayRate(chan, op, firstDecayRate);
         }
     }
