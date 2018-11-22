@@ -194,7 +194,7 @@ static void test_synth_sets_operator_first_decay_rate(void** state)
     const u8 baseReg = 0x60;
     u8 firstDecayRate = 16;
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
-        for (u8 op = 0; op < 4; op++) {
+        for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
             expect_ym2612_writeOperator(chan, op, baseReg, firstDecayRate);
             __real_synth_operatorFirstDecayRate(chan, op, firstDecayRate);
         }
