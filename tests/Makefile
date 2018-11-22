@@ -57,8 +57,9 @@ SYSTEM_TEST_LDFLAGS=$(LDFLAGS)
 UNIT_TEST_LDFLAGS=$(LDFLAGS) $(foreach MOCK,$(MOCKS),-Wl,--wrap=$(MOCK))
 
 SRC=$(shell find ../src/* -type f -name '*.c' ! -name '*main.c*' -printf '%f\n')
-UNIT_TEST_SRC=$(shell find ./unit/* -maxdepth 0 -type f -name '*.c' -print)
-SYSTEM_TEST_SRC=$(shell find ./system/* -maxdepth 0 -type f -name '*.c' -print)
+COMMON_TEST_SRC=$(shell find * -maxdepth 0 -type f -name '*.c' -print)
+UNIT_TEST_SRC=$(COMMON_TEST_SRC) $(shell find ./unit/* -maxdepth 0 -type f -name '*.c' -print)
+SYSTEM_TEST_SRC=$(COMMON_TEST_SRC) $(shell find ./system/* -maxdepth 0 -type f -name '*.c' -print)
 
 SRC_OBJ=$(patsubst %.c,obj/%.o,$(SRC))
 UNIT_TEST_OBJ=$(patsubst %.c,obj/%.o,$(UNIT_TEST_SRC))
