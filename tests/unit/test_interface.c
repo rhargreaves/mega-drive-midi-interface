@@ -2,6 +2,7 @@
 #include <stdarg.h>
 #include <stddef.h>
 
+#include "asserts.h"
 #include "interface.h"
 #include "midi.h"
 #include "wraps.h"
@@ -12,14 +13,13 @@
 
 static void test_interface_tick_passes_note_on_to_midi_processor(void** state)
 {
+    const u8 expectedData = 60;
+    const u8 expectedData2 = 127;
+
     for (int chan = 0; chan < MAX_MIDI_CHANS; chan++) {
         u8 expectedStatus = 0x90 + chan;
-        u8 expectedData = 60;
-        u8 expectedData2 = 127;
 
-        will_return(__wrap_comm_read, expectedStatus);
-        will_return(__wrap_comm_read, expectedData);
-        will_return(__wrap_comm_read, expectedData2);
+        stub_comm_read_returns_midi_event(expectedStatus, expectedData, expectedData2);
 
         expect_value(__wrap_midi_noteOn, chan, chan);
         expect_value(__wrap_midi_noteOn, pitch, expectedData);
@@ -35,9 +35,7 @@ static void test_interface_tick_passes_note_off_to_midi_processor(void** state)
     u8 expectedData = 60;
     u8 expectedData2 = 127;
 
-    will_return(__wrap_comm_read, expectedStatus);
-    will_return(__wrap_comm_read, expectedData);
-    will_return(__wrap_comm_read, expectedData2);
+    stub_comm_read_returns_midi_event(expectedStatus, expectedData, expectedData2);
 
     expect_value(__wrap_midi_noteOff, chan, 0);
 
@@ -50,9 +48,7 @@ static void test_interface_does_nothing_for_control_change(void** state)
     u8 expectedData = 106;
     u8 expectedData2 = 127;
 
-    will_return(__wrap_comm_read, expectedStatus);
-    will_return(__wrap_comm_read, expectedData);
-    will_return(__wrap_comm_read, expectedData2);
+    stub_comm_read_returns_midi_event(expectedStatus, expectedData, expectedData2);
 
     interface_tick();
     interface_tick();
@@ -76,9 +72,7 @@ static void test_interface_sets_unknown_CC(void** state)
     u8 expectedController = 0x9;
     u8 expectedValue = 0x50;
 
-    will_return(__wrap_comm_read, expectedStatus);
-    will_return(__wrap_comm_read, expectedController);
-    will_return(__wrap_comm_read, expectedValue);
+    stub_comm_read_returns_midi_event(expectedStatus, expectedController, expectedValue);
 
     interface_tick();
 
@@ -94,9 +88,7 @@ static void test_interface_does_not_set_unknown_CC_for_known_CC(void** state)
     u8 expectedController = 0x7;
     u8 expectedValue = 0x80;
 
-    will_return(__wrap_comm_read, expectedStatus);
-    will_return(__wrap_comm_read, expectedController);
-    will_return(__wrap_comm_read, expectedValue);
+    stub_comm_read_returns_midi_event(expectedStatus, expectedController, expectedValue);
 
     expect_value(__wrap_midi_channelVolume, chan, 0);
     expect_value(__wrap_midi_channelVolume, volume, expectedValue);
@@ -114,9 +106,7 @@ static void test_interface_sets_channel_volume(void** state)
     u8 expectedController = 0x7;
     u8 expectedValue = 0x50;
 
-    will_return(__wrap_comm_read, expectedStatus);
-    will_return(__wrap_comm_read, expectedController);
-    will_return(__wrap_comm_read, expectedValue);
+    stub_comm_read_returns_midi_event(expectedStatus, expectedController, expectedValue);
 
     expect_value(__wrap_midi_channelVolume, chan, 0);
     expect_value(__wrap_midi_channelVolume, volume, expectedValue);
@@ -130,9 +120,7 @@ static void test_interface_sets_pan(void** state)
     u8 expectedController = 0x0A;
     u8 expectedValue = 0xFF;
 
-    will_return(__wrap_comm_read, expectedStatus);
-    will_return(__wrap_comm_read, expectedController);
-    will_return(__wrap_comm_read, expectedValue);
+    stub_comm_read_returns_midi_event(expectedStatus, expectedController, expectedValue);
 
     expect_value(__wrap_midi_pan, chan, 0);
     expect_value(__wrap_midi_pan, pan, expectedValue);
@@ -151,9 +139,7 @@ static void test_interface_sets_fm_algorithm(void** state)
     u8 expectedStatus = STATUS_CC;
     u8 expectedController = 0x0E;
 
-    will_return(__wrap_comm_read, expectedStatus);
-    will_return(__wrap_comm_read, expectedController);
-    will_return(__wrap_comm_read, 20);
+    stub_comm_read_returns_midi_event(expectedStatus, expectedController, 20);
 
     expect_value(__wrap_synth_algorithm, channel, 0);
     expect_value(__wrap_synth_algorithm, algorithm, 1);
@@ -168,9 +154,7 @@ static void test_interface_sets_fm_feedback(void** state)
     u8 midiValue = 33;
     u8 expectedFeedback = 2;
 
-    will_return(__wrap_comm_read, expectedStatus);
-    will_return(__wrap_comm_read, expectedController);
-    will_return(__wrap_comm_read, midiValue);
+    stub_comm_read_returns_midi_event(expectedStatus, expectedController, midiValue);
 
     expect_value(__wrap_synth_feedback, channel, 0);
     expect_value(__wrap_synth_feedback, feedback, expectedFeedback);
@@ -184,9 +168,7 @@ static void test_interface_sets_all_notes_off(void** state)
     u8 expectedController = 123;
     u8 expectedValue = 0;
 
-    will_return(__wrap_comm_read, expectedStatus);
-    will_return(__wrap_comm_read, expectedController);
-    will_return(__wrap_comm_read, expectedValue);
+    stub_comm_read_returns_midi_event(expectedStatus, expectedController, expectedValue);
 
     expect_value(__wrap_midi_noteOff, chan, 0);
 
@@ -199,9 +181,7 @@ static void test_interface_sets_operator_total_level(void** state)
     u8 expectedValue = 50;
 
     for (u8 cc = 16; cc <= 19; cc++) {
-        will_return(__wrap_comm_read, expectedStatus);
-        will_return(__wrap_comm_read, cc);
-        will_return(__wrap_comm_read, expectedValue);
+        stub_comm_read_returns_midi_event(expectedStatus, cc, expectedValue);
 
         u8 expectedOp = cc - 16;
         expect_value(__wrap_synth_operatorTotalLevel, channel, 0);
@@ -218,9 +198,7 @@ static void test_interface_sets_operator_multiple(void** state)
     u8 expectedValue = 4;
 
     for (u8 cc = 20; cc <= 23; cc++) {
-        will_return(__wrap_comm_read, expectedStatus);
-        will_return(__wrap_comm_read, cc);
-        will_return(__wrap_comm_read, 32);
+        stub_comm_read_returns_midi_event(expectedStatus, cc, 32);
 
         u8 expectedOp = cc - 20;
         expect_value(__wrap_synth_operatorMultiple, channel, 0);
@@ -237,9 +215,7 @@ static void test_interface_sets_operator_detune(void** state)
     u8 expectedValue = 2;
 
     for (u8 cc = 24; cc <= 27; cc++) {
-        will_return(__wrap_comm_read, expectedStatus);
-        will_return(__wrap_comm_read, cc);
-        will_return(__wrap_comm_read, 32);
+        stub_comm_read_returns_midi_event(expectedStatus, cc, 32);
 
         u8 expectedOp = cc - 24;
         expect_value(__wrap_synth_operatorDetune, channel, 0);
@@ -256,9 +232,7 @@ static void test_interface_sets_operator_rate_scaling(void** state)
     u8 expectedValue = 2;
 
     for (u8 cc = 39; cc <= 42; cc++) {
-        will_return(__wrap_comm_read, expectedStatus);
-        will_return(__wrap_comm_read, cc);
-        will_return(__wrap_comm_read, 64);
+        stub_comm_read_returns_midi_event(expectedStatus, cc, 64);
 
         u8 expectedOp = cc - 39;
         expect_value(__wrap_synth_operatorRateScaling, channel, 0);
@@ -275,9 +249,7 @@ static void test_interface_sets_operator_attack_rate(void** state)
     u8 expectedValue = 2;
 
     for (u8 cc = 43; cc <= 46; cc++) {
-        will_return(__wrap_comm_read, expectedStatus);
-        will_return(__wrap_comm_read, cc);
-        will_return(__wrap_comm_read, 8);
+        stub_comm_read_returns_midi_event(expectedStatus, cc, 8);
 
         u8 expectedOp = cc - 43;
         expect_value(__wrap_synth_operatorAttackRate, channel, 0);
@@ -294,9 +266,7 @@ static void test_interface_sets_operator_first_decay_rate(void** state)
     u8 expectedValue = 2;
 
     for (u8 cc = 47; cc <= 50; cc++) {
-        will_return(__wrap_comm_read, expectedStatus);
-        will_return(__wrap_comm_read, cc);
-        will_return(__wrap_comm_read, 8);
+        stub_comm_read_returns_midi_event(expectedStatus, cc, 8);
 
         u8 expectedOp = cc - 47;
         expect_value(__wrap_synth_operatorFirstDecayRate, channel, 0);
