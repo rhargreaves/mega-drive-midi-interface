@@ -2,7 +2,9 @@
 #include <stdarg.h>
 #include <stddef.h>
 
+#include "asserts.h"
 #include "interface.h"
+#include "wraps.h"
 #include <cmocka.h>
 
 static void test_midi_note_on_event_sent_to_ym2612(void** state)
@@ -18,20 +20,9 @@ static void test_midi_note_on_event_sent_to_ym2612(void** state)
     will_return(__wrap_ssf_usb_rd_ready, 1);
     will_return(__wrap_ssf_usb_read, noteOnVelocity);
 
-    const u8 regPart = 0;
-    const u8 regOffset = 0;
-
-    expect_value(__wrap_YM2612_writeReg, part, regPart);
-    expect_value(__wrap_YM2612_writeReg, reg, 0xA4 + regOffset);
-    expect_value(__wrap_YM2612_writeReg, data, 0x1A);
-
-    expect_value(__wrap_YM2612_writeReg, part, regPart);
-    expect_value(__wrap_YM2612_writeReg, reg, 0xA0 + regOffset);
-    expect_value(__wrap_YM2612_writeReg, data, 0x8D);
-
-    expect_value(__wrap_YM2612_writeReg, part, regPart);
-    expect_value(__wrap_YM2612_writeReg, reg, 0x28);
-    expect_value(__wrap_YM2612_writeReg, data, 0xF0 + regOffset);
+    expect_ym2612_writeChannel(0, 0xA4, 0x1A);
+    expect_ym2612_writeChannel(0, 0xA0, 0x8D);
+    expect_YM2612_writeReg(0, 0x28, 0xF0);
 
     interface_tick();
 }
