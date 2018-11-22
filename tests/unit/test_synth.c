@@ -3,6 +3,7 @@
 #include <stddef.h>
 
 #include "asserts.h"
+#include "synth.h"
 #include <cmocka.h>
 #include <types.h>
 
@@ -51,7 +52,7 @@ static void test_synth_sets_note_on_fm_reg_chan_0_to_2(void** state)
 
 static void test_synth_sets_note_on_fm_reg_chan_3_to_5(void** state)
 {
-    for (u8 chan = 3; chan < 6; chan++) {
+    for (u8 chan = 3; chan < MAX_FM_CHANS; chan++) {
         expect_YM2612_writeReg(0, 0x28, 0xF1 + chan);
         __real_synth_noteOn(chan);
     }
@@ -67,7 +68,7 @@ static void test_synth_sets_note_off_fm_reg_chan_0_to_2(void** state)
 
 static void test_synth_sets_note_off_fm_reg_chan_3_to_5(void** state)
 {
-    for (u8 chan = 3; chan < 6; chan++) {
+    for (u8 chan = 3; chan < MAX_FM_CHANS; chan++) {
         expect_YM2612_writeReg(0, 0x28, 1 + chan);
         __real_synth_noteOff(chan);
     }
@@ -75,7 +76,7 @@ static void test_synth_sets_note_off_fm_reg_chan_3_to_5(void** state)
 
 static void test_synth_sets_octave_and_freq_reg_chan(void** state)
 {
-    for (u8 chan = 0; chan < 6; chan++) {
+    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         expect_ym2612_writeChannel(chan, 0xA4, 0x22);
         expect_ym2612_writeChannel(chan, 0xA0, 0x8D);
         __real_synth_pitch(chan, 4, 653);
@@ -84,7 +85,7 @@ static void test_synth_sets_octave_and_freq_reg_chan(void** state)
 
 static void test_synth_sets_total_level_reg_chan(void** state)
 {
-    for (u8 chan = 0; chan < 6; chan++) {
+    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         expect_ym2612_writeChannel(chan, 0x4C, 0);
         __real_synth_totalLevel(chan, 0);
     }
@@ -93,7 +94,7 @@ static void test_synth_sets_total_level_reg_chan(void** state)
 static void test_synth_sets_stereo_reg_chan(void** state)
 {
     const u8 stereo = 1;
-    for (u8 chan = 0; chan < 6; chan++) {
+    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         expect_ym2612_writeChannel(chan, 0xB4, stereo << 6);
         __real_synth_stereo(chan, stereo);
     }
@@ -101,30 +102,22 @@ static void test_synth_sets_stereo_reg_chan(void** state)
 
 static void test_synth_sets_algorithm(void** state)
 {
-    u8 defaultFeedback = 6;
-    u8 algorithm = 1;
-    for (u8 chan = 0; chan < 6; chan++) {
-        u8 regOffset = chan % 3;
-        u8 regPart = chan < 3 ? 0 : 1;
-        expect_value(__wrap_YM2612_writeReg, part, regPart);
-        expect_value(__wrap_YM2612_writeReg, reg, 0xB0 + regOffset);
-        expect_value(__wrap_YM2612_writeReg, data, (defaultFeedback << 3) + algorithm);
-
+    const u8 defaultFeedback = 6;
+    const u8 algorithm = 1;
+    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
+        expect_ym2612_writeChannel(chan, 0xB0,
+            (defaultFeedback << 3) + algorithm);
         __real_synth_algorithm(chan, algorithm);
     }
 }
 
 static void test_synth_sets_feedback(void** state)
 {
-    u8 defaultAlgorithm = 2;
-    u8 feedback = 1;
+    const u8 defaultAlgorithm = 2;
+    const u8 feedback = 1;
     for (u8 chan = 0; chan < 6; chan++) {
-        u8 regOffset = chan % 3;
-        u8 regPart = chan < 3 ? 0 : 1;
-        expect_value(__wrap_YM2612_writeReg, part, regPart);
-        expect_value(__wrap_YM2612_writeReg, reg, 0xB0 + regOffset);
-        expect_value(__wrap_YM2612_writeReg, data, (feedback << 3) + defaultAlgorithm);
-
+        expect_ym2612_writeChannel(chan, 0xB0,
+            (feedback << 3) + defaultAlgorithm);
         __real_synth_feedback(chan, feedback);
     }
 }

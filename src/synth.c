@@ -25,7 +25,7 @@ struct Channel {
     Operator operators[MAX_FM_OPERATORS];
 };
 
-static Channel channels[MAX_SYNTH_CHANS];
+static Channel channels[MAX_FM_CHANS];
 
 static const Channel DEFAULT_CHANNEL = {
     .algorithm = 2,
@@ -53,7 +53,7 @@ static const Channel DEFAULT_CHANNEL = {
 void synth_init(void)
 {
     YM2612_writeReg(0, 0x27, 0); // Ch 3 Normal
-    for (u8 chan = 0; chan < MAX_SYNTH_CHANS; chan++) {
+    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         synth_noteOff(chan);
 
         memcpy(&channels[chan], &DEFAULT_CHANNEL, sizeof(Channel));
