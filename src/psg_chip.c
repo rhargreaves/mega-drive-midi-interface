@@ -7,12 +7,8 @@
 
 static void applyAttenuation(u8 channel);
 
-static u8 attenuations[] = {
-    ATTENUATION_ON,
-    ATTENUATION_ON,
-    ATTENUATION_ON,
-    ATTENUATION_ON
-};
+static u8 attenuations[]
+    = { ATTENUATION_ON, ATTENUATION_ON, ATTENUATION_ON, ATTENUATION_ON };
 
 static void applyAttenuation(u8 channel)
 {

@@ -27,28 +27,14 @@ struct Channel {
 
 static Channel channels[MAX_FM_CHANS];
 
-static const Channel DEFAULT_CHANNEL = {
-    .algorithm = 2,
+static const Channel DEFAULT_CHANNEL = { .algorithm = 2,
     .feedback = 6,
     .operators = {
-        { .multiple = 1,
-            .detune = 7,
-            .attackRate = 31,
-            .rateScaling = 1 },
-        { .multiple = 13,
-            .detune = 0,
-            .attackRate = 25,
-            .rateScaling = 2 },
-        { .multiple = 3,
-            .detune = 2,
-            .attackRate = 31,
-            .rateScaling = 1 },
-        { .multiple = 1,
-            .detune = 0,
-            .attackRate = 25,
-            .rateScaling = 2 },
-    }
-};
+        { .multiple = 1, .detune = 7, .attackRate = 31, .rateScaling = 1 },
+        { .multiple = 13, .detune = 0, .attackRate = 25, .rateScaling = 2 },
+        { .multiple = 3, .detune = 2, .attackRate = 31, .rateScaling = 1 },
+        { .multiple = 1, .detune = 0, .attackRate = 25, .rateScaling = 2 },
+    } };
 
 void synth_init(void)
 {
@@ -181,15 +167,13 @@ static void updateAlgorithmAndFeedback(u8 channel)
 static void updateOperatorMultipleAndDetune(u8 channel, u8 operator)
 {
     Operator* op = &channels[channel].operators[operator];
-    synth_writeFm(channel,
-        0x30 + (operator* 4),
-        op->multiple + (op->detune << 4));
+    synth_writeFm(
+        channel, 0x30 + (operator* 4), op->multiple + (op->detune << 4));
 }
 
 static void updateOperatorRateScalingAndAttackRate(u8 channel, u8 operator)
 {
     Operator* op = &channels[channel].operators[operator];
-    synth_writeFm(channel,
-        0x50 + (operator* 4),
-        op->attackRate + (op->rateScaling << 6));
+    synth_writeFm(
+        channel, 0x50 + (operator* 4), op->attackRate + (op->rateScaling << 6));
 }

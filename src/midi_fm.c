@@ -6,16 +6,7 @@ static const u8 MIN_MIDI_PITCH = 23;
 static const u8 SEMITONES = 12;
 static const u16 FREQ_NUMBERS[] = {
     617, // B
-    653,
-    692,
-    733,
-    777,
-    823,
-    872,
-    924,
-    979,
-    1037,
-    1099,
+    653, 692, 733, 777, 823, 872, 924, 979, 1037, 1099,
     1164 // A#
 };
 
@@ -32,9 +23,7 @@ static u16 getFreqNumber(u8 pitch);
 
 void midi_fm_noteOn(u8 chan, u8 pitch, u8 velocity)
 {
-    synth_pitch(chan,
-        getOctave(pitch),
-        getFreqNumber(pitch));
+    synth_pitch(chan, getOctave(pitch), getFreqNumber(pitch));
     synth_noteOn(chan);
 }
 

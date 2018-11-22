@@ -7,9 +7,8 @@
 
 int main(void)
 {
-    const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_midi_note_on_event_sent_to_ym2612)
-    };
+    const struct CMUnitTest tests[]
+        = { cmocka_unit_test(test_midi_note_on_event_sent_to_ym2612) };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

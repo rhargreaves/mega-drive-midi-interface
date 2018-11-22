@@ -16,42 +16,19 @@ struct VTable {
     void (*channelVolume)(u8 chan, u8 volume);
 };
 
-static const VTable PSG_VTable = {
-    midi_psg_noteOn,
-    midi_psg_noteOff,
-    midi_psg_channelVolume
-};
+static const VTable PSG_VTable
+    = { midi_psg_noteOn, midi_psg_noteOff, midi_psg_channelVolume };
 
-static const VTable FM_VTable = {
-    midi_fm_noteOn,
-    midi_fm_noteOff,
-    midi_fm_channelVolume
-};
+static const VTable FM_VTable
+    = { midi_fm_noteOn, midi_fm_noteOff, midi_fm_channelVolume };
 
-static const VTable NOP_VTable = {
-    midi_nop_noteOn,
-    midi_nop_noteOff,
-    midi_nop_channelVolume
-};
+static const VTable NOP_VTable
+    = { midi_nop_noteOn, midi_nop_noteOff, midi_nop_channelVolume };
 
-static const VTable* CHANNEL_OPS[16] = {
-    &FM_VTable,
-    &FM_VTable,
-    &FM_VTable,
-    &FM_VTable,
-    &FM_VTable,
-    &FM_VTable,
-    &PSG_VTable,
-    &PSG_VTable,
-    &PSG_VTable,
-    &PSG_VTable,
-    &NOP_VTable,
-    &NOP_VTable,
-    &NOP_VTable,
-    &NOP_VTable,
-    &NOP_VTable,
-    &NOP_VTable
-};
+static const VTable* CHANNEL_OPS[16]
+    = { &FM_VTable, &FM_VTable, &FM_VTable, &FM_VTable, &FM_VTable, &FM_VTable,
+          &PSG_VTable, &PSG_VTable, &PSG_VTable, &PSG_VTable, &NOP_VTable,
+          &NOP_VTable, &NOP_VTable, &NOP_VTable, &NOP_VTable, &NOP_VTable };
 
 static void midi_nop_noteOn(u8 chan, u8 pitch, u8 velocity)
 {

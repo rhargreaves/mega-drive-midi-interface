@@ -20,7 +20,8 @@ extern void __real_synth_operatorMultiple(u8 channel, u8 op, u8 multiple);
 extern void __real_synth_operatorDetune(u8 channel, u8 op, u8 detune);
 extern void __real_synth_operatorRateScaling(u8 channel, u8 op, u8 rateScaling);
 extern void __real_synth_operatorAttackRate(u8 channel, u8 op, u8 attackRate);
-extern void __real_synth_operatorFirstDecayRate(u8 channel, u8 op, u8 firstDecayRate);
+extern void __real_synth_operatorFirstDecayRate(
+    u8 channel, u8 op, u8 firstDecayRate);
 
 static int test_synth_setup(void** state)
 {
@@ -105,8 +106,8 @@ static void test_synth_sets_algorithm(void** state)
     const u8 defaultFeedback = 6;
     const u8 algorithm = 1;
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
-        expect_ym2612_writeChannel(chan, 0xB0,
-            (defaultFeedback << 3) + algorithm);
+        expect_ym2612_writeChannel(
+            chan, 0xB0, (defaultFeedback << 3) + algorithm);
         __real_synth_algorithm(chan, algorithm);
     }
 }
@@ -116,8 +117,8 @@ static void test_synth_sets_feedback(void** state)
     const u8 defaultAlgorithm = 2;
     const u8 feedback = 1;
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
-        expect_ym2612_writeChannel(chan, 0xB0,
-            (feedback << 3) + defaultAlgorithm);
+        expect_ym2612_writeChannel(
+            chan, 0xB0, (feedback << 3) + defaultAlgorithm);
         __real_synth_feedback(chan, feedback);
     }
 }
@@ -130,11 +131,10 @@ static void test_synth_sets_feedback_and_algorithm(void** state)
         u8 feedback = 1;
         u8 algorithm = 1;
 
-        expect_ym2612_writeChannel(chan, baseReg,
-            (defaultFeedback << 3) + algorithm);
+        expect_ym2612_writeChannel(
+            chan, baseReg, (defaultFeedback << 3) + algorithm);
         __real_synth_algorithm(chan, feedback);
-        expect_ym2612_writeChannel(chan, baseReg,
-            (feedback << 3) + algorithm);
+        expect_ym2612_writeChannel(chan, baseReg, (feedback << 3) + algorithm);
         __real_synth_feedback(chan, feedback);
 
         feedback++;
@@ -163,7 +163,8 @@ static void test_synth_sets_operator_multiple_and_detune(void** state)
         for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
             expect_ym2612_writeOperator_any_data(chan, op, baseReg);
             __real_synth_operatorMultiple(chan, op, multiple);
-            expect_ym2612_writeOperator(chan, op, baseReg, (detune << 4) | multiple);
+            expect_ym2612_writeOperator(
+                chan, op, baseReg, (detune << 4) | multiple);
             __real_synth_operatorDetune(chan, op, detune);
             multiple++;
             detune++;
@@ -180,8 +181,8 @@ static void test_synth_sets_operator_attack_rate_and_rate_scaling(void** state)
         for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
             expect_ym2612_writeOperator_any_data(chan, op, baseReg);
             __real_synth_operatorAttackRate(chan, op, attackRate);
-            expect_ym2612_writeOperator(chan, op, baseReg,
-                attackRate | (rateScaling << 6));
+            expect_ym2612_writeOperator(
+                chan, op, baseReg, attackRate | (rateScaling << 6));
             __real_synth_operatorRateScaling(chan, op, rateScaling);
             attackRate++;
             rateScaling++;

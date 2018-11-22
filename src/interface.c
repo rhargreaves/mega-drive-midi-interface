@@ -113,36 +113,36 @@ static void controlChange(u8 status)
     case CC_GENMDM_TOTAL_LEVEL_OP2:
     case CC_GENMDM_TOTAL_LEVEL_OP3:
     case CC_GENMDM_TOTAL_LEVEL_OP4:
-        synth_operatorTotalLevel(chan,
-            controller - CC_GENMDM_TOTAL_LEVEL_OP1, value);
+        synth_operatorTotalLevel(
+            chan, controller - CC_GENMDM_TOTAL_LEVEL_OP1, value);
         break;
     case CC_GENMDM_MULTIPLE_OP1:
     case CC_GENMDM_MULTIPLE_OP2:
     case CC_GENMDM_MULTIPLE_OP3:
     case CC_GENMDM_MULTIPLE_OP4:
-        synth_operatorMultiple(chan,
-            controller - CC_GENMDM_MULTIPLE_OP1, RANGE(value, 16));
+        synth_operatorMultiple(
+            chan, controller - CC_GENMDM_MULTIPLE_OP1, RANGE(value, 16));
         break;
     case CC_GENMDM_DETUNE_OP1:
     case CC_GENMDM_DETUNE_OP2:
     case CC_GENMDM_DETUNE_OP3:
     case CC_GENMDM_DETUNE_OP4:
-        synth_operatorDetune(chan,
-            controller - CC_GENMDM_DETUNE_OP1, RANGE(value, 8));
+        synth_operatorDetune(
+            chan, controller - CC_GENMDM_DETUNE_OP1, RANGE(value, 8));
         break;
     case CC_GENMDM_RATE_SCALING_OP1:
     case CC_GENMDM_RATE_SCALING_OP2:
     case CC_GENMDM_RATE_SCALING_OP3:
     case CC_GENMDM_RATE_SCALING_OP4:
-        synth_operatorRateScaling(chan,
-            controller - CC_GENMDM_RATE_SCALING_OP1, RANGE(value, 4));
+        synth_operatorRateScaling(
+            chan, controller - CC_GENMDM_RATE_SCALING_OP1, RANGE(value, 4));
         break;
     case CC_GENMDM_ATTACK_RATE_OP1:
     case CC_GENMDM_ATTACK_RATE_OP2:
     case CC_GENMDM_ATTACK_RATE_OP3:
     case CC_GENMDM_ATTACK_RATE_OP4:
-        synth_operatorAttackRate(chan,
-            controller - CC_GENMDM_ATTACK_RATE_OP1, RANGE(value, 32));
+        synth_operatorAttackRate(
+            chan, controller - CC_GENMDM_ATTACK_RATE_OP1, RANGE(value, 32));
         break;
     case CC_GENMDM_FIRST_DECAY_RATE_OP1:
     case CC_GENMDM_FIRST_DECAY_RATE_OP2:
@@ -163,10 +163,7 @@ static void noteOn(u8 status)
     u8 chan = STATUS_CHANNEL(status);
     u8 pitch = comm_read();
     u8 velocity = comm_read();
-    midi_noteOn(
-        chan,
-        pitch,
-        velocity);
+    midi_noteOn(chan, pitch, velocity);
 }
 
 static void noteOff(u8 status)
