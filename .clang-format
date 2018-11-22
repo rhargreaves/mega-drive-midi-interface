@@ -1,3 +1,4 @@
 BasedOnStyle: WebKit
 AllowShortFunctionsOnASingleLine: false
 AllowShortLoopsOnASingleLine: true
+ColumnLimit: 80
