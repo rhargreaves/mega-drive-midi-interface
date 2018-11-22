@@ -68,7 +68,7 @@ For example: A MIDI value of 32, with CC range of 8 translates into to a YM2612 
 
 ## Build & Test
 
-Unit tests are built with `cmocka` and are compiled to x86. Mega Drive interfaces are mocked out where appropriate.
+Unit & system tests are compiled and ran as x86 binaries using CMocka. Mega Drive interfaces are mocked.
 
 Docker:
 
