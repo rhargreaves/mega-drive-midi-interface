@@ -52,13 +52,17 @@ MD_MOCKS=SYS_setVIntCallback \
 
 LDFLAGS=-ffreestanding -l cmocka -L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src
 LDFLAGS+=$(foreach MOCK,$(MD_MOCKS),-Wl,--wrap=$(MOCK))
-LDFLAGS+=$(foreach MOCK,$(MOCKS),-Wl,--wrap=$(MOCK))
+
+SYSTEM_TEST_LDFLAGS=$(LDFLAGS)
+UNIT_TEST_LDFLAGS=$(LDFLAGS) $(foreach MOCK,$(MOCKS),-Wl,--wrap=$(MOCK))
 
 SRC=$(shell find ../src/* -type f -name '*.c' ! -name '*main.c*' -printf '%f\n')
-TEST_SRC=$(shell find ./unit/* -maxdepth 0 -type f -name '*.c' -print)
+UNIT_TEST_SRC=$(shell find ./unit/* -maxdepth 0 -type f -name '*.c' -print)
+SYSTEM_TEST_SRC=$(shell find ./system/* -maxdepth 0 -type f -name '*.c' -print)
 
 SRC_OBJ=$(patsubst %.c,obj/%.o,$(SRC))
-TEST_OBJ=$(patsubst %.c,obj/%.o,$(TEST_SRC))
+UNIT_TEST_OBJ=$(patsubst %.c,obj/%.o,$(UNIT_TEST_SRC))
+SYSTEM_TEST_OBJ=$(patsubst %.c,obj/%.o,$(SYSTEM_TEST_SRC))
 BIN_DIR=bin
 OBJ_DIR=obj
 
@@ -68,32 +72,33 @@ CMOCKA_DIR=cmocka
 UNIT_TESTS_TARGET=$(BIN_DIR)/unit_tests
 SYSTEM_TESTS_TARGET=$(BIN_DIR)/system_tests
 
-all: unit # system
+all: unit system
 
 unit: $(CMOCKA_DIR) $(UNIT_TESTS_TARGET)
 	./$(UNIT_TESTS_TARGET)
 .PHONY: unit
 
-#system: $(CMOCKA_DIR) $(SYSTEM_TESTS_TARGET)
-#	./$(SYSTEM_TESTS_TARGET)
-#.PHONY: system
+system: $(CMOCKA_DIR) $(SYSTEM_TESTS_TARGET)
+	./$(SYSTEM_TESTS_TARGET)
+.PHONY: system
 
 $(SRC_OBJ): | $(OBJ_DIR)
 
 $(OBJ_DIR):
 	mkdir -p $@
 	mkdir -p $@/unit
+	mkdir -p $@/system
 
 $(OBJ_DIR)/%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(UNIT_TESTS_TARGET): $(SRC_OBJ) $(TEST_OBJ)
+$(UNIT_TESTS_TARGET): $(SRC_OBJ) $(UNIT_TEST_OBJ)
 	mkdir -p $(BIN_DIR)
-	$(CC) -o $@ $^ $(LDFLAGS)
+	$(CC) -o $@ $^ $(UNIT_TEST_LDFLAGS)
 
-#$(SYSTEM_TESTS_TARGET): $(SRC_OBJ) $(TEST_OBJ)
-#	mkdir -p $(BIN_DIR)
-#	$(CC) -o $@ $^ $(LDFLAGS)
+$(SYSTEM_TESTS_TARGET): $(SRC_OBJ) $(SYSTEM_TEST_OBJ)
+	mkdir -p $(BIN_DIR)
+	$(CC) -o $@ $^ $(SYSTEM_TEST_LDFLAGS)
 
 $(CMOCKA_DIR):
 	mkdir -p $@
