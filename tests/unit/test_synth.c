@@ -43,10 +43,7 @@ static void test_synth_init_sets_initial_registers(void** state)
 static void test_synth_sets_note_on_fm_reg_chan_0_to_2(void** state)
 {
     for (u8 chan = 0; chan < 3; chan++) {
-        expect_value(__wrap_YM2612_writeReg, part, 0);
-        expect_value(__wrap_YM2612_writeReg, reg, 0x28);
-        expect_value(__wrap_YM2612_writeReg, data, 0xF0 + chan);
-
+        expect_YM2612_writeReg(0, 0x28, 0xF0 + chan);
         __real_synth_noteOn(chan);
     }
 }
@@ -54,10 +51,7 @@ static void test_synth_sets_note_on_fm_reg_chan_0_to_2(void** state)
 static void test_synth_sets_note_on_fm_reg_chan_3_to_5(void** state)
 {
     for (u8 chan = 3; chan < 6; chan++) {
-        expect_value(__wrap_YM2612_writeReg, part, 0);
-        expect_value(__wrap_YM2612_writeReg, reg, 0x28);
-        expect_value(__wrap_YM2612_writeReg, data, 0xF0 + 1 + chan);
-
+        expect_YM2612_writeReg(0, 0x28, 0xF1 + chan);
         __real_synth_noteOn(chan);
     }
 }
