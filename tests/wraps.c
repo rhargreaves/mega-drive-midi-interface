@@ -100,6 +100,14 @@ void __wrap_synth_operatorSecondDecayRate(u8 channel, u8 op, u8 secondDecayRate)
     check_expected(secondDecayRate);
 }
 
+void __wrap_synth_operatorSecondaryAmplitude(
+    u8 channel, u8 op, u8 secondaryAmplitude)
+{
+    check_expected(channel);
+    check_expected(op);
+    check_expected(secondaryAmplitude);
+}
+
 u8 __wrap_comm_read(void)
 {
     return mock_type(u8);

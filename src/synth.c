@@ -163,6 +163,10 @@ void synth_operatorSecondDecayRate(u8 channel, u8 op, u8 secondDecayRate)
     synth_writeFm(channel, 0x70 + (op * 4), secondDecayRate);
 }
 
+void synth_operatorSecondaryAmplitude(u8 channel, u8 op, u8 secondaryAmplitude)
+{
+}
+
 static void updateAlgorithmAndFeedback(u8 channel)
 {
     Channel* chan = &channels[channel];

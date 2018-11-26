@@ -45,6 +45,10 @@
 #define CC_GENMDM_SECOND_DECAY_RATE_OP2 52
 #define CC_GENMDM_SECOND_DECAY_RATE_OP3 53
 #define CC_GENMDM_SECOND_DECAY_RATE_OP4 54
+#define CC_GENMDM_SECOND_AMPLITUDE_OP1 55
+#define CC_GENMDM_SECOND_AMPLITUDE_OP2 56
+#define CC_GENMDM_SECOND_AMPLITUDE_OP3 57
+#define CC_GENMDM_SECOND_AMPLITUDE_OP4 58
 
 #define CC_ALL_NOTES_OFF 123
 
@@ -161,6 +165,13 @@ static void controlChange(u8 status)
     case CC_GENMDM_SECOND_DECAY_RATE_OP4:
         synth_operatorSecondDecayRate(chan,
             controller - CC_GENMDM_SECOND_DECAY_RATE_OP1, RANGE(value, 16));
+        break;
+    case CC_GENMDM_SECOND_AMPLITUDE_OP1:
+    case CC_GENMDM_SECOND_AMPLITUDE_OP2:
+    case CC_GENMDM_SECOND_AMPLITUDE_OP3:
+    case CC_GENMDM_SECOND_AMPLITUDE_OP4:
+        synth_operatorSecondaryAmplitude(chan,
+            controller - CC_GENMDM_SECOND_AMPLITUDE_OP1, RANGE(value, 16));
         break;
     default:
         lastUnknownControlChange.controller = controller;
