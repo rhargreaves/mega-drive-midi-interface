@@ -23,13 +23,13 @@ void expect_ym2612_write_reg(u8 part, u8 reg, u8 data)
     expect_value(__wrap_YM2612_writeReg, data, data);
 }
 
-void expect_ym2612_writeOperator(u8 chan, u8 op, u8 baseReg, u8 data)
+void expect_ym2612_write_operator(u8 chan, u8 op, u8 baseReg, u8 data)
 {
     expect_ym2612_write_reg(
         REG_PART(chan), baseReg + REG_OFFSET(chan) + (op * 4), data);
 }
 
-void expect_ym2612_writeOperator_any_data(u8 chan, u8 op, u8 baseReg)
+void expect_ym2612_write_operator_any_data(u8 chan, u8 op, u8 baseReg)
 {
     expect_value(__wrap_YM2612_writeReg, part, REG_PART(chan));
     expect_value(
