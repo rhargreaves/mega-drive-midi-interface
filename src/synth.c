@@ -2,13 +2,6 @@
 #include <memory.h>
 #include <ym2612.h>
 
-static void updateOperatorMultipleAndDetune(u8 channel, u8 op);
-static void updateAlgorithmAndFeedback(u8 channel);
-static void updateOperatorRateScalingAndAttackRate(u8 channel, u8 operator);
-static void writeChannelReg(u8 channel, u8 baseReg, u8 data);
-static void writeOperatorReg(u8 channel, u8 op, u8 baseReg, u8 data);
-static u8 keyOnOffRegOffset(u8 channel);
-
 typedef struct Operator Operator;
 
 struct Operator {
@@ -36,6 +29,15 @@ static const Channel DEFAULT_CHANNEL = { .algorithm = 2,
         { .multiple = 3, .detune = 2, .attackRate = 31, .rateScaling = 1 },
         { .multiple = 1, .detune = 0, .attackRate = 25, .rateScaling = 2 },
     } };
+
+static void updateOperatorMultipleAndDetune(u8 channel, u8 op);
+static void updateAlgorithmAndFeedback(u8 channel);
+static void updateOperatorRateScalingAndAttackRate(u8 channel, u8 operator);
+static void writeChannelReg(u8 channel, u8 baseReg, u8 data);
+static void writeOperatorReg(u8 channel, u8 op, u8 baseReg, u8 data);
+static u8 keyOnOffRegOffset(u8 channel);
+static Channel* getChannel(u8 channel);
+static Operator* getOperator(u8 channel, u8 operator);
 
 void synth_init(void)
 {
@@ -105,13 +107,13 @@ void synth_stereo(u8 channel, u8 mode)
 
 void synth_algorithm(u8 channel, u8 algorithm)
 {
-    channels[channel].algorithm = algorithm;
+    getChannel(channel)->algorithm = algorithm;
     updateAlgorithmAndFeedback(channel);
 }
 
 void synth_feedback(u8 channel, u8 feedback)
 {
-    channels[channel].feedback = feedback;
+    getChannel(channel)->feedback = feedback;
     updateAlgorithmAndFeedback(channel);
 }
 
@@ -122,25 +124,25 @@ void synth_operatorTotalLevel(u8 channel, u8 op, u8 totalLevel)
 
 void synth_operatorMultiple(u8 channel, u8 op, u8 multiple)
 {
-    channels[channel].operators[op].multiple = multiple;
+    getOperator(channel, op)->multiple = multiple;
     updateOperatorMultipleAndDetune(channel, op);
 }
 
 void synth_operatorDetune(u8 channel, u8 op, u8 detune)
 {
-    channels[channel].operators[op].detune = detune;
+    getOperator(channel, op)->detune = detune;
     updateOperatorMultipleAndDetune(channel, op);
 }
 
 void synth_operatorRateScaling(u8 channel, u8 op, u8 rateScaling)
 {
-    channels[channel].operators[op].rateScaling = rateScaling;
+    getOperator(channel, op)->rateScaling = rateScaling;
     updateOperatorRateScalingAndAttackRate(channel, op);
 }
 
 void synth_operatorAttackRate(u8 channel, u8 op, u8 attackRate)
 {
-    channels[channel].operators[op].attackRate = attackRate;
+    getOperator(channel, op)->attackRate = attackRate;
     updateOperatorRateScalingAndAttackRate(channel, op);
 }
 
@@ -174,21 +176,31 @@ static u8 keyOnOffRegOffset(u8 channel)
     return (channel < 3) ? channel : (channel + 1);
 }
 
+static Channel* getChannel(u8 channel)
+{
+    return &channels[channel];
+}
+
+static Operator* getOperator(u8 channel, u8 operator)
+{
+    return &getChannel(channel)->operators[operator];
+}
+
 static void updateAlgorithmAndFeedback(u8 channel)
 {
-    Channel* chan = &channels[channel];
+    Channel* chan = getChannel(channel);
     writeChannelReg(channel, 0xB0, (chan->feedback << 3) + chan->algorithm);
 }
 
 static void updateOperatorMultipleAndDetune(u8 channel, u8 operator)
 {
-    Operator* op = &channels[channel].operators[operator];
+    Operator* op = getOperator(channel, operator);
     writeOperatorReg(channel, operator, 0x30, op->multiple +(op->detune << 4));
 }
 
 static void updateOperatorRateScalingAndAttackRate(u8 channel, u8 operator)
 {
-    Operator* op = &channels[channel].operators[operator];
+    Operator* op = getOperator(channel, operator);
     writeOperatorReg(
         channel, operator, 0x50, op->attackRate +(op->rateScaling << 6));
 }
