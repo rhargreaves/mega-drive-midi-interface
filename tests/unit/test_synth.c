@@ -22,6 +22,8 @@ extern void __real_synth_operatorRateScaling(u8 channel, u8 op, u8 rateScaling);
 extern void __real_synth_operatorAttackRate(u8 channel, u8 op, u8 attackRate);
 extern void __real_synth_operatorFirstDecayRate(
     u8 channel, u8 op, u8 firstDecayRate);
+extern void __real_synth_operatorSecondDecayRate(
+    u8 channel, u8 op, u8 secondDecayRate);
 
 static int test_synth_setup(void** state)
 {
@@ -198,6 +200,18 @@ static void test_synth_sets_operator_first_decay_rate(void** state)
         for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
             expect_ym2612_writeOperator(chan, op, baseReg, firstDecayRate);
             __real_synth_operatorFirstDecayRate(chan, op, firstDecayRate);
+        }
+    }
+}
+
+static void test_synth_sets_operator_second_decay_rate(void** state)
+{
+    const u8 baseReg = 0x70;
+    u8 secondDecayRate = 16;
+    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
+        for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
+            expect_ym2612_writeOperator(chan, op, baseReg, secondDecayRate);
+            __real_synth_operatorSecondDecayRate(chan, op, secondDecayRate);
         }
     }
 }

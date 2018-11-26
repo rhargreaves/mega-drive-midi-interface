@@ -15,6 +15,8 @@ void __wrap_synth_operatorDetune(u8 channel, u8 op, u8 detune);
 void __wrap_synth_operatorRateScaling(u8 channel, u8 op, u8 rateScaling);
 void __wrap_synth_operatorAttackRate(u8 channel, u8 op, u8 attackRate);
 void __wrap_synth_operatorFirstDecayRate(u8 channel, u8 op, u8 firstDecayRate);
+void __wrap_synth_operatorSecondDecayRate(
+    u8 channel, u8 op, u8 secondDecayRate);
 u8 __wrap_comm_read(void);
 void __wrap_fm_writeReg(u16 part, u8 reg, u8 data);
 void __wrap_psg_noteOn(u8 channel, u16 freq);

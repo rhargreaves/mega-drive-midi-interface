@@ -289,3 +289,21 @@ static void test_interface_sets_operator_first_decay_rate(void** state)
         interface_tick();
     }
 }
+
+static void test_interface_sets_operator_second_decay_rate(void** state)
+{
+    u8 expectedStatus = STATUS_CC;
+    u8 expectedValue = 1;
+
+    for (u8 cc = 51; cc <= 54; cc++) {
+        stub_comm_read_returns_midi_event(expectedStatus, cc, 8);
+
+        u8 expectedOp = cc - 51;
+        expect_value(__wrap_synth_operatorSecondDecayRate, channel, 0);
+        expect_value(__wrap_synth_operatorSecondDecayRate, op, expectedOp);
+        expect_value(__wrap_synth_operatorSecondDecayRate, secondDecayRate,
+            expectedValue);
+
+        interface_tick();
+    }
+}

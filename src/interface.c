@@ -41,6 +41,10 @@
 #define CC_GENMDM_FIRST_DECAY_RATE_OP2 48
 #define CC_GENMDM_FIRST_DECAY_RATE_OP3 49
 #define CC_GENMDM_FIRST_DECAY_RATE_OP4 50
+#define CC_GENMDM_SECOND_DECAY_RATE_OP1 51
+#define CC_GENMDM_SECOND_DECAY_RATE_OP2 52
+#define CC_GENMDM_SECOND_DECAY_RATE_OP3 53
+#define CC_GENMDM_SECOND_DECAY_RATE_OP4 54
 
 #define CC_ALL_NOTES_OFF 123
 
@@ -150,6 +154,13 @@ static void controlChange(u8 status)
     case CC_GENMDM_FIRST_DECAY_RATE_OP4:
         synth_operatorFirstDecayRate(chan,
             controller - CC_GENMDM_FIRST_DECAY_RATE_OP1, RANGE(value, 32));
+        break;
+    case CC_GENMDM_SECOND_DECAY_RATE_OP1:
+    case CC_GENMDM_SECOND_DECAY_RATE_OP2:
+    case CC_GENMDM_SECOND_DECAY_RATE_OP3:
+    case CC_GENMDM_SECOND_DECAY_RATE_OP4:
+        synth_operatorSecondDecayRate(chan,
+            controller - CC_GENMDM_SECOND_DECAY_RATE_OP1, RANGE(value, 16));
         break;
     default:
         lastUnknownControlChange.controller = controller;
