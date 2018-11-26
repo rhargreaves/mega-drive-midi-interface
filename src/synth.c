@@ -6,6 +6,7 @@ static void updateOperatorMultipleAndDetune(u8 channel, u8 op);
 static void updateAlgorithmAndFeedback(u8 channel);
 static void updateOperatorRateScalingAndAttackRate(u8 channel, u8 operator);
 static void synth_writeFm(u8 channel, u8 baseReg, u8 data);
+static void synth_writeFmOperator(u8 channel, u8 op, u8 baseReg, u8 data);
 static u8 synth_keyOnOffRegOffset(u8 channel);
 
 typedef struct Operator Operator;
@@ -76,16 +77,6 @@ void synth_init(void)
     YM2612_writeReg(0, 0x9C, 0);
 }
 
-static void synth_writeFm(u8 channel, u8 baseReg, u8 data)
-{
-    YM2612_writeReg(channel > 2 ? 1 : 0, baseReg + (channel % 3), data);
-}
-
-static u8 synth_keyOnOffRegOffset(u8 channel)
-{
-    return (channel < 3) ? channel : (channel + 1);
-}
-
 void synth_noteOn(u8 channel)
 {
     YM2612_writeReg(0, 0x28, 0xF0 + synth_keyOnOffRegOffset(channel));
@@ -126,7 +117,7 @@ void synth_feedback(u8 channel, u8 feedback)
 
 void synth_operatorTotalLevel(u8 channel, u8 op, u8 totalLevel)
 {
-    synth_writeFm(channel, 0x40 + (op * 4), totalLevel);
+    synth_writeFmOperator(channel, op, 0x40, totalLevel);
 }
 
 void synth_operatorMultiple(u8 channel, u8 op, u8 multiple)
@@ -155,17 +146,32 @@ void synth_operatorAttackRate(u8 channel, u8 op, u8 attackRate)
 
 void synth_operatorFirstDecayRate(u8 channel, u8 op, u8 firstDecayRate)
 {
-    synth_writeFm(channel, 0x60 + (op * 4), firstDecayRate);
+    synth_writeFmOperator(channel, op, 0x60, firstDecayRate);
 }
 
 void synth_operatorSecondDecayRate(u8 channel, u8 op, u8 secondDecayRate)
 {
-    synth_writeFm(channel, 0x70 + (op * 4), secondDecayRate);
+    synth_writeFmOperator(channel, op, 0x70, secondDecayRate);
 }
 
 void synth_operatorSecondaryAmplitude(u8 channel, u8 op, u8 secondaryAmplitude)
 {
-    synth_writeFm(channel, 0x80 + (op * 4), secondaryAmplitude << 4);
+    synth_writeFmOperator(channel, op, 0x80, secondaryAmplitude << 4);
+}
+
+static void synth_writeFm(u8 channel, u8 baseReg, u8 data)
+{
+    YM2612_writeReg(channel > 2 ? 1 : 0, baseReg + (channel % 3), data);
+}
+
+static void synth_writeFmOperator(u8 channel, u8 op, u8 baseReg, u8 data)
+{
+    synth_writeFm(channel, baseReg + (op * 4), data);
+}
+
+static u8 synth_keyOnOffRegOffset(u8 channel)
+{
+    return (channel < 3) ? channel : (channel + 1);
 }
 
 static void updateAlgorithmAndFeedback(u8 channel)
@@ -177,13 +183,13 @@ static void updateAlgorithmAndFeedback(u8 channel)
 static void updateOperatorMultipleAndDetune(u8 channel, u8 operator)
 {
     Operator* op = &channels[channel].operators[operator];
-    synth_writeFm(
-        channel, 0x30 + (operator* 4), op->multiple + (op->detune << 4));
+    synth_writeFmOperator(
+        channel, operator, 0x30, op->multiple +(op->detune << 4));
 }
 
 static void updateOperatorRateScalingAndAttackRate(u8 channel, u8 operator)
 {
     Operator* op = &channels[channel].operators[operator];
-    synth_writeFm(
-        channel, 0x50 + (operator* 4), op->attackRate + (op->rateScaling << 6));
+    synth_writeFmOperator(
+        channel, operator, 0x50, op->attackRate +(op->rateScaling << 6));
 }
