@@ -24,6 +24,8 @@ extern void __real_synth_operatorFirstDecayRate(
     u8 channel, u8 op, u8 firstDecayRate);
 extern void __real_synth_operatorSecondDecayRate(
     u8 channel, u8 op, u8 secondDecayRate);
+extern void __real_synth_operatorSecondaryAmplitude(
+    u8 channel, u8 op, u8 secondaryAmplitude);
 
 static int test_synth_setup(void** state)
 {
@@ -212,6 +214,20 @@ static void test_synth_sets_operator_second_decay_rate(void** state)
         for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
             expect_ym2612_writeOperator(chan, op, baseReg, secondDecayRate);
             __real_synth_operatorSecondDecayRate(chan, op, secondDecayRate);
+        }
+    }
+}
+
+static void test_synth_sets_operator_secondary_amplitude(void** state)
+{
+    const u8 baseReg = 0x80;
+    u8 secondaryAmplitude = 16;
+    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
+        for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
+            expect_ym2612_writeOperator(
+                chan, op, baseReg, secondaryAmplitude << 4);
+            __real_synth_operatorSecondaryAmplitude(
+                chan, op, secondaryAmplitude);
         }
     }
 }
