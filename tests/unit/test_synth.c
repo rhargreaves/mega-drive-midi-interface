@@ -26,6 +26,8 @@ extern void __real_synth_operatorSecondDecayRate(
     u8 channel, u8 op, u8 secondDecayRate);
 extern void __real_synth_operatorSecondaryAmplitude(
     u8 channel, u8 op, u8 secondaryAmplitude);
+extern void __real_synth_operatorAmplitudeModulation(
+    u8 channel, u8 op, u8 amplitudeModulation);
 
 static int test_synth_setup(void** state)
 {
@@ -194,18 +196,6 @@ static void test_synth_sets_operator_attack_rate_and_rate_scaling(void** state)
     }
 }
 
-static void test_synth_sets_operator_first_decay_rate(void** state)
-{
-    const u8 baseReg = 0x60;
-    u8 firstDecayRate = 16;
-    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
-        for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
-            expect_ym2612_write_operator(chan, op, baseReg, firstDecayRate);
-            __real_synth_operatorFirstDecayRate(chan, op, firstDecayRate);
-        }
-    }
-}
-
 static void test_synth_sets_operator_second_decay_rate(void** state)
 {
     const u8 baseReg = 0x70;
@@ -228,6 +218,24 @@ static void test_synth_sets_operator_secondary_amplitude(void** state)
                 chan, op, baseReg, secondaryAmplitude << 4);
             __real_synth_operatorSecondaryAmplitude(
                 chan, op, secondaryAmplitude);
+        }
+    }
+}
+
+static void test_synth_sets_operator_amplitude_modulation_and_first_decay_rate(
+    void** state)
+{
+    const u8 baseReg = 0x60;
+    u8 amplitudeModulation = 1;
+    u8 firstDecayRate = 16;
+    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
+        for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
+            expect_ym2612_write_operator_any_data(chan, op, baseReg);
+            __real_synth_operatorFirstDecayRate(chan, op, firstDecayRate);
+            expect_ym2612_write_operator(
+                chan, op, baseReg, firstDecayRate + (amplitudeModulation << 7));
+            __real_synth_operatorAmplitudeModulation(
+                chan, op, amplitudeModulation);
         }
     }
 }

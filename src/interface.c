@@ -49,6 +49,10 @@
 #define CC_GENMDM_SECOND_AMPLITUDE_OP2 56
 #define CC_GENMDM_SECOND_AMPLITUDE_OP3 57
 #define CC_GENMDM_SECOND_AMPLITUDE_OP4 58
+#define CC_GENMDM_AMPLITUDE_MODULATION_OP1 70
+#define CC_GENMDM_AMPLITUDE_MODULATION_OP2 71
+#define CC_GENMDM_AMPLITUDE_MODULATION_OP3 72
+#define CC_GENMDM_AMPLITUDE_MODULATION_OP4 73
 
 #define CC_ALL_NOTES_OFF 123
 
@@ -172,6 +176,13 @@ static void controlChange(u8 status)
     case CC_GENMDM_SECOND_AMPLITUDE_OP4:
         synth_operatorSecondaryAmplitude(chan,
             controller - CC_GENMDM_SECOND_AMPLITUDE_OP1, RANGE(value, 16));
+        break;
+    case CC_GENMDM_AMPLITUDE_MODULATION_OP1:
+    case CC_GENMDM_AMPLITUDE_MODULATION_OP2:
+    case CC_GENMDM_AMPLITUDE_MODULATION_OP3:
+    case CC_GENMDM_AMPLITUDE_MODULATION_OP4:
+        synth_operatorAmplitudeModulation(chan,
+            controller - CC_GENMDM_AMPLITUDE_MODULATION_OP1, RANGE(value, 2));
         break;
     default:
         lastUnknownControlChange.controller = controller;

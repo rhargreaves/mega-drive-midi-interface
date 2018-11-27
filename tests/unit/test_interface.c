@@ -325,3 +325,21 @@ static void test_interface_sets_operator_secondary_amplitude(void** state)
         interface_tick();
     }
 }
+
+static void test_interface_sets_operator_amplitude_modulation(void** state)
+{
+    u8 expectedStatus = STATUS_CC;
+    u8 expectedValue = 1;
+
+    for (u8 cc = 70; cc <= 73; cc++) {
+        stub_comm_read_returns_midi_event(expectedStatus, cc, 96);
+
+        u8 expectedOp = cc - 70;
+        expect_value(__wrap_synth_operatorAmplitudeModulation, channel, 0);
+        expect_value(__wrap_synth_operatorAmplitudeModulation, op, expectedOp);
+        expect_value(__wrap_synth_operatorAmplitudeModulation,
+            amplitudeModulation, expectedValue);
+
+        interface_tick();
+    }
+}

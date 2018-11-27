@@ -23,3 +23,5 @@ void synth_operatorAttackRate(u8 channel, u8 op, u8 attackRate);
 void synth_operatorFirstDecayRate(u8 channel, u8 op, u8 firstDecayRate);
 void synth_operatorSecondDecayRate(u8 channel, u8 op, u8 secondDecayRate);
 void synth_operatorSecondaryAmplitude(u8 channel, u8 op, u8 secondaryAmplitude);
+void synth_operatorAmplitudeModulation(
+    u8 channel, u8 op, u8 amplitudeModulation);

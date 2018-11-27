@@ -108,6 +108,14 @@ void __wrap_synth_operatorSecondaryAmplitude(
     check_expected(secondaryAmplitude);
 }
 
+void __wrap_synth_operatorAmplitudeModulation(
+    u8 channel, u8 op, u8 amplitudeModulation)
+{
+    check_expected(channel);
+    check_expected(op);
+    check_expected(amplitudeModulation);
+}
+
 u8 __wrap_comm_read(void)
 {
     return mock_type(u8);
