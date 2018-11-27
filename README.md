@@ -67,6 +67,7 @@ For example: A MIDI value of 32, with CC range of 8 translates into to a YM2612 
 | 47-50 | FM First Decay Rate OP1-4     | 32    |
 | 51-54 | FM Second Decay Rate OP1-4    | 16    |
 | 55-58 | FM Secondary Amplitude OP1-4  | 16    |
+| 59-62 | FM Release Rate OP1-4         | 16    |
 | 70-73 | FM Amplitude Modulation OP1-4 | 2     |
 
 ## Build & Test
