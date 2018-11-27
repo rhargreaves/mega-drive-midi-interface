@@ -33,6 +33,7 @@ int main(void)
         cmocka_unit_test(test_interface_sets_operator_second_decay_rate),
         cmocka_unit_test(test_interface_sets_operator_secondary_amplitude),
         cmocka_unit_test(test_interface_sets_operator_amplitude_modulation),
+        cmocka_unit_test(test_interface_sets_operator_release_rate),
 
         cmocka_unit_test(test_midi_triggers_synth_note_on),
         cmocka_unit_test(test_midi_triggers_synth_note_on_2),
@@ -66,7 +67,9 @@ int main(void)
             test_synth_sets_operator_attack_rate_and_rate_scaling,
             test_synth_setup),
         cmocka_unit_test(test_synth_sets_operator_second_decay_rate),
-        cmocka_unit_test(test_synth_sets_operator_secondary_amplitude),
+        cmocka_unit_test_setup(
+            test_synth_sets_operator_release_rate_and_secondary_amplitude,
+            test_synth_setup),
         cmocka_unit_test_setup(
             test_synth_sets_operator_amplitude_modulation_and_first_decay_rate,
             test_synth_setup),

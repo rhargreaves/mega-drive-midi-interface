@@ -11,6 +11,8 @@ struct Operator {
     u8 rateScaling;
     u8 firstDecayRate;
     u8 amplitudeModulation;
+    u8 secondaryAmplitude;
+    u8 releaseRate;
 };
 
 typedef struct Channel Channel;
@@ -31,31 +33,41 @@ static const Channel DEFAULT_CHANNEL = { .algorithm = 2,
             .attackRate = 31,
             .rateScaling = 1,
             .amplitudeModulation = 0,
-            .firstDecayRate = 5 },
+            .firstDecayRate = 5,
+            .releaseRate = 1,
+            .secondaryAmplitude = 1 },
         { .multiple = 13,
             .detune = 0,
             .attackRate = 25,
             .rateScaling = 2,
             .amplitudeModulation = 0,
-            .firstDecayRate = 5 },
+            .firstDecayRate = 5,
+            .releaseRate = 1,
+            .secondaryAmplitude = 1 },
         { .multiple = 3,
             .detune = 2,
             .attackRate = 31,
             .rateScaling = 1,
             .amplitudeModulation = 0,
-            .firstDecayRate = 5 },
+            .firstDecayRate = 5,
+            .releaseRate = 1,
+            .secondaryAmplitude = 1 },
         { .multiple = 1,
             .detune = 0,
             .attackRate = 25,
             .rateScaling = 2,
             .amplitudeModulation = 0,
-            .firstDecayRate = 7 },
+            .firstDecayRate = 7,
+            .releaseRate = 6,
+            .secondaryAmplitude = 10 },
     } };
 
 static void updateOperatorMultipleAndDetune(u8 channel, u8 op);
 static void updateAlgorithmAndFeedback(u8 channel);
 static void updateOperatorRateScalingAndAttackRate(u8 channel, u8 operator);
 static void updateOperatorAmplitudeModulationAndFirstDecayRate(
+    u8 channel, u8 operator);
+static void updateOperatorReleaseRateAndSecondaryAmplitude(
     u8 channel, u8 operator);
 static void writeChannelReg(u8 channel, u8 baseReg, u8 data);
 static void writeOperatorReg(u8 channel, u8 op, u8 baseReg, u8 data);
@@ -168,12 +180,20 @@ void synth_operatorAttackRate(u8 channel, u8 op, u8 attackRate)
 
 void synth_operatorSecondDecayRate(u8 channel, u8 op, u8 secondDecayRate)
 {
+
     writeOperatorReg(channel, op, 0x70, secondDecayRate);
+}
+
+void synth_operatorReleaseRate(u8 channel, u8 op, u8 releaseRate)
+{
+    getOperator(channel, op)->releaseRate = releaseRate;
+    updateOperatorReleaseRateAndSecondaryAmplitude(channel, op);
 }
 
 void synth_operatorSecondaryAmplitude(u8 channel, u8 op, u8 secondaryAmplitude)
 {
-    writeOperatorReg(channel, op, 0x80, secondaryAmplitude << 4);
+    getOperator(channel, op)->secondaryAmplitude = secondaryAmplitude;
+    updateOperatorReleaseRateAndSecondaryAmplitude(channel, op);
 }
 
 void synth_operatorFirstDecayRate(u8 channel, u8 op, u8 firstDecayRate)
@@ -239,4 +259,12 @@ static void updateOperatorAmplitudeModulationAndFirstDecayRate(
     Operator* op = getOperator(channel, operator);
     writeOperatorReg(channel, operator, 0x60,
         op->firstDecayRate +(op->amplitudeModulation << 7));
+}
+
+static void updateOperatorReleaseRateAndSecondaryAmplitude(
+    u8 channel, u8 operator)
+{
+    Operator* op = getOperator(channel, operator);
+    writeOperatorReg(channel, operator, 0x80,
+        op->releaseRate +(op->secondaryAmplitude << 4));
 }

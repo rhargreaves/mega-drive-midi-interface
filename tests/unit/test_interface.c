@@ -343,3 +343,21 @@ static void test_interface_sets_operator_amplitude_modulation(void** state)
         interface_tick();
     }
 }
+
+static void test_interface_sets_operator_release_rate(void** state)
+{
+    u8 expectedStatus = STATUS_CC;
+    u8 expectedValue = 1;
+
+    for (u8 cc = 59; cc <= 62; cc++) {
+        stub_comm_read_returns_midi_event(expectedStatus, cc, 8);
+
+        u8 expectedOp = cc - 59;
+        expect_value(__wrap_synth_operatorReleaseRate, channel, 0);
+        expect_value(__wrap_synth_operatorReleaseRate, op, expectedOp);
+        expect_value(
+            __wrap_synth_operatorReleaseRate, releaseRate, expectedValue);
+
+        interface_tick();
+    }
+}

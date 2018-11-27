@@ -21,6 +21,7 @@ void __wrap_synth_operatorSecondaryAmplitude(
     u8 channel, u8 op, u8 secondaryAmplitude);
 void __wrap_synth_operatorAmplitudeModulation(
     u8 channel, u8 op, u8 amplitudeModulation);
+void __wrap_synth_operatorReleaseRate(u8 channel, u8 op, u8 releaseRate);
 u8 __wrap_comm_read(void);
 void __wrap_fm_writeReg(u16 part, u8 reg, u8 data);
 void __wrap_psg_noteOn(u8 channel, u16 freq);

@@ -28,6 +28,7 @@ extern void __real_synth_operatorSecondaryAmplitude(
     u8 channel, u8 op, u8 secondaryAmplitude);
 extern void __real_synth_operatorAmplitudeModulation(
     u8 channel, u8 op, u8 amplitudeModulation);
+extern void __real_synth_operatorReleaseRate(u8 channel, u8 op, u8 releaseRate);
 
 static int test_synth_setup(void** state)
 {
@@ -208,16 +209,20 @@ static void test_synth_sets_operator_second_decay_rate(void** state)
     }
 }
 
-static void test_synth_sets_operator_secondary_amplitude(void** state)
+static void test_synth_sets_operator_release_rate_and_secondary_amplitude(
+    void** state)
 {
     const u8 baseReg = 0x80;
     u8 secondaryAmplitude = 16;
+    u8 releaseRate = 4;
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
-            expect_ym2612_write_operator(
-                chan, op, baseReg, secondaryAmplitude << 4);
+            expect_ym2612_write_operator_any_data(chan, op, baseReg);
             __real_synth_operatorSecondaryAmplitude(
                 chan, op, secondaryAmplitude);
+            expect_ym2612_write_operator(
+                chan, op, baseReg, releaseRate + (secondaryAmplitude << 4));
+            __real_synth_operatorReleaseRate(chan, op, releaseRate);
         }
     }
 }

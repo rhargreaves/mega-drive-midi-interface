@@ -116,6 +116,13 @@ void __wrap_synth_operatorAmplitudeModulation(
     check_expected(amplitudeModulation);
 }
 
+void __wrap_synth_operatorReleaseRate(u8 channel, u8 op, u8 releaseRate)
+{
+    check_expected(channel);
+    check_expected(op);
+    check_expected(releaseRate);
+}
+
 u8 __wrap_comm_read(void)
 {
     return mock_type(u8);
