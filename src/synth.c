@@ -138,11 +138,20 @@ void synth_pitch(u8 channel, u8 octave, u16 freqNumber)
 void synth_totalLevel(u8 channel, u8 totalLevel)
 {
     Channel* chan = getChannel(channel);
-    if (chan->algorithm == 4) {
+    switch (chan->algorithm) {
+    case 4:
         writeOperatorReg(channel, 1, 0x40, totalLevel);
         writeOperatorReg(channel, 3, 0x40, totalLevel);
-    } else {
+        break;
+    case 5:
+    case 6:
+        writeOperatorReg(channel, 1, 0x40, totalLevel);
+        writeOperatorReg(channel, 2, 0x40, totalLevel);
         writeOperatorReg(channel, 3, 0x40, totalLevel);
+        break;
+    default:
+        writeOperatorReg(channel, 3, 0x40, totalLevel);
+        break;
     }
 }
 
