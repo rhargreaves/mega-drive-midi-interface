@@ -21,6 +21,7 @@ typedef struct Channel Channel;
 struct Channel {
     u8 algorithm;
     u8 feedback;
+    u8 stereo;
     Operator operators[MAX_FM_OPERATORS];
 };
 
@@ -28,6 +29,7 @@ static Channel channels[MAX_FM_CHANS];
 
 static const Channel DEFAULT_CHANNEL = { .algorithm = 2,
     .feedback = 6,
+    .stereo = 3,
     .operators = {
         { .multiple = 1,
             .detune = 7,
@@ -75,6 +77,7 @@ static void updateOperatorAmplitudeModulationAndFirstDecayRate(
 static void updateOperatorReleaseRateAndSecondaryAmplitude(
     u8 channel, u8 operator);
 static void updateOperatorTotalLevel(u8 channel, u8 operator);
+static void updateStereo(u8 channel);
 static void writeChannelReg(u8 channel, u8 baseReg, u8 data);
 static void writeOperatorReg(u8 channel, u8 op, u8 baseReg, u8 data);
 static u8 keyOnOffRegOffset(u8 channel);
@@ -84,12 +87,14 @@ static Operator* getOperator(u8 channel, u8 operator);
 void synth_init(void)
 {
     YM2612_writeReg(0, 0x27, 0); // Ch 3 Normal
+
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         synth_noteOff(chan);
 
         memcpy(&channels[chan], &DEFAULT_CHANNEL, sizeof(Channel));
 
         updateAlgorithmAndFeedback(chan);
+
         for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
             updateOperatorMultipleAndDetune(chan, op);
             updateOperatorRateScalingAndAttackRate(chan, op);
@@ -101,7 +106,7 @@ void synth_init(void)
         writeChannelReg(chan, 0x74, 2);
         writeChannelReg(chan, 0x78, 2);
         writeChannelReg(chan, 0x7C, 2);
-        writeChannelReg(chan, 0xB4, 0xC0);
+        updateStereo(chan);
     }
     YM2612_writeReg(0, 0x90, 0); // Proprietary
     YM2612_writeReg(0, 0x94, 0);
@@ -130,9 +135,10 @@ void synth_totalLevel(u8 channel, u8 totalLevel)
     writeChannelReg(channel, 0x4C, totalLevel);
 }
 
-void synth_stereo(u8 channel, u8 mode)
+void synth_stereo(u8 channel, u8 stereo)
 {
-    writeChannelReg(channel, 0xB4, mode << 6);
+    getChannel(channel)->stereo = stereo;
+    updateStereo(channel);
 }
 
 void synth_algorithm(u8 channel, u8 algorithm)
@@ -236,6 +242,12 @@ static void updateAlgorithmAndFeedback(u8 channel)
 {
     Channel* chan = getChannel(channel);
     writeChannelReg(channel, 0xB0, (chan->feedback << 3) + chan->algorithm);
+}
+
+static void updateStereo(u8 channel)
+{
+    Channel* chan = getChannel(channel);
+    writeChannelReg(channel, 0xB4, chan->stereo << 6);
 }
 
 static void updateOperatorMultipleAndDetune(u8 channel, u8 operator)
