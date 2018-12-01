@@ -87,14 +87,12 @@ static Operator* getOperator(u8 channel, u8 operator);
 void synth_init(void)
 {
     YM2612_writeReg(0, 0x27, 0); // Ch 3 Normal
-
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         synth_noteOff(chan);
 
         memcpy(&channels[chan], &DEFAULT_CHANNEL, sizeof(Channel));
-
         updateAlgorithmAndFeedback(chan);
-
+        updateStereo(chan);
         for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
             updateOperatorMultipleAndDetune(chan, op);
             updateOperatorRateScalingAndAttackRate(chan, op);
@@ -106,7 +104,6 @@ void synth_init(void)
         writeChannelReg(chan, 0x74, 2);
         writeChannelReg(chan, 0x78, 2);
         writeChannelReg(chan, 0x7C, 2);
-        updateStereo(chan);
     }
     YM2612_writeReg(0, 0x90, 0); // Proprietary
     YM2612_writeReg(0, 0x94, 0);
