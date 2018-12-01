@@ -288,3 +288,11 @@ static void test_synth_sets_operator_amplitude_modulation_and_first_decay_rate(
         }
     }
 }
+
+static void test_synth_sets_global_LFO_enable(void** state)
+{
+    const u8 baseReg = 0x22;
+
+    expect_ym2612_write_reg(0, baseReg, 1 << 3);
+    __real_synth_enableLfo(1);
+}
