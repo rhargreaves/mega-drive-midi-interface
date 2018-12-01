@@ -15,6 +15,8 @@ extern void __real_synth_globalLfoFrequency(u8 freq);
 extern void __real_synth_pitch(u8 channel, u8 octave, u16 freqNumber);
 extern void __real_synth_totalLevel(u8 channel, u8 totalLevel);
 extern void __real_synth_stereo(u8 channel, u8 stereo);
+extern void __real_synth_ams(u8 channel, u8 ams);
+extern void __real_synth_fms(u8 channel, u8 fms);
 extern void __real_synth_algorithm(u8 channel, u8 algorithm);
 extern void __real_synth_feedback(u8 channel, u8 feedback);
 extern void __real_synth_operatorTotalLevel(u8 channel, u8 op, u8 totalLevel);
@@ -145,12 +147,20 @@ static void test_synth_sets_total_level_reg_chan_for_algorithm_7(void** state)
     }
 }
 
-static void test_synth_sets_stereo_reg_chan(void** state)
+static void test_synth_sets_stereo_ams_and_freq(void** state)
 {
+    const u8 ams = 1;
+    const u8 fms = 1;
     const u8 stereo = 1;
+    const u8 baseReg = 0xB4;
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
-        expect_ym2612_write_channel(chan, 0xB4, stereo << 6);
+        expect_ym2612_write_channel_any_data(chan, baseReg);
         __real_synth_stereo(chan, stereo);
+        expect_ym2612_write_channel_any_data(chan, baseReg);
+        __real_synth_ams(chan, ams);
+        expect_ym2612_write_channel(
+            chan, baseReg, (stereo << 6) + (ams << 4) + fms);
+        __real_synth_fms(chan, fms);
     }
 }
 

@@ -64,7 +64,7 @@ int main(void)
         cmocka_unit_test(
             test_synth_sets_total_level_reg_chan_for_algorithms_5_and_6),
         cmocka_unit_test(test_synth_sets_total_level_reg_chan_for_algorithm_7),
-        cmocka_unit_test(test_synth_sets_stereo_reg_chan),
+        cmocka_unit_test(test_synth_sets_stereo_ams_and_freq),
         cmocka_unit_test_setup(test_synth_sets_algorithm, test_synth_setup),
         cmocka_unit_test_setup(test_synth_sets_feedback, test_synth_setup),
         cmocka_unit_test(test_synth_sets_operator_total_level),

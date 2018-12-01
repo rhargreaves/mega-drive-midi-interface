@@ -32,6 +32,8 @@ struct Channel {
     u8 algorithm;
     u8 feedback;
     u8 stereo;
+    u8 ams;
+    u8 fms;
     Operator operators[MAX_FM_OPERATORS];
 };
 
@@ -40,6 +42,8 @@ static Channel channels[MAX_FM_CHANS];
 static const Channel DEFAULT_CHANNEL = { .algorithm = 2,
     .feedback = 6,
     .stereo = 3,
+    .ams = 0,
+    .fms = 0,
     .operators = {
         { .multiple = 1,
             .detune = 7,
@@ -94,7 +98,7 @@ static void updateOperatorReleaseRateAndSecondaryAmplitude(
     u8 channel, u8 operator);
 static void updateOperatorTotalLevel(u8 channel, u8 operator);
 static void updateOperatorSecondaryDecayRate(u8 channel, u8 operator);
-static void updateStereo(u8 channel);
+static void updateStereoAmsFms(u8 channel);
 static void writeChannelReg(u8 channel, u8 baseReg, u8 data);
 static void writeOperatorReg(u8 channel, u8 op, u8 baseReg, u8 data);
 static u8 keyOnOffRegOffset(u8 channel);
@@ -118,7 +122,7 @@ static void initChannel(u8 chan)
 {
     memcpy(&channels[chan], &DEFAULT_CHANNEL, sizeof(Channel));
     updateAlgorithmAndFeedback(chan);
-    updateStereo(chan);
+    updateStereoAmsFms(chan);
     for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
         updateOperatorMultipleAndDetune(chan, op);
         updateOperatorRateScalingAndAttackRate(chan, op);
@@ -175,7 +179,7 @@ void synth_totalLevel(u8 channel, u8 totalLevel)
 void synth_stereo(u8 channel, u8 stereo)
 {
     getChannel(channel)->stereo = stereo;
-    updateStereo(channel);
+    updateStereoAmsFms(channel);
 }
 
 void synth_algorithm(u8 channel, u8 algorithm)
@@ -265,10 +269,14 @@ void synth_globalLfoFrequency(u8 freq)
 
 void synth_ams(u8 channel, u8 ams)
 {
+    getChannel(channel)->ams = ams;
+    updateStereoAmsFms(channel);
 }
 
 void synth_fms(u8 channel, u8 fms)
 {
+    getChannel(channel)->fms = fms;
+    updateStereoAmsFms(channel);
 }
 
 static void writeChannelReg(u8 channel, u8 baseReg, u8 data)
@@ -307,10 +315,11 @@ static void updateAlgorithmAndFeedback(u8 channel)
     writeChannelReg(channel, 0xB0, (chan->feedback << 3) + chan->algorithm);
 }
 
-static void updateStereo(u8 channel)
+static void updateStereoAmsFms(u8 channel)
 {
     Channel* chan = getChannel(channel);
-    writeChannelReg(channel, 0xB4, chan->stereo << 6);
+    writeChannelReg(
+        channel, 0xB4, (chan->stereo << 6) + (chan->ams << 4) + chan->fms);
 }
 
 static void updateOperatorMultipleAndDetune(u8 channel, u8 operator)
