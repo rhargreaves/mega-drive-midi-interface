@@ -361,3 +361,12 @@ static void test_interface_sets_operator_release_rate(void** state)
         interface_tick();
     }
 }
+
+static void test_interface_sets_global_LFO_enable(void** state)
+{
+    const u8 cc = 74;
+    stub_comm_read_returns_midi_event(STATUS_CC, cc, 64);
+    expect_value(__wrap_synth_enableLfo, enable, 1);
+
+    interface_tick();
+}

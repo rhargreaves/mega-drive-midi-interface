@@ -34,6 +34,7 @@ int main(void)
         cmocka_unit_test(test_interface_sets_operator_secondary_amplitude),
         cmocka_unit_test(test_interface_sets_operator_amplitude_modulation),
         cmocka_unit_test(test_interface_sets_operator_release_rate),
+        cmocka_unit_test(test_interface_sets_global_LFO_enable),
 
         cmocka_unit_test(test_midi_triggers_synth_note_on),
         cmocka_unit_test(test_midi_triggers_synth_note_on_2),

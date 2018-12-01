@@ -26,3 +26,4 @@ void synth_operatorSecondaryAmplitude(u8 channel, u8 op, u8 secondaryAmplitude);
 void synth_operatorAmplitudeModulation(
     u8 channel, u8 op, u8 amplitudeModulation);
 void synth_operatorReleaseRate(u8 channel, u8 op, u8 releaseRate);
+void synth_enableLfo(u8 enable);

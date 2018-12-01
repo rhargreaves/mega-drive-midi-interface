@@ -241,6 +241,10 @@ void synth_operatorAmplitudeModulation(
     updateOperatorAmplitudeModulationAndFirstDecayRate(channel, op);
 }
 
+void synth_enableLfo(u8 enable)
+{
+}
+
 static void writeChannelReg(u8 channel, u8 baseReg, u8 data)
 {
     YM2612_writeReg(channel > 2 ? 1 : 0, baseReg + (channel % 3), data);

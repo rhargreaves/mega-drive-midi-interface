@@ -10,6 +10,11 @@ void __wrap_synth_init(void)
     function_called();
 }
 
+void __wrap_synth_enableLfo(u8 enable)
+{
+    check_expected(enable);
+}
+
 void __wrap_synth_noteOn(u8 channel)
 {
     check_expected(channel);
