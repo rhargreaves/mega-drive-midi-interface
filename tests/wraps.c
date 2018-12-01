@@ -61,6 +61,18 @@ void __wrap_synth_feedback(u8 channel, u8 feedback)
     check_expected(feedback);
 }
 
+void __wrap_synth_ams(u8 channel, u8 ams)
+{
+    check_expected(channel);
+    check_expected(ams);
+}
+
+void __wrap_synth_fms(u8 channel, u8 fms)
+{
+    check_expected(channel);
+    check_expected(fms);
+}
+
 void __wrap_synth_operatorTotalLevel(u8 channel, u8 op, u8 totalLevel)
 {
     check_expected(channel);

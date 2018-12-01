@@ -25,6 +25,8 @@ MOCKS=midi_process \
 	synth_stereo \
 	synth_algorithm \
 	synth_feedback \
+	synth_ams \
+	synth_fms \
 	synth_operatorTotalLevel \
 	synth_operatorMultiple \
 	synth_operatorDetune \

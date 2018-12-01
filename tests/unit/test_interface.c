@@ -170,6 +170,34 @@ static void test_interface_sets_fm_feedback(void** state)
     interface_tick();
 }
 
+static void test_interface_sets_channel_AMS(void** state)
+{
+    u8 expectedStatus = STATUS_CC;
+    u8 expectedController = 76;
+    u8 expectedValue = 32;
+
+    stub_comm_read_returns_midi_event(expectedStatus, expectedController, 32);
+
+    expect_value(__wrap_synth_ams, channel, 0);
+    expect_value(__wrap_synth_ams, ams, 2);
+
+    interface_tick();
+}
+
+static void test_interface_sets_channel_FMS(void** state)
+{
+    u8 expectedStatus = STATUS_CC;
+    u8 expectedController = 75;
+    u8 expectedValue = 32;
+
+    stub_comm_read_returns_midi_event(expectedStatus, expectedController, 32);
+
+    expect_value(__wrap_synth_fms, channel, 0);
+    expect_value(__wrap_synth_fms, fms, 2);
+
+    interface_tick();
+}
+
 static void test_interface_sets_all_notes_off(void** state)
 {
     u8 expectedStatus = STATUS_CC;

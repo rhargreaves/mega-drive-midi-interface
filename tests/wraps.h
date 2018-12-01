@@ -11,6 +11,8 @@ void __wrap_synth_totalLevel(u8 channel, u8 totalLevel);
 void __wrap_synth_stereo(u8 channel, u8 mode);
 void __wrap_synth_algorithm(u8 channel, u8 algorithm);
 void __wrap_synth_feedback(u8 channel, u8 feedback);
+void __wrap_synth_ams(u8 channel, u8 ams);
+void __wrap_synth_fms(u8 channel, u8 fms);
 void __wrap_synth_operatorTotalLevel(u8 channel, u8 op, u8 totalLevel);
 void __wrap_synth_operatorMultiple(u8 channel, u8 op, u8 multiple);
 void __wrap_synth_operatorDetune(u8 channel, u8 op, u8 detune);
