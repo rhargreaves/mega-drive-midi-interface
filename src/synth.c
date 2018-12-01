@@ -84,6 +84,7 @@ static const Channel DEFAULT_CHANNEL = { .algorithm = 2,
     } };
 
 static void initChannel(u8 chan);
+static void updateGlobalLfo(void);
 static void updateOperatorMultipleAndDetune(u8 channel, u8 op);
 static void updateAlgorithmAndFeedback(u8 channel);
 static void updateOperatorRateScalingAndAttackRate(u8 channel, u8 operator);
@@ -253,13 +254,13 @@ void synth_operatorAmplitudeModulation(
 void synth_enableLfo(u8 enable)
 {
     global.lfoEnable = enable;
-    YM2612_writeReg(0, 0x22, (global.lfoEnable << 3) | global.lfoFrequency);
+    updateGlobalLfo();
 }
 
 void synth_globalLfoFrequency(u8 freq)
 {
     global.lfoFrequency = freq;
-    YM2612_writeReg(0, 0x22, (global.lfoEnable << 3) | global.lfoFrequency);
+    updateGlobalLfo();
 }
 
 static void writeChannelReg(u8 channel, u8 baseReg, u8 data)
@@ -285,6 +286,11 @@ static Channel* getChannel(u8 channel)
 static Operator* getOperator(u8 channel, u8 operator)
 {
     return &getChannel(channel)->operators[operator];
+}
+
+static void updateGlobalLfo(void)
+{
+    YM2612_writeReg(0, 0x22, (global.lfoEnable << 3) | global.lfoFrequency);
 }
 
 static void updateAlgorithmAndFeedback(u8 channel)
