@@ -210,7 +210,7 @@ static void controlChange(u8 status)
         synth_globalLfoFrequency(RANGE(value, 8));
         break;
     case CC_GENMDM_AMS:
-        synth_ams(chan, RANGE(value, 8));
+        synth_ams(chan, RANGE(value, 4));
         break;
     case CC_GENMDM_FMS:
         synth_fms(chan, RANGE(value, 8));

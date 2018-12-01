@@ -179,7 +179,7 @@ static void test_interface_sets_channel_AMS(void** state)
     stub_comm_read_returns_midi_event(expectedStatus, expectedController, 32);
 
     expect_value(__wrap_synth_ams, channel, 0);
-    expect_value(__wrap_synth_ams, ams, 2);
+    expect_value(__wrap_synth_ams, ams, 1);
 
     interface_tick();
 }
