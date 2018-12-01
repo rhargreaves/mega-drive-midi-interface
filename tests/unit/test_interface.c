@@ -370,3 +370,12 @@ static void test_interface_sets_global_LFO_enable(void** state)
 
     interface_tick();
 }
+
+static void test_interface_sets_global_LFO_frequency(void** state)
+{
+    const u8 cc = 1;
+    stub_comm_read_returns_midi_event(STATUS_CC, cc, 16);
+    expect_value(__wrap_synth_globalLfoFrequency, freq, 1);
+
+    interface_tick();
+}

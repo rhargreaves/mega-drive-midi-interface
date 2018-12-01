@@ -36,6 +36,7 @@ MOCKS=midi_process \
 	synth_operatorAmplitudeModulation \
 	synth_operatorReleaseRate \
 	synth_enableLfo \
+	synth_globalLfoFrequency \
 	fm_writeReg \
 	psg_noteOn \
 	psg_noteOff \

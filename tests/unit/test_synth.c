@@ -11,6 +11,7 @@ extern void __real_synth_init(void);
 extern void __real_synth_noteOn(u8 channel);
 extern void __real_synth_noteOff(u8 channel);
 extern void __real_synth_enableLfo(u8 enable);
+extern void __real_synth_globalLfoFrequency(u8 freq);
 extern void __real_synth_pitch(u8 channel, u8 octave, u16 freqNumber);
 extern void __real_synth_totalLevel(u8 channel, u8 totalLevel);
 extern void __real_synth_stereo(u8 channel, u8 stereo);
@@ -290,9 +291,11 @@ static void test_synth_sets_operator_amplitude_modulation_and_first_decay_rate(
     }
 }
 
-static void test_synth_sets_global_LFO_enable(void** state)
+static void test_synth_sets_global_LFO_enable_and_frequency(void** state)
 {
     const u8 baseReg = 0x22;
-    expect_ym2612_write_reg(0, baseReg, 1 << 3);
+    expect_ym2612_write_reg_any_data(0, baseReg);
     __real_synth_enableLfo(1);
+    expect_ym2612_write_reg(0, baseReg, (1 << 3) | 1);
+    __real_synth_globalLfoFrequency(1);
 }

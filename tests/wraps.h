@@ -3,6 +3,7 @@
 
 void __wrap_synth_init(void);
 void __wrap_synth_enableLfo(u8 enable);
+void __wrap_synth_globalLfoFrequency(u8 freq);
 void __wrap_synth_noteOn(u8 channel);
 void __wrap_synth_noteOff(u8 channel);
 void __wrap_synth_pitch(u8 channel, u8 octave, u16 freqNumber);

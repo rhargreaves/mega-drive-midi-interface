@@ -2,6 +2,15 @@
 #include <memory.h>
 #include <ym2612.h>
 
+typedef struct Global Global;
+
+struct Global {
+    u8 lfoEnable;
+    u8 lfoFrequency;
+};
+
+static Global global = { .lfoEnable = 0, .lfoFrequency = 0 };
+
 typedef struct Operator Operator;
 
 struct Operator {
@@ -243,7 +252,14 @@ void synth_operatorAmplitudeModulation(
 
 void synth_enableLfo(u8 enable)
 {
-    YM2612_writeReg(0, 0x22, enable << 3);
+    global.lfoEnable = enable;
+    YM2612_writeReg(0, 0x22, (global.lfoEnable << 3) | global.lfoFrequency);
+}
+
+void synth_globalLfoFrequency(u8 freq)
+{
+    global.lfoFrequency = freq;
+    YM2612_writeReg(0, 0x22, (global.lfoEnable << 3) | global.lfoFrequency);
 }
 
 static void writeChannelReg(u8 channel, u8 baseReg, u8 data)

@@ -58,6 +58,7 @@
 #define CC_GENMDM_AMPLITUDE_MODULATION_OP3 72
 #define CC_GENMDM_AMPLITUDE_MODULATION_OP4 73
 #define CC_GENMDM_GLOBAL_LFO_ENABLE 74
+#define CC_GENMDM_GLOBAL_LFO_FREQUENCY 1
 #define CC_ALL_NOTES_OFF 123
 
 static u8 lastUnknownStatus = 0;
@@ -202,6 +203,9 @@ static void controlChange(u8 status)
         break;
     case CC_GENMDM_GLOBAL_LFO_ENABLE:
         synth_enableLfo(RANGE(value, 2));
+        break;
+    case CC_GENMDM_GLOBAL_LFO_FREQUENCY:
+        synth_globalLfoFrequency(RANGE(value, 8));
         break;
     default:
         lastUnknownControlChange.controller = controller;

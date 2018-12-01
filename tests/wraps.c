@@ -15,6 +15,11 @@ void __wrap_synth_enableLfo(u8 enable)
     check_expected(enable);
 }
 
+void __wrap_synth_globalLfoFrequency(u8 freq)
+{
+    check_expected(freq);
+}
+
 void __wrap_synth_noteOn(u8 channel)
 {
     check_expected(channel);

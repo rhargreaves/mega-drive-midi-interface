@@ -70,6 +70,7 @@ For example: A MIDI value of 32, with CC range of 8 translates into to a YM2612 
 | 59-62 | FM Release Rate OP1-4         | 16    |
 | 70-73 | FM Amplitude Modulation OP1-4 | 2     |
 | 74    | FM Global LFO Enable          | 2     |
+| 1     | FM Global LFO Frequency       | 8     |
 
 ## Build & Test
 
