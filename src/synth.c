@@ -88,6 +88,7 @@ void synth_init(void)
             updateOperatorMultipleAndDetune(chan, op);
             updateOperatorRateScalingAndAttackRate(chan, op);
             updateOperatorAmplitudeModulationAndFirstDecayRate(chan, op);
+            updateOperatorReleaseRateAndSecondaryAmplitude(chan, op);
         }
 
         writeChannelReg(chan, 0x40, 0x23); // Total Level
@@ -98,11 +99,6 @@ void synth_init(void)
         writeChannelReg(chan, 0x74, 2);
         writeChannelReg(chan, 0x78, 2);
         writeChannelReg(chan, 0x7C, 2);
-        writeChannelReg(chan, 0x80, 0x11); // D1L/RR
-        writeChannelReg(chan, 0x84, 0x11);
-        writeChannelReg(chan, 0x88, 0x11);
-        writeChannelReg(chan, 0x8C, 0xA6);
-
         writeChannelReg(chan, 0xB4, 0xC0);
     }
     YM2612_writeReg(0, 0x90, 0); // Proprietary
