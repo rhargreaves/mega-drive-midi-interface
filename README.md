@@ -98,4 +98,6 @@ make all
 
 ## Contributions
 
-Pull requests are welcome.
+Pull requests are welcome, as are donations!
+
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4VY6LCUMYLD42&source=url)
