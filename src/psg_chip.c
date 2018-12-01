@@ -2,13 +2,13 @@
 #include <psg.h>
 #include <types.h>
 
-#define ATTENUATION_OFF 0xF
-#define ATTENUATION_ON 0
+#define ATTENUATION_SILENCE 0xF
+#define ATTENUATION_LOUDEST 0
 
 static void applyAttenuation(u8 channel);
 
-static u8 attenuations[]
-    = { ATTENUATION_ON, ATTENUATION_ON, ATTENUATION_ON, ATTENUATION_ON };
+static u8 attenuations[] = { ATTENUATION_LOUDEST, ATTENUATION_LOUDEST,
+    ATTENUATION_LOUDEST, ATTENUATION_LOUDEST };
 
 static void applyAttenuation(u8 channel)
 {
@@ -17,7 +17,7 @@ static void applyAttenuation(u8 channel)
 
 void psg_noteOff(u8 channel)
 {
-    PSG_setEnvelope(channel, ATTENUATION_OFF);
+    PSG_setEnvelope(channel, ATTENUATION_SILENCE);
 }
 
 void psg_noteOn(u8 channel, u16 freq)
