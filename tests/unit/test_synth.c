@@ -129,6 +129,20 @@ static void test_synth_sets_total_level_reg_chan_for_algorithms_5_and_6(
         }
 }
 
+static void test_synth_sets_total_level_reg_chan_for_algorithm_7(void** state)
+{
+    const u8 algorithm = 7;
+    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
+        expect_ym2612_write_channel_any_data(chan, 0xB0);
+        expect_ym2612_write_operator(chan, 0, 0x40, 0);
+        expect_ym2612_write_operator(chan, 1, 0x40, 0);
+        expect_ym2612_write_operator(chan, 2, 0x40, 0);
+        expect_ym2612_write_operator(chan, 3, 0x40, 0);
+        __real_synth_algorithm(chan, algorithm);
+        __real_synth_totalLevel(chan, 0);
+    }
+}
+
 static void test_synth_sets_stereo_reg_chan(void** state)
 {
     const u8 stereo = 1;

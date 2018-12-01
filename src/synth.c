@@ -149,6 +149,12 @@ void synth_totalLevel(u8 channel, u8 totalLevel)
         writeOperatorReg(channel, 2, 0x40, totalLevel);
         writeOperatorReg(channel, 3, 0x40, totalLevel);
         break;
+    case 7:
+        writeOperatorReg(channel, 0, 0x40, totalLevel);
+        writeOperatorReg(channel, 1, 0x40, totalLevel);
+        writeOperatorReg(channel, 2, 0x40, totalLevel);
+        writeOperatorReg(channel, 3, 0x40, totalLevel);
+        break;
     default:
         writeOperatorReg(channel, 3, 0x40, totalLevel);
         break;
