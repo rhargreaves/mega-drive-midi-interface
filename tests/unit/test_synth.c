@@ -94,10 +94,13 @@ static void test_synth_sets_octave_and_freq_reg_chan(void** state)
 static void test_synth_sets_total_level_reg_chan_for_algorithms_0_to_3(
     void** state)
 {
-    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
-        expect_ym2612_write_operator(chan, 3, 0x40, 0);
-        __real_synth_totalLevel(chan, 0);
-    }
+    for (u8 algorithm = 0; algorithm < 4; algorithm++)
+        for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
+            expect_ym2612_write_channel_any_data(chan, 0xB0);
+            expect_ym2612_write_operator(chan, 3, 0x40, 0);
+            __real_synth_algorithm(chan, algorithm);
+            __real_synth_totalLevel(chan, 0);
+        }
 }
 
 static void test_synth_sets_total_level_reg_chan_for_algorithm_4(void** state)
