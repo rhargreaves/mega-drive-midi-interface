@@ -137,7 +137,13 @@ void synth_pitch(u8 channel, u8 octave, u16 freqNumber)
 
 void synth_totalLevel(u8 channel, u8 totalLevel)
 {
-    writeChannelReg(channel, 0x4C, totalLevel);
+    Channel* chan = getChannel(channel);
+    if (chan->algorithm == 4) {
+        writeOperatorReg(channel, 1, 0x40, totalLevel);
+        writeOperatorReg(channel, 3, 0x40, totalLevel);
+    } else {
+        writeOperatorReg(channel, 3, 0x40, totalLevel);
+    }
 }
 
 void synth_stereo(u8 channel, u8 stereo)
