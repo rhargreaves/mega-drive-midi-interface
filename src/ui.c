@@ -15,7 +15,7 @@
 #define RIGHTED_TEXT_X(text) (MAX_EFFECTIVE_X - (sizeof(text) - 1) + 1)
 #define CENTRED_TEXT_X(text) ((MAX_EFFECTIVE_X - (sizeof(text) - 1)) / 2)
 
-#define FRAMES_BEFORE_UPDATE 10
+#define FRAMES_BEFORE_UPDATE 5
 
 static const char HEADER[] = "Mega Drive MIDI Interface";
 static const char CHAN_HEADER1[] = "       FM              PSG    ";
