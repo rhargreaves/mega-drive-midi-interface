@@ -1,6 +1,7 @@
 #include "ui.h"
 #include "comm.h"
 #include "interface.h"
+#include "synth.h"
 #include <genesis.h>
 
 #define MAX_Y 27
@@ -59,9 +60,18 @@ static void printHeader(void)
 
 static void printActivity(void)
 {
+    const u8 ACTIVITY_X = MARGIN_X + 3;
+    const u8 ACTIVITY_Y = MARGIN_Y + 6;
+
     VDP_setTextPalette(PAL2);
-    VDP_drawText(
-        CHAN_ACTIVITY, (MAX_X - sizeof(CHAN_ACTIVITY)) / 2, MARGIN_Y + 6);
+    u8 busy = synth_busy();
+    for (u8 chan; chan < MAX_FM_CHANS; chan++) {
+        if ((busy >> chan) & 1) {
+            VDP_drawText("*", (chan * 3) + ACTIVITY_X, ACTIVITY_Y);
+        } else {
+            VDP_clearText((chan * 3) + ACTIVITY_X, ACTIVITY_Y, 1);
+        }
+    }
     VDP_setTextPalette(PAL0);
 }
 
