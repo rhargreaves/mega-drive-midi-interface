@@ -9,12 +9,16 @@
 #define MAX_X 39
 #define MARGIN_X 1
 #define MARGIN_Y 1
-#define MAX_EFFECTIVE_X MAX_X - MARGIN_X - MARGIN_X
-#define MAX_EFFECTIVE_Y MAX_Y - MARGIN_Y - MARGIN_Y
+#define MAX_EFFECTIVE_X (MAX_X - MARGIN_X - MARGIN_X)
+#define MAX_EFFECTIVE_Y (MAX_Y - MARGIN_Y - MARGIN_Y)
 #define MAX_ERROR_X 30
 #define ERROR_Y (MAX_EFFECTIVE_Y - 2)
 #define RIGHTED_TEXT_X(text) (MAX_EFFECTIVE_X - (sizeof(text) - 1) + 1)
 #define CENTRED_TEXT_X(text) ((MAX_EFFECTIVE_X - (sizeof(text) - 1)) / 2)
+#define CHAN_X_GAP 3
+#define ACTIVITY_FM_X 3
+#define ACTIVITY_PSG_X (ACTIVITY_FM_X + ((MAX_FM_CHANS + 1) * CHAN_X_GAP))
+#define ACTIVITY_Y 6
 
 #define FRAMES_BEFORE_UPDATE_ACTIVITY 10
 #define FRAMES_BEFORE_UPDATE_LOAD 50
@@ -33,6 +37,7 @@ static void printActivity(void);
 static void printErrorText(const char* text);
 static void drawText(const char* text, u16 x, u16 y);
 static void clearText(u16 x, u16 y, u16 w);
+static void printActivityFromChipBusy(u8 busy, u16 maxChannels, u16 x);
 
 void ui_init(void)
 {
@@ -81,29 +86,21 @@ static void printChannels(void)
 
 static void printActivity(void)
 {
-    const u8 CHAN_X_GAP = 3;
-    const u8 ACTIVITY_FM_X = 3;
-    const u8 ACTIVITY_PSG_X = ACTIVITY_FM_X + ((MAX_FM_CHANS + 1) * CHAN_X_GAP);
-    const u8 ACTIVITY_Y = 6;
-
     VDP_setTextPalette(PAL2);
-    u8 busy = synth_busy();
-    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
-        if ((busy >> chan) & 1) {
-            drawText("*", (chan * CHAN_X_GAP) + ACTIVITY_FM_X, ACTIVITY_Y);
-        } else {
-            clearText((chan * CHAN_X_GAP) + ACTIVITY_FM_X, ACTIVITY_Y, 1);
-        }
-    }
-    busy = psg_busy();
-    for (u8 chan = 0; chan < MAX_PSG_CHANS; chan++) {
-        if ((busy >> chan) & 1) {
-            drawText("*", (chan * CHAN_X_GAP) + ACTIVITY_PSG_X, ACTIVITY_Y);
-        } else {
-            clearText((chan * CHAN_X_GAP) + ACTIVITY_PSG_X, ACTIVITY_Y, 1);
-        }
-    }
+    printActivityFromChipBusy(synth_busy(), MAX_FM_CHANS, ACTIVITY_FM_X);
+    printActivityFromChipBusy(psg_busy(), MAX_PSG_CHANS, ACTIVITY_PSG_X);
     VDP_setTextPalette(PAL0);
+}
+
+static void printActivityFromChipBusy(u8 busy, u16 maxChannels, u16 x)
+{
+    for (u8 chan = 0; chan < maxChannels; chan++) {
+        if ((busy >> chan) & 1) {
+            drawText("*", (chan * CHAN_X_GAP) + x, ACTIVITY_Y);
+        } else {
+            clearText((chan * CHAN_X_GAP) + x, ACTIVITY_Y, 1);
+        }
+    }
 }
 
 static u16 loadPercent(void)
