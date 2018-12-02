@@ -37,7 +37,7 @@ static void printActivity(void);
 static void printErrorText(const char* text);
 static void drawText(const char* text, u16 x, u16 y);
 static void clearText(u16 x, u16 y, u16 w);
-static void printActivityFromChipBusy(u8 busy, u16 maxChannels, u16 x);
+static void printActivityForBusy(u8 busy, u16 maxChannels, u16 x);
 
 void ui_init(void)
 {
@@ -87,12 +87,12 @@ static void printChannels(void)
 static void printActivity(void)
 {
     VDP_setTextPalette(PAL2);
-    printActivityFromChipBusy(synth_busy(), MAX_FM_CHANS, ACTIVITY_FM_X);
-    printActivityFromChipBusy(psg_busy(), MAX_PSG_CHANS, ACTIVITY_PSG_X);
+    printActivityForBusy(synth_busy(), MAX_FM_CHANS, ACTIVITY_FM_X);
+    printActivityForBusy(psg_busy(), MAX_PSG_CHANS, ACTIVITY_PSG_X);
     VDP_setTextPalette(PAL0);
 }
 
-static void printActivityFromChipBusy(u8 busy, u16 maxChannels, u16 x)
+static void printActivityForBusy(u8 busy, u16 maxChannels, u16 x)
 {
     for (u8 chan = 0; chan < maxChannels; chan++) {
         if ((busy >> chan) & 1) {
