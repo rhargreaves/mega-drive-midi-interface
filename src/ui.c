@@ -5,17 +5,17 @@
 #include <genesis.h>
 
 #define MAX_Y 27
-#define MAX_X 40
-#define MAX_ERROR_X 30
+#define MAX_X 39
 #define MARGIN_X 1
 #define MARGIN_Y 1
+#define MAX_ERROR_X 30
 #define ERROR_Y MAX_Y - MARGIN_Y - 2
+
 #define FRAMES_BEFORE_UPDATE 10
 
 static const char HEADER[] = "Mega Drive MIDI Interface";
 static const char CHAN_HEADER1[] = "       FM              PSG    ";
 static const char CHAN_HEADER2[] = "1  2  3  4  5  6    1  2  3  4";
-static const char CHAN_ACTIVITY[] = "*  *  *  *  *  *    *  *  *  *";
 
 static void vsync(void);
 static void printChannels(void);
@@ -44,18 +44,18 @@ static void vsync(void)
     }
 }
 
+static void printHeader(void)
+{
+    VDP_drawText(HEADER, (MAX_X - (sizeof(HEADER) - 1)) / 2, MARGIN_Y);
+    VDP_drawText(BUILD, MAX_X - (sizeof(BUILD) - 1), MAX_Y - MARGIN_Y);
+}
+
 static void printChannels(void)
 {
     VDP_drawText(
         CHAN_HEADER1, (MAX_X - sizeof(CHAN_HEADER1)) / 2, MARGIN_Y + 2);
     VDP_drawText(
         CHAN_HEADER2, (MAX_X - sizeof(CHAN_HEADER2)) / 2, MARGIN_Y + 4);
-}
-
-static void printHeader(void)
-{
-    VDP_drawText(HEADER, (MAX_X - sizeof(HEADER)) / 2, MARGIN_Y);
-    VDP_drawText(BUILD, MAX_X - sizeof(BUILD), MAX_Y - MARGIN_Y);
 }
 
 static void printActivity(void)
@@ -65,7 +65,7 @@ static void printActivity(void)
 
     VDP_setTextPalette(PAL2);
     u8 busy = synth_busy();
-    for (u8 chan; chan < MAX_FM_CHANS; chan++) {
+    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         if ((busy >> chan) & 1) {
             VDP_drawText("*", (chan * 3) + ACTIVITY_X, ACTIVITY_Y);
         } else {
