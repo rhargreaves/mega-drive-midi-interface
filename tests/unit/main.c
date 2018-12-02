@@ -83,6 +83,8 @@ int main(void)
             test_synth_sets_operator_amplitude_modulation_and_first_decay_rate,
             test_synth_setup),
         cmocka_unit_test(test_synth_sets_global_LFO_enable_and_frequency),
+        cmocka_unit_test_setup(
+            test_synth_sets_busy_indicators, test_synth_setup),
 
         cmocka_unit_test(test_psg_chip_sets_note_on_psg),
         cmocka_unit_test(test_psg_chip_sets_note_off_psg),

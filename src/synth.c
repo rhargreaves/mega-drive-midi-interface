@@ -39,6 +39,8 @@ struct Channel {
 
 static Channel channels[MAX_FM_CHANS];
 
+static u8 noteOn;
+
 static const Channel DEFAULT_CHANNEL = { .algorithm = 2,
     .feedback = 6,
     .stereo = 3,
@@ -86,6 +88,9 @@ static const Channel DEFAULT_CHANNEL = { .algorithm = 2,
             .secondaryDecayRate = 2,
             .totalLevel = 0 },
     } };
+
+#define SET_BIT(var, bit) var |= 1 << bit;
+#define CLEAR_BIT(var, bit) var &= ~(1 << bit);
 
 static void initChannel(u8 chan);
 static void updateGlobalLfo(void);
@@ -136,11 +141,13 @@ static void initChannel(u8 chan)
 void synth_noteOn(u8 channel)
 {
     YM2612_writeReg(0, 0x28, 0xF0 + keyOnOffRegOffset(channel));
+    SET_BIT(noteOn, channel);
 }
 
 void synth_noteOff(u8 channel)
 {
     YM2612_writeReg(0, 0x28, keyOnOffRegOffset(channel));
+    CLEAR_BIT(noteOn, channel);
 }
 
 void synth_pitch(u8 channel, u8 octave, u16 freqNumber)
@@ -277,6 +284,11 @@ void synth_fms(u8 channel, u8 fms)
 {
     getChannel(channel)->fms = fms;
     updateStereoAmsFms(channel);
+}
+
+u8 synth_busy(void)
+{
+    return noteOn;
 }
 
 static void writeChannelReg(u8 channel, u8 baseReg, u8 data)

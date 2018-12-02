@@ -309,3 +309,13 @@ static void test_synth_sets_global_LFO_enable_and_frequency(void** state)
     expect_ym2612_write_reg(0, baseReg, (1 << 3) | 1);
     __real_synth_globalLfoFrequency(1);
 }
+
+static void test_synth_sets_busy_indicators(void** state)
+{
+    for (u8 chan = 0; chan < MAX_FM_CHANS; chan += 2) {
+        expect_ym2612_write_reg_any_data(0, 0x28);
+        __real_synth_noteOn(chan);
+    }
+    u8 busy = synth_busy();
+    assert_int_equal(busy, 0b00010101);
+}
