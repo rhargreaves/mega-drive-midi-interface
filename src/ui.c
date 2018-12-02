@@ -54,10 +54,8 @@ static void printHeader(void)
 
 static void printChannels(void)
 {
-    VDP_drawText(
-        CHAN_HEADER1, (MAX_X - sizeof(CHAN_HEADER1)) / 2, MARGIN_Y + 2);
-    VDP_drawText(
-        CHAN_HEADER2, (MAX_X - sizeof(CHAN_HEADER2)) / 2, MARGIN_Y + 4);
+    VDP_drawText(CHAN_HEADER1, CENTRED_TEXT_X(CHAN_HEADER1), MARGIN_Y + 2);
+    VDP_drawText(CHAN_HEADER2, CENTRED_TEXT_X(CHAN_HEADER2), MARGIN_Y + 4);
 }
 
 static void printActivity(void)
