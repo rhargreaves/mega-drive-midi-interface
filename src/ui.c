@@ -16,7 +16,8 @@
 #define RIGHTED_TEXT_X(text) (MAX_EFFECTIVE_X - (sizeof(text) - 1) + 1)
 #define CENTRED_TEXT_X(text) ((MAX_EFFECTIVE_X - (sizeof(text) - 1)) / 2)
 
-#define FRAMES_BEFORE_UPDATE 5
+#define FRAMES_BEFORE_UPDATE_ACTIVITY 10
+#define FRAMES_BEFORE_UPDATE_LOAD 50
 
 static const char HEADER[] = "Mega Drive MIDI Interface";
 static const char CHAN_HEADER1[] = "       FM               PSG    ";
@@ -37,17 +38,22 @@ void ui_init(void)
 {
     printHeader();
     printChannels();
+    printLoad();
     SYS_setVIntCallback(vsync);
 }
 
 static void vsync(void)
 {
-    static u8 frame = 0;
-    if (++frame == FRAMES_BEFORE_UPDATE) {
+    static u8 activityFrame = 0;
+    if (++activityFrame == FRAMES_BEFORE_UPDATE_ACTIVITY) {
         printLastError();
-        printLoad();
         printActivity();
-        frame = 0;
+        activityFrame = 0;
+    }
+    static u8 loadFrame = 0;
+    if (++loadFrame == FRAMES_BEFORE_UPDATE_LOAD) {
+        printLoad();
+        loadFrame = 0;
     }
 }
 
@@ -97,7 +103,6 @@ static void printActivity(void)
             clearText((chan * CHAN_X_GAP) + ACTIVITY_PSG_X, ACTIVITY_Y, 1);
         }
     }
-
     VDP_setTextPalette(PAL0);
 }
 
@@ -105,6 +110,9 @@ static u16 loadPercent(void)
 {
     u16 idle = comm_idleCount();
     u16 busy = comm_busyCount();
+    if (idle == 0 && busy == 0) {
+        return 0;
+    }
     return (busy * 100) / (idle + busy);
 }
 
