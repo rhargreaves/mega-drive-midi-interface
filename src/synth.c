@@ -1,4 +1,5 @@
 #include "synth.h"
+#include "bits.h"
 #include <memory.h>
 #include <ym2612.h>
 
@@ -88,9 +89,6 @@ static const Channel DEFAULT_CHANNEL = { .algorithm = 2,
             .secondaryDecayRate = 2,
             .totalLevel = 0 },
     } };
-
-#define SET_BIT(var, bit) var |= 1 << bit;
-#define CLEAR_BIT(var, bit) var &= ~(1 << bit);
 
 static void initChannel(u8 chan);
 static void updateGlobalLfo(void);
