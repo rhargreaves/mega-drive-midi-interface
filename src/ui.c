@@ -1,6 +1,7 @@
 #include "ui.h"
 #include "comm.h"
 #include "interface.h"
+#include "psg_chip.h"
 #include "synth.h"
 #include <genesis.h>
 
@@ -18,8 +19,8 @@
 #define FRAMES_BEFORE_UPDATE 5
 
 static const char HEADER[] = "Mega Drive MIDI Interface";
-static const char CHAN_HEADER1[] = "       FM              PSG    ";
-static const char CHAN_HEADER2[] = "1  2  3  4  5  6    1  2  3  4";
+static const char CHAN_HEADER1[] = "       FM               PSG    ";
+static const char CHAN_HEADER2[] = "1  2  3  4  5  6     1  2  3  4";
 
 static void vsync(void);
 static void printChannels(void);
@@ -74,19 +75,29 @@ static void printChannels(void)
 
 static void printActivity(void)
 {
-    const u8 ACTIVITY_X = 3;
-    const u8 ACTIVITY_Y = 6;
     const u8 CHAN_X_GAP = 3;
+    const u8 ACTIVITY_FM_X = 3;
+    const u8 ACTIVITY_PSG_X = ACTIVITY_FM_X + ((MAX_FM_CHANS + 1) * CHAN_X_GAP);
+    const u8 ACTIVITY_Y = 6;
 
     VDP_setTextPalette(PAL2);
     u8 busy = synth_busy();
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         if ((busy >> chan) & 1) {
-            drawText("*", (chan * CHAN_X_GAP) + ACTIVITY_X, ACTIVITY_Y);
+            drawText("*", (chan * CHAN_X_GAP) + ACTIVITY_FM_X, ACTIVITY_Y);
         } else {
-            clearText((chan * CHAN_X_GAP) + ACTIVITY_X, ACTIVITY_Y, 1);
+            clearText((chan * CHAN_X_GAP) + ACTIVITY_FM_X, ACTIVITY_Y, 1);
         }
     }
+    busy = psg_busy();
+    for (u8 chan = 0; chan < MAX_PSG_CHANS; chan++) {
+        if ((busy >> chan) & 1) {
+            drawText("*", (chan * CHAN_X_GAP) + ACTIVITY_PSG_X, ACTIVITY_Y);
+        } else {
+            clearText((chan * CHAN_X_GAP) + ACTIVITY_PSG_X, ACTIVITY_Y, 1);
+        }
+    }
+
     VDP_setTextPalette(PAL0);
 }
 
