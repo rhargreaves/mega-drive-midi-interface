@@ -12,7 +12,7 @@
 #define MAX_EFFECTIVE_Y MAX_Y - MARGIN_Y - MARGIN_Y
 #define MAX_ERROR_X 30
 #define ERROR_Y (MAX_EFFECTIVE_Y - 2)
-#define RIGHTED_TEXT_X(text) (MAX_EFFECTIVE_X - (sizeof(text) - 1)) + 1
+#define RIGHTED_TEXT_X(text) (MAX_EFFECTIVE_X - (sizeof(text) - 1) + 1)
 #define CENTRED_TEXT_X(text) ((MAX_EFFECTIVE_X - (sizeof(text) - 1)) / 2)
 
 #define FRAMES_BEFORE_UPDATE 10
