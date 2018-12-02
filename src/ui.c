@@ -9,7 +9,9 @@
 #define MARGIN_X 1
 #define MARGIN_Y 1
 #define MAX_ERROR_X 30
-#define ERROR_Y MAX_Y - MARGIN_Y - 2
+#define ERROR_Y (MAX_Y - MARGIN_Y - 2)
+#define RIGHTED_TEXT_X(text) (MAX_X - (sizeof(text) - 1))
+#define CENTRED_TEXT_X(text) ((MAX_X - (sizeof(text) - 1)) / 2)
 
 #define FRAMES_BEFORE_UPDATE 10
 
@@ -46,8 +48,8 @@ static void vsync(void)
 
 static void printHeader(void)
 {
-    VDP_drawText(HEADER, (MAX_X - (sizeof(HEADER) - 1)) / 2, MARGIN_Y);
-    VDP_drawText(BUILD, MAX_X - (sizeof(BUILD) - 1), MAX_Y - MARGIN_Y);
+    VDP_drawText(HEADER, CENTRED_TEXT_X(HEADER), MARGIN_Y);
+    VDP_drawText(BUILD, RIGHTED_TEXT_X(BUILD), MAX_Y - MARGIN_Y);
 }
 
 static void printChannels(void)
@@ -62,14 +64,15 @@ static void printActivity(void)
 {
     const u8 ACTIVITY_X = MARGIN_X + 3;
     const u8 ACTIVITY_Y = MARGIN_Y + 6;
+    const u8 CHAN_X_GAP = 3;
 
     VDP_setTextPalette(PAL2);
     u8 busy = synth_busy();
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         if ((busy >> chan) & 1) {
-            VDP_drawText("*", (chan * 3) + ACTIVITY_X, ACTIVITY_Y);
+            VDP_drawText("*", (chan * CHAN_X_GAP) + ACTIVITY_X, ACTIVITY_Y);
         } else {
-            VDP_clearText((chan * 3) + ACTIVITY_X, ACTIVITY_Y, 1);
+            VDP_clearText((chan * CHAN_X_GAP) + ACTIVITY_X, ACTIVITY_Y, 1);
         }
     }
     VDP_setTextPalette(PAL0);
@@ -88,7 +91,7 @@ static void printLoad(void)
     sprintf(loadText, "Load %i%s  ", loadPercent(), "%");
     comm_resetCounts();
     VDP_setTextPalette(PAL0);
-    VDP_drawText(loadText, 1, MAX_Y - MARGIN_Y);
+    VDP_drawText(loadText, MARGIN_X, MAX_Y - MARGIN_Y);
 }
 
 static void printLastError(void)
@@ -117,5 +120,6 @@ static void printErrorText(const char* text)
 {
     VDP_setTextPalette(PAL1);
     VDP_clearText(1, ERROR_Y, MAX_ERROR_X);
-    VDP_drawText(text, 1, ERROR_Y);
+    VDP_drawText(text, MARGIN_X, ERROR_Y);
+    VDP_setTextPalette(PAL0);
 }
