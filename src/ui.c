@@ -8,12 +8,13 @@
 #define MAX_ERROR_X 30
 #define MARGIN_X 1
 #define MARGIN_Y 1
-#define ERROR_Y MAX_Y - MARGIN_Y - 1
+#define ERROR_Y MAX_Y - MARGIN_Y - 2
 #define FRAMES_BEFORE_UPDATE 10
 
-static const char HEADER[] = "Sega Mega Drive MIDI Interface";
-static const char CHAN_HEADER1[] = "       FM               PSG   ";
+static const char HEADER[] = "Mega Drive MIDI Interface";
+static const char CHAN_HEADER1[] = "       FM              PSG    ";
 static const char CHAN_HEADER2[] = "1  2  3  4  5  6    1  2  3  4";
+static const char CHAN_ACTIVITY[] = "*  *  *  *  *  *    *  *  *  *";
 
 static void vsync(void);
 static void printChannels(void);
@@ -21,6 +22,7 @@ static void printHeader(void);
 static void printLoad(void);
 static u16 loadPercent(void);
 static void printLastError(void);
+static void printActivity(void);
 static void printErrorText(const char* text);
 
 void ui_init(void)
@@ -36,6 +38,7 @@ static void vsync(void)
     if (++frame == FRAMES_BEFORE_UPDATE) {
         printLastError();
         printLoad();
+        printActivity();
         frame = 0;
     }
 }
@@ -52,6 +55,14 @@ static void printHeader(void)
 {
     VDP_drawText(HEADER, (MAX_X - sizeof(HEADER)) / 2, MARGIN_Y);
     VDP_drawText(BUILD, MAX_X - sizeof(BUILD), MAX_Y - MARGIN_Y);
+}
+
+static void printActivity(void)
+{
+    VDP_setTextPalette(PAL2);
+    VDP_drawText(
+        CHAN_ACTIVITY, (MAX_X - sizeof(CHAN_ACTIVITY)) / 2, MARGIN_Y + 6);
+    VDP_setTextPalette(PAL0);
 }
 
 static u16 loadPercent(void)
