@@ -119,10 +119,12 @@ static u16 loadPercent(void)
 static void printLoad(void)
 {
     static char loadText[16];
-    sprintf(loadText, "Load %i%s  ", loadPercent(), "%");
+    u8 percent = loadPercent();
+    VDP_setTextPalette(percent > 70 ? PAL1 : PAL0);
+    sprintf(loadText, "Load %i%s  ", percent, "%");
     comm_resetCounts();
-    VDP_setTextPalette(PAL0);
     drawText(loadText, 0, MAX_EFFECTIVE_Y);
+    VDP_setTextPalette(PAL0);
 }
 
 static void printLastError(void)
