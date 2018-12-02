@@ -131,7 +131,7 @@ static void printLastError(void)
 static void printErrorText(const char* text)
 {
     VDP_setTextPalette(PAL1);
-    VDP_clearText(1, ERROR_Y, MAX_ERROR_X);
-    VDP_drawText(text, MARGIN_X, ERROR_Y);
+    clearText(0, ERROR_Y, MAX_ERROR_X);
+    drawText(text, 0, ERROR_Y);
     VDP_setTextPalette(PAL0);
 }
