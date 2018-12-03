@@ -1,6 +1,6 @@
 # Sega Mega Drive MIDI Interface [![CircleCI](https://circleci.com/gh/rhargreaves/mega-drive-midi-interface.svg?style=svg)](https://circleci.com/gh/rhargreaves/mega-drive-midi-interface)
 
-Exposes the Mega Drive's YM2612 FM Synth and PSG chip as a MIDI interface
+Exposes the Mega Drive's YM2612 FM Synth and PSG as a MIDI interface
 
 <p align="center">
     <img src="https://github.com/rhargreaves/mega-drive-midi-interface/raw/master/docs/screenshot.png" width="600" />
@@ -39,15 +39,15 @@ You can download pre-built ROMs from [releases](https://github.com/rhargreaves/m
 
 ### MIDI Specification
 
-| CC  | Description    | Effect                | Values                                             |
-| --- | -------------- | --------------------- | -------------------------------------------------- |
-| 7   | Channel Volume | FM: Op 4 Total Level  | 0 - 127: [Logarithmic](src/midi.c#L24)             |
-|     |                | PSG: Attenuation      | 0 - 127: [Logarithmic](src/midi.c#L45)             |
-| 10  | Panning        | Stereo                | 0 - 31: Left<br>32 - 96: Centre<br>97 - 127: Right |
-| 123 | All Notes Off  | FM: Key Off           | 0                                                  |
-|     |                | PSG: Max. Attenuation | 0                                                  |
+| CC  | Description    | Effect                     | Values                                             |
+| --- | -------------- | -------------------------- | -------------------------------------------------- |
+| 7   | Channel Volume | FM: Output Op. Total Level | 0 - 127: [Logarithmic](src/midi.c#L24)             |
+|     |                | PSG: Attenuation           | 0 - 127: [Logarithmic](src/midi.c#L45)             |
+| 10  | Panning        | Stereo                     | 0 - 31: Left<br>32 - 96: Centre<br>97 - 127: Right |
+| 123 | All Notes Off  | FM: Key Off                | 0                                                  |
+|     |                | PSG: Max. Attenuation      | 0                                                  |
 
-### Gen/MDM Compatibility
+### GenMDM Compatibility
 
 Range determines how the possible 128 MIDI values are divided to give the respective YM2612 register value, using the formula:
 
@@ -55,24 +55,38 @@ _midiValue / (128 / range) = registerValue_
 
 For example: A MIDI value of 32, with CC range of 8 translates into to a YM2612 register value of 2.
 
-| CC    | Description                   | Range |
-| ----- | ----------------------------- | ----- |
-| 14    | FM Algorithm                  | 8     |
-| 15    | FM Feedback                   | 8     |
-| 16-19 | FM Total Level OP1-4          | 128   |
-| 20-23 | FM Multiple OP1-4             | 16    |
-| 24-27 | FM Detune OP1-4               | 8     |
-| 39-42 | FM Rate Scaling OP1-4         | 4     |
-| 43-46 | FM Attack Rate OP1-4          | 32    |
-| 47-50 | FM First Decay Rate OP1-4     | 32    |
-| 51-54 | FM Second Decay Rate OP1-4    | 16    |
-| 55-58 | FM Secondary Amplitude OP1-4  | 16    |
-| 59-62 | FM Release Rate OP1-4         | 16    |
-| 70-73 | FM Amplitude Modulation OP1-4 | 2     |
-| 74    | FM Global LFO Enable          | 2     |
-| 75    | FM Frequency Modulation Level | 8     |
-| 76    | FM Amplitude Modulation Level | 4     |
-| 1     | FM Global LFO Frequency       | 8     |
+#### Global FM Parameters
+
+| CC  | Description          | Range |
+| --- | -------------------- | ----- |
+| 74  | Global LFO Enable    | 2     |
+| 1   | Global LFO Frequency | 8     |
+
+#### FM Channels
+
+| CC  | Description                      | Range |
+| --- | -------------------------------- | ----- |
+| 14  | Algorithm                        | 8     |
+| 15  | Feedback                         | 8     |
+| 75  | Frequency Modulation Level (FMS) | 8     |
+| 76  | Amplitude Modulation Level (AMS) | 4     |
+
+#### FM Channel Operators
+
+Each CC relates to one of the four FM channel operators for the parameter type
+
+| CC    | Description               | Range |
+| ----- | ------------------------- | ----- |
+| 16-19 | Total Level (TL)          | 128   |
+| 20-23 | Multiple (MUL)            | 16    |
+| 24-27 | Detune (DT1)              | 8     |
+| 39-42 | Rate Scaling (RS)         | 4     |
+| 43-46 | Attack Rate (AR)          | 32    |
+| 47-50 | First Decay Rate (D1R)    | 32    |
+| 51-54 | Second Decay Rate (D2R)   | 16    |
+| 55-58 | Secondary Amplitude (D1L) | 16    |
+| 59-62 | Release Rate (RR)         | 16    |
+| 70-73 | Amplitude Modulation (AM) | 2     |
 
 ## Build & Test
 
