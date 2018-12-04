@@ -71,10 +71,11 @@ UNIT_TEST_LDFLAGS=$(LDFLAGS) $(foreach MOCK,$(MOCKS),-Wl,--wrap=$(MOCK))
 
 SRC=$(shell find ../src/* -type f -name '*.c' ! -name '*main.c*' -printf '%f\n')
 COMMON_TEST_SRC=$(shell find * -maxdepth 0 -type f -name '*.c' -print)
-UNIT_TEST_SRC=$(COMMON_TEST_SRC) $(shell find ./unit/* -maxdepth 0 -type f -name '*.c' -print)
-SYSTEM_TEST_SRC=$(COMMON_TEST_SRC) $(shell find ./system/* -maxdepth 0 -type f -name '*.c' -print)
+UNIT_TEST_SRC=$(shell find ./unit/* -maxdepth 0 -type f -name '*.c' -print)
+SYSTEM_TEST_SRC=$(shell find ./system/* -maxdepth 0 -type f -name '*.c' -print)
 
 SRC_OBJ=$(patsubst %.c,obj/%.o,$(SRC))
+COMMON_TEST_OBJ=$(patsubst %.c,obj/%.o,$(COMMON_TEST_SRC))
 UNIT_TEST_OBJ=$(patsubst %.c,obj/%.o,$(UNIT_TEST_SRC))
 SYSTEM_TEST_OBJ=$(patsubst %.c,obj/%.o,$(SYSTEM_TEST_SRC))
 BIN_DIR=bin
@@ -106,11 +107,11 @@ $(OBJ_DIR):
 $(OBJ_DIR)/%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(UNIT_TESTS_TARGET): $(SRC_OBJ) $(UNIT_TEST_OBJ)
+$(UNIT_TESTS_TARGET): $(SRC_OBJ) $(UNIT_TEST_OBJ) $(COMMON_TEST_OBJ)
 	mkdir -p $(BIN_DIR)
 	$(CC) -o $@ $^ $(UNIT_TEST_LDFLAGS)
 
-$(SYSTEM_TESTS_TARGET): $(SRC_OBJ) $(SYSTEM_TEST_OBJ)
+$(SYSTEM_TESTS_TARGET): $(SRC_OBJ) $(SYSTEM_TEST_OBJ) $(COMMON_TEST_OBJ)
 	mkdir -p $(BIN_DIR)
 	$(CC) -o $@ $^ $(SYSTEM_TEST_LDFLAGS)
 
