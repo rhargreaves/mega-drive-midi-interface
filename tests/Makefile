@@ -9,7 +9,12 @@ INCLUDE_DIRS+=-I.
 INCLUDE_DIRS+=-I../src
 INCLUDE_DIRS+=-I$(CMOCKA_DIR)/include
 
-CFLAGS=$(INCLUDE_DIRS) -Wno-builtin-declaration-mismatch
+CFLAGS=$(INCLUDE_DIRS) \
+	-Wall \
+	-std=c11 \
+	-Werror \
+	-Wno-builtin-declaration-mismatch \
+	-Wno-unused-function
 
  # list of function signature to mock
 MOCKS=midi_process \

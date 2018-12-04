@@ -1,4 +1,5 @@
 #pragma once
+#include <stdbool.h>
 #include <types.h>
 
 typedef struct ControlChange ControlChange;
@@ -13,3 +14,4 @@ void interface_tick(void);
 void interface_init(void);
 u8 interface_lastUnknownStatus(void);
 ControlChange* interface_lastUnknownCC(void);
+bool interface_polyphonic(void);

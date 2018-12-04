@@ -222,6 +222,11 @@ static void controlChange(u8 status)
     }
 }
 
+bool interface_polyphonic(void)
+{
+    return false;
+}
+
 static void noteOn(u8 status)
 {
     u8 chan = STATUS_CHANNEL(status);

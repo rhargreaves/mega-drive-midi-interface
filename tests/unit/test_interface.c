@@ -174,7 +174,6 @@ static void test_interface_sets_channel_AMS(void** state)
 {
     u8 expectedStatus = STATUS_CC;
     u8 expectedController = 76;
-    u8 expectedValue = 32;
 
     stub_comm_read_returns_midi_event(expectedStatus, expectedController, 32);
 
@@ -188,7 +187,6 @@ static void test_interface_sets_channel_FMS(void** state)
 {
     u8 expectedStatus = STATUS_CC;
     u8 expectedController = 75;
-    u8 expectedValue = 32;
 
     stub_comm_read_returns_midi_event(expectedStatus, expectedController, 32);
 
@@ -406,4 +404,24 @@ static void test_interface_sets_global_LFO_frequency(void** state)
     expect_value(__wrap_synth_globalLfoFrequency, freq, 1);
 
     interface_tick();
+}
+
+static void test_interface_sets_polyphonic_mode(void** state)
+{
+    // const u8 cc = 80;
+    // stub_comm_read_returns_midi_event(STATUS_CC, cc, 64);
+
+    // interface_tick();
+
+    // assert_true(interface_polyphonic());
+}
+
+static void test_interface_unsets_polyphonic_mode(void** state)
+{
+    const u8 cc = 80;
+    stub_comm_read_returns_midi_event(STATUS_CC, cc, 0);
+
+    interface_tick();
+
+    assert_false(interface_polyphonic());
 }

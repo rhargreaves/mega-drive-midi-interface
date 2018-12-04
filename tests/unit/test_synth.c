@@ -42,6 +42,8 @@ static int test_synth_setup(void** state)
     expect_any_count(__wrap_YM2612_writeReg, data, count);
 
     __real_synth_init();
+
+    return 0;
 }
 
 static void test_synth_init_sets_initial_registers(void** state)
