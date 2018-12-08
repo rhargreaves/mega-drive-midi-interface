@@ -11,6 +11,7 @@ AR = $(GENGCC_BIN)/m68k-elf-ar
 LD = $(GENGCC_BIN)/m68k-elf-ld
 RANLIB = $(GENGCC_BIN)/m68k-elf-ranlib
 OBJC = $(GENGCC_BIN)/m68k-elf-objcopy
+OBJDUMP = $(GENGCC_BIN)/m68k-elf-objdump
 BINTOS = $(GENBIN)/bintos
 RESCOMP= $(GENBIN)/rescomp
 XGMTOOL= $(GENBIN)/xgmtool
@@ -26,7 +27,7 @@ BUILD := $(if $(VERSION),v$(VERSION),Dev $(shell date '+%Y-%m-%d %H:%M:%S'))
 INCS = -I. -I$(GENDEV)/sgdk/inc -I$(GENDEV)/m86k-elf/include -I$(GENDEV)/sgdk/res -Isrc
 CCFLAGS = -Wall -std=c11 -Werror \
 	-fno-builtin -DBUILD='"$(BUILD)"' \
-	-m68000 -O3 -c -fomit-frame-pointer
+	-m68000 -O3 -c -fomit-frame-pointer -g
 Z80FLAGS = -vb2
 ASFLAGS = -m68000 --register-prefix-optional
 LIBS =  -L$(GENDEV)/m68k-elf/lib -L$(GENDEV)/lib/gcc/m68k-elf/$(GCC_VER)/* -L$(GENDEV)/sgdk/lib -lmd -lnosys
@@ -65,6 +66,7 @@ bin/%.bin: %.elf
 	mkdir -p bin
 	$(OBJC) -O binary $< temp.bin
 	dd if=temp.bin of=$@ bs=8K conv=sync
+	$(OBJDUMP) -D $< --source > $(ASSEMBLY_OUT)/out.s
 	rm temp.bin
 
 %.elf: $(OBJS) $(BOOT_RESOURCES)
