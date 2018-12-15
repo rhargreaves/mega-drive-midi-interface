@@ -408,12 +408,12 @@ static void test_interface_sets_global_LFO_frequency(void** state)
 
 static void test_interface_sets_polyphonic_mode(void** state)
 {
-    // const u8 cc = 80;
-    // stub_comm_read_returns_midi_event(STATUS_CC, cc, 64);
+    const u8 cc = 80;
+    stub_comm_read_returns_midi_event(STATUS_CC, cc, 64);
 
-    // interface_tick();
+    interface_tick();
 
-    // assert_true(interface_polyphonic());
+    assert_true(interface_polyphonic());
 }
 
 static void test_interface_unsets_polyphonic_mode(void** state)

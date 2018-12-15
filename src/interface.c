@@ -7,7 +7,7 @@
 #define STATUS_CHANNEL(status) status & 0x0F
 #define STATUS_EVENT(status) status >> 4
 
-#define RANGE(value, range) value / (128 / range)
+#define RANGE(value, range) (value / (128 / range))
 
 #define EVENT_NOTE_ON 0x9
 #define EVENT_NODE_OFF 0x8
@@ -60,10 +60,12 @@
 #define CC_GENMDM_GLOBAL_LFO_ENABLE 74
 #define CC_GENMDM_FMS 75
 #define CC_GENMDM_AMS 76
+#define CC_POLYPHONIC_MODE 80
 #define CC_GENMDM_GLOBAL_LFO_FREQUENCY 1
 #define CC_ALL_NOTES_OFF 123
 
 static u8 lastUnknownStatus = 0;
+static bool polyphonic = false;
 static ControlChange lastUnknownControlChange;
 
 static void noteOn(u8 status);
@@ -215,6 +217,8 @@ static void controlChange(u8 status)
     case CC_GENMDM_FMS:
         synth_fms(chan, RANGE(value, 8));
         break;
+    case CC_POLYPHONIC_MODE:
+        polyphonic = RANGE(value, 2) != 0;
     default:
         lastUnknownControlChange.controller = controller;
         lastUnknownControlChange.value = value;
@@ -224,7 +228,7 @@ static void controlChange(u8 status)
 
 bool interface_polyphonic(void)
 {
-    return false;
+    return polyphonic;
 }
 
 static void noteOn(u8 status)
