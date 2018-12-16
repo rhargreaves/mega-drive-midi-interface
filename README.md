@@ -66,6 +66,7 @@ For example: A MIDI value of 32, with CC range of 8 translates into to a YM2612 
 | --- | -------------------- | ----- |
 | 74  | Global LFO Enable    | 2     |
 | 1   | Global LFO Frequency | 8     |
+| 80  | Polyphonic Mode\*    | 2     |
 
 #### FM Channels
 
@@ -92,6 +93,14 @@ Each CC relates to one of the four FM channel operators for the parameter type
 | 55-58 | Secondary Amplitude (D1L) | 16    |
 | 59-62 | Release Rate (RR)         | 16    |
 | 70-73 | Amplitude Modulation (AM) | 2     |
+
+## Polyphonic Mode (CC 80)
+
+When polyphonic mode is enabled, all note on/off events are routed to a pool of
+FM channels, ignoring the specific MIDI channel the event is sent to. This allows for
+polyphony within a single MIDI channel.
+
+If no available FM channels are free, the note on event is dropped.
 
 ## Build & Test
 
