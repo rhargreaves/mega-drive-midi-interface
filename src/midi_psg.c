@@ -24,6 +24,8 @@ static const u8 ATTENUATIONS[] = { 15, 14, 14, 14, 13, 13, 13, 13, 12, 12, 12,
     2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
+static u8 pitches[MAX_PSG_CHANS];
+
 static u8 psgChannel(u8 midiChannel)
 {
     return midiChannel - MIN_PSG_CHAN;
@@ -31,7 +33,9 @@ static u8 psgChannel(u8 midiChannel)
 
 void midi_psg_noteOn(u8 chan, u8 pitch, u8 velocity)
 {
-    psg_noteOn(psgChannel(chan), FREQUENCIES[pitch]);
+    u8 psgChan = psgChannel(chan);
+    pitches[psgChan] = pitch;
+    psg_noteOn(psgChan, FREQUENCIES[pitch]);
 }
 
 void midi_psg_noteOff(u8 chan)
@@ -42,4 +46,16 @@ void midi_psg_noteOff(u8 chan)
 void midi_psg_channelVolume(u8 chan, u8 volume)
 {
     psg_attenuation(psgChannel(chan), ATTENUATIONS[volume]);
+}
+
+void midi_psg_pitchBend(u8 chan, u16 bend)
+{
+    u8 psgChan = psgChannel(chan);
+    u8 origPitch = pitches[psgChan];
+    u16 freq = FREQUENCIES[origPitch];
+
+    s16 bendRelative = bend - 0x2000;
+    freq = freq + (bendRelative / 100);
+
+    psg_noteOn(psgChan, freq);
 }

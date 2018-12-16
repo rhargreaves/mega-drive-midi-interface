@@ -55,6 +55,7 @@ int main(void)
         cmocka_unit_test(test_midi_channel_volume_sets_psg_attenuation_2),
         cmocka_unit_test(test_midi_ignores_channels_above_10),
         cmocka_unit_test(test_midi_sets_synth_pitch_bend),
+        cmocka_unit_test(test_midi_sets_psg_pitch_bend),
 
         cmocka_unit_test(test_synth_init_sets_initial_registers),
         cmocka_unit_test(test_synth_sets_note_on_fm_reg_chan_0_to_2),

@@ -149,3 +149,18 @@ static void test_midi_sets_synth_pitch_bend(void** state)
         __real_midi_pitchBend(chan, 1000);
     }
 }
+
+static void test_midi_sets_psg_pitch_bend(void** state)
+{
+    for (int chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN; chan++) {
+        expect_value(__wrap_psg_noteOn, channel, chan - MIN_PSG_CHAN);
+        expect_value(__wrap_psg_noteOn, freq, 262);
+
+        __real_midi_noteOn(chan, 60, 127);
+
+        expect_value(__wrap_psg_noteOn, channel, chan - MIN_PSG_CHAN);
+        expect_value(__wrap_psg_noteOn, freq, 191);
+
+        __real_midi_pitchBend(chan, 1000);
+    }
+}

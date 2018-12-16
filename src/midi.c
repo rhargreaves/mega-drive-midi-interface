@@ -15,7 +15,7 @@ struct VTable {
 };
 
 static const VTable PSG_VTable = { midi_psg_noteOn, midi_psg_noteOff,
-    midi_psg_channelVolume, midi_nop_pitchBend };
+    midi_psg_channelVolume, midi_psg_pitchBend };
 
 static const VTable FM_VTable = { midi_fm_noteOn, midi_fm_noteOff,
     midi_fm_channelVolume, midi_fm_pitchBend };
