@@ -36,6 +36,11 @@ void midi_fm_channelVolume(u8 chan, u8 volume)
     synth_totalLevel(chan, TOTAL_LEVELS[volume]);
 }
 
+void midi_fm_pitchBend(u8 chan, u16 bend)
+{
+    synth_pitchBend(chan, bend);
+}
+
 static u8 octave(u8 pitch)
 {
     return (pitch - MIN_MIDI_PITCH) / SEMITONES;

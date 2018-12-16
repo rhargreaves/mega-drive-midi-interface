@@ -4,11 +4,12 @@
 #include <string.h>
 #include <synth.h>
 
-#define STATUS_CHANNEL(status) status & 0x0F
-#define STATUS_EVENT(status) status >> 4
+#define STATUS_CHANNEL(status) (status & 0x0F)
+#define STATUS_EVENT(status) (status >> 4)
 
 #define RANGE(value, range) (value / (128 / range))
 
+#define EVENT_PITCH_BEND 0xE
 #define EVENT_NOTE_ON 0x9
 #define EVENT_NODE_OFF 0x8
 #define EVENT_CC 0xB
@@ -71,6 +72,7 @@ static ControlChange lastUnknownControlChange;
 static void noteOn(u8 status);
 static void noteOff(u8 status);
 static void controlChange(u8 status);
+static void pitchBend(u8 status);
 
 void interface_init(void)
 {
@@ -97,6 +99,9 @@ void interface_tick(void)
         break;
     case EVENT_CC:
         controlChange(status);
+        break;
+    case EVENT_PITCH_BEND:
+        pitchBend(status);
         break;
     default:
         lastUnknownStatus = status;
@@ -245,4 +250,13 @@ static void noteOff(u8 status)
     comm_read();
     comm_read();
     midi_noteOff(chan);
+}
+
+static void pitchBend(u8 status) 
+{
+    u8 chan = STATUS_CHANNEL(status);
+    u16 lowerBend = comm_read();
+    u16 upperBend = comm_read();
+    u16 bend = (((u16)upperBend) << 7) + (u16)lowerBend;
+    midi_pitchBend(chan, bend);
 }

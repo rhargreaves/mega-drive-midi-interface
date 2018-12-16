@@ -9,6 +9,7 @@ extern void __real_midi_noteOn(u8 chan, u8 pitch, u8 velocity);
 extern void __real_midi_noteOff(u8 chan);
 extern void __real_midi_channelVolume(u8 chan, u8 volume);
 extern void __real_midi_pan(u8 chan, u8 pan);
+extern void __real_midi_pitchBend(u8 chan, u16 bend);
 
 static void test_midi_triggers_synth_note_on(void** state)
 {
@@ -128,5 +129,15 @@ static void test_midi_ignores_channels_above_10(void** state)
 {
     for (int chan = 11; chan < 16; chan++) {
         __real_midi_noteOn(chan, 60, 127);
+    }
+}
+
+static void test_midi_sets_synth_pitch_bend(void** state)
+{
+    for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
+        expect_value(__wrap_synth_pitchBend, chan, chan);
+        expect_value(__wrap_synth_pitchBend, bend, 1000);
+
+        __real_midi_pitchBend(chan, 1000);
     }
 }

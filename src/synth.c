@@ -35,6 +35,8 @@ struct Channel {
     u8 stereo;
     u8 ams;
     u8 fms;
+    u8 octave;
+    u16 freqNumber;
     Operator operators[MAX_FM_OPERATORS];
 };
 
@@ -47,6 +49,8 @@ static const Channel DEFAULT_CHANNEL = { .algorithm = 2,
     .stereo = 3,
     .ams = 0,
     .fms = 0,
+    .octave = 0,
+    .freqNumber = 0,
     .operators = {
         { .multiple = 1,
             .detune = 7,
@@ -104,6 +108,7 @@ static void updateOperatorSecondaryDecayRate(u8 channel, u8 operator);
 static void updateStereoAmsFms(u8 channel);
 static void writeChannelReg(u8 channel, u8 baseReg, u8 data);
 static void writeOperatorReg(u8 channel, u8 op, u8 baseReg, u8 data);
+static void updateOctaveAndFrequency(u8 channel);
 static u8 keyOnOffRegOffset(u8 channel);
 static Channel* getChannel(u8 channel);
 static Operator* getOperator(u8 channel, u8 operator);
@@ -150,8 +155,10 @@ void synth_noteOff(u8 channel)
 
 void synth_pitch(u8 channel, u8 octave, u16 freqNumber)
 {
-    writeChannelReg(channel, 0xA4, (freqNumber >> 8) | (octave << 3));
-    writeChannelReg(channel, 0xA0, freqNumber);
+    Channel* chan = getChannel(channel);
+    chan->octave = octave;
+    chan->freqNumber = freqNumber;
+    updateOctaveAndFrequency(channel);
 }
 
 void synth_totalLevel(u8 channel, u8 totalLevel)
@@ -289,6 +296,16 @@ u8 synth_busy(void)
     return noteOn;
 }
 
+void synth_pitchBend(u8 channel, u16 bend)
+{
+    Channel* chan = getChannel(channel);
+    u16 origFreqNumber = chan->freqNumber;
+    s16 bendRelative = bend - 0x2000;
+    u16 newFreqNumber = origFreqNumber + (bendRelative / 20);
+    chan->freqNumber = newFreqNumber;
+    updateOctaveAndFrequency(channel);
+}
+
 static void writeChannelReg(u8 channel, u8 baseReg, u8 data)
 {
     YM2612_writeReg(channel > 2 ? 1 : 0, baseReg + (channel % 3), data);
@@ -317,6 +334,14 @@ static Operator* getOperator(u8 channel, u8 operator)
 static void updateGlobalLfo(void)
 {
     YM2612_writeReg(0, 0x22, (global.lfoEnable << 3) | global.lfoFrequency);
+}
+
+static void updateOctaveAndFrequency(u8 channel)
+{
+    Channel* chan = getChannel(channel);
+    writeChannelReg(
+        channel, 0xA4, (chan->freqNumber >> 8) | (chan->octave << 3));
+    writeChannelReg(channel, 0xA0, chan->freqNumber);
 }
 
 static void updateAlgorithmAndFeedback(u8 channel)

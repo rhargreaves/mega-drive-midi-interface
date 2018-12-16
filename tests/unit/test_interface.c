@@ -10,6 +10,7 @@
 #include <types.h>
 
 #define STATUS_CC 0xB0
+#define STATUS_PITCH_BEND 0xE0
 
 static void test_interface_tick_passes_note_on_to_midi_processor(void** state)
 {
@@ -424,4 +425,21 @@ static void test_interface_unsets_polyphonic_mode(void** state)
     interface_tick();
 
     assert_false(interface_polyphonic());
+}
+
+
+static void test_interface_sets_pitch_bend(void** state)
+{
+    u8 expectedStatus = STATUS_PITCH_BEND;
+    u16 expectedValue = 12000;
+    u8 expectedValueLower = expectedValue & 0x007F;
+    u8 expectedValueUpper = expectedValue >> 7;
+
+    stub_comm_read_returns_midi_event(
+        expectedStatus, expectedValueLower, expectedValueUpper);
+
+    expect_value(__wrap_midi_pitchBend, chan, 0);
+    expect_value(__wrap_midi_pitchBend, bend, expectedValue);
+
+    interface_tick();
 }

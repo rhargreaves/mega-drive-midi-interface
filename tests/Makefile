@@ -44,6 +44,7 @@ MOCKS=midi_process \
 	synth_operatorReleaseRate \
 	synth_enableLfo \
 	synth_globalLfoFrequency \
+	synth_pitchBend \
 	fm_writeReg \
 	psg_noteOn \
 	psg_noteOff \
@@ -51,7 +52,8 @@ MOCKS=midi_process \
 	midi_noteOff \
 	midi_noteOn \
 	midi_channelVolume \
-	midi_pan
+	midi_pan \
+	midi_pitchBend
 
 MD_MOCKS=SYS_setVIntCallback \
 	VDP_setTextPalette \

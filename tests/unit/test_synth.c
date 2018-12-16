@@ -33,6 +33,7 @@ extern void __real_synth_operatorSecondaryAmplitude(
 extern void __real_synth_operatorAmplitudeModulation(
     u8 channel, u8 op, u8 amplitudeModulation);
 extern void __real_synth_operatorReleaseRate(u8 channel, u8 op, u8 releaseRate);
+extern void __real_synth_pitchBend(u8 channel, u16 bend);
 
 static int test_synth_setup(void** state)
 {
@@ -320,4 +321,16 @@ static void test_synth_sets_busy_indicators(void** state)
     }
     u8 busy = synth_busy();
     assert_int_equal(busy, 0b00010101);
+}
+
+static void test_synth_sets_pitch_bend(void** state)
+{
+    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
+        expect_ym2612_write_channel(chan, 0xA4, 0x22);
+        expect_ym2612_write_channel(chan, 0xA0, 0x8D);
+        __real_synth_pitch(chan, 4, 653);
+        expect_ym2612_write_channel(chan, 0xA4, 0x21);
+        expect_ym2612_write_channel(chan, 0xA0, 0x26);
+        __real_synth_pitchBend(chan, 1000);
+    }
 }

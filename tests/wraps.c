@@ -145,6 +145,12 @@ void __wrap_synth_operatorReleaseRate(u8 channel, u8 op, u8 releaseRate)
     check_expected(releaseRate);
 }
 
+void __wrap_synth_pitchBend(u8 chan, u16 bend)
+{
+    check_expected(chan);
+    check_expected(bend);
+}
+
 u8 __wrap_comm_read(void)
 {
     return mock_type(u8);
@@ -186,6 +192,12 @@ void __wrap_midi_noteOn(u8 chan, u8 pitch, u8 velocity)
     check_expected(chan);
     check_expected(pitch);
     check_expected(velocity);
+}
+
+void __wrap_midi_pitchBend(u8 chan, u16 bend)
+{
+    check_expected(chan);
+    check_expected(bend);
 }
 
 void __wrap_fm_writeReg(u16 part, u8 reg, u8 data)
