@@ -120,7 +120,6 @@ make all
 
 ## Stretch Goals
 
-- Support polyphony on a single MIDI channel (pool the YM2612's channels?)
 - Support for MIDI messages to be received via the controller ports (in serial mode) as an alternative to the EverDrive X7.
 - Support for loading & playback of PCM samples.
 
