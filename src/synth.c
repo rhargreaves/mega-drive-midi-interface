@@ -301,9 +301,10 @@ void synth_pitchBend(u8 channel, u16 bend)
     Channel* chan = getChannel(channel);
     u16 origFreqNumber = chan->freqNumber;
     s16 bendRelative = bend - 0x2000;
-    u16 newFreqNumber = origFreqNumber + (bendRelative / 20);
+    u16 newFreqNumber = origFreqNumber + (bendRelative / 100);
     chan->freqNumber = newFreqNumber;
     updateOctaveAndFrequency(channel);
+    chan->freqNumber = origFreqNumber;
 }
 
 static void writeChannelReg(u8 channel, u8 baseReg, u8 data)

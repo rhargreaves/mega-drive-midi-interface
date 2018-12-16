@@ -329,8 +329,8 @@ static void test_synth_sets_pitch_bend(void** state)
         expect_ym2612_write_channel(chan, 0xA4, 0x22);
         expect_ym2612_write_channel(chan, 0xA0, 0x8D);
         __real_synth_pitch(chan, 4, 653);
-        expect_ym2612_write_channel(chan, 0xA4, 0x21);
-        expect_ym2612_write_channel(chan, 0xA0, 0x26);
+        expect_ym2612_write_channel(chan, 0xA4, 0x22);
+        expect_ym2612_write_channel(chan, 0xA0, 0x46);
         __real_synth_pitchBend(chan, 1000);
     }
 }
