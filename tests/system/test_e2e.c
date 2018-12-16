@@ -41,7 +41,7 @@ static void test_midi_pitch_bend_sent_to_ym2612(void** state)
     will_return(__wrap_ssf_usb_rd_ready, 1);
     will_return(__wrap_ssf_usb_read, bendUpper);
 
-    expect_ym2612_write_channel_any_data(0, 0xA4);
-    expect_ym2612_write_channel_any_data(0, 0xA0);
+    expect_ym2612_write_channel(0, 0xA4, 0x1A);
+    expect_ym2612_write_channel(0, 0xA0, 0x77);
     interface_tick();
 }
