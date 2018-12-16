@@ -35,6 +35,11 @@ You can download pre-built ROMs from [releases](https://github.com/rhargreaves/m
 | 7 - 9    | PSG Square Wave Tone |
 | 10       | PSG Noise            |
 
+## Supported Events
+
+- Note On/Off
+- Pitch Bend
+
 ## Control Change Messages
 
 ### MIDI Specification
