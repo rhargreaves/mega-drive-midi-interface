@@ -1,5 +1,6 @@
 #include <types.h>
 
+void stub_usb_receive_byte(u8 value);
 void stub_comm_read_returns_midi_event(u8 status, u8 data, u8 data2);
 void expect_ym2612_write_reg(u8 part, u8 reg, u8 data);
 void expect_ym2612_write_reg_any_data(u8 part, u8 reg);

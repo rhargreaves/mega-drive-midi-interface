@@ -13,12 +13,9 @@ static void test_midi_note_on_event_sent_to_ym2612(void** state)
     const u8 noteOnKey = 60;
     const u8 noteOnVelocity = 127;
 
-    will_return(__wrap_ssf_usb_rd_ready, 1);
-    will_return(__wrap_ssf_usb_read, noteOnStatus);
-    will_return(__wrap_ssf_usb_rd_ready, 1);
-    will_return(__wrap_ssf_usb_read, noteOnKey);
-    will_return(__wrap_ssf_usb_rd_ready, 1);
-    will_return(__wrap_ssf_usb_read, noteOnVelocity);
+    stub_usb_receive_byte(noteOnStatus);
+    stub_usb_receive_byte(noteOnKey);
+    stub_usb_receive_byte(noteOnVelocity);
 
     expect_ym2612_write_channel(0, 0xA4, 0x1A);
     expect_ym2612_write_channel(0, 0xA0, 0x8D);
@@ -34,14 +31,12 @@ static void test_midi_pitch_bend_sent_to_ym2612(void** state)
     const u8 bendLower = bend & 0x007F;
     const u8 bendUpper = bend >> 8;
 
-    will_return(__wrap_ssf_usb_rd_ready, 1);
-    will_return(__wrap_ssf_usb_read, bendStatus);
-    will_return(__wrap_ssf_usb_rd_ready, 1);
-    will_return(__wrap_ssf_usb_read, bendLower);
-    will_return(__wrap_ssf_usb_rd_ready, 1);
-    will_return(__wrap_ssf_usb_read, bendUpper);
+    stub_usb_receive_byte(bendStatus);
+    stub_usb_receive_byte(bendLower);
+    stub_usb_receive_byte(bendUpper);
 
     expect_ym2612_write_channel(0, 0xA4, 0x1A);
     expect_ym2612_write_channel(0, 0xA0, 0x77);
+
     interface_tick();
 }

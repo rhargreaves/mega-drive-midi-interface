@@ -9,6 +9,12 @@
 #define REG_PART(chan) chan < 3 ? 0 : 1
 #define REG_OFFSET(chan) chan % 3
 
+void stub_usb_receive_byte(u8 value)
+{
+    will_return(__wrap_ssf_usb_rd_ready, 1);
+    will_return(__wrap_ssf_usb_read, value);
+}
+
 void stub_comm_read_returns_midi_event(u8 status, u8 data, u8 data2)
 {
     will_return(__wrap_comm_read, status);
