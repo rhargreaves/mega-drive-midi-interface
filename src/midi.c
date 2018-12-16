@@ -4,6 +4,7 @@
 #include "midi_psg.h"
 #include "psg_chip.h"
 #include "synth.h"
+#include <stdbool.h>
 
 typedef struct VTable VTable;
 
@@ -28,14 +29,38 @@ static const VTable* CHANNEL_OPS[16]
           &PSG_VTable, &PSG_VTable, &PSG_VTable, &PSG_VTable, &NOP_VTable,
           &NOP_VTable, &NOP_VTable, &NOP_VTable, &NOP_VTable, &NOP_VTable };
 
+static bool polyphonic;
+
+static u8 polyphonicPitches[MAX_MIDI_CHANS];
+
 void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
 {
-    CHANNEL_OPS[chan]->noteOn(chan, pitch, velocity);
+    if (polyphonic) {
+        for (u8 c = 0; c < MAX_MIDI_CHANS; c++) {
+            if (polyphonicPitches[c] == 0) {
+                polyphonicPitches[c] = pitch;
+                CHANNEL_OPS[chan]->noteOn(c, pitch, velocity);
+                break;
+            }
+        }
+    } else {
+        CHANNEL_OPS[chan]->noteOn(chan, pitch, velocity);
+    }
 }
 
 void midi_noteOff(u8 chan, u8 pitch)
 {
-    CHANNEL_OPS[chan]->noteOff(chan, pitch);
+    if (polyphonic) {
+        for (u8 c = 0; c < MAX_MIDI_CHANS; c++) {
+            if (polyphonicPitches[c] == pitch) {
+                polyphonicPitches[c] = 0;
+                CHANNEL_OPS[chan]->noteOff(c, pitch);
+                break;
+            }
+        }
+    } else {
+        CHANNEL_OPS[chan]->noteOff(chan, pitch);
+    }
 }
 
 void midi_channelVolume(u8 chan, u8 volume)
@@ -57,4 +82,14 @@ void midi_pan(u8 chan, u8 pan)
     } else {
         synth_stereo(chan, STEREO_MODE_LEFT);
     }
+}
+
+void midi_setPolyphonic(bool state)
+{
+    polyphonic = state;
+}
+
+bool midi_getPolyphonic(void)
+{
+    return polyphonic;
 }

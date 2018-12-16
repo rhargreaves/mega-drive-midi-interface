@@ -66,7 +66,6 @@
 #define CC_ALL_NOTES_OFF 123
 
 static u8 lastUnknownStatus = 0;
-static bool polyphonic = false;
 static ControlChange lastUnknownControlChange;
 
 static void noteOn(u8 status);
@@ -222,8 +221,11 @@ static void controlChange(u8 status)
     case CC_GENMDM_FMS:
         synth_fms(chan, RANGE(value, 8));
         break;
-    case CC_POLYPHONIC_MODE:
-        polyphonic = RANGE(value, 2) != 0;
+    case CC_POLYPHONIC_MODE: {
+        bool polyphonic = RANGE(value, 2) != 0;
+        midi_setPolyphonic(polyphonic);
+        break;
+    }
     default:
         lastUnknownControlChange.controller = controller;
         lastUnknownControlChange.value = value;
@@ -233,7 +235,7 @@ static void controlChange(u8 status)
 
 bool interface_polyphonic(void)
 {
-    return polyphonic;
+    return midi_getPolyphonic();
 }
 
 static void noteOn(u8 status)

@@ -6,10 +6,27 @@
 #include <cmocka.h>
 
 extern void __real_midi_noteOn(u8 chan, u8 pitch, u8 velocity);
-extern void __real_midi_noteOff(u8 chan);
+extern void __real_midi_noteOff(u8 chan, u8 pitch);
 extern void __real_midi_channelVolume(u8 chan, u8 volume);
 extern void __real_midi_pan(u8 chan, u8 pan);
 extern void __real_midi_pitchBend(u8 chan, u16 bend);
+extern bool __real_midi_getPolyphonic(void);
+extern void __real_midi_setPolyphonic(bool state);
+
+static const u16 A_SHARP = 106;
+static const u16 B = 107;
+
+static int test_midi_setup(void** state)
+{
+    for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
+        expect_any(__wrap_synth_pitch, channel);
+        expect_any(__wrap_synth_pitch, octave);
+        expect_any(__wrap_synth_pitch, freqNumber);
+
+        __real_midi_pitchBend(chan, 0);
+    }
+    return 0;
+}
 
 static void test_midi_triggers_synth_note_on(void** state)
 {
@@ -28,7 +45,7 @@ static void test_midi_triggers_synth_note_off(void** state)
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         expect_value(__wrap_synth_noteOff, channel, chan);
 
-        __real_midi_noteOff(chan);
+        __real_midi_noteOff(chan, 0);
     }
 }
 
@@ -38,8 +55,6 @@ static void test_midi_triggers_synth_note_on_2(void** state)
     expect_value(__wrap_synth_pitch, octave, 6);
     expect_value(__wrap_synth_pitch, freqNumber, 1164);
     expect_value(__wrap_synth_noteOn, channel, 0);
-
-    const u16 A_SHARP = 106;
 
     __real_midi_noteOn(0, A_SHARP, 127);
 }
@@ -68,7 +83,7 @@ static void test_midi_triggers_psg_note_off(void** state)
     for (u8 chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN; chan++) {
         expect_value(__wrap_psg_noteOff, channel, chan - MIN_PSG_CHAN);
 
-        __real_midi_noteOff(chan);
+        __real_midi_noteOff(chan, 0);
     }
 }
 
@@ -165,24 +180,38 @@ static void test_midi_sets_psg_pitch_bend(void** state)
     }
 }
 
+static void test_midi_polyphonic_mode_returns_state(void** state)
+{
+    __real_midi_setPolyphonic(true);
+
+    assert_true(__real_midi_getPolyphonic());
+}
+
 static void test_midi_polyphonic_mode_uses_multiple_fm_channels(void** state)
 {
+    __real_midi_setPolyphonic(true);
+
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         expect_value(__wrap_synth_pitch, channel, 0);
         expect_value(__wrap_synth_pitch, octave, 6);
         expect_value(__wrap_synth_pitch, freqNumber, 1164);
         expect_value(__wrap_synth_noteOn, channel, 0);
 
-        __real_midi_noteOn(chan, 60, 127);
+        __real_midi_noteOn(chan, A_SHARP, 127);
 
         expect_value(__wrap_synth_pitch, channel, 1);
-        expect_value(__wrap_synth_pitch, octave, 6);
-        expect_value(__wrap_synth_pitch, freqNumber, 1164);
+        expect_value(__wrap_synth_pitch, octave, 7);
+        expect_value(__wrap_synth_pitch, freqNumber, 0x269);
         expect_value(__wrap_synth_noteOn, channel, 1);
 
-        __real_midi_noteOn(chan, 61, 127);
+        __real_midi_noteOn(chan, B, 127);
 
-        __real_midi_noteOff(chan);
-        __real_midi_noteOff(chan);
+        expect_value(__wrap_synth_noteOff, channel, 0);
+
+        __real_midi_noteOff(chan, A_SHARP);
+
+        expect_value(__wrap_synth_noteOff, channel, 1);
+
+        __real_midi_noteOff(chan, B);
     }
 }

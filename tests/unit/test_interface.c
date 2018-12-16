@@ -414,6 +414,9 @@ static void test_interface_sets_polyphonic_mode(void** state)
     const u8 cc = 80;
     stub_comm_read_returns_midi_event(STATUS_CC, cc, 64);
 
+    expect_value(__wrap_midi_setPolyphonic, state, true);
+    will_return(__wrap_midi_getPolyphonic, true);
+
     interface_tick();
 
     assert_true(interface_polyphonic());
@@ -423,6 +426,9 @@ static void test_interface_unsets_polyphonic_mode(void** state)
 {
     const u8 cc = 80;
     stub_comm_read_returns_midi_event(STATUS_CC, cc, 0);
+
+    expect_value(__wrap_midi_setPolyphonic, state, false);
+    will_return(__wrap_midi_getPolyphonic, false);
 
     interface_tick();
 

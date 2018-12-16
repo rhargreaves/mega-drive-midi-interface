@@ -71,8 +71,8 @@ static void test_polyphonic_midi_sent_to_separate_ym2612_channels(void** state)
     stub_usb_receive_byte(noteOnKey2);
     stub_usb_receive_byte(noteOnVelocity);
 
-    expect_ym2612_write_channel(0, 0xA4, 0x1A);
-    expect_ym2612_write_channel(0, 0xA0, 0xB4);
+    expect_ym2612_write_channel(0, 0xA5, 0x1A);
+    expect_ym2612_write_channel(0, 0xA1, 0xB4);
     expect_ym2612_write_reg(0, 0x28, 0xF1);
 
     interface_tick();

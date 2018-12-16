@@ -52,7 +52,9 @@ MOCKS=midi_process \
 	midi_noteOn \
 	midi_channelVolume \
 	midi_pan \
-	midi_pitchBend
+	midi_pitchBend \
+	midi_setPolyphonic \
+	midi_getPolyphonic
 
 MD_MOCKS=SYS_setVIntCallback \
 	VDP_setTextPalette \

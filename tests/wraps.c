@@ -195,6 +195,16 @@ void __wrap_midi_pitchBend(u8 chan, u16 bend)
     check_expected(bend);
 }
 
+void __wrap_midi_setPolyphonic(bool state)
+{
+    check_expected(state);
+}
+
+bool __wrap_midi_getPolyphonic(void)
+{
+    return mock_type(bool);
+}
+
 void __wrap_fm_writeReg(u16 part, u8 reg, u8 data)
 {
     check_expected(part);
