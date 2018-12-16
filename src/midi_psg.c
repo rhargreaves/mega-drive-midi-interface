@@ -38,7 +38,7 @@ void midi_psg_noteOn(u8 chan, u8 pitch, u8 velocity)
     psg_noteOn(psgChan, FREQUENCIES[pitch]);
 }
 
-void midi_psg_noteOff(u8 chan)
+void midi_psg_noteOff(u8 chan, u8 pitch)
 {
     psg_noteOff(psgChannel(chan));
 }

@@ -29,7 +29,7 @@ void midi_fm_noteOn(u8 chan, u8 pitch, u8 velocity)
     synth_noteOn(chan);
 }
 
-void midi_fm_noteOff(u8 chan)
+void midi_fm_noteOff(u8 chan, u8 pitch)
 {
     synth_noteOff(chan);
 }

@@ -41,6 +41,7 @@ static void test_interface_tick_passes_note_off_to_midi_processor(void** state)
         expectedStatus, expectedData, expectedData2);
 
     expect_value(__wrap_midi_noteOff, chan, 0);
+    expect_value(__wrap_midi_noteOff, pitch, expectedData);
 
     interface_tick();
 }
@@ -207,6 +208,7 @@ static void test_interface_sets_all_notes_off(void** state)
         expectedStatus, expectedController, expectedValue);
 
     expect_value(__wrap_midi_noteOff, chan, 0);
+    expect_value(__wrap_midi_noteOff, pitch, 0);
 
     interface_tick();
 }
@@ -426,7 +428,6 @@ static void test_interface_unsets_polyphonic_mode(void** state)
 
     assert_false(interface_polyphonic());
 }
-
 
 static void test_interface_sets_pitch_bend(void** state)
 {

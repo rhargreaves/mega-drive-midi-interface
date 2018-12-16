@@ -9,7 +9,7 @@ typedef struct VTable VTable;
 
 struct VTable {
     void (*noteOn)(u8 chan, u8 pitch, u8 velocity);
-    void (*noteOff)(u8 chan);
+    void (*noteOff)(u8 chan, u8 pitch);
     void (*channelVolume)(u8 chan, u8 volume);
     void (*pitchBend)(u8 chan, u16 bend);
 };
@@ -33,9 +33,9 @@ void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
     CHANNEL_OPS[chan]->noteOn(chan, pitch, velocity);
 }
 
-void midi_noteOff(u8 chan)
+void midi_noteOff(u8 chan, u8 pitch)
 {
-    CHANNEL_OPS[chan]->noteOff(chan);
+    CHANNEL_OPS[chan]->noteOff(chan, pitch);
 }
 
 void midi_channelVolume(u8 chan, u8 volume)

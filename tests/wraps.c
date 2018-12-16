@@ -164,9 +164,10 @@ void __wrap_comm_resetCounts(void)
 {
 }
 
-void __wrap_midi_noteOff(u8 chan)
+void __wrap_midi_noteOff(u8 chan, u8 pitch)
 {
     check_expected(chan);
+    check_expected(pitch);
 }
 
 void __wrap_midi_channelVolume(u8 chan, u8 volume)

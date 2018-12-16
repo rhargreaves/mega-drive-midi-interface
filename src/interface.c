@@ -132,7 +132,7 @@ static void controlChange(u8 status)
         midi_pan(chan, value);
         break;
     case CC_ALL_NOTES_OFF:
-        midi_noteOff(chan);
+        midi_noteOff(chan, 0);
         break;
     case CC_GENMDM_FM_ALGORITHM:
         synth_algorithm(chan, RANGE(value, 8));
@@ -247,12 +247,12 @@ static void noteOn(u8 status)
 static void noteOff(u8 status)
 {
     u8 chan = STATUS_CHANNEL(status);
+    u8 pitch = comm_read();
     comm_read();
-    comm_read();
-    midi_noteOff(chan);
+    midi_noteOff(chan, pitch);
 }
 
-static void pitchBend(u8 status) 
+static void pitchBend(u8 status)
 {
     u8 chan = STATUS_CHANNEL(status);
     u16 lowerBend = comm_read();
