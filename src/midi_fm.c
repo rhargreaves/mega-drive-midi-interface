@@ -20,8 +20,11 @@ static const u8 TOTAL_LEVELS[] = { 127, 122, 117, 113, 108, 104, 100, 97, 93,
 static u8 octave(u8 pitch);
 static u16 freqNumber(u8 pitch);
 
+static u8 pitches[MAX_FM_CHANS];
+
 void midi_fm_noteOn(u8 chan, u8 pitch, u8 velocity)
 {
+    pitches[chan] = pitch;
     synth_pitch(chan, octave(pitch), freqNumber(pitch));
     synth_noteOn(chan);
 }
@@ -38,7 +41,11 @@ void midi_fm_channelVolume(u8 chan, u8 volume)
 
 void midi_fm_pitchBend(u8 chan, u16 bend)
 {
-    synth_pitchBend(chan, bend);
+    u8 pitch = pitches[chan];
+    u16 freq = freqNumber(pitch);
+    s16 bendRelative = bend - 0x2000;
+    freq = freq + (bendRelative / 100);
+    synth_pitch(chan, octave(pitch), freq);
 }
 
 static u8 octave(u8 pitch)

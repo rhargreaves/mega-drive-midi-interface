@@ -135,8 +135,16 @@ static void test_midi_ignores_channels_above_10(void** state)
 static void test_midi_sets_synth_pitch_bend(void** state)
 {
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
-        expect_value(__wrap_synth_pitchBend, chan, chan);
-        expect_value(__wrap_synth_pitchBend, bend, 1000);
+        expect_value(__wrap_synth_pitch, channel, chan);
+        expect_value(__wrap_synth_pitch, octave, 3);
+        expect_value(__wrap_synth_pitch, freqNumber, 653);
+        expect_value(__wrap_synth_noteOn, channel, chan);
+
+        __real_midi_noteOn(chan, 60, 127);
+
+        expect_value(__wrap_synth_pitch, channel, chan);
+        expect_value(__wrap_synth_pitch, octave, 3);
+        expect_value(__wrap_synth_pitch, freqNumber, 582);
 
         __real_midi_pitchBend(chan, 1000);
     }

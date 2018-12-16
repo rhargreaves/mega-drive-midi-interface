@@ -322,15 +322,3 @@ static void test_synth_sets_busy_indicators(void** state)
     u8 busy = synth_busy();
     assert_int_equal(busy, 0b00010101);
 }
-
-static void test_synth_sets_pitch_bend(void** state)
-{
-    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
-        expect_ym2612_write_channel(chan, 0xA4, 0x22);
-        expect_ym2612_write_channel(chan, 0xA0, 0x8D);
-        __real_synth_pitch(chan, 4, 653);
-        expect_ym2612_write_channel(chan, 0xA4, 0x22);
-        expect_ym2612_write_channel(chan, 0xA0, 0x46);
-        __real_synth_pitchBend(chan, 1000);
-    }
-}

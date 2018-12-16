@@ -145,12 +145,6 @@ void __wrap_synth_operatorReleaseRate(u8 channel, u8 op, u8 releaseRate)
     check_expected(releaseRate);
 }
 
-void __wrap_synth_pitchBend(u8 chan, u16 bend)
-{
-    check_expected(chan);
-    check_expected(bend);
-}
-
 u8 __wrap_comm_read(void)
 {
     return mock_type(u8);

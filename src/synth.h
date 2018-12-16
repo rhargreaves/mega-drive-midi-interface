@@ -31,4 +31,3 @@ void synth_globalLfoFrequency(u8 freq);
 void synth_ams(u8 channel, u8 ams);
 void synth_fms(u8 channel, u8 fms);
 u8 synth_busy(void);
-void synth_pitchBend(u8 channel, u16 bend);

@@ -44,7 +44,6 @@ MOCKS=midi_process \
 	synth_operatorReleaseRate \
 	synth_enableLfo \
 	synth_globalLfoFrequency \
-	synth_pitchBend \
 	fm_writeReg \
 	psg_noteOn \
 	psg_noteOff \

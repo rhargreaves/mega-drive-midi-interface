@@ -296,17 +296,6 @@ u8 synth_busy(void)
     return noteOn;
 }
 
-void synth_pitchBend(u8 channel, u16 bend)
-{
-    Channel* chan = getChannel(channel);
-    u16 origFreqNumber = chan->freqNumber;
-    s16 bendRelative = bend - 0x2000;
-    u16 newFreqNumber = origFreqNumber + (bendRelative / 100);
-    chan->freqNumber = newFreqNumber;
-    updateOctaveAndFrequency(channel);
-    chan->freqNumber = origFreqNumber;
-}
-
 static void writeChannelReg(u8 channel, u8 baseReg, u8 data)
 {
     YM2612_writeReg(channel > 2 ? 1 : 0, baseReg + (channel % 3), data);
