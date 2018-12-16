@@ -13,6 +13,7 @@
 #define MAX_EFFECTIVE_Y (MAX_Y - MARGIN_Y - MARGIN_Y)
 #define MAX_ERROR_X 30
 #define ERROR_Y (MAX_EFFECTIVE_Y - 2)
+#define POLY_Y (MAX_EFFECTIVE_Y - 4)
 #define RIGHTED_TEXT_X(text) (MAX_EFFECTIVE_X - (sizeof(text) - 1) + 1)
 #define CENTRED_TEXT_X(text) ((MAX_EFFECTIVE_X - (sizeof(text) - 1)) / 2)
 #define CHAN_X_GAP 3
@@ -38,6 +39,7 @@ static void printErrorText(const char* text);
 static void drawText(const char* text, u16 x, u16 y);
 static void clearText(u16 x, u16 y, u16 w);
 static void printActivityForBusy(u8 busy, u16 maxChannels, u16 x);
+static void printPolyphonicMode(void);
 
 void ui_init(void)
 {
@@ -58,6 +60,7 @@ static void vsync(void)
     static u8 loadFrame = 0;
     if (++loadFrame == FRAMES_BEFORE_UPDATE_LOAD) {
         printLoad();
+        printPolyphonicMode();
         loadFrame = 0;
     }
 }
@@ -152,4 +155,21 @@ static void printErrorText(const char* text)
     clearText(0, ERROR_Y, MAX_ERROR_X);
     drawText(text, 0, ERROR_Y);
     VDP_setTextPalette(PAL0);
+}
+
+static void printPolyphonicMode(void)
+{
+    static bool lastStatus = false;
+    bool status = interface_polyphonic();
+    if (status != lastStatus) {
+        VDP_setTextPalette(PAL2);
+        if (status) {
+            const char text[] = "Poly";
+            drawText(text, 0, POLY_Y);
+        } else {
+            clearText(0, POLY_Y, 4);
+        }
+        VDP_setTextPalette(PAL0);
+        lastStatus = status;
+    }
 }
