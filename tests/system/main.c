@@ -10,7 +10,7 @@ int main(void)
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_midi_note_on_event_sent_to_ym2612),
         cmocka_unit_test(test_midi_pitch_bend_sent_to_ym2612),
-        // cmocka_unit_test(test_polyphonic_midi_sent_to_separate_ym2612_channels)
+        //  cmocka_unit_test(test_polyphonic_midi_sent_to_separate_ym2612_channels)
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);

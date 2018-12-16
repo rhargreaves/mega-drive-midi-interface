@@ -164,3 +164,25 @@ static void test_midi_sets_psg_pitch_bend(void** state)
         __real_midi_pitchBend(chan, 1000);
     }
 }
+
+static void test_midi_polyphonic_mode_uses_multiple_fm_channels(void** state)
+{
+    for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
+        expect_value(__wrap_synth_pitch, channel, 0);
+        expect_value(__wrap_synth_pitch, octave, 6);
+        expect_value(__wrap_synth_pitch, freqNumber, 1164);
+        expect_value(__wrap_synth_noteOn, channel, 0);
+
+        __real_midi_noteOn(chan, 60, 127);
+
+        expect_value(__wrap_synth_pitch, channel, 1);
+        expect_value(__wrap_synth_pitch, octave, 6);
+        expect_value(__wrap_synth_pitch, freqNumber, 1164);
+        expect_value(__wrap_synth_noteOn, channel, 1);
+
+        __real_midi_noteOn(chan, 61, 127);
+
+        __real_midi_noteOff(chan);
+        __real_midi_noteOff(chan);
+    }
+}
