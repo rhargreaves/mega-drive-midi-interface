@@ -30,19 +30,15 @@ static const VTable* CHANNEL_OPS[16]
           &NOP_VTable, &NOP_VTable, &NOP_VTable, &NOP_VTable, &NOP_VTable };
 
 static bool polyphonic;
-
 static u8 polyphonicPitches[MAX_MIDI_CHANS];
+
+static void pooledNoteOn(u8 chan, u8 pitch, u8 velocity);
+static void pooledNoteOff(u8 chan, u8 pitch);
 
 void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
 {
     if (polyphonic) {
-        for (u8 c = 0; c < MAX_MIDI_CHANS; c++) {
-            if (polyphonicPitches[c] == 0) {
-                polyphonicPitches[c] = pitch;
-                CHANNEL_OPS[chan]->noteOn(c, pitch, velocity);
-                break;
-            }
-        }
+        pooledNoteOn(chan, pitch, velocity);
     } else {
         CHANNEL_OPS[chan]->noteOn(chan, pitch, velocity);
     }
@@ -51,13 +47,7 @@ void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
 void midi_noteOff(u8 chan, u8 pitch)
 {
     if (polyphonic) {
-        for (u8 c = 0; c < MAX_MIDI_CHANS; c++) {
-            if (polyphonicPitches[c] == pitch) {
-                polyphonicPitches[c] = 0;
-                CHANNEL_OPS[chan]->noteOff(c, pitch);
-                break;
-            }
-        }
+        pooledNoteOff(chan, pitch);
     } else {
         CHANNEL_OPS[chan]->noteOff(chan, pitch);
     }
@@ -92,4 +82,26 @@ void midi_setPolyphonic(bool state)
 bool midi_getPolyphonic(void)
 {
     return polyphonic;
+}
+
+static void pooledNoteOn(u8 chan, u8 pitch, u8 velocity)
+{
+    for (u8 c = 0; c < MAX_MIDI_CHANS; c++) {
+        if (polyphonicPitches[c] == 0) {
+            polyphonicPitches[c] = pitch;
+            CHANNEL_OPS[chan]->noteOn(c, pitch, velocity);
+            return;
+        }
+    }
+}
+
+static void pooledNoteOff(u8 chan, u8 pitch)
+{
+    for (u8 c = 0; c < MAX_MIDI_CHANS; c++) {
+        if (polyphonicPitches[c] == pitch) {
+            polyphonicPitches[c] = 0;
+            CHANNEL_OPS[chan]->noteOff(c, pitch);
+            return;
+        }
+    }
 }
