@@ -217,7 +217,7 @@ static void test_midi_polyphonic_mode_uses_multiple_fm_channels(void** state)
     }
 }
 
-static void test_interface_sets_fm_algorithm(void** state)
+static void test_midi_sets_fm_algorithm(void** state)
 {
     expect_value(__wrap_synth_algorithm, channel, 0);
     expect_value(__wrap_synth_algorithm, algorithm, 1);
@@ -225,7 +225,7 @@ static void test_interface_sets_fm_algorithm(void** state)
     __real_midi_cc(0, CC_GENMDM_FM_ALGORITHM, 20);
 }
 
-static void test_interface_sets_fm_feedback(void** state)
+static void test_midi_sets_fm_feedback(void** state)
 {
     expect_value(__wrap_synth_feedback, channel, 0);
     expect_value(__wrap_synth_feedback, feedback, 2);
@@ -233,7 +233,7 @@ static void test_interface_sets_fm_feedback(void** state)
     __real_midi_cc(0, CC_GENMDM_FM_FEEDBACK, 33);
 }
 
-static void test_interface_sets_channel_AMS(void** state)
+static void test_midi_sets_channel_AMS(void** state)
 {
     expect_value(__wrap_synth_ams, channel, 0);
     expect_value(__wrap_synth_ams, ams, 1);
@@ -241,7 +241,7 @@ static void test_interface_sets_channel_AMS(void** state)
     __real_midi_cc(0, 76, 32);
 }
 
-static void test_interface_sets_channel_FMS(void** state)
+static void test_midi_sets_channel_FMS(void** state)
 {
     expect_value(__wrap_synth_fms, channel, 0);
     expect_value(__wrap_synth_fms, fms, 2);
@@ -249,14 +249,14 @@ static void test_interface_sets_channel_FMS(void** state)
     __real_midi_cc(0, 75, 32);
 }
 
-static void test_interface_sets_all_notes_off(void** state)
+static void test_midi_sets_all_notes_off(void** state)
 {
     expect_value(__wrap_synth_noteOff, channel, 0);
 
     __real_midi_cc(0, CC_ALL_NOTES_OFF, 0);
 }
 
-static void test_interface_sets_operator_total_level(void** state)
+static void test_midi_sets_operator_total_level(void** state)
 {
     const u8 expectedValue = 50;
     for (u8 cc = 16; cc <= 19; cc++) {
@@ -270,7 +270,7 @@ static void test_interface_sets_operator_total_level(void** state)
     }
 }
 
-static void test_interface_sets_operator_multiple(void** state)
+static void test_midi_sets_operator_multiple(void** state)
 {
     const u8 expectedValue = 4;
 
@@ -284,7 +284,7 @@ static void test_interface_sets_operator_multiple(void** state)
     }
 }
 
-static void test_interface_sets_operator_detune(void** state)
+static void test_midi_sets_operator_detune(void** state)
 {
     const u8 expectedValue = 2;
 
@@ -298,7 +298,7 @@ static void test_interface_sets_operator_detune(void** state)
     }
 }
 
-static void test_interface_sets_operator_rate_scaling(void** state)
+static void test_midi_sets_operator_rate_scaling(void** state)
 {
     const u8 expectedValue = 2;
 
@@ -313,7 +313,7 @@ static void test_interface_sets_operator_rate_scaling(void** state)
     }
 }
 
-static void test_interface_sets_operator_attack_rate(void** state)
+static void test_midi_sets_operator_attack_rate(void** state)
 {
     const u8 expectedValue = 2;
 
@@ -328,7 +328,7 @@ static void test_interface_sets_operator_attack_rate(void** state)
     }
 }
 
-static void test_interface_sets_operator_first_decay_rate(void** state)
+static void test_midi_sets_operator_first_decay_rate(void** state)
 {
     const u8 expectedValue = 2;
 
@@ -343,7 +343,7 @@ static void test_interface_sets_operator_first_decay_rate(void** state)
     }
 }
 
-static void test_interface_sets_operator_second_decay_rate(void** state)
+static void test_midi_sets_operator_second_decay_rate(void** state)
 {
     const u8 expectedValue = 1;
 
@@ -358,7 +358,7 @@ static void test_interface_sets_operator_second_decay_rate(void** state)
     }
 }
 
-static void test_interface_sets_operator_secondary_amplitude(void** state)
+static void test_midi_sets_operator_secondary_amplitude(void** state)
 {
     const u8 expectedValue = 1;
 
@@ -373,7 +373,7 @@ static void test_interface_sets_operator_secondary_amplitude(void** state)
     }
 }
 
-static void test_interface_sets_operator_amplitude_modulation(void** state)
+static void test_midi_sets_operator_amplitude_modulation(void** state)
 {
     const u8 expectedValue = 1;
 
@@ -388,7 +388,7 @@ static void test_interface_sets_operator_amplitude_modulation(void** state)
     }
 }
 
-static void test_interface_sets_operator_release_rate(void** state)
+static void test_midi_sets_operator_release_rate(void** state)
 {
     const u8 expectedValue = 1;
 
@@ -403,35 +403,35 @@ static void test_interface_sets_operator_release_rate(void** state)
     }
 }
 
-static void test_interface_sets_global_LFO_enable(void** state)
+static void test_midi_sets_global_LFO_enable(void** state)
 {
     expect_value(__wrap_synth_enableLfo, enable, 1);
 
     __real_midi_cc(0, 74, 64);
 }
 
-static void test_interface_sets_global_LFO_frequency(void** state)
+static void test_midi_sets_global_LFO_frequency(void** state)
 {
     expect_value(__wrap_synth_globalLfoFrequency, freq, 1);
 
     __real_midi_cc(0, 1, 16);
 }
 
-static void test_interface_sets_polyphonic_mode(void** state)
+static void test_midi_sets_polyphonic_mode(void** state)
 {
     __real_midi_cc(0, CC_POLYPHONIC_MODE, 64);
 
     assert_true(__real_midi_getPolyphonic());
 }
 
-static void test_interface_unsets_polyphonic_mode(void** state)
+static void test_midi_unsets_polyphonic_mode(void** state)
 {
     __real_midi_cc(0, CC_POLYPHONIC_MODE, 0);
 
     assert_false(__real_midi_getPolyphonic());
 }
 
-static void test_interface_sets_unknown_CC(void** state)
+static void test_midi_sets_unknown_CC(void** state)
 {
     u8 expectedController = 0x9;
     u8 expectedValue = 0x50;
