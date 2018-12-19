@@ -160,11 +160,9 @@ void midi_cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_FMS:
         synth_fms(chan, RANGE(value, 8));
         break;
-    case CC_POLYPHONIC_MODE: {
-        bool polyphonic = RANGE(value, 2) != 0;
-        setPolyphonic(polyphonic);
+    case CC_POLYPHONIC_MODE:
+        setPolyphonic(RANGE(value, 2) != 0);
         break;
-    }
     default:
         lastUnknownControlChange.controller = controller;
         lastUnknownControlChange.value = value;
@@ -172,14 +170,24 @@ void midi_cc(u8 chan, u8 controller, u8 value)
     }
 }
 
-static void channelVolume(u8 chan, u8 volume)
-{
-    CHANNEL_OPS[chan]->channelVolume(chan, volume);
-}
-
 void midi_pitchBend(u8 chan, u16 bend)
 {
     CHANNEL_OPS[chan]->pitchBend(chan, bend);
+}
+
+bool midi_getPolyphonic(void)
+{
+    return polyphonic;
+}
+
+ControlChange* midi_lastUnknownCC(void)
+{
+    return &lastUnknownControlChange;
+}
+
+static void channelVolume(u8 chan, u8 volume)
+{
+    CHANNEL_OPS[chan]->channelVolume(chan, volume);
 }
 
 static void pan(u8 chan, u8 pan)
@@ -196,16 +204,6 @@ static void pan(u8 chan, u8 pan)
 static void setPolyphonic(bool state)
 {
     polyphonic = state;
-}
-
-bool midi_getPolyphonic(void)
-{
-    return polyphonic;
-}
-
-ControlChange* midi_lastUnknownCC(void)
-{
-    return &lastUnknownControlChange;
 }
 
 static void pooledNoteOn(u8 chan, u8 pitch, u8 velocity)
