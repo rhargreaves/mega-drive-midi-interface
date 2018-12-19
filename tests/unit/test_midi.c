@@ -183,6 +183,8 @@ static void test_midi_polyphonic_mode_returns_state(void** state)
     __real_midi_cc(0, CC_POLYPHONIC_MODE, 127);
 
     assert_true(__real_midi_getPolyphonic());
+
+    __real_midi_cc(0, CC_POLYPHONIC_MODE, 0);
 }
 
 static void test_midi_polyphonic_mode_uses_multiple_fm_channels(void** state)
@@ -212,6 +214,8 @@ static void test_midi_polyphonic_mode_uses_multiple_fm_channels(void** state)
 
         __real_midi_noteOff(chan, B);
     }
+
+    __real_midi_cc(0, CC_POLYPHONIC_MODE, 0);
 }
 
 static void test_midi_sets_fm_algorithm(void** state)
@@ -439,4 +443,16 @@ static void test_midi_sets_unknown_CC(void** state)
 
     assert_int_equal(cc->controller, expectedController);
     assert_int_equal(cc->value, expectedValue);
+}
+
+static void test_midi_polyphonic_mode_sends_CCs_to_all_FM_channels(void** state)
+{
+    __real_midi_cc(0, CC_POLYPHONIC_MODE, 127);
+
+    for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
+        expect_value(__wrap_synth_algorithm, channel, chan);
+        expect_value(__wrap_synth_algorithm, algorithm, 1);
+    }
+
+    __real_midi_cc(0, CC_GENMDM_FM_ALGORITHM, 16);
 }

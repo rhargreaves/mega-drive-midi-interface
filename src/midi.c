@@ -41,6 +41,7 @@ static void pooledNoteOff(u8 chan, u8 pitch);
 static void channelVolume(u8 chan, u8 volume);
 static void pan(u8 chan, u8 pan);
 static void setPolyphonic(bool state);
+static void cc(u8 chan, u8 controller, u8 value);
 
 void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
 {
@@ -61,6 +62,17 @@ void midi_noteOff(u8 chan, u8 pitch)
 }
 
 void midi_cc(u8 chan, u8 controller, u8 value)
+{
+    if (polyphonic) {
+        for (u8 c = 0; c <= MAX_FM_CHAN; c++) {
+            cc(c, controller, value);
+        }
+    } else {
+        cc(chan, controller, value);
+    }
+}
+
+static void cc(u8 chan, u8 controller, u8 value)
 {
     switch (controller) {
     case CC_VOLUME:
