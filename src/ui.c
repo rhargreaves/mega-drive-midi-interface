@@ -1,6 +1,7 @@
 #include "ui.h"
 #include "comm.h"
 #include "interface.h"
+#include "midi.h"
 #include "psg_chip.h"
 #include "synth.h"
 #include <genesis.h>
@@ -139,7 +140,7 @@ static void printLastError(void)
     }
 
     static ControlChange lastCc;
-    ControlChange* cc = interface_lastUnknownCC();
+    ControlChange* cc = midi_lastUnknownCC();
     if ((cc->controller != lastCc.controller || cc->value != lastCc.value)
         && (cc->controller != 0 || cc->value != 0)) {
         sprintf(text, "Unknown CC %02X Value %02X", cc->controller, cc->value);

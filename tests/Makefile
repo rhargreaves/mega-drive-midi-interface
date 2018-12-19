@@ -50,11 +50,9 @@ MOCKS=midi_process \
 	psg_attenuation \
 	midi_noteOff \
 	midi_noteOn \
-	midi_channelVolume \
-	midi_pan \
 	midi_pitchBend \
-	midi_setPolyphonic \
-	midi_getPolyphonic
+	midi_getPolyphonic \
+	midi_cc
 
 MD_MOCKS=SYS_setVIntCallback \
 	VDP_setTextPalette \

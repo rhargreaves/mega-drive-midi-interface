@@ -1,25 +1,25 @@
 {
-    "configurations": [
-        {
-            "name": "Docker",
-            "includePath": [
-                "${workspaceFolder}/**",
-                "${workspaceFolder}/src",
-                "${workspaceFolder}/../SGDK/inc",
-                "${workspaceFolder}/../SGDK/res",
-                "${workspaceFolder}/tests/cmocka/include",
-                "/usr/include/linux",
-                "/usr/include/c++/7/tr1"
-            ],
-            "defines": [],
-            "macFrameworkPath": [
-                "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks"
-            ],
-            "compilerPath": "${workspaceFolder}/docker-run /opt/gendev/bin/m68k-elf-gcc",
-            "cStandard": "c11",
-            "cppStandard": "c++17",
-            "intelliSenseMode": "gcc-x64"
-        }
-    ],
-    "version": 4
+  "configurations": [
+    {
+      "name": "Docker",
+      "includePath": [
+        "${workspaceFolder}/**",
+        "${workspaceFolder}/src",
+        "${workspaceFolder}/../SGDK/inc",
+        "${workspaceFolder}/../SGDK/res",
+        "${workspaceFolder}/tests/cmocka/include",
+        "/usr/include/linux",
+        "/usr/include/c++/7/tr1"
+      ],
+      "defines": [],
+      "macFrameworkPath": [
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks"
+      ],
+      "compilerPath": "${workspaceFolder}/docker-run /opt/gendev/bin/m68k-elf-gcc",
+      "cStandard": "c11",
+      "cppStandard": "c++17",
+      "intelliSenseMode": "gcc-x64"
+    }
+  ],
+  "version": 4
 }
