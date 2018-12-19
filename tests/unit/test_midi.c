@@ -7,11 +7,8 @@
 
 extern void __real_midi_noteOn(u8 chan, u8 pitch, u8 velocity);
 extern void __real_midi_noteOff(u8 chan, u8 pitch);
-extern void __real_midi_channelVolume(u8 chan, u8 volume);
-extern void __real_midi_pan(u8 chan, u8 pan);
 extern void __real_midi_pitchBend(u8 chan, u16 bend);
 extern bool __real_midi_getPolyphonic(void);
-extern void __real_midi_setPolyphonic(bool state);
 extern void __real_midi_cc(u8 chan, u8 controller, u8 value);
 
 static const u16 A_SHARP = 106;
