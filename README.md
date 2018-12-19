@@ -100,7 +100,9 @@ When polyphonic mode is enabled, all note on/off events are routed to a pool of
 FM channels, ignoring the specific MIDI channel the event is sent to. This allows for
 polyphony within a single MIDI channel.
 
-If no available FM channels are free, the note on event is dropped.
+In addition, any FM parameter change made will be sent to all FM channels.
+
+If all FM channels are busy, the note on event is dropped.
 
 ## Build & Test
 
