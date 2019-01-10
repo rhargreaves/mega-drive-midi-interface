@@ -251,7 +251,6 @@ static void pooledNoteOff(u8 chan, u8 pitch)
         if (polyphonicPitches[c] == pitch) {
             polyphonicPitches[c] = 0;
             CHANNEL_OPS[chan]->noteOff(c, pitch);
-            return;
         }
     }
 }

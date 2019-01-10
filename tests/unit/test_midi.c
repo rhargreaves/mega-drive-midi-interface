@@ -221,6 +221,35 @@ static void test_midi_polyphonic_mode_uses_multiple_fm_channels(void** state)
     __real_midi_cc(0, CC_POLYPHONIC_MODE, 0);
 }
 
+static void test_midi_polyphonic_mode_note_off_silences_all_matching_pitch(
+    void** state)
+{
+    __real_midi_cc(0, CC_POLYPHONIC_MODE, 127);
+
+    for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
+        expect_value(__wrap_synth_pitch, channel, 0);
+        expect_value(__wrap_synth_pitch, octave, 6);
+        expect_value(__wrap_synth_pitch, freqNumber, 1164);
+        expect_value(__wrap_synth_noteOn, channel, 0);
+
+        __real_midi_noteOn(chan, A_SHARP, 127);
+
+        expect_value(__wrap_synth_pitch, channel, 1);
+        expect_value(__wrap_synth_pitch, octave, 6);
+        expect_value(__wrap_synth_pitch, freqNumber, 1164);
+        expect_value(__wrap_synth_noteOn, channel, 1);
+
+        __real_midi_noteOn(chan, A_SHARP, 127);
+
+        expect_value(__wrap_synth_noteOff, channel, 0);
+        expect_value(__wrap_synth_noteOff, channel, 1);
+
+        __real_midi_noteOff(chan, A_SHARP);
+    }
+
+    __real_midi_cc(0, CC_POLYPHONIC_MODE, 0);
+}
+
 static void test_midi_sets_fm_algorithm(void** state)
 {
     expect_value(__wrap_synth_algorithm, channel, 0);

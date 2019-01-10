@@ -39,6 +39,9 @@ int main(void)
         cmocka_unit_test_setup(
             test_midi_polyphonic_mode_uses_multiple_fm_channels,
             test_midi_setup),
+        cmocka_unit_test_setup(
+            test_midi_polyphonic_mode_note_off_silences_all_matching_pitch,
+            test_midi_setup),
         cmocka_unit_test(test_midi_sets_all_notes_off),
         cmocka_unit_test_setup_teardown(
             test_midi_sets_all_notes_off_in_polyphonic_mode, test_midi_setup,
