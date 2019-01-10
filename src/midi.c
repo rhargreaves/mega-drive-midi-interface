@@ -32,16 +32,27 @@ static const VTable* CHANNEL_OPS[16]
           &NOP_VTable, &NOP_VTable, &NOP_VTable, &NOP_VTable, &NOP_VTable };
 
 static bool polyphonic;
-static u8 polyphonicPitches[MAX_MIDI_CHANS];
+static u8 polyphonicPitches[MAX_FM_CHANS];
 
 static ControlChange lastUnknownControlChange;
 
+static void allNotesOff(u8 chan);
 static void pooledNoteOn(u8 chan, u8 pitch, u8 velocity);
 static void pooledNoteOff(u8 chan, u8 pitch);
 static void channelVolume(u8 chan, u8 volume);
 static void pan(u8 chan, u8 pan);
 static void setPolyphonic(bool state);
 static void cc(u8 chan, u8 controller, u8 value);
+
+void midi_reset(void)
+{
+    polyphonic = false;
+    lastUnknownControlChange.controller = 0;
+    lastUnknownControlChange.value = 0;
+    for (u16 c = 0; c <= MAX_FM_CHAN; c++) {
+        polyphonicPitches[c] = 0;
+    }
+}
 
 void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
 {
@@ -82,7 +93,7 @@ static void cc(u8 chan, u8 controller, u8 value)
         pan(chan, value);
         break;
     case CC_ALL_NOTES_OFF:
-        midi_noteOff(chan, 0);
+        allNotesOff(chan);
         break;
     case CC_GENMDM_FM_ALGORITHM:
         synth_algorithm(chan, RANGE(value, 8));
@@ -213,6 +224,11 @@ static void pan(u8 chan, u8 pan)
     }
 }
 
+static void allNotesOff(u8 chan)
+{
+    CHANNEL_OPS[chan]->noteOff(chan, 0);
+}
+
 static void setPolyphonic(bool state)
 {
     polyphonic = state;
@@ -220,7 +236,7 @@ static void setPolyphonic(bool state)
 
 static void pooledNoteOn(u8 chan, u8 pitch, u8 velocity)
 {
-    for (u8 c = 0; c < MAX_MIDI_CHANS; c++) {
+    for (u8 c = 0; c < MAX_FM_CHANS; c++) {
         if (polyphonicPitches[c] == 0) {
             polyphonicPitches[c] = pitch;
             CHANNEL_OPS[chan]->noteOn(c, pitch, velocity);
@@ -231,7 +247,7 @@ static void pooledNoteOn(u8 chan, u8 pitch, u8 velocity)
 
 static void pooledNoteOff(u8 chan, u8 pitch)
 {
-    for (u8 c = 0; c < MAX_MIDI_CHANS; c++) {
+    for (u8 c = 0; c < MAX_FM_CHANS; c++) {
         if (polyphonicPitches[c] == pitch) {
             polyphonicPitches[c] = 0;
             CHANNEL_OPS[chan]->noteOff(c, pitch);

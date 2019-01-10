@@ -64,6 +64,7 @@ struct ControlChange {
     u8 value;
 };
 
+void midi_reset(void);
 void midi_noteOn(u8 chan, u8 pitch, u8 velocity);
 void midi_noteOff(u8 chan, u8 pitch);
 void midi_pitchBend(u8 chan, u16 bend);

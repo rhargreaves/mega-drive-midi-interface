@@ -3,6 +3,7 @@
 #include <stddef.h>
 
 #include "midi.h"
+#include "synth.h"
 #include <cmocka.h>
 
 extern void __real_midi_noteOn(u8 chan, u8 pitch, u8 velocity);
@@ -16,6 +17,8 @@ static const u16 B = 107;
 
 static int test_midi_setup(void** state)
 {
+    midi_reset();
+
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         expect_any(__wrap_synth_pitch, channel);
         expect_any(__wrap_synth_pitch, octave);
@@ -255,6 +258,33 @@ static void test_midi_sets_all_notes_off(void** state)
     expect_value(__wrap_synth_noteOff, channel, 0);
 
     __real_midi_cc(0, CC_ALL_NOTES_OFF, 0);
+}
+
+static void test_midi_sets_all_notes_off_in_polyphonic_mode(void** state)
+{
+    __real_midi_cc(0, CC_POLYPHONIC_MODE, 64);
+
+    expect_value(__wrap_synth_pitch, channel, 0);
+    expect_any(__wrap_synth_pitch, octave);
+    expect_any(__wrap_synth_pitch, freqNumber);
+    expect_value(__wrap_synth_noteOn, channel, 0);
+
+    __real_midi_noteOn(0, A_SHARP, 127);
+
+    expect_value(__wrap_synth_pitch, channel, 1);
+    expect_any(__wrap_synth_pitch, octave);
+    expect_any(__wrap_synth_pitch, freqNumber);
+    expect_value(__wrap_synth_noteOn, channel, 1);
+
+    __real_midi_noteOn(0, B, 127);
+
+    for (u8 c = 0; c <= MAX_FM_CHAN; c++) {
+        expect_value(__wrap_synth_noteOff, channel, c);
+    }
+
+    __real_midi_cc(0, CC_ALL_NOTES_OFF, 0);
+
+    __real_midi_cc(0, CC_POLYPHONIC_MODE, 0);
 }
 
 static void test_midi_sets_operator_total_level(void** state)
