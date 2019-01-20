@@ -37,6 +37,11 @@ void psg_attenuation(u8 channel, u8 attenuation)
     setAttenuation(channel);
 }
 
+void psg_frequency(u8 channel, u16 freq)
+{
+    PSG_setFrequency(channel, freq);
+}
+
 u8 psg_busy(void)
 {
     return noteOn;

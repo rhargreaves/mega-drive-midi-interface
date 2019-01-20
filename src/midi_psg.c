@@ -57,5 +57,5 @@ void midi_psg_pitchBend(u8 chan, u16 bend)
     s16 bendRelative = bend - 0x2000;
     freq = freq + (bendRelative / 100);
 
-    psg_noteOn(psgChan, freq);
+    psg_frequency(psgChan, freq);
 }

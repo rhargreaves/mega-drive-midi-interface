@@ -10,6 +10,7 @@
 extern void __real_psg_attenuation(u8 channel, u8 attenuation);
 extern void __real_psg_noteOn(u8 channel, u16 freq);
 extern void __real_psg_noteOff(u8 channel);
+extern void __real_psg_frequency(u8 channel, u16 freq);
 
 static void test_psg_chip_sets_note_on_psg(void** state)
 {
@@ -40,6 +41,16 @@ static void test_psg_chip_sets_attenuation(void** state)
         expect_value(__wrap_PSG_setEnvelope, value, 2);
 
         __real_psg_attenuation(chan, 2);
+    }
+}
+
+static void test_psg_chip_sets_frequency(void** state)
+{
+    for (u8 chan = 0; chan < 3; chan++) {
+        expect_value(__wrap_PSG_setFrequency, channel, chan);
+        expect_value(__wrap_PSG_setFrequency, value, 440);
+
+        __real_psg_frequency(chan, 440);
     }
 }
 

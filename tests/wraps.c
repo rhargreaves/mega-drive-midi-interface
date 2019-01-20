@@ -236,6 +236,12 @@ void __wrap_psg_attenuation(u8 channel, u8 attenuation)
     check_expected(attenuation);
 }
 
+void __wrap_psg_frequency(u8 channel, u16 freq)
+{
+    check_expected(channel);
+    check_expected(freq);
+}
+
 void __wrap_YM2612_writeReg(const u16 part, const u8 reg, const u8 data)
 {
     check_expected(part);

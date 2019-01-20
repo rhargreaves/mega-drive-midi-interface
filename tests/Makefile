@@ -48,6 +48,7 @@ MOCKS=midi_process \
 	psg_noteOn \
 	psg_noteOff \
 	psg_attenuation \
+	psg_frequency \
 	midi_noteOff \
 	midi_noteOn \
 	midi_pitchBend \

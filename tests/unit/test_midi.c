@@ -174,8 +174,8 @@ static void test_midi_sets_psg_pitch_bend(void** state)
 
         __real_midi_noteOn(chan, 60, 127);
 
-        expect_value(__wrap_psg_noteOn, channel, chan - MIN_PSG_CHAN);
-        expect_value(__wrap_psg_noteOn, freq, 191);
+        expect_value(__wrap_psg_frequency, channel, chan - MIN_PSG_CHAN);
+        expect_value(__wrap_psg_frequency, freq, 191);
 
         __real_midi_pitchBend(chan, 1000);
     }
