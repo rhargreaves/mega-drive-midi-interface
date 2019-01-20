@@ -12,6 +12,7 @@
 #define STATUS_CC 0xB0
 #define STATUS_PITCH_BEND 0xE0
 #define STATUS_SYSTEM 0xF0
+#define STATUS_CLOCK 0xF8
 
 static void test_interface_tick_passes_note_on_to_midi_processor(void** state)
 {
@@ -72,6 +73,18 @@ static void test_interface_sets_unknown_event_for_unknown_status(void** state)
     assert_int_equal(interface_lastUnknownStatus(), expectedStatus);
 }
 
+static void test_interface_sets_unknown_event_for_unknown_system_message(
+    void** state)
+{
+    u8 expectedStatus = 0xF1;
+
+    will_return(__wrap_comm_read, expectedStatus);
+
+    interface_tick();
+
+    assert_int_equal(interface_lastUnknownStatus(), expectedStatus);
+}
+
 static void test_interface_sets_CC(void** state)
 {
     u8 expectedStatus = STATUS_CC;
@@ -117,7 +130,7 @@ static void test_interface_sets_pitch_bend(void** state)
 static void test_interface_increments_beat_every_6th_clock(void** state)
 {
     for (u16 i = 0; i < 6 * 2; i++) {
-        u8 status = STATUS_SYSTEM;
+        u8 status = STATUS_CLOCK;
         will_return(__wrap_comm_read, status);
         interface_tick();
     }

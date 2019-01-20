@@ -5,6 +5,7 @@
 #include <string.h>
 
 #define STATUS_CHANNEL(status) (status & 0x0F)
+#define STATUS_LOWER(status) (status & 0x0F)
 #define STATUS_EVENT(status) (status >> 4)
 
 #define EVENT_PITCH_BEND 0xE
@@ -111,9 +112,14 @@ static void pitchBend(u8 status)
 
 static void systemMessage(u8 status)
 {
-    clock++;
-    if (clock == 6) {
-        beat++;
-        clock = 0;
+    u8 type = STATUS_LOWER(status);
+    if (type == 0x8) {
+        clock++;
+        if (clock == 6) {
+            beat++;
+            clock = 0;
+        }
+    } else {
+        lastUnknownStatus = status;
     }
 }
