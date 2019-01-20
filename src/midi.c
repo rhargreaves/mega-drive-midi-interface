@@ -89,6 +89,11 @@ bool midi_overflow(void)
     return overflow;
 }
 
+void midi_clearOverflow(void)
+{
+    overflow = false;
+}
+
 static void cc(u8 chan, u8 controller, u8 value)
 {
     switch (controller) {

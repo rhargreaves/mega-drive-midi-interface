@@ -533,3 +533,25 @@ static void test_midi_set_overflow_flag_on_polyphony_breach(void** state)
 
     assert_true(midi_overflow());
 }
+
+static void test_midi_clears_overflow_flag(void** state)
+{
+    __real_midi_cc(0, CC_POLYPHONIC_MODE, 127);
+
+    for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
+        expect_value(__wrap_synth_pitch, channel, chan);
+        expect_value(__wrap_synth_pitch, octave, 6);
+        expect_value(__wrap_synth_pitch, freqNumber, 1164);
+        expect_value(__wrap_synth_noteOn, channel, chan);
+
+        __real_midi_noteOn(0, A_SHARP, 127);
+    }
+
+    __real_midi_noteOn(0, A_SHARP, 127);
+
+    assert_true(midi_overflow());
+
+    midi_clearOverflow();
+
+    assert_false(midi_overflow());
+}

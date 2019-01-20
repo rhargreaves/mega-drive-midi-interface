@@ -67,7 +67,11 @@ int main(void)
         cmocka_unit_test(test_midi_sets_unknown_CC),
         cmocka_unit_test(
             test_midi_polyphonic_mode_sends_CCs_to_all_FM_channels),
-        cmocka_unit_test(test_midi_set_overflow_flag_on_polyphony_breach),
+        cmocka_unit_test_setup_teardown(
+            test_midi_set_overflow_flag_on_polyphony_breach, test_midi_setup,
+            test_midi_setup),
+        cmocka_unit_test_setup_teardown(
+            test_midi_clears_overflow_flag, test_midi_setup, test_midi_setup),
 
         cmocka_unit_test(test_synth_init_sets_initial_registers),
         cmocka_unit_test(test_synth_sets_note_on_fm_reg_chan_0_to_2),
