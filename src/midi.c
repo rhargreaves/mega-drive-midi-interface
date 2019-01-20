@@ -8,6 +8,13 @@
 
 #define RANGE(value, range) (value / (128 / range))
 
+typedef struct Timing Timing;
+
+struct Timing {
+    u16 beat;
+    u16 clock;
+};
+
 typedef struct VTable VTable;
 
 struct VTable {
@@ -35,9 +42,7 @@ static bool polyphonic;
 static u8 polyphonicPitches[MAX_FM_CHANS];
 static ControlChange lastUnknownControlChange;
 static bool overflow;
-
-static u16 beat = 0;
-static u16 clock = 0;
+static Timing timing;
 
 static void allNotesOff(u8 chan);
 static void pooledNoteOn(u8 chan, u8 pitch, u8 velocity);
@@ -49,8 +54,8 @@ static void cc(u8 chan, u8 controller, u8 value);
 
 void midi_reset(void)
 {
-    clock = 0;
-    beat = 0;
+    timing.clock = 0;
+    timing.beat = 0;
     overflow = false;
     polyphonic = false;
     lastUnknownControlChange.controller = 0;
@@ -216,22 +221,22 @@ bool midi_getPolyphonic(void)
 
 void midi_clock(void)
 {
-    clock++;
-    if (clock == 6) {
-        beat++;
-        clock = 0;
+    timing.clock++;
+    if (timing.clock == 6) {
+        timing.beat++;
+        timing.clock = 0;
     }
 }
 
 u16 midi_beat(void)
 {
-    return beat;
+    return timing.beat;
 }
 
 void midi_stop(void)
 {
-    clock = 0;
-    beat = 0;
+    timing.clock = 0;
+    timing.beat = 0;
 }
 
 ControlChange* midi_lastUnknownCC(void)
