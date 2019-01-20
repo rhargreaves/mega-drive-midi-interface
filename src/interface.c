@@ -15,6 +15,7 @@
 
 static u8 lastUnknownStatus = 0;
 static u16 beat = 0;
+static u16 clock = 0;
 
 static void noteOn(u8 status);
 static void noteOff(u8 status);
@@ -110,5 +111,9 @@ static void pitchBend(u8 status)
 
 static void systemMessage(u8 status)
 {
-    beat++;
+    clock++;
+    if (clock == 6) {
+        beat++;
+        clock = 0;
+    }
 }

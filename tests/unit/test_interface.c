@@ -114,12 +114,13 @@ static void test_interface_sets_pitch_bend(void** state)
     interface_tick();
 }
 
-static void test_interface_increments_beat(void** state)
+static void test_interface_increments_beat_every_6th_clock(void** state)
 {
-    u8 status = STATUS_SYSTEM;
-    will_return(__wrap_comm_read, status);
+    for (u16 i = 0; i < 6 * 2; i++) {
+        u8 status = STATUS_SYSTEM;
+        will_return(__wrap_comm_read, status);
+        interface_tick();
+    }
 
-    interface_tick();
-
-    assert_int_equal(interface_beat(), 1);
+    assert_int_equal(interface_beat(), 2);
 }
