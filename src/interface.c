@@ -11,13 +11,16 @@
 #define EVENT_NOTE_ON 0x9
 #define EVENT_NODE_OFF 0x8
 #define EVENT_CC 0xB
+#define EVENT_SYSTEM 0xF
 
 static u8 lastUnknownStatus = 0;
+static u16 beat = 0;
 
 static void noteOn(u8 status);
 static void noteOff(u8 status);
 static void controlChange(u8 status);
 static void pitchBend(u8 status);
+static void systemMessage(u8 status);
 
 void interface_init(void)
 {
@@ -48,10 +51,18 @@ void interface_tick(void)
     case EVENT_PITCH_BEND:
         pitchBend(status);
         break;
+    case EVENT_SYSTEM:
+        systemMessage(status);
+        break;
     default:
         lastUnknownStatus = status;
         break;
     }
+}
+
+u16 interface_beat(void)
+{
+    return beat;
 }
 
 u8 interface_lastUnknownStatus(void)
@@ -95,4 +106,9 @@ static void pitchBend(u8 status)
     u16 upperBend = comm_read();
     u16 bend = (upperBend << 7) + lowerBend;
     midi_pitchBend(chan, bend);
+}
+
+static void systemMessage(u8 status)
+{
+    beat++;
 }

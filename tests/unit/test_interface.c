@@ -11,6 +11,7 @@
 
 #define STATUS_CC 0xB0
 #define STATUS_PITCH_BEND 0xE0
+#define STATUS_SYSTEM 0xF0
 
 static void test_interface_tick_passes_note_on_to_midi_processor(void** state)
 {
@@ -60,9 +61,9 @@ static void test_interface_does_nothing_for_control_change(void** state)
     interface_tick();
 }
 
-static void test_interface_sets_unknown_event_for_system_messages(void** state)
+static void test_interface_sets_unknown_event_for_unknown_status(void** state)
 {
-    u8 expectedStatus = 0xF0;
+    u8 expectedStatus = 0xD0;
 
     will_return(__wrap_comm_read, expectedStatus);
 
@@ -111,4 +112,14 @@ static void test_interface_sets_pitch_bend(void** state)
     expect_value(__wrap_midi_pitchBend, bend, expectedValue);
 
     interface_tick();
+}
+
+static void test_interface_increments_beat(void** state)
+{
+    u8 status = STATUS_SYSTEM;
+    will_return(__wrap_comm_read, status);
+
+    interface_tick();
+
+    assert_int_equal(interface_beat(), 1);
 }

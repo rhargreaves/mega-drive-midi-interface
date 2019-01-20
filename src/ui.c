@@ -23,6 +23,7 @@
 #define ACTIVITY_Y 6
 
 #define FRAMES_BEFORE_UPDATE_ACTIVITY 1
+#define FRAMES_BEFORE_UPDATE_ERROR 10
 #define FRAMES_BEFORE_UPDATE_LOAD 50
 #define FRAMES_BEFORE_UPDATE_LOAD_PERCENT 5
 
@@ -34,6 +35,7 @@ static void vsync(void);
 static void printChannels(void);
 static void printHeader(void);
 static void printLoad(void);
+static void printBeat(void);
 static u16 loadPercent(void);
 static void printLastError(void);
 static void printActivity(void);
@@ -44,6 +46,8 @@ static void clearText(u16 x, u16 y, u16 w);
 static void printActivityForBusy(u8 busy, u16 maxChannels, u16 x);
 static void printPolyphonicMode(void);
 
+static u16 loadPercentSum = 0;
+
 void ui_init(void)
 {
     printHeader();
@@ -52,29 +56,33 @@ void ui_init(void)
     SYS_setVIntCallback(vsync);
 }
 
-static u8 activityFrame = 0;
-static u8 loadFrame = 0;
-static u8 loadCalculationFrame = 0;
-static u16 loadPercentSum = 0;
-
 static void vsync(void)
 {
+    static u8 activityFrame = 0;
     if (++activityFrame == FRAMES_BEFORE_UPDATE_ACTIVITY) {
-        printLastError();
-        printOverflowStatus();
         printActivity();
+        printBeat();
         activityFrame = 0;
     }
 
+    static u8 loadCalculationFrame = 0;
     if (++loadCalculationFrame == FRAMES_BEFORE_UPDATE_LOAD_PERCENT) {
         loadPercentSum += loadPercent();
         loadCalculationFrame = 0;
     }
 
+    static u8 loadFrame = 0;
     if (++loadFrame == FRAMES_BEFORE_UPDATE_LOAD) {
         printLoad();
         printPolyphonicMode();
         loadFrame = 0;
+    }
+
+    static u8 errorFrame = 0;
+    if (++errorFrame == FRAMES_BEFORE_UPDATE_ERROR) {
+        printLastError();
+        printOverflowStatus();
+        errorFrame = 0;
     }
 }
 
@@ -142,6 +150,13 @@ static void printActivityForBusy(u8 busy, u16 maxChannels, u16 x)
     }
 }
 
+static void printBeat(void)
+{
+    static char text[16];
+    sprintf(text, "Beat # %i ", interface_beat());
+    drawText(text, 0, 10);
+}
+
 static void printLoad(void)
 {
     static char loadText[16];
@@ -159,6 +174,7 @@ static void printLastError(void)
 {
     static u8 lastStatus = 0;
     static char text[MAX_ERROR_X];
+
     u8 unknownStatus = interface_lastUnknownStatus();
     if (unknownStatus != lastStatus && unknownStatus != 0) {
         sprintf(text, "Unknown Status %02X", unknownStatus);
