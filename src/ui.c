@@ -157,9 +157,12 @@ static void printOverflowStatus(void)
     static bool lastOverflow = false;
     bool overflow = midi_overflow();
     if (lastOverflow != overflow) {
-        printErrorText("Polyphony Overflow");
-    } else {
-        clearText(0, ERROR_Y, MAX_ERROR_X);
+        if (overflow) {
+            printErrorText("Polyphony Overflow");
+        } else {
+            clearText(0, ERROR_Y, MAX_ERROR_X);
+        }
+        lastOverflow = overflow;
     }
 }
 
