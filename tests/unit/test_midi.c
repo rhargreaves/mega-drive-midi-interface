@@ -540,18 +540,29 @@ static void test_midi_clears_overflow_flag(void** state)
 
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         expect_value(__wrap_synth_pitch, channel, chan);
-        expect_value(__wrap_synth_pitch, octave, 6);
-        expect_value(__wrap_synth_pitch, freqNumber, 1164);
+        expect_any(__wrap_synth_pitch, octave);
+        expect_any(__wrap_synth_pitch, freqNumber);
         expect_value(__wrap_synth_noteOn, channel, chan);
 
-        __real_midi_noteOn(0, A_SHARP, 127);
+        __real_midi_noteOn(0, A_SHARP + chan, 127);
     }
 
-    __real_midi_noteOn(0, A_SHARP, 127);
+    __real_midi_noteOn(0, A_SHARP + MAX_FM_CHAN + 1, 127);
 
     assert_true(midi_overflow());
 
-    midi_clearOverflow();
+    for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
+        expect_value(__wrap_synth_noteOff, channel, chan);
+
+        __real_midi_noteOff(0, A_SHARP + chan);
+    }
+
+    expect_value(__wrap_synth_pitch, channel, 0);
+    expect_any(__wrap_synth_pitch, octave);
+    expect_any(__wrap_synth_pitch, freqNumber);
+    expect_value(__wrap_synth_noteOn, channel, 0);
+
+    __real_midi_noteOn(0, A_SHARP, 127);
 
     assert_false(midi_overflow());
 }

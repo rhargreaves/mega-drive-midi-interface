@@ -36,6 +36,7 @@ static void printLoad(void);
 static u16 loadPercent(void);
 static void printLastError(void);
 static void printActivity(void);
+static void printOverflowStatus(void);
 static void printErrorText(const char* text);
 static void drawText(const char* text, u16 x, u16 y);
 static void clearText(u16 x, u16 y, u16 w);
@@ -55,6 +56,7 @@ static void vsync(void)
     static u8 activityFrame = 0;
     if (++activityFrame == FRAMES_BEFORE_UPDATE_ACTIVITY) {
         printLastError();
+        printOverflowStatus();
         printActivity();
         activityFrame = 0;
     }
@@ -147,6 +149,17 @@ static void printLastError(void)
         printErrorText(text);
         lastCc.controller = cc->controller;
         lastCc.value = cc->value;
+    }
+}
+
+static void printOverflowStatus(void)
+{
+    static bool lastOverflow = false;
+    bool overflow = midi_overflow();
+    if (lastOverflow != overflow) {
+        printErrorText("Polyphony Overflow");
+    } else {
+        clearText(0, ERROR_Y, MAX_ERROR_X);
     }
 }
 

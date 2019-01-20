@@ -89,11 +89,6 @@ bool midi_overflow(void)
     return overflow;
 }
 
-void midi_clearOverflow(void)
-{
-    overflow = false;
-}
-
 static void cc(u8 chan, u8 controller, u8 value)
 {
     switch (controller) {
@@ -251,6 +246,7 @@ static void pooledNoteOn(u8 chan, u8 pitch, u8 velocity)
         if (polyphonicPitches[c] == 0) {
             polyphonicPitches[c] = pitch;
             CHANNEL_OPS[chan]->noteOn(c, pitch, velocity);
+            overflow = false;
             return;
         }
     }
