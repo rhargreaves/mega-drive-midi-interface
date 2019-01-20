@@ -104,6 +104,14 @@ In addition, any FM parameter change made will be sent to all FM channels.
 
 If all FM channels are busy, the note on event is dropped.
 
+## System Real-Time Messages
+
+| Status | Description  | Effect                 |
+| ------ | ------------ | ---------------------- |
+| 0xF8   | Timing Clock | Increment Beat Counter |
+| 0xFA   | Start        | None                   |
+| 0xFC   | Stop         | Reset Beat Counter     |
+
 ## Build & Test
 
 Unit & system tests are compiled and ran as x86 binaries using CMocka. Mega Drive interfaces are mocked.
