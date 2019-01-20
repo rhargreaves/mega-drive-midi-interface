@@ -54,7 +54,8 @@ MOCKS=midi_process \
 	midi_pitchBend \
 	midi_getPolyphonic \
 	midi_cc \
-	midi_clock
+	midi_clock \
+	midi_stop
 
 MD_MOCKS=SYS_setVIntCallback \
 	VDP_setTextPalette \

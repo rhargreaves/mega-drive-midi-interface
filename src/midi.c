@@ -49,6 +49,8 @@ static void cc(u8 chan, u8 controller, u8 value);
 
 void midi_reset(void)
 {
+    clock = 0;
+    beat = 0;
     overflow = false;
     polyphonic = false;
     lastUnknownControlChange.controller = 0;
@@ -224,6 +226,12 @@ void midi_clock(void)
 u16 midi_beat(void)
 {
     return beat;
+}
+
+void midi_stop(void)
+{
+    clock = 0;
+    beat = 0;
 }
 
 ControlChange* midi_lastUnknownCC(void)

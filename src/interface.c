@@ -58,7 +58,6 @@ void interface_tick(void)
         break;
     default:
         setUnknownStatus(status);
-
         break;
     }
 }

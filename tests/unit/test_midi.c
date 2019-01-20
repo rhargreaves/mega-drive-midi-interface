@@ -12,6 +12,7 @@ extern void __real_midi_pitchBend(u8 chan, u16 bend);
 extern bool __real_midi_getPolyphonic(void);
 extern void __real_midi_cc(u8 chan, u8 controller, u8 value);
 extern void __real_midi_clock(void);
+extern void __real_midi_stop(void);
 
 static const u16 A_SHARP = 106;
 static const u16 B = 107;
@@ -575,4 +576,15 @@ static void test_midi_increments_beat_every_6th_clock(void** state)
     }
 
     assert_int_equal(midi_beat(), 2);
+}
+
+static void test_midi_stop_resets_clock(void** state)
+{
+    for (u16 i = 0; i < 6; i++) {
+        __real_midi_clock();
+    }
+    assert_int_equal(midi_beat(), 1);
+
+    __real_midi_stop();
+    assert_int_equal(midi_beat(), 0);
 }
