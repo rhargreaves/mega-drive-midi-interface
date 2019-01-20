@@ -152,9 +152,14 @@ static void printActivityForBusy(u8 busy, u16 maxChannels, u16 x)
 
 static void printBeat(void)
 {
-    static char text[16];
-    sprintf(text, "Beat # %i   ", midi_beat());
-    drawText(text, 0, 10);
+    static u16 lastBeat = 0;
+    u16 beat = midi_beat();
+    if (beat != lastBeat) {
+        static char text[16];
+        sprintf(text, "Beat # %i   ", midi_beat());
+        drawText(text, 0, 10);
+        lastBeat = beat;
+    }
 }
 
 static void printLoad(void)

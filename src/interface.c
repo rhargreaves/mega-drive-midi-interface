@@ -14,6 +14,7 @@
 #define EVENT_SYSTEM 0xF
 
 #define SYSTEM_CLOCK 0x8
+#define SYSTEM_START 0xA
 #define SYSTEM_STOP 0xC
 
 static u8 lastUnknownStatus = 0;
@@ -28,6 +29,11 @@ static void setUnknownStatus(u8 status);
 void interface_init(void)
 {
     synth_init();
+}
+
+void interface_reset(void)
+{
+    lastUnknownStatus = 0;
 }
 
 void interface_loop(void)
@@ -117,6 +123,8 @@ static void systemMessage(u8 status)
     switch (type) {
     case SYSTEM_CLOCK:
         midi_clock();
+        break;
+    case SYSTEM_START:
         break;
     case SYSTEM_STOP:
         midi_stop();
