@@ -33,8 +33,8 @@ static const VTable* CHANNEL_OPS[16]
 
 static bool polyphonic;
 static u8 polyphonicPitches[MAX_FM_CHANS];
-
 static ControlChange lastUnknownControlChange;
+static bool overflow;
 
 static void allNotesOff(u8 chan);
 static void pooledNoteOn(u8 chan, u8 pitch, u8 velocity);
@@ -46,6 +46,7 @@ static void cc(u8 chan, u8 controller, u8 value);
 
 void midi_reset(void)
 {
+    overflow = false;
     polyphonic = false;
     lastUnknownControlChange.controller = 0;
     lastUnknownControlChange.value = 0;
@@ -81,6 +82,11 @@ void midi_cc(u8 chan, u8 controller, u8 value)
     } else {
         cc(chan, controller, value);
     }
+}
+
+bool midi_overflow(void)
+{
+    return overflow;
 }
 
 static void cc(u8 chan, u8 controller, u8 value)
@@ -243,6 +249,7 @@ static void pooledNoteOn(u8 chan, u8 pitch, u8 velocity)
             return;
         }
     }
+    overflow = true;
 }
 
 static void pooledNoteOff(u8 chan, u8 pitch)
