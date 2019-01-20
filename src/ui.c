@@ -24,6 +24,7 @@
 
 #define FRAMES_BEFORE_UPDATE_ACTIVITY 10
 #define FRAMES_BEFORE_UPDATE_LOAD 50
+#define FRAMES_BEFORE_UPDATE_LOAD_PERCENT 1
 
 static const char HEADER[] = "Mega Drive MIDI Interface";
 static const char CHAN_HEADER1[] = "       FM               PSG    ";
@@ -51,21 +52,40 @@ void ui_init(void)
     SYS_setVIntCallback(vsync);
 }
 
+static u8 activityFrame = 0;
+static u8 loadFrame = 0;
+static u8 loadCalculationFrame = 0;
+static u16 loadPercentSum = 0;
+
 static void vsync(void)
 {
-    static u8 activityFrame = 0;
     if (++activityFrame == FRAMES_BEFORE_UPDATE_ACTIVITY) {
         printLastError();
         printOverflowStatus();
         printActivity();
         activityFrame = 0;
     }
-    static u8 loadFrame = 0;
+
+    if (++loadCalculationFrame == FRAMES_BEFORE_UPDATE_LOAD_PERCENT) {
+        loadPercentSum += loadPercent();
+        loadCalculationFrame = 0;
+    }
+
     if (++loadFrame == FRAMES_BEFORE_UPDATE_LOAD) {
         printLoad();
         printPolyphonicMode();
         loadFrame = 0;
     }
+}
+
+static u16 loadPercent(void)
+{
+    u16 idle = comm_idleCount();
+    u16 busy = comm_busyCount();
+    if (idle == 0 && busy == 0) {
+        return 0;
+    }
+    return (busy * 100) / (idle + busy);
 }
 
 static void clearText(u16 x, u16 y, u16 w)
@@ -109,20 +129,12 @@ static void printActivityForBusy(u8 busy, u16 maxChannels, u16 x)
     }
 }
 
-static u16 loadPercent(void)
-{
-    u16 idle = comm_idleCount();
-    u16 busy = comm_busyCount();
-    if (idle == 0 && busy == 0) {
-        return 0;
-    }
-    return (busy * 100) / (idle + busy);
-}
-
 static void printLoad(void)
 {
     static char loadText[16];
-    u8 percent = loadPercent();
+    u16 percent = loadPercentSum
+        / (FRAMES_BEFORE_UPDATE_LOAD / FRAMES_BEFORE_UPDATE_LOAD_PERCENT);
+    loadPercentSum = 0;
     VDP_setTextPalette(percent > 70 ? PAL1 : PAL0);
     sprintf(loadText, "Load %i%s  ", percent, "%");
     comm_resetCounts();
@@ -133,7 +145,7 @@ static void printLoad(void)
 static void printLastError(void)
 {
     static u8 lastStatus = 0;
-    char text[MAX_ERROR_X];
+    static char text[MAX_ERROR_X];
     u8 unknownStatus = interface_lastUnknownStatus();
     if (unknownStatus != lastStatus && unknownStatus != 0) {
         sprintf(text, "Unknown Status %02X", unknownStatus);

@@ -5,6 +5,9 @@
 #include "comm.h"
 #include <cmocka.h>
 
+static const u16 MAX_COMM_IDLE = 0x28F;
+static const u16 MAX_COMM_BUSY = 0x28F;
+
 extern u8 __real_comm_read(void);
 extern u16 __real_comm_idleCount(void);
 extern u16 __real_comm_busyCount(void);
@@ -58,7 +61,7 @@ static void test_comm_busy_count_is_correct(void** state)
 
 static void test_comm_clamps_idle_count(void** state)
 {
-    for (int i = 0; i < 0xFFFF; i++) {
+    for (u16 i = 0; i < MAX_COMM_IDLE + 1; i++) {
         will_return(__wrap_ssf_usb_rd_ready, 0);
     }
     will_return(__wrap_ssf_usb_rd_ready, 1);
@@ -67,12 +70,12 @@ static void test_comm_clamps_idle_count(void** state)
     __real_comm_read();
     u16 idle = __real_comm_idleCount();
 
-    assert_int_equal(idle, 0);
+    assert_int_equal(idle, MAX_COMM_IDLE);
 }
 
 static void test_comm_clamps_busy_count(void** state)
 {
-    for (int i = 0; i < 0xFFFF; i++) {
+    for (u16 i = 0; i < MAX_COMM_BUSY + 1; i++) {
         will_return(__wrap_ssf_usb_rd_ready, 1);
         will_return(__wrap_ssf_usb_read, 50);
         __real_comm_read();
@@ -80,5 +83,5 @@ static void test_comm_clamps_busy_count(void** state)
 
     u16 busy = __real_comm_busyCount();
 
-    assert_int_equal(busy, 0);
+    assert_int_equal(busy, MAX_COMM_BUSY);
 }
