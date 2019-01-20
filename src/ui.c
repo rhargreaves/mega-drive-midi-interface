@@ -22,9 +22,9 @@
 #define ACTIVITY_PSG_X (ACTIVITY_FM_X + ((MAX_FM_CHANS + 1) * CHAN_X_GAP))
 #define ACTIVITY_Y 6
 
-#define FRAMES_BEFORE_UPDATE_ACTIVITY 10
+#define FRAMES_BEFORE_UPDATE_ACTIVITY 1
 #define FRAMES_BEFORE_UPDATE_LOAD 50
-#define FRAMES_BEFORE_UPDATE_LOAD_PERCENT 1
+#define FRAMES_BEFORE_UPDATE_LOAD_PERCENT 5
 
 static const char HEADER[] = "Mega Drive MIDI Interface";
 static const char CHAN_HEADER1[] = "       FM               PSG    ";
@@ -112,10 +112,23 @@ static void printChannels(void)
 
 static void printActivity(void)
 {
-    VDP_setTextPalette(PAL2);
-    printActivityForBusy(synth_busy(), MAX_FM_CHANS, ACTIVITY_FM_X);
-    printActivityForBusy(psg_busy(), MAX_PSG_CHANS, ACTIVITY_PSG_X);
-    VDP_setTextPalette(PAL0);
+    static u8 lastSynthBusy = 0;
+    u8 synthBusy = synth_busy();
+    if (synthBusy != lastSynthBusy) {
+        VDP_setTextPalette(PAL2);
+        printActivityForBusy(synthBusy, MAX_FM_CHANS, ACTIVITY_FM_X);
+        VDP_setTextPalette(PAL0);
+        lastSynthBusy = synthBusy;
+    }
+
+    static u8 lastPsgBusy = 0;
+    u8 psgBusy = psg_busy();
+    if (psgBusy != lastPsgBusy) {
+        VDP_setTextPalette(PAL2);
+        printActivityForBusy(psgBusy, MAX_PSG_CHANS, ACTIVITY_PSG_X);
+        VDP_setTextPalette(PAL0);
+        lastPsgBusy = psgBusy;
+    }
 }
 
 static void printActivityForBusy(u8 busy, u16 maxChannels, u16 x)
