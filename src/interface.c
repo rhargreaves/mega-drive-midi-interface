@@ -22,6 +22,7 @@ static void noteOff(u8 status);
 static void controlChange(u8 status);
 static void pitchBend(u8 status);
 static void systemMessage(u8 status);
+static void setUnknownStatus(u8 status);
 
 void interface_init(void)
 {
@@ -56,7 +57,8 @@ void interface_tick(void)
         systemMessage(status);
         break;
     default:
-        lastUnknownStatus = status;
+        setUnknownStatus(status);
+
         break;
     }
 }
@@ -69,6 +71,11 @@ u16 interface_beat(void)
 u8 interface_lastUnknownStatus(void)
 {
     return lastUnknownStatus;
+}
+
+static void setUnknownStatus(u8 status)
+{
+    lastUnknownStatus = status;
 }
 
 static void controlChange(u8 status)
@@ -114,11 +121,10 @@ static void systemMessage(u8 status)
     u8 type = STATUS_LOWER(status);
     switch (type) {
     case SYSTEM_CLOCK:
-
         midi_clock();
         break;
     default:
-        lastUnknownStatus = status;
+        setUnknownStatus(status);
         break;
     }
 }
