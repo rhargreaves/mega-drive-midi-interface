@@ -7,4 +7,3 @@ void interface_tick(void);
 void interface_init(void);
 u8 interface_lastUnknownStatus(void);
 bool interface_polyphonic(void);
-u16 interface_beat(void);

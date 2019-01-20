@@ -63,11 +63,6 @@ void interface_tick(void)
     }
 }
 
-u16 interface_beat(void)
-{
-    return midi_beat();
-}
-
 u8 interface_lastUnknownStatus(void)
 {
     return lastUnknownStatus;
