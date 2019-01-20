@@ -4,15 +4,16 @@
 #include "synth.h"
 #include <string.h>
 
-#define STATUS_CHANNEL(status) (status & 0x0F)
 #define STATUS_LOWER(status) (status & 0x0F)
-#define STATUS_EVENT(status) (status >> 4)
+#define STATUS_UPPER(status) (status >> 4)
 
 #define EVENT_PITCH_BEND 0xE
 #define EVENT_NOTE_ON 0x9
 #define EVENT_NODE_OFF 0x8
 #define EVENT_CC 0xB
 #define EVENT_SYSTEM 0xF
+
+#define SYSTEM_CLOCK 0x8
 
 static u8 lastUnknownStatus = 0;
 static u16 beat = 0;
@@ -39,7 +40,7 @@ void interface_loop(void)
 void interface_tick(void)
 {
     u8 status = comm_read();
-    u8 event = STATUS_EVENT(status);
+    u8 event = STATUS_UPPER(status);
     switch (event) {
     case EVENT_NOTE_ON:
         noteOn(status);
@@ -74,7 +75,7 @@ u8 interface_lastUnknownStatus(void)
 
 static void controlChange(u8 status)
 {
-    u8 chan = STATUS_CHANNEL(status);
+    u8 chan = STATUS_LOWER(status);
     u8 controller = comm_read();
     u8 value = comm_read();
     midi_cc(chan, controller, value);
@@ -87,7 +88,7 @@ bool interface_polyphonic(void)
 
 static void noteOn(u8 status)
 {
-    u8 chan = STATUS_CHANNEL(status);
+    u8 chan = STATUS_LOWER(status);
     u8 pitch = comm_read();
     u8 velocity = comm_read();
     midi_noteOn(chan, pitch, velocity);
@@ -95,7 +96,7 @@ static void noteOn(u8 status)
 
 static void noteOff(u8 status)
 {
-    u8 chan = STATUS_CHANNEL(status);
+    u8 chan = STATUS_LOWER(status);
     u8 pitch = comm_read();
     comm_read();
     midi_noteOff(chan, pitch);
@@ -103,7 +104,7 @@ static void noteOff(u8 status)
 
 static void pitchBend(u8 status)
 {
-    u8 chan = STATUS_CHANNEL(status);
+    u8 chan = STATUS_LOWER(status);
     u16 lowerBend = comm_read();
     u16 upperBend = comm_read();
     u16 bend = (upperBend << 7) + lowerBend;
@@ -113,13 +114,16 @@ static void pitchBend(u8 status)
 static void systemMessage(u8 status)
 {
     u8 type = STATUS_LOWER(status);
-    if (type == 0x8) {
+    switch (type) {
+    case SYSTEM_CLOCK:
         clock++;
         if (clock == 6) {
             beat++;
             clock = 0;
         }
-    } else {
+        break;
+    default:
         lastUnknownStatus = status;
+        break;
     }
 }
