@@ -14,6 +14,7 @@
 #define EVENT_SYSTEM 0xF
 
 #define SYSTEM_CLOCK 0x8
+#define SYSTEM_STOP 0xC
 
 static u8 lastUnknownStatus = 0;
 
@@ -116,6 +117,9 @@ static void systemMessage(u8 status)
     switch (type) {
     case SYSTEM_CLOCK:
         midi_clock();
+        break;
+    case SYSTEM_STOP:
+        midi_stop();
         break;
     default:
         setUnknownStatus(status);

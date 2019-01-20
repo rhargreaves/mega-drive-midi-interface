@@ -13,6 +13,7 @@
 #define STATUS_PITCH_BEND 0xE0
 #define STATUS_SYSTEM 0xF0
 #define STATUS_CLOCK 0xF8
+#define STATUS_STOP 0xFC
 
 static void test_interface_tick_passes_note_on_to_midi_processor(void** state)
 {
@@ -133,6 +134,16 @@ static void test_interface_increments_midi_clock(void** state)
     will_return(__wrap_comm_read, status);
 
     expect_function_call(__wrap_midi_clock);
+
+    interface_tick();
+}
+
+static void test_interface_stops_midi(void** state)
+{
+    u8 status = STATUS_STOP;
+    will_return(__wrap_comm_read, status);
+
+    expect_function_call(__wrap_midi_stop);
 
     interface_tick();
 }

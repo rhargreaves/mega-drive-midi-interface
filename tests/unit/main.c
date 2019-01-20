@@ -22,6 +22,7 @@ int main(void)
         cmocka_unit_test(test_interface_sets_CC),
         cmocka_unit_test(test_interface_sets_pitch_bend),
         cmocka_unit_test(test_interface_increments_midi_clock),
+        cmocka_unit_test(test_interface_stops_midi),
 
         cmocka_unit_test(test_midi_triggers_synth_note_on),
         cmocka_unit_test(test_midi_triggers_synth_note_on_2),
