@@ -21,7 +21,7 @@ int main(void)
             test_interface_sets_unknown_event_for_unknown_system_message),
         cmocka_unit_test(test_interface_sets_CC),
         cmocka_unit_test(test_interface_sets_pitch_bend),
-        cmocka_unit_test(test_interface_increments_beat_every_6th_clock),
+        cmocka_unit_test(test_interface_increments_midi_clock),
 
         cmocka_unit_test(test_midi_triggers_synth_note_on),
         cmocka_unit_test(test_midi_triggers_synth_note_on_2),
@@ -75,6 +75,7 @@ int main(void)
             test_midi_setup),
         cmocka_unit_test_setup_teardown(
             test_midi_clears_overflow_flag, test_midi_setup, test_midi_setup),
+        cmocka_unit_test(test_midi_increments_beat_every_6th_clock),
 
         cmocka_unit_test(test_synth_init_sets_initial_registers),
         cmocka_unit_test(test_synth_sets_note_on_fm_reg_chan_0_to_2),

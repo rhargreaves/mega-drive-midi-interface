@@ -212,6 +212,11 @@ void __wrap_midi_cc(u8 chan, u8 controller, u8 value)
     check_expected(value);
 }
 
+void __wrap_midi_clock(void)
+{
+    function_called();
+}
+
 void __wrap_fm_writeReg(u16 part, u8 reg, u8 data)
 {
     check_expected(part);

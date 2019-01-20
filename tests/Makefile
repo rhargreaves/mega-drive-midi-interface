@@ -53,7 +53,8 @@ MOCKS=midi_process \
 	midi_noteOn \
 	midi_pitchBend \
 	midi_getPolyphonic \
-	midi_cc
+	midi_cc \
+	midi_clock
 
 MD_MOCKS=SYS_setVIntCallback \
 	VDP_setTextPalette \
