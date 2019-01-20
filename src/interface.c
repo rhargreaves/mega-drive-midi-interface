@@ -16,8 +16,6 @@
 #define SYSTEM_CLOCK 0x8
 
 static u8 lastUnknownStatus = 0;
-static u16 beat = 0;
-static u16 clock = 0;
 
 static void noteOn(u8 status);
 static void noteOff(u8 status);
@@ -65,7 +63,7 @@ void interface_tick(void)
 
 u16 interface_beat(void)
 {
-    return beat;
+    return midi_beat();
 }
 
 u8 interface_lastUnknownStatus(void)
@@ -116,11 +114,8 @@ static void systemMessage(u8 status)
     u8 type = STATUS_LOWER(status);
     switch (type) {
     case SYSTEM_CLOCK:
-        clock++;
-        if (clock == 6) {
-            beat++;
-            clock = 0;
-        }
+
+        midi_clock();
         break;
     default:
         lastUnknownStatus = status;

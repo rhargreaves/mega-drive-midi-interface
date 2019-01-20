@@ -36,6 +36,9 @@ static u8 polyphonicPitches[MAX_FM_CHANS];
 static ControlChange lastUnknownControlChange;
 static bool overflow;
 
+static u16 beat = 0;
+static u16 clock = 0;
+
 static void allNotesOff(u8 chan);
 static void pooledNoteOn(u8 chan, u8 pitch, u8 velocity);
 static void pooledNoteOff(u8 chan, u8 pitch);
@@ -207,6 +210,20 @@ void midi_pitchBend(u8 chan, u16 bend)
 bool midi_getPolyphonic(void)
 {
     return polyphonic;
+}
+
+void midi_clock(void)
+{
+    clock++;
+    if (clock == 6) {
+        beat++;
+        clock = 0;
+    }
+}
+
+u16 midi_beat(void)
+{
+    return beat;
 }
 
 ControlChange* midi_lastUnknownCC(void)
