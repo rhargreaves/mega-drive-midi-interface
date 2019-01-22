@@ -217,7 +217,7 @@ void __wrap_midi_clock(void)
     function_called();
 }
 
-void __wrap_midi_stop(void)
+void __wrap_midi_start(void)
 {
     function_called();
 }

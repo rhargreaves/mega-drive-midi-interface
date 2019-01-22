@@ -139,21 +139,21 @@ static void test_interface_increments_midi_clock(void** state)
     interface_tick();
 }
 
-static void test_interface_stops_midi(void** state)
+static void test_interface_starts_midi(void** state)
 {
-    u8 status = STATUS_STOP;
+    u8 status = STATUS_START;
     will_return(__wrap_comm_read, status);
 
-    expect_function_call(__wrap_midi_stop);
+    expect_function_call(__wrap_midi_start);
 
     interface_tick();
 }
 
-static void test_interface_swallows_midi_start(void** state)
+static void test_interface_swallows_midi_stop(void** state)
 {
     interface_reset();
 
-    u8 status = STATUS_START;
+    u8 status = STATUS_STOP;
     will_return(__wrap_comm_read, status);
 
     interface_tick();

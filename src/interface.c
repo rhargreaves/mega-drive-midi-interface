@@ -125,9 +125,9 @@ static void systemMessage(u8 status)
         midi_clock();
         break;
     case SYSTEM_START:
+        midi_start();
         break;
     case SYSTEM_STOP:
-        midi_stop();
         break;
     default:
         setUnknownStatus(status);

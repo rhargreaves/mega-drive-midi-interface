@@ -233,7 +233,7 @@ u16 midi_beat(void)
     return timing.beat;
 }
 
-void midi_stop(void)
+void midi_start(void)
 {
     timing.clock = 0;
     timing.beat = 0;
