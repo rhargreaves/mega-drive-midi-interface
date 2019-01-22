@@ -15,6 +15,7 @@
 #define STATUS_CLOCK 0xF8
 #define STATUS_STOP 0xFC
 #define STATUS_START 0xFA
+#define STATUS_CONTINUE 0xFB
 
 static void test_interface_tick_passes_note_on_to_midi_processor(void** state)
 {
@@ -154,6 +155,18 @@ static void test_interface_swallows_midi_stop(void** state)
     interface_reset();
 
     u8 status = STATUS_STOP;
+    will_return(__wrap_comm_read, status);
+
+    interface_tick();
+
+    assert_int_equal(interface_lastUnknownStatus(), 0);
+}
+
+static void test_interface_swallows_midi_continue(void** state)
+{
+    interface_reset();
+
+    u8 status = STATUS_CONTINUE;
     will_return(__wrap_comm_read, status);
 
     interface_tick();

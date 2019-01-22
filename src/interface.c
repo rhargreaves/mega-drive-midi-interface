@@ -16,6 +16,7 @@
 #define SYSTEM_CLOCK 0x8
 #define SYSTEM_START 0xA
 #define SYSTEM_STOP 0xC
+#define SYSTEM_CONTINUE 0xB
 
 static u8 lastUnknownStatus = 0;
 
@@ -127,6 +128,7 @@ static void systemMessage(u8 status)
     case SYSTEM_START:
         midi_start();
         break;
+    case SYSTEM_CONTINUE:
     case SYSTEM_STOP:
         break;
     default:
