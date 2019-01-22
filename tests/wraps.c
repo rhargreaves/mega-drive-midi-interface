@@ -222,6 +222,11 @@ void __wrap_midi_start(void)
     function_called();
 }
 
+void __wrap_midi_position(u16 beat)
+{
+    check_expected(beat);
+}
+
 void __wrap_fm_writeReg(u16 part, u8 reg, u8 data)
 {
     check_expected(part);

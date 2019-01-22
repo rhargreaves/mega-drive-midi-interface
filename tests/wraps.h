@@ -41,6 +41,7 @@ bool __wrap_midi_getPolyphonic(void);
 void __wrap_midi_cc(u8 chan, u8 controller, u8 value);
 void __wrap_midi_clock(void);
 void __wrap_midi_start(void);
+void __wrap_midi_position(u16 beat);
 void __wrap_YM2612_writeReg(const u16 part, const u8 reg, const u8 data);
 void __wrap_VDP_drawText(const char* str, u16 x, u16 y);
 void __wrap_SYS_setVIntCallback(_voidCallback* CB);

@@ -16,6 +16,7 @@
 #define STATUS_STOP 0xFC
 #define STATUS_START 0xFA
 #define STATUS_CONTINUE 0xFB
+#define STATUS_SONG_POSITION 0xF2
 
 static void test_interface_tick_passes_note_on_to_midi_processor(void** state)
 {
@@ -172,4 +173,20 @@ static void test_interface_swallows_midi_continue(void** state)
     interface_tick();
 
     assert_int_equal(interface_lastUnknownStatus(), 0);
+}
+
+static void test_interface_sets_position(void** state)
+{
+    u8 status = STATUS_SONG_POSITION;
+    u16 beat = 0x3FFF;
+    u8 beatLSB = beat & 0x007F;
+    u8 beatMSB = (beat >> 7) & 0x007F;
+
+    will_return(__wrap_comm_read, status);
+    will_return(__wrap_comm_read, beatLSB);
+    will_return(__wrap_comm_read, beatMSB);
+
+    expect_value(__wrap_midi_position, beat, beat);
+
+    interface_tick();
 }

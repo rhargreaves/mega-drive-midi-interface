@@ -75,3 +75,4 @@ bool midi_overflow(void);
 void midi_clock(void);
 u16 midi_beat(void);
 void midi_start(void);
+void midi_position(u16 beat);

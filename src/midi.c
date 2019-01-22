@@ -239,6 +239,10 @@ void midi_start(void)
     timing.beat = 0;
 }
 
+void midi_position(u16 beat)
+{
+}
+
 ControlChange* midi_lastUnknownCC(void)
 {
     return &lastUnknownControlChange;

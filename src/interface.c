@@ -17,6 +17,7 @@
 #define SYSTEM_START 0xA
 #define SYSTEM_STOP 0xC
 #define SYSTEM_CONTINUE 0xB
+#define SYSTEM_SONG_POSITION 0x2
 
 static u8 lastUnknownStatus = 0;
 
@@ -26,6 +27,7 @@ static void controlChange(u8 status);
 static void pitchBend(u8 status);
 static void systemMessage(u8 status);
 static void setUnknownStatus(u8 status);
+static void songPosition(void);
 
 void interface_init(void)
 {
@@ -118,6 +120,14 @@ static void pitchBend(u8 status)
     midi_pitchBend(chan, bend);
 }
 
+static void songPosition(void)
+{
+    u16 lowerBeat = comm_read();
+    u16 upperBeat = comm_read();
+    u16 beat = (upperBeat << 7) + lowerBeat;
+    midi_position(beat);
+}
+
 static void systemMessage(u8 status)
 {
     u8 type = STATUS_LOWER(status);
@@ -127,6 +137,9 @@ static void systemMessage(u8 status)
         break;
     case SYSTEM_START:
         midi_start();
+        break;
+    case SYSTEM_SONG_POSITION:
+        songPosition();
         break;
     case SYSTEM_CONTINUE:
     case SYSTEM_STOP:

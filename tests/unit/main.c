@@ -25,6 +25,7 @@ int main(void)
         cmocka_unit_test(test_interface_starts_midi),
         cmocka_unit_test(test_interface_swallows_midi_stop),
         cmocka_unit_test(test_interface_swallows_midi_continue),
+        cmocka_unit_test(test_interface_sets_position),
 
         cmocka_unit_test(test_midi_triggers_synth_note_on),
         cmocka_unit_test(test_midi_triggers_synth_note_on_2),
