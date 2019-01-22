@@ -235,8 +235,7 @@ u16 midi_beat(void)
 
 void midi_start(void)
 {
-    timing.clock = 0;
-    timing.beat = 0;
+    midi_position(0);
 }
 
 void midi_position(u16 beat)
