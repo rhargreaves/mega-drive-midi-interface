@@ -106,11 +106,13 @@ If all FM channels are busy, the note on event is dropped.
 
 ## System Real-Time Messages
 
-| Status | Description  | Effect                 |
-| ------ | ------------ | ---------------------- |
-| 0xF8   | Timing Clock | Increment Beat Counter |
-| 0xFA   | Start        | None                   |
-| 0xFC   | Stop         | Reset Beat Counter     |
+| Status | Description           | Effect                 |
+| ------ | --------------------- | ---------------------- |
+| 0xF2   | Song Position Pointer | Set Beat Counter       |
+| 0xF8   | Timing Clock          | Increment Beat Counter |
+| 0xFA   | Start                 | Reset Beat Counter     |
+| 0xFC   | Stop                  | None                   |
+| 0xFD   | Continue              | None                   |
 
 ## Build & Test
 
