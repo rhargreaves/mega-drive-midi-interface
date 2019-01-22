@@ -241,6 +241,8 @@ void midi_start(void)
 
 void midi_position(u16 beat)
 {
+    timing.clock = 0;
+    timing.beat = beat;
 }
 
 ControlChange* midi_lastUnknownCC(void)

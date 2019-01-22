@@ -13,6 +13,7 @@ extern bool __real_midi_getPolyphonic(void);
 extern void __real_midi_cc(u8 chan, u8 controller, u8 value);
 extern void __real_midi_clock(void);
 extern void __real_midi_start(void);
+extern void __real_midi_position(u16 beat);
 
 static const u16 A_SHARP = 106;
 static const u16 B = 107;
@@ -587,4 +588,12 @@ static void test_midi_start_resets_clock(void** state)
 
     __real_midi_start();
     assert_int_equal(midi_beat(), 0);
+}
+
+static void test_midi_position_sets_beat(void** state)
+{
+    u16 beat = 0xABCD;
+    __real_midi_position(beat);
+
+    assert_int_equal(midi_beat(), beat);
 }
