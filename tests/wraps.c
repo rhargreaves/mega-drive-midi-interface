@@ -314,6 +314,10 @@ void __wrap_SPR_init(u16 maxSprite, u16 vramSize, u16 unpackBufferSize)
 {
 }
 
+void __wrap_VDP_setPaletteColors(u16 index, const u16* values, u16 count)
+{
+}
+
 u8 __wrap_ssf_usb_read(void)
 {
     return mock_type(u8);

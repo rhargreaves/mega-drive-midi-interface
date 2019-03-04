@@ -71,6 +71,7 @@ MD_MOCKS=SYS_setVIntCallback \
 	SYS_disableInts \
 	SYS_enableInts \
 	SPR_init \
+	VDP_setPaletteColors \
 	ssf_usb_read \
     ssf_usb_rd_ready
 

@@ -15,6 +15,8 @@ void sonic_init(void)
     SPR_init(16, 256, 256);
     sprite = SPR_addSprite(&sonic_sprite, fix32ToInt(FIX32(0)),
         fix32ToInt(FIX32(0)), TILE_ATTR(PAL2, TRUE, FALSE, FALSE));
+    VDP_setPaletteColors(
+        (PAL2 * 16), sonic_sprite.palette->data, sonic_sprite.palette->length);
     SPR_update();
     SYS_enableInts();
 }
