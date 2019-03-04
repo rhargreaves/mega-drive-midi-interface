@@ -75,6 +75,7 @@ static void vsync(void)
 
     static u8 loadFrame = 0;
     if (++loadFrame == FRAMES_BEFORE_UPDATE_LOAD) {
+        sonic_vsync();
         printLoad();
         printPolyphonicMode();
         loadFrame = 0;

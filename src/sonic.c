@@ -4,6 +4,7 @@
 #include "sprite.h"
 
 static Sprite* sprite;
+static s16 frame;
 
 #define ANIM_STAND 0
 #define ANIM_WAIT 1
@@ -29,4 +30,14 @@ void sonic_init(void)
         (PAL2 * 16), sonic_sprite.palette->data, sonic_sprite.palette->length);
     SPR_update();
     SYS_enableInts();
+}
+
+void sonic_vsync(void)
+{
+    if (frame == 0)
+        frame = 1;
+    else
+        frame = 0;
+    SPR_setFrame(sprite, frame);
+    SPR_update();
 }

@@ -62,7 +62,7 @@ RESOURCES+=$(S80S:.s80=.o)
 
 OBJS = $(RESOURCES)
 
-all: test bin/out.bin
+all: bin/out.bin
 
 boot/sega.o: boot/rom_head.bin
 	$(AS) $(ASFLAGS) boot/sega.s -o $@
