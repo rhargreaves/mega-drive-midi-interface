@@ -111,8 +111,8 @@ If all FM channels are busy, the note on event is dropped.
 | 0xF2   | Song Position Pointer | Set Beat Counter       |
 | 0xF8   | Timing Clock          | Increment Beat Counter |
 | 0xFA   | Start                 | Reset Beat Counter     |
+| 0xFB   | Continue              | None                   |
 | 0xFC   | Stop                  | None                   |
-| 0xFD   | Continue              | None                   |
 
 ## Build & Test
 
