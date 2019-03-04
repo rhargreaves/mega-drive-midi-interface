@@ -292,6 +292,28 @@ void __wrap_PSG_setFrequency(u8 channel, u16 value)
     check_expected(value);
 }
 
+Sprite* __wrap_SPR_addSprite(
+    const SpriteDefinition* spriteDef, s16 x, s16 y, u16 attribut)
+{
+    return mock_type(Sprite*);
+}
+
+void __wrap_SPR_update()
+{
+}
+
+void __wrap_SYS_disableInts()
+{
+}
+
+void __wrap_SYS_enableInts()
+{
+}
+
+void __wrap_SPR_init(u16 maxSprite, u16 vramSize, u16 unpackBufferSize)
+{
+}
+
 u8 __wrap_ssf_usb_read(void)
 {
     return mock_type(u8);

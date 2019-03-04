@@ -3,6 +3,7 @@
 #include "interface.h"
 #include "midi.h"
 #include "psg_chip.h"
+#include "sonic.h"
 #include "synth.h"
 #include <genesis.h>
 
@@ -50,6 +51,7 @@ static u16 loadPercentSum = 0;
 
 void ui_init(void)
 {
+    sonic_init();
     printHeader();
     printChannels();
     printLoad();

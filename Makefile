@@ -24,7 +24,12 @@ NM = nm
 
 BUILD := $(if $(VERSION),v$(VERSION),Dev $(shell date '+%Y-%m-%d %H:%M:%S'))
 
-INCS = -I. -I$(GENDEV)/sgdk/inc -I$(GENDEV)/m86k-elf/include -I$(GENDEV)/sgdk/res -Isrc
+INCS = -I. \
+	-I$(GENDEV)/sgdk/inc \
+	-I$(GENDEV)/m86k-elf/include \
+	-I$(GENDEV)/sgdk/res \
+	-Isrc \
+	-Ires
 CCFLAGS = -Wall -std=c11 -Werror \
 	-fno-builtin -DBUILD='"$(BUILD)"' \
 	-m68000 -O3 -c -fomit-frame-pointer -g

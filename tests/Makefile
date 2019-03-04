@@ -6,6 +6,7 @@ SGDK?=/opt/gendev/sgdk
 INCLUDE_DIRS+=-I$(SGDK)/inc
 INCLUDE_DIRS+=-I$(SGDK)/res
 INCLUDE_DIRS+=-I.
+INCLUDE_DIRS+=-I../res
 INCLUDE_DIRS+=-I../src
 INCLUDE_DIRS+=-I$(CMOCKA_DIR)/include
 
@@ -65,6 +66,11 @@ MD_MOCKS=SYS_setVIntCallback \
 	VDP_clearText \
 	PSG_setEnvelope \
 	PSG_setFrequency \
+	SPR_addSprite \
+	SPR_update \
+	SYS_disableInts \
+	SYS_enableInts \
+	SPR_init \
 	ssf_usb_read \
     ssf_usb_rd_ready
 
