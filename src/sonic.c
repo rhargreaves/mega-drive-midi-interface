@@ -4,7 +4,8 @@
 #include "sprite.h"
 
 static Sprite* sprite;
-static s16 frame;
+static s16 animationFrame;
+static u16 frame;
 
 #define ANIM_STAND 0
 #define ANIM_WAIT 1
@@ -18,6 +19,8 @@ static s16 frame;
 #define MIN_POSX FIX32(10)
 #define MAX_POSX FIX32(400)
 #define MAX_POSY FIX32(156)
+
+static void incrementFrame(void);
 
 void sonic_init(void)
 {
@@ -34,10 +37,18 @@ void sonic_init(void)
 
 void sonic_vsync(void)
 {
-    if (frame == 0)
-        frame = 1;
-    else
-        frame = 0;
-    SPR_setFrame(sprite, frame);
+    if (++frame != 25) {
+        return;
+    }
+    frame = 0;
+    incrementFrame();
+}
+
+static void incrementFrame(void)
+{
+    if (++animationFrame == 3) {
+        animationFrame = 1;
+    }
+    SPR_setFrame(sprite, animationFrame);
     SPR_update();
 }

@@ -60,6 +60,8 @@ void ui_init(void)
 
 static void vsync(void)
 {
+    sonic_vsync();
+
     static u8 activityFrame = 0;
     if (++activityFrame == FRAMES_BEFORE_UPDATE_ACTIVITY) {
         printActivity();
@@ -75,7 +77,6 @@ static void vsync(void)
 
     static u8 loadFrame = 0;
     if (++loadFrame == FRAMES_BEFORE_UPDATE_LOAD) {
-        sonic_vsync();
         printLoad();
         printPolyphonicMode();
         loadFrame = 0;
