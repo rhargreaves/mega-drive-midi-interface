@@ -16,6 +16,11 @@ static u16 frame;
 #define ANIM_CROUNCH 6
 #define ANIM_ROLL 7
 
+static const int MAX_FRAMES[] = { 0, 2, 5, 3, 1, 0, 0, 4 };
+static const int SPEEDS[] = { 50, 25, 10, 10, 25, 50, 50, 10 };
+
+static int animation = ANIM_RUN;
+
 #define MIN_POSX FIX32(10)
 #define MAX_POSX FIX32(400)
 #define MAX_POSY FIX32(156)
@@ -28,7 +33,7 @@ void sonic_init(void)
     SPR_init(16, 256, 256);
     sprite = SPR_addSprite(&sonic_sprite, fix32ToInt(FIX32(0)),
         fix32ToInt(FIX32(0)), TILE_ATTR(PAL2, TRUE, FALSE, FALSE));
-    SPR_setAnim(sprite, ANIM_WAIT);
+    SPR_setAnim(sprite, animation);
     VDP_setPaletteColors(
         (PAL2 * 16), sonic_sprite.palette->data, sonic_sprite.palette->length);
     SPR_update();
@@ -37,7 +42,7 @@ void sonic_init(void)
 
 void sonic_vsync(void)
 {
-    if (++frame != 25) {
+    if (++frame != SPEEDS[animation]) {
         return;
     }
     frame = 0;
@@ -46,8 +51,8 @@ void sonic_vsync(void)
 
 static void incrementFrame(void)
 {
-    if (++animationFrame == 3) {
-        animationFrame = 1;
+    if (++animationFrame == MAX_FRAMES[animation]) {
+        animationFrame = 0;
     }
     SPR_setFrame(sprite, animationFrame);
     SPR_update();
