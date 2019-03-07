@@ -16,10 +16,11 @@ static u16 frame;
 #define ANIM_CROUNCH 6
 #define ANIM_ROLL 7
 
-static const int MAX_FRAMES[] = { 0, 2, 5, 3, 1, 0, 0, 4 };
-static const int SPEEDS[] = { 50, 25, 10, 10, 25, 50, 50, 10 };
+static const int LOOP_START[] = { 0, 1, 0, 0, 0, 0, 0, 0 };
+static const int LOOP_END[] = { 0, 2, 5, 3, 1, 0, 0, 4 };
+static const int SPEEDS[] = { 50, 25, 10, 10, 25, 50, 50, 5 };
 
-static int animation = ANIM_RUN;
+static int animation = ANIM_WAIT;
 
 #define MIN_POSX FIX32(10)
 #define MAX_POSX FIX32(400)
@@ -51,9 +52,9 @@ void sonic_vsync(void)
 
 static void incrementFrame(void)
 {
-    if (++animationFrame == MAX_FRAMES[animation]) {
-        animationFrame = 0;
-    }
     SPR_setFrame(sprite, animationFrame);
     SPR_update();
+    if (++animationFrame == LOOP_END[animation] + 1) {
+        animationFrame = LOOP_START[animation];
+    }
 }
