@@ -16,6 +16,7 @@
 #define MAX_ERROR_X 30
 #define ERROR_Y (MAX_EFFECTIVE_Y - 2)
 #define POLY_Y (MAX_EFFECTIVE_Y - 4)
+#define BEATS_Y (MAX_EFFECTIVE_Y - 6)
 #define RIGHTED_TEXT_X(text) (MAX_EFFECTIVE_X - (sizeof(text) - 1) + 1)
 #define CENTRED_TEXT_X(text) ((MAX_EFFECTIVE_X - (sizeof(text) - 1)) / 2)
 #define CHAN_X_GAP 3
@@ -160,10 +161,11 @@ static void printBeat(void)
     Timing* timing = midi_timing();
     if (timing->sixteenth != lastSixteenth) {
         static char text[16];
-
         sprintf(text, "%i. %i. %i   ", timing->bar + 1, timing->barBeat + 1,
             timing->sixteenth + 1);
-        drawText(text, 0, 10);
+        VDP_setTextPalette(PAL2);
+        drawText(text, 0, BEATS_Y);
+        VDP_setTextPalette(PAL0);
         lastSixteenth = timing->sixteenth;
     }
 }
