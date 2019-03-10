@@ -597,3 +597,15 @@ static void test_midi_position_sets_beat(void** state)
 
     assert_int_equal(midi_beat(), beat);
 }
+
+static void test_midi_timing_sets_bar_number(void** state)
+{
+    __real_midi_position(0);
+    for (u16 i = 0; i < 6 * 5 * 4; i++) {
+        __real_midi_clock();
+    };
+
+    Timing* timing = midi_timing();
+    assert_int_equal(timing->bar, 2);
+    assert_int_equal(timing->barBeat, 0);
+}

@@ -327,3 +327,11 @@ u16 __wrap_ssf_usb_rd_ready(void)
 {
     return mock_type(u16);
 }
+
+void __wrap_SPR_setAnim(Sprite* sprite, s16 anim)
+{
+}
+
+void __wrap_SPR_setFrame(Sprite* sprite, s16 frame)
+{
+}

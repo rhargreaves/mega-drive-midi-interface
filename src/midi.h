@@ -64,6 +64,15 @@ struct ControlChange {
     u8 value;
 };
 
+typedef struct Timing Timing;
+
+struct Timing {
+    u16 beat;
+    u16 clock;
+    u16 bar;
+    u16 barBeat;
+};
+
 void midi_reset(void);
 void midi_noteOn(u8 chan, u8 pitch, u8 velocity);
 void midi_noteOff(u8 chan, u8 pitch);
@@ -76,3 +85,4 @@ void midi_clock(void);
 u16 midi_beat(void);
 void midi_start(void);
 void midi_position(u16 beat);
+Timing* midi_timing(void);

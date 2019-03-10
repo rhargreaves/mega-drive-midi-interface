@@ -8,13 +8,6 @@
 
 #define RANGE(value, range) (value / (128 / range))
 
-typedef struct Timing Timing;
-
-struct Timing {
-    u16 beat;
-    u16 clock;
-};
-
 typedef struct VTable VTable;
 
 struct VTable {
@@ -296,4 +289,9 @@ static void pooledNoteOff(u8 chan, u8 pitch)
             CHANNEL_OPS[chan]->noteOff(c, pitch);
         }
     }
+}
+
+Timing* midi_timing(void)
+{
+    return &timing;
 }
