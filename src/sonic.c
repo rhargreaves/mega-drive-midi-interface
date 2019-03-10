@@ -3,10 +3,6 @@
 
 #include "sprite.h"
 
-static Sprite* sprite;
-static s16 animationFrame;
-static u16 vsyncFrame;
-
 #define ANIM_STAND 0
 #define ANIM_WAIT 1
 #define ANIM_WALK 2
@@ -15,6 +11,11 @@ static u16 vsyncFrame;
 #define ANIM_UP 5
 #define ANIM_CROUNCH 6
 #define ANIM_ROLL 7
+
+static Sprite* sprite;
+static s16 animationFrame;
+static u16 vsyncFrame;
+static int animation = ANIM_WAIT;
 
 typedef struct SonicAnimation SonicAnimation;
 
@@ -27,12 +28,6 @@ struct SonicAnimation {
 static const SonicAnimation sonicAnimation[8]
     = { { 0, 0, 50 }, { 1, 2, 25 }, { 0, 5, 10 }, { 0, 3, 10 }, { 0, 1, 25 },
           { 0, 0, 50 }, { 0, 0, 50 }, { 0, 4, 5 } };
-
-static int animation = ANIM_WAIT;
-
-#define MIN_POSX FIX32(10)
-#define MAX_POSX FIX32(400)
-#define MAX_POSY FIX32(156)
 
 static void incrementFrame(void);
 
