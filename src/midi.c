@@ -238,10 +238,13 @@ void midi_start(void)
 
 void midi_position(u16 beat)
 {
+    const u16 BEATS_IN_BAR = 4;
+
+    u16 quarterNotes = beat;
     timing.clock = 0;
-    timing.beat = beat;
-    timing.bar = 0;
-    timing.barBeat = 0;
+    timing.beat = quarterNotes / 4;
+    timing.bar = timing.beat / BEATS_IN_BAR;
+    timing.barBeat = timing.beat % BEATS_IN_BAR;
 }
 
 ControlChange* midi_lastUnknownCC(void)

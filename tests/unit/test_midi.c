@@ -592,10 +592,13 @@ static void test_midi_start_resets_clock(void** state)
 
 static void test_midi_position_sets_beat(void** state)
 {
-    u16 beat = 0xABCD;
-    __real_midi_position(beat);
+    u16 quarterNotes = 4 * 4 * 9;
+    __real_midi_position(quarterNotes);
 
-    assert_int_equal(midi_beat(), beat);
+    Timing* timing = midi_timing();
+    assert_int_equal(timing->bar, 9);
+    assert_int_equal(timing->barBeat, 0);
+    assert_int_equal(timing->beat, quarterNotes / 4);
 }
 
 static void test_midi_timing_sets_bar_number(void** state)
