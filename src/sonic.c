@@ -5,7 +5,7 @@
 
 static Sprite* sprite;
 static s16 animationFrame;
-static u16 frame;
+static u16 vsyncFrame;
 
 #define ANIM_STAND 0
 #define ANIM_WAIT 1
@@ -16,9 +16,17 @@ static u16 frame;
 #define ANIM_CROUNCH 6
 #define ANIM_ROLL 7
 
-static const int LOOP_START[] = { 0, 1, 0, 0, 0, 0, 0, 0 };
-static const int LOOP_END[] = { 0, 2, 5, 3, 1, 0, 0, 4 };
-static const int SPEEDS[] = { 50, 25, 10, 10, 25, 50, 50, 5 };
+typedef struct SonicAnimation SonicAnimation;
+
+struct SonicAnimation {
+    u16 loopStart;
+    u16 loopEnd;
+    u16 speed;
+};
+
+static const SonicAnimation sonicAnimation[8]
+    = { { 0, 0, 50 }, { 1, 2, 25 }, { 0, 5, 10 }, { 0, 3, 10 }, { 0, 1, 25 },
+          { 0, 0, 50 }, { 0, 0, 50 }, { 0, 4, 5 } };
 
 static int animation = ANIM_WAIT;
 
@@ -43,10 +51,10 @@ void sonic_init(void)
 
 void sonic_vsync(void)
 {
-    if (++frame != SPEEDS[animation]) {
+    if (++vsyncFrame != sonicAnimation[animation].speed) {
         return;
     }
-    frame = 0;
+    vsyncFrame = 0;
     incrementFrame();
 }
 
@@ -54,7 +62,7 @@ static void incrementFrame(void)
 {
     SPR_setFrame(sprite, animationFrame);
     SPR_update();
-    if (++animationFrame == LOOP_END[animation] + 1) {
-        animationFrame = LOOP_START[animation];
+    if (++animationFrame == sonicAnimation[animation].loopEnd + 1) {
+        animationFrame = sonicAnimation[animation].loopStart;
     }
 }
