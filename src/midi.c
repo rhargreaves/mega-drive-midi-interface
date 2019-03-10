@@ -215,8 +215,13 @@ bool midi_getPolyphonic(void)
 void midi_clock(void)
 {
     timing.clock++;
-    if (timing.clock == 6) {
+    if (timing.clock == 24) {
         timing.beat++;
+        timing.barBeat++;
+        if (timing.barBeat == 4) {
+            timing.bar++;
+            timing.barBeat = 0;
+        }
         timing.clock = 0;
     }
 }
@@ -235,6 +240,8 @@ void midi_position(u16 beat)
 {
     timing.clock = 0;
     timing.beat = beat;
+    timing.bar = 0;
+    timing.barBeat = 0;
 }
 
 ControlChange* midi_lastUnknownCC(void)

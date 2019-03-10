@@ -570,9 +570,9 @@ static void test_midi_clears_overflow_flag(void** state)
     assert_false(midi_overflow());
 }
 
-static void test_midi_increments_beat_every_6th_clock(void** state)
+static void test_midi_increments_beat_every_24th_clock(void** state)
 {
-    for (u16 i = 0; i < 6 * 2; i++) {
+    for (u16 i = 0; i < 24 * 2; i++) {
         __real_midi_clock();
     }
 
@@ -581,7 +581,7 @@ static void test_midi_increments_beat_every_6th_clock(void** state)
 
 static void test_midi_start_resets_clock(void** state)
 {
-    for (u16 i = 0; i < 6; i++) {
+    for (u16 i = 0; i < 24; i++) {
         __real_midi_clock();
     }
     assert_int_equal(midi_beat(), 1);
@@ -601,11 +601,11 @@ static void test_midi_position_sets_beat(void** state)
 static void test_midi_timing_sets_bar_number(void** state)
 {
     __real_midi_position(0);
-    for (u16 i = 0; i < 6 * 5 * 4; i++) {
+    for (u16 i = 0; i < 6 * 24; i++) {
         __real_midi_clock();
     };
 
     Timing* timing = midi_timing();
-    assert_int_equal(timing->bar, 2);
-    assert_int_equal(timing->barBeat, 0);
+    assert_int_equal(timing->bar, 1);
+    assert_int_equal(timing->barBeat, 2);
 }
