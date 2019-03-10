@@ -71,6 +71,7 @@ struct Timing {
     u16 clock;
     u16 bar;
     u16 barBeat;
+    u16 sixteenth;
 };
 
 void midi_reset(void);

@@ -604,11 +604,12 @@ static void test_midi_position_sets_beat(void** state)
 static void test_midi_timing_sets_bar_number(void** state)
 {
     __real_midi_position(0);
-    for (u16 i = 0; i < 6 * 24; i++) {
+    for (u16 i = 0; i < (6 * 4 * 6) + 6; i++) {
         __real_midi_clock();
     };
 
     Timing* timing = midi_timing();
     assert_int_equal(timing->bar, 1);
     assert_int_equal(timing->barBeat, 2);
+    assert_int_equal(timing->sixteenth, 1);
 }

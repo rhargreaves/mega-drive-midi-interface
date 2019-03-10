@@ -4,3 +4,4 @@
 tests/cmocka/
 tests/bin/
 out/
+.idea/

@@ -215,14 +215,18 @@ bool midi_getPolyphonic(void)
 void midi_clock(void)
 {
     timing.clock++;
-    if (timing.clock == 24) {
-        timing.beat++;
-        timing.barBeat++;
-        if (timing.barBeat == 4) {
-            timing.bar++;
-            timing.barBeat = 0;
-        }
+    if (timing.clock == 6) {
         timing.clock = 0;
+        timing.sixteenth++;
+        if (timing.sixteenth == 4) {
+            timing.sixteenth = 0;
+            timing.beat++;
+            timing.barBeat++;
+            if (timing.barBeat == 4) {
+                timing.bar++;
+                timing.barBeat = 0;
+            }
+        }
     }
 }
 
