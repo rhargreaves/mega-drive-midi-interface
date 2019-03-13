@@ -579,6 +579,15 @@ static void test_midi_increments_beat_every_24th_clock(void** state)
     assert_int_equal(midi_timing()->beat, 2);
 }
 
+static void test_midi_increments_clocks(void** state)
+{
+    for (u16 i = 0; i < 24 * 2; i++) {
+        __real_midi_clock();
+    }
+
+    assert_int_equal(midi_timing()->clocks, 48);
+}
+
 static void test_midi_start_resets_clock(void** state)
 {
     for (u16 i = 0; i < 24; i++) {

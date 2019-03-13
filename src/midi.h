@@ -67,11 +67,12 @@ struct ControlChange {
 typedef struct Timing Timing;
 
 struct Timing {
-    u16 beat;
-    u16 clock;
+    u8 beat;
+    u8 clock;
     u16 bar;
-    u16 barBeat;
-    u16 sixteenth;
+    u8 barBeat;
+    u8 sixteenth;
+    u16 clocks;
 };
 
 void midi_reset(void);

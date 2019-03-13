@@ -47,6 +47,7 @@ static void cc(u8 chan, u8 controller, u8 value);
 
 void midi_reset(void)
 {
+    timing.clocks = 0;
     timing.clock = 0;
     timing.beat = 0;
     overflow = false;
@@ -214,6 +215,7 @@ bool midi_getPolyphonic(void)
 
 void midi_clock(void)
 {
+    timing.clocks++;
     timing.clock++;
     if (timing.clock == 6) {
         timing.clock = 0;
