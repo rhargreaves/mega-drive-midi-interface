@@ -33,7 +33,6 @@ static const char HEADER[] = "Mega Drive MIDI Interface";
 static const char CHAN_HEADER1[] = "       FM               PSG    ";
 static const char CHAN_HEADER2[] = "1  2  3  4  5  6     1  2  3  4";
 
-static void vsync(void);
 static void printChannels(void);
 static void printHeader(void);
 static void printLoad(void);
@@ -56,10 +55,9 @@ void ui_init(void)
     printHeader();
     printChannels();
     printLoad();
-    SYS_setVIntCallback(vsync);
 }
 
-static void vsync(void)
+void ui_vsync(void)
 {
     sonic_vsync();
 
@@ -166,6 +164,7 @@ static void printBeat(void)
         VDP_setTextPalette(PAL2);
         drawText(text, 0, BEATS_Y);
         VDP_setTextPalette(PAL0);
+        sonic_tick();
         lastSixteenth = timing->sixteenth;
     }
 }

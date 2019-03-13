@@ -6,3 +6,4 @@
 #endif
 
 void ui_init(void);
+void ui_vsync(void);

@@ -1,4 +1,5 @@
 #include "sonic.h"
+#include "midi.h"
 #include <genesis.h>
 
 #include "sprite.h"
@@ -15,7 +16,7 @@
 static Sprite* sprite;
 static s16 animationFrame;
 static u16 vsyncFrame;
-static int animation = ANIM_WAIT;
+static int animation = ANIM_RUN;
 
 typedef struct SonicAnimation SonicAnimation;
 
@@ -46,10 +47,11 @@ void sonic_init(void)
 
 void sonic_vsync(void)
 {
-    if (++vsyncFrame != sonicAnimation[animation].speed) {
-        return;
-    }
-    vsyncFrame = 0;
+    vsyncFrame++;
+}
+
+void sonic_tick(void)
+{
     incrementFrame();
 }
 
