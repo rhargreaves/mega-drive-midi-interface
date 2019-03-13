@@ -83,7 +83,6 @@ ControlChange* midi_lastUnknownCC(void);
 void midi_cc(u8 chan, u8 controller, u8 value);
 bool midi_overflow(void);
 void midi_clock(void);
-u16 midi_beat(void);
 void midi_start(void);
 void midi_position(u16 beat);
 Timing* midi_timing(void);

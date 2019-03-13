@@ -230,11 +230,6 @@ void midi_clock(void)
     }
 }
 
-u16 midi_beat(void)
-{
-    return timing.beat;
-}
-
 void midi_start(void)
 {
     midi_position(0);
