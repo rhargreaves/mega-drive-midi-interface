@@ -10,6 +10,7 @@
 #include <cmocka.h>
 
 #define midi_test(test) cmocka_unit_test_setup(test, test_midi_setup)
+#define synth_test(test) cmocka_unit_test_setup(test, test_synth_setup)
 
 int main(void)
 {
@@ -77,39 +78,30 @@ int main(void)
         midi_test(test_midi_timing_sets_bar_number),
         midi_test(test_midi_increments_clocks),
 
-        cmocka_unit_test(test_synth_init_sets_initial_registers),
-        cmocka_unit_test(test_synth_sets_note_on_fm_reg_chan_0_to_2),
-        cmocka_unit_test(test_synth_sets_note_on_fm_reg_chan_3_to_5),
-        cmocka_unit_test(test_synth_sets_note_off_fm_reg_chan_0_to_2),
-        cmocka_unit_test(test_synth_sets_note_off_fm_reg_chan_3_to_5),
-        cmocka_unit_test(test_synth_sets_octave_and_freq_reg_chan),
-        cmocka_unit_test(
-            test_synth_sets_total_level_reg_chan_for_algorithms_0_to_3),
-        cmocka_unit_test(test_synth_sets_total_level_reg_chan_for_algorithm_4),
-        cmocka_unit_test(
-            test_synth_sets_total_level_reg_chan_for_algorithms_5_and_6),
-        cmocka_unit_test(test_synth_sets_total_level_reg_chan_for_algorithm_7),
-        cmocka_unit_test(test_synth_sets_stereo_ams_and_freq),
-        cmocka_unit_test_setup(test_synth_sets_algorithm, test_synth_setup),
-        cmocka_unit_test_setup(test_synth_sets_feedback, test_synth_setup),
-        cmocka_unit_test(test_synth_sets_operator_total_level),
-        cmocka_unit_test_setup(
-            test_synth_sets_feedback_and_algorithm, test_synth_setup),
-        cmocka_unit_test_setup(
-            test_synth_sets_operator_multiple_and_detune, test_synth_setup),
-        cmocka_unit_test_setup(
-            test_synth_sets_operator_attack_rate_and_rate_scaling,
-            test_synth_setup),
-        cmocka_unit_test(test_synth_sets_operator_second_decay_rate),
-        cmocka_unit_test_setup(
-            test_synth_sets_operator_release_rate_and_secondary_amplitude,
-            test_synth_setup),
-        cmocka_unit_test_setup(
-            test_synth_sets_operator_amplitude_modulation_and_first_decay_rate,
-            test_synth_setup),
-        cmocka_unit_test(test_synth_sets_global_LFO_enable_and_frequency),
-        cmocka_unit_test_setup(
-            test_synth_sets_busy_indicators, test_synth_setup),
+        synth_test(test_synth_init_sets_initial_registers),
+        synth_test(test_synth_sets_note_on_fm_reg_chan_0_to_2),
+        synth_test(test_synth_sets_note_on_fm_reg_chan_3_to_5),
+        synth_test(test_synth_sets_note_off_fm_reg_chan_0_to_2),
+        synth_test(test_synth_sets_note_off_fm_reg_chan_3_to_5),
+        synth_test(test_synth_sets_octave_and_freq_reg_chan),
+        synth_test(test_synth_sets_total_level_reg_chan_for_algorithms_0_to_3),
+        synth_test(test_synth_sets_total_level_reg_chan_for_algorithm_4),
+        synth_test(test_synth_sets_total_level_reg_chan_for_algorithms_5_and_6),
+        synth_test(test_synth_sets_total_level_reg_chan_for_algorithm_7),
+        synth_test(test_synth_sets_stereo_ams_and_freq),
+        synth_test(test_synth_sets_algorithm),
+        synth_test(test_synth_sets_feedback),
+        synth_test(test_synth_sets_operator_total_level),
+        synth_test(test_synth_sets_feedback_and_algorithm),
+        synth_test(test_synth_sets_operator_multiple_and_detune),
+        synth_test(test_synth_sets_operator_attack_rate_and_rate_scaling),
+        synth_test(test_synth_sets_operator_second_decay_rate),
+        synth_test(
+            test_synth_sets_operator_release_rate_and_secondary_amplitude),
+        synth_test(
+            test_synth_sets_operator_amplitude_modulation_and_first_decay_rate),
+        synth_test(test_synth_sets_global_LFO_enable_and_frequency),
+        synth_test(test_synth_sets_busy_indicators),
 
         cmocka_unit_test(test_psg_chip_sets_note_on_psg),
         cmocka_unit_test(test_psg_chip_sets_note_off_psg),
