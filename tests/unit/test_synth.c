@@ -35,7 +35,7 @@ extern void __real_synth_operatorAmplitudeModulation(
 extern void __real_synth_operatorReleaseRate(u8 channel, u8 op, u8 releaseRate);
 extern void __real_synth_pitchBend(u8 channel, u16 bend);
 
-static int test_synth_setup(void** state)
+static void set_initial_registers()
 {
     const u16 count = 167;
     expect_any_count(__wrap_YM2612_writeReg, part, count);
@@ -43,18 +43,17 @@ static int test_synth_setup(void** state)
     expect_any_count(__wrap_YM2612_writeReg, data, count);
 
     __real_synth_init();
+}
 
+static int test_synth_setup(void** state)
+{
+    set_initial_registers();
     return 0;
 }
 
 static void test_synth_init_sets_initial_registers(void** state)
 {
-    const u16 count = 167;
-    expect_any_count(__wrap_YM2612_writeReg, part, count);
-    expect_any_count(__wrap_YM2612_writeReg, reg, count);
-    expect_any_count(__wrap_YM2612_writeReg, data, count);
-
-    __real_synth_init();
+    set_initial_registers();
 }
 
 static void test_synth_sets_note_on_fm_reg_chan_0_to_2(void** state)
