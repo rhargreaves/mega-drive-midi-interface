@@ -11,6 +11,7 @@
 
 #define midi_test(test) cmocka_unit_test_setup(test, test_midi_setup)
 #define synth_test(test) cmocka_unit_test_setup(test, test_synth_setup)
+#define comm_test(test) cmocka_unit_test_setup(test, test_comm_setup)
 
 int main(void)
 {
@@ -110,13 +111,11 @@ int main(void)
         cmocka_unit_test(test_psg_chip_sets_note_on_psg_with_attenuation),
         cmocka_unit_test(test_psg_sets_busy_indicators),
 
-        cmocka_unit_test_setup(test_comm_reads_when_ready, test_comm_setup),
-        cmocka_unit_test_setup(
-            test_comm_idle_count_is_correct, test_comm_setup),
-        cmocka_unit_test_setup(
-            test_comm_busy_count_is_correct, test_comm_setup),
-        cmocka_unit_test_setup(test_comm_clamps_idle_count, test_comm_setup),
-        cmocka_unit_test_setup(test_comm_clamps_busy_count, test_comm_setup) };
+        comm_test(test_comm_reads_when_ready),
+        comm_test(test_comm_idle_count_is_correct),
+        comm_test(test_comm_busy_count_is_correct),
+        comm_test(test_comm_clamps_idle_count),
+        comm_test(test_comm_clamps_busy_count) };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
 }
