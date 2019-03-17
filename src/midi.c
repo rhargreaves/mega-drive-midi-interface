@@ -1,4 +1,5 @@
 #include "midi.h"
+#include "memory.h"
 #include "midi_fm.h"
 #include "midi_nop.h"
 #include "midi_psg.h"
@@ -47,13 +48,10 @@ static void cc(u8 chan, u8 controller, u8 value);
 
 void midi_reset(void)
 {
-    timing.clocks = 0;
-    timing.clock = 0;
-    timing.beat = 0;
+    memset(&timing, 0, sizeof(Timing));
+    memset(&lastUnknownControlChange, 0, sizeof(ControlChange));
     overflow = false;
     polyphonic = false;
-    lastUnknownControlChange.controller = 0;
-    lastUnknownControlChange.value = 0;
     for (u16 c = 0; c <= MAX_FM_CHAN; c++) {
         polyphonicPitches[c] = 0;
     }
