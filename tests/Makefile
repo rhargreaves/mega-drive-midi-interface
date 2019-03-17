@@ -73,6 +73,7 @@ MD_MOCKS=SYS_setVIntCallback \
 	SPR_init \
 	SPR_setAnim \
 	SPR_setFrame \
+	SPR_setAnimAndFrame \
 	VDP_setPaletteColors \
 	ssf_usb_read \
     ssf_usb_rd_ready

@@ -164,7 +164,6 @@ static void printBeat(void)
         VDP_setTextPalette(PAL2);
         drawText(text, 0, BEATS_Y);
         VDP_setTextPalette(PAL0);
-        sonic_tick();
         lastSixteenth = timing->sixteenth;
     }
 }
