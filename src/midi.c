@@ -32,11 +32,11 @@ static const VTable* CHANNEL_OPS[16]
           &PSG_VTable, &PSG_VTable, &PSG_VTable, &PSG_VTable, &NOP_VTable,
           &NOP_VTable, &NOP_VTable, &NOP_VTable, &NOP_VTable, &NOP_VTable };
 
-static bool polyphonic;
 static u8 polyphonicPitches[MAX_FM_CHANS];
 static ControlChange lastUnknownControlChange;
-static bool overflow;
 static Timing timing;
+static bool polyphonic;
+static bool overflow;
 
 static void allNotesOff(u8 chan);
 static void pooledNoteOn(u8 chan, u8 pitch, u8 velocity);
@@ -50,11 +50,9 @@ void midi_reset(void)
 {
     memset(&timing, 0, sizeof(Timing));
     memset(&lastUnknownControlChange, 0, sizeof(ControlChange));
+    memset(&polyphonicPitches, 0, sizeof(polyphonicPitches));
     overflow = false;
     polyphonic = false;
-    for (u16 c = 0; c <= MAX_FM_CHAN; c++) {
-        polyphonicPitches[c] = 0;
-    }
 }
 
 void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
