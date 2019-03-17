@@ -599,15 +599,23 @@ static void test_midi_start_resets_clock(void** state)
     assert_int_equal(midi_timing()->beat, 0);
 }
 
-static void test_midi_position_sets_beat(void** state)
+static void test_midi_position_sets_correct_timing(void** state)
 {
-    u16 quarterNotes = 4 * 4 * 9;
-    __real_midi_position(quarterNotes);
+    const u16 bars = 2;
+    const u16 quarterNotes = 1;
+    const u16 sixteenths = 2;
+    const u16 midiBeats = sixteenths + (quarterNotes * 4) + (bars * 16);
+    const u16 clocks = midiBeats * 6;
+
+    __real_midi_position(midiBeats);
 
     Timing* timing = midi_timing();
-    assert_int_equal(timing->bar, 9);
-    assert_int_equal(timing->barBeat, 0);
-    assert_int_equal(timing->beat, quarterNotes / 4);
+    assert_int_equal(timing->bar, bars);
+    assert_int_equal(timing->barBeat, quarterNotes);
+    assert_int_equal(timing->beat, quarterNotes + (bars * 4));
+    assert_int_equal(timing->sixteenth, sixteenths);
+    assert_int_equal(timing->clocks, clocks);
+    assert_int_equal(timing->clock, 0);
 }
 
 static void test_midi_timing_sets_bar_number(void** state)

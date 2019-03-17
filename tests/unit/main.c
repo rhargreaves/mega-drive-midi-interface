@@ -75,7 +75,7 @@ int main(void)
         midi_test(test_midi_clears_overflow_flag),
         midi_test(test_midi_increments_beat_every_24th_clock),
         midi_test(test_midi_start_resets_clock),
-        midi_test(test_midi_position_sets_beat),
+        midi_test(test_midi_position_sets_correct_timing),
         midi_test(test_midi_timing_sets_bar_number),
         midi_test(test_midi_increments_clocks),
 

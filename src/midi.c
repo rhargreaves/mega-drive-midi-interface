@@ -233,15 +233,19 @@ void midi_start(void)
     midi_position(0);
 }
 
-void midi_position(u16 beat)
+/* midiBeat = 1/16th note = 6 clocks */
+void midi_position(u16 midiBeat)
 {
+    timing.clocks = midiBeat * 6;
+
     const u16 BEATS_IN_BAR = 4;
 
-    u16 quarterNotes = beat;
-    timing.clock = 0;
-    timing.beat = quarterNotes / 4;
-    timing.bar = timing.beat / BEATS_IN_BAR;
-    timing.barBeat = timing.beat % BEATS_IN_BAR;
+    u16 quarterNotes = midiBeat / 4;
+    timing.clock = timing.clocks % 6;
+    timing.beat = quarterNotes;
+    timing.bar = midiBeat / 16;
+    timing.barBeat = quarterNotes % BEATS_IN_BAR;
+    timing.sixteenth = midiBeat % 4;
 }
 
 ControlChange* midi_lastUnknownCC(void)
