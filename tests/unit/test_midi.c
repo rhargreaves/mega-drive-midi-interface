@@ -576,7 +576,7 @@ static void test_midi_increments_beat_every_24th_clock(void** state)
         __real_midi_clock();
     }
 
-    assert_int_equal(midi_timing()->beat, 2);
+    assert_int_equal(midi_timing()->barBeat, 2);
 }
 
 static void test_midi_increments_clocks(void** state)
@@ -593,10 +593,10 @@ static void test_midi_start_resets_clock(void** state)
     for (u16 i = 0; i < 24; i++) {
         __real_midi_clock();
     }
-    assert_int_equal(midi_timing()->beat, 1);
+    assert_int_equal(midi_timing()->clocks, 24);
 
     __real_midi_start();
-    assert_int_equal(midi_timing()->beat, 0);
+    assert_int_equal(midi_timing()->clocks, 0);
 }
 
 static void test_midi_position_sets_correct_timing(void** state)
@@ -612,7 +612,6 @@ static void test_midi_position_sets_correct_timing(void** state)
     Timing* timing = midi_timing();
     assert_int_equal(timing->bar, bars);
     assert_int_equal(timing->barBeat, quarterNotes);
-    assert_int_equal(timing->beat, quarterNotes + (bars * 4));
     assert_int_equal(timing->sixteenth, sixteenths);
     assert_int_equal(timing->clocks, clocks);
     assert_int_equal(timing->clock, 0);

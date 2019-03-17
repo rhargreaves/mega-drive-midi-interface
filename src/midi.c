@@ -218,7 +218,6 @@ void midi_clock(void)
         timing.sixteenth++;
         if (timing.sixteenth == 4) {
             timing.sixteenth = 0;
-            timing.beat++;
             timing.barBeat++;
             if (timing.barBeat == 4) {
                 timing.bar++;
@@ -236,13 +235,12 @@ void midi_start(void)
 /* midiBeat = 1/16th note = 6 clocks */
 void midi_position(u16 midiBeat)
 {
-    timing.clocks = midiBeat * 6;
-
     const u16 BEATS_IN_BAR = 4;
 
-    u16 quarterNotes = midiBeat / 4;
+    timing.clocks = midiBeat * 6;
     timing.clock = timing.clocks % 6;
-    timing.beat = quarterNotes;
+
+    u16 quarterNotes = midiBeat / 4;
     timing.bar = midiBeat / 16;
     timing.barBeat = quarterNotes % BEATS_IN_BAR;
     timing.sixteenth = midiBeat % 4;

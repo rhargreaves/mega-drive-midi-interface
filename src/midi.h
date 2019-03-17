@@ -67,7 +67,6 @@ struct ControlChange {
 typedef struct Timing Timing;
 
 struct Timing {
-    u8 beat;
     u8 clock;
     u16 bar;
     u8 barBeat;
