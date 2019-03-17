@@ -236,10 +236,8 @@ void midi_position(u16 midiBeat)
 
     timing.clocks = midiBeat * 6;
     timing.clock = timing.clocks % 6;
-
-    u16 quarterNotes = midiBeat / 4;
     timing.bar = midiBeat / 16;
-    timing.barBeat = quarterNotes % BEATS_IN_BAR;
+    timing.barBeat = (midiBeat / 4) % BEATS_IN_BAR;
     timing.sixteenth = midiBeat % 4;
 }
 
