@@ -66,20 +66,19 @@ static void incrementFrame(void)
 static void midiBeat(void)
 {
     static u8 sixteenth = 0;
-    if (sixteenth == 2) {
-        if (framesSinceBeat > 36) {
-            switchAnimation(ANIM_STAND);
-        } else if (framesSinceBeat > 16 && framesSinceBeat <= 35) {
-            switchAnimation(ANIM_WALK);
+    if (sixteenth++ == 2) {
+        sixteenth = 0;
+        if (framesSinceBeat <= 9) {
+            switchAnimation(ANIM_ROLL);
         } else if (framesSinceBeat > 10 && framesSinceBeat <= 15) {
             switchAnimation(ANIM_RUN);
-        } else if (framesSinceBeat <= 9) {
-            switchAnimation(ANIM_ROLL);
+        } else if (framesSinceBeat > 16 && framesSinceBeat <= 75) {
+            switchAnimation(ANIM_WALK);
+        } else if (framesSinceBeat > 76) {
+            switchAnimation(ANIM_STAND);
         }
         framesSinceBeat = 0;
-        sixteenth = 0;
     }
-    sixteenth++;
     incrementFrame();
 }
 
