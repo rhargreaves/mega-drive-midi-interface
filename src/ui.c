@@ -57,6 +57,7 @@ void ui_init(void)
     printHeader();
     printChannels();
     printLoad();
+    printBeat();
 }
 
 void ui_vsync(void)
@@ -157,7 +158,7 @@ static void printActivityForBusy(u8 busy, u16 maxChannels, u16 x)
 
 static void printBeat(void)
 {
-    static u16 lastSixteenth = 0;
+    static u16 lastSixteenth = 0xFFFF;
     Timing* timing = midi_timing();
     if (timing->sixteenth != lastSixteenth) {
         static char text[16];
