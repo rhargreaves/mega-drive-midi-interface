@@ -50,6 +50,7 @@ static void switchAnimation(u8 animation)
     if (animation != currentAnimation) {
         animationFrame = 0;
         SPR_setAnimAndFrame(sprite, animation, animationFrame);
+        SPR_update();
         currentAnimation = animation;
     }
 }
@@ -87,7 +88,9 @@ void sonic_vsync(void)
     framesSinceBeat++;
     static u16 lastClock = 0;
     u16 clock = midi_timing()->clocks / 6;
-    if (clock != lastClock) {
+    if (clock == 0) {
+        switchAnimation(ANIM_STAND);
+    } else if (clock != lastClock) {
         midiBeat();
         lastClock = clock;
     }
