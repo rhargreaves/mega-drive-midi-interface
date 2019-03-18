@@ -15,14 +15,16 @@
 #define MAX_EFFECTIVE_Y (MAX_Y - MARGIN_Y - MARGIN_Y)
 #define MAX_ERROR_X 30
 #define ERROR_Y (MAX_EFFECTIVE_Y - 2)
-#define POLY_Y (MAX_EFFECTIVE_Y - 4)
-#define BEATS_Y (MAX_EFFECTIVE_Y - 6)
+#define POLY_X 17
+#define POLY_Y 2
+#define BEATS_X 6
+#define BEATS_Y 2
 #define RIGHTED_TEXT_X(text) (MAX_EFFECTIVE_X - (sizeof(text) - 1) + 1)
 #define CENTRED_TEXT_X(text) ((MAX_EFFECTIVE_X - (sizeof(text) - 1)) / 2)
 #define CHAN_X_GAP 3
 #define ACTIVITY_FM_X 3
 #define ACTIVITY_PSG_X (ACTIVITY_FM_X + ((MAX_FM_CHANS + 1) * CHAN_X_GAP))
-#define ACTIVITY_Y 6
+#define ACTIVITY_Y 8
 
 #define FRAMES_BEFORE_UPDATE_ACTIVITY 1
 #define FRAMES_BEFORE_UPDATE_ERROR 10
@@ -117,8 +119,8 @@ static void printHeader(void)
 
 static void printChannels(void)
 {
-    drawText(CHAN_HEADER1, CENTRED_TEXT_X(CHAN_HEADER1), 2);
-    drawText(CHAN_HEADER2, CENTRED_TEXT_X(CHAN_HEADER2), 4);
+    drawText(CHAN_HEADER1, CENTRED_TEXT_X(CHAN_HEADER1), 4);
+    drawText(CHAN_HEADER2, CENTRED_TEXT_X(CHAN_HEADER2), 6);
 }
 
 static void printActivity(void)
@@ -159,10 +161,10 @@ static void printBeat(void)
     Timing* timing = midi_timing();
     if (timing->sixteenth != lastSixteenth) {
         static char text[16];
-        sprintf(text, "%i. %i. %i   ", timing->bar + 1, timing->barBeat + 1,
+        sprintf(text, "%3i. %i. %i ", timing->bar + 1, timing->barBeat + 1,
             timing->sixteenth + 1);
         VDP_setTextPalette(PAL2);
-        drawText(text, 0, BEATS_Y);
+        drawText(text, BEATS_X, BEATS_Y);
         VDP_setTextPalette(PAL0);
         lastSixteenth = timing->sixteenth;
     }
@@ -175,7 +177,7 @@ static void printLoad(void)
         / (FRAMES_BEFORE_UPDATE_LOAD / FRAMES_BEFORE_UPDATE_LOAD_PERCENT);
     loadPercentSum = 0;
     VDP_setTextPalette(percent > 70 ? PAL1 : PAL0);
-    sprintf(loadText, "Load %i%s  ", percent, "%");
+    sprintf(loadText, "Load %i%c  ", percent, '%');
     comm_resetCounts();
     drawText(loadText, 0, MAX_EFFECTIVE_Y);
     VDP_setTextPalette(PAL0);
@@ -234,9 +236,9 @@ static void printPolyphonicMode(void)
         VDP_setTextPalette(PAL2);
         if (status) {
             const char text[] = "Poly";
-            drawText(text, 0, POLY_Y);
+            drawText(text, POLY_X, POLY_Y);
         } else {
-            clearText(0, POLY_Y, 4);
+            clearText(POLY_X, POLY_Y, 4);
         }
         VDP_setTextPalette(PAL0);
         lastStatus = status;

@@ -16,7 +16,7 @@
 static Sprite* sprite;
 static s16 animationFrame;
 static u16 framesSinceBeat;
-static int currentAnimation = ANIM_WAIT;
+static int currentAnimation = ANIM_STAND;
 
 typedef struct SonicAnimation SonicAnimation;
 
@@ -37,11 +37,11 @@ void sonic_init(void)
     SYS_disableInts();
     SPR_init(16, 256, 256);
     sprite = SPR_addSprite(&sonic_sprite, fix32ToInt(FIX32(0)),
-        fix32ToInt(FIX32(0)), TILE_ATTR(PAL2, TRUE, FALSE, FALSE));
+        fix32ToInt(FIX32(0)), TILE_ATTR(PAL3, TRUE, FALSE, FALSE));
     SPR_setAnim(sprite, currentAnimation);
     SPR_update();
     VDP_setPaletteColors(
-        (PAL2 * 16), sonic_sprite.palette->data, sonic_sprite.palette->length);
+        (PAL3 * 16), sonic_sprite.palette->data, sonic_sprite.palette->length);
     SYS_enableInts();
 }
 
@@ -65,14 +65,21 @@ static void incrementFrame(void)
 
 static void midiBeat(void)
 {
-    if (framesSinceBeat > 8) {
-        switchAnimation(ANIM_WALK);
-    } else if (framesSinceBeat <= 7 && framesSinceBeat > 5) {
-        switchAnimation(ANIM_RUN);
-    } else if (framesSinceBeat < 4) {
-        switchAnimation(ANIM_ROLL);
+    static u8 sixteenth = 0;
+    if (sixteenth == 2) {
+        if (framesSinceBeat > 36) {
+            switchAnimation(ANIM_STAND);
+        } else if (framesSinceBeat > 16 && framesSinceBeat <= 35) {
+            switchAnimation(ANIM_WALK);
+        } else if (framesSinceBeat > 10 && framesSinceBeat <= 15) {
+            switchAnimation(ANIM_RUN);
+        } else if (framesSinceBeat <= 9) {
+            switchAnimation(ANIM_ROLL);
+        }
+        framesSinceBeat = 0;
+        sixteenth = 0;
     }
-    framesSinceBeat = 0;
+    sixteenth++;
     incrementFrame();
 }
 
