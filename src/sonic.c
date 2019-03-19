@@ -68,7 +68,7 @@ void sonic_vsync(void)
     case ANIM_WALK:
     case ANIM_RUN:
         framesSinceStanding = 0;
-        if (framesSinceBeat > 91) {
+        if (framesSinceBeat > 120) {
             switchState(ANIM_STAND);
         }
         break;
