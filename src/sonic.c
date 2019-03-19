@@ -12,14 +12,18 @@ struct SonicAnimation {
     u16 speed;
 };
 
-#define ANIM_STAND 0
-#define ANIM_WAIT 1
-#define ANIM_WALK 2
-#define ANIM_RUN 3
-#define ANIM_BRAKE 4
-#define ANIM_UP 5
-#define ANIM_CROUNCH 6
-#define ANIM_ROLL 7
+typedef enum {
+    ANIM_STAND,
+    ANIM_WAIT,
+    ANIM_WALK,
+    ANIM_RUN,
+    ANIM_BRAKE,
+    ANIM_UP,
+    ANIM_CROUNCH,
+    ANIM_ROLL
+} SonicAnim;
+
+static SonicAnim currentAnimation = ANIM_STAND;
 
 static const SonicAnimation sonicAnimation[8]
     = { { 0, 0, 50 }, { 1, 2, 25 }, { 0, 5, 10 }, { 0, 3, 10 }, { 0, 1, 25 },
@@ -29,7 +33,6 @@ static Sprite* sprite;
 static s16 animationFrame;
 static u16 framesSinceBeat;
 static u16 framesSinceStanding;
-static s16 currentAnimation = ANIM_STAND;
 
 static void incrementFrame(void);
 
