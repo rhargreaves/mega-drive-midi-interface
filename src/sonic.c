@@ -16,7 +16,7 @@
 static Sprite* sprite;
 static s16 animationFrame;
 static u16 framesSinceBeat;
-static int currentAnimation = ANIM_STAND;
+static s16 currentAnimation = ANIM_STAND;
 
 typedef struct SonicAnimation SonicAnimation;
 
