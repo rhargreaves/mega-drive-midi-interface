@@ -13,17 +13,17 @@ struct SonicAnimation {
 };
 
 typedef enum SonicState {
-    ANIM_STAND,
-    ANIM_WAIT,
-    ANIM_WALK,
-    ANIM_RUN,
-    ANIM_BRAKE,
-    ANIM_UP,
-    ANIM_CROUNCH,
-    ANIM_ROLL
+    STAND,
+    WAIT,
+    WALK,
+    RUN,
+    BRAKE,
+    UP,
+    CROUNCH,
+    ROLL
 } SonicState;
 
-static SonicState currentState = ANIM_STAND;
+static SonicState currentState = STAND;
 
 static const SonicAnimation sonicAnimation[8]
     = { { 0, 0, 50 }, { 1, 2, 25 }, { 0, 5, 10 }, { 0, 3, 10 }, { 0, 1, 25 },
@@ -38,7 +38,7 @@ static void switchState(SonicState state);
 static void incrementFrame(void);
 static void switchStateToMatchSpeed(void);
 static void checkMidiClock(void);
-static void animateStandingState(void);
+static void switchToWaitIfIdle(void);
 static void animateWaitState(void);
 
 void sonic_init(void)
@@ -58,18 +58,18 @@ void sonic_vsync(void)
 {
     framesSinceBeat++;
     switch (currentState) {
-    case ANIM_STAND:
-        animateStandingState();
+    case STAND:
+        switchToWaitIfIdle();
         break;
-    case ANIM_WAIT:
+    case WAIT:
         animateWaitState();
         break;
-    case ANIM_ROLL:
-    case ANIM_WALK:
-    case ANIM_RUN:
+    case ROLL:
+    case WALK:
+    case RUN:
         framesSinceStanding = 0;
         if (framesSinceBeat > 120) {
-            switchState(ANIM_STAND);
+            switchState(STAND);
         }
         break;
     default:
@@ -97,11 +97,11 @@ static void incrementFrame(void)
     }
 }
 
-static void animateStandingState(void)
+static void switchToWaitIfIdle(void)
 {
     framesSinceStanding++;
     if (framesSinceStanding > (60 * 5)) {
-        switchState(ANIM_WAIT);
+        switchState(WAIT);
     }
 }
 
@@ -131,11 +131,11 @@ static void switchStateToMatchSpeed(void)
     if (sixteenth++ == 3) {
         sixteenth = 0;
         if (framesSinceBeat > 30) {
-            switchState(ANIM_WALK);
+            switchState(WALK);
         } else if (framesSinceBeat > 22) {
-            switchState(ANIM_RUN);
+            switchState(RUN);
         } else {
-            switchState(ANIM_ROLL);
+            switchState(ROLL);
         }
         framesSinceBeat = 0;
     }
