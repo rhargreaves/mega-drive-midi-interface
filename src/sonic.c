@@ -4,6 +4,14 @@
 
 #include "sprite.h"
 
+typedef struct SonicAnimation SonicAnimation;
+
+struct SonicAnimation {
+    u16 loopStart;
+    u16 loopEnd;
+    u16 speed;
+};
+
 #define ANIM_STAND 0
 #define ANIM_WAIT 1
 #define ANIM_WALK 2
@@ -13,22 +21,15 @@
 #define ANIM_CROUNCH 6
 #define ANIM_ROLL 7
 
-static Sprite* sprite;
-static s16 animationFrame;
-static u16 framesSinceBeat;
-static s16 currentAnimation = ANIM_STAND;
-
-typedef struct SonicAnimation SonicAnimation;
-
-struct SonicAnimation {
-    u16 loopStart;
-    u16 loopEnd;
-    u16 speed;
-};
-
 static const SonicAnimation sonicAnimation[8]
     = { { 0, 0, 50 }, { 1, 2, 25 }, { 0, 5, 10 }, { 0, 3, 10 }, { 0, 1, 25 },
           { 0, 0, 50 }, { 0, 0, 50 }, { 0, 4, 5 } };
+
+static Sprite* sprite;
+static s16 animationFrame;
+static u16 framesSinceBeat;
+static u16 framesSinceStanding;
+static s16 currentAnimation = ANIM_STAND;
 
 static void incrementFrame(void);
 
@@ -88,10 +89,23 @@ void sonic_vsync(void)
     framesSinceBeat++;
     static u16 lastClock = 0;
     u16 clock = midi_timing()->clocks / 6;
-    if (clock == 0) {
+    if (clock == 0 && currentAnimation != ANIM_WAIT) {
         switchAnimation(ANIM_STAND);
     } else if (clock != lastClock) {
         midiBeat();
         lastClock = clock;
+    }
+
+    if (currentAnimation == ANIM_STAND) {
+        framesSinceStanding++;
+        if (framesSinceStanding > (60 * 5)) {
+            switchAnimation(ANIM_WAIT);
+        }
+    } else if (currentAnimation == ANIM_WAIT) {
+        if (framesSinceBeat % 30 == 0) {
+            incrementFrame();
+        }
+    } else {
+        framesSinceStanding = 0;
     }
 }
