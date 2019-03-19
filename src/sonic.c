@@ -12,7 +12,7 @@ struct SonicAnimation {
     u16 speed;
 };
 
-typedef enum {
+typedef enum SonicState {
     ANIM_STAND,
     ANIM_WAIT,
     ANIM_WALK,
@@ -21,9 +21,9 @@ typedef enum {
     ANIM_UP,
     ANIM_CROUNCH,
     ANIM_ROLL
-} SonicAnim;
+} SonicState;
 
-static SonicAnim currentAnimation = ANIM_STAND;
+static SonicState currentState = ANIM_STAND;
 
 static const SonicAnimation sonicAnimation[8]
     = { { 0, 0, 50 }, { 1, 2, 25 }, { 0, 5, 10 }, { 0, 3, 10 }, { 0, 1, 25 },
@@ -34,7 +34,12 @@ static s16 animationFrame;
 static u16 framesSinceBeat;
 static u16 framesSinceStanding;
 
+static void switchState(SonicState state);
 static void incrementFrame(void);
+static void switchStateToMatchSpeed(void);
+static void checkMidiClock(void);
+static void animateStandingState(void);
+static void animateWaitState(void);
 
 void sonic_init(void)
 {
@@ -42,20 +47,44 @@ void sonic_init(void)
     SPR_init(16, 256, 256);
     sprite = SPR_addSprite(&sonic_sprite, fix32ToInt(FIX32(0)),
         fix32ToInt(FIX32(0)), TILE_ATTR(PAL3, TRUE, FALSE, FALSE));
-    SPR_setAnim(sprite, currentAnimation);
+    SPR_setAnim(sprite, (s16)currentState);
     SPR_update();
     VDP_setPaletteColors(
         (PAL3 * 16), sonic_sprite.palette->data, sonic_sprite.palette->length);
     SYS_enableInts();
 }
 
-static void switchAnimation(u8 animation)
+void sonic_vsync(void)
 {
-    if (animation != currentAnimation) {
+    framesSinceBeat++;
+    switch (currentState) {
+    case ANIM_STAND:
+        animateStandingState();
+        break;
+    case ANIM_WAIT:
+        animateWaitState();
+        break;
+    case ANIM_ROLL:
+    case ANIM_WALK:
+    case ANIM_RUN:
+        framesSinceStanding = 0;
+        if (framesSinceBeat > 91) {
+            switchState(ANIM_STAND);
+        }
+        break;
+    default:
+        break;
+    }
+    checkMidiClock();
+}
+
+static void switchState(SonicState state)
+{
+    if (state != currentState) {
         animationFrame = 0;
-        SPR_setAnimAndFrame(sprite, animation, animationFrame);
+        SPR_setAnimAndFrame(sprite, state, animationFrame);
         SPR_update();
-        currentAnimation = animation;
+        currentState = state;
     }
 }
 
@@ -63,52 +92,51 @@ static void incrementFrame(void)
 {
     SPR_setFrame(sprite, animationFrame);
     SPR_update();
-    if (++animationFrame == sonicAnimation[currentAnimation].loopEnd + 1) {
-        animationFrame = sonicAnimation[currentAnimation].loopStart;
+    if (++animationFrame == sonicAnimation[currentState].loopEnd + 1) {
+        animationFrame = sonicAnimation[currentState].loopStart;
     }
 }
 
-static void midiBeat(void)
+static void animateStandingState(void)
 {
-    static u8 sixteenth = 0;
-    if (sixteenth++ == 2) {
-        sixteenth = 0;
-        if (framesSinceBeat <= 9) {
-            switchAnimation(ANIM_ROLL);
-        } else if (framesSinceBeat > 10 && framesSinceBeat <= 15) {
-            switchAnimation(ANIM_RUN);
-        } else if (framesSinceBeat > 16 && framesSinceBeat <= 75) {
-            switchAnimation(ANIM_WALK);
-        } else if (framesSinceBeat > 76) {
-            switchAnimation(ANIM_STAND);
-        }
-        framesSinceBeat = 0;
+    framesSinceStanding++;
+    if (framesSinceStanding > (60 * 5)) {
+        switchState(ANIM_WAIT);
     }
-    incrementFrame();
 }
 
-void sonic_vsync(void)
+static void animateWaitState(void)
 {
-    framesSinceBeat++;
+    static u16 framesSinceWait = 0;
+    if (++framesSinceWait == 25) {
+        framesSinceWait = 0;
+        incrementFrame();
+    }
+}
+
+static void checkMidiClock(void)
+{
     static u16 lastClock = 0;
     u16 clock = midi_timing()->clocks / 6;
-    if (clock == 0 && currentAnimation != ANIM_WAIT) {
-        switchAnimation(ANIM_STAND);
-    } else if (clock != lastClock) {
-        midiBeat();
+    if (clock != lastClock) {
+        switchStateToMatchSpeed();
+        incrementFrame();
         lastClock = clock;
     }
+}
 
-    if (currentAnimation == ANIM_STAND) {
-        framesSinceStanding++;
-        if (framesSinceStanding > (60 * 5)) {
-            switchAnimation(ANIM_WAIT);
+static void switchStateToMatchSpeed(void)
+{
+    static u8 sixteenth = 0;
+    if (sixteenth++ == 3) {
+        sixteenth = 0;
+        if (framesSinceBeat > 30) {
+            switchState(ANIM_WALK);
+        } else if (framesSinceBeat > 22) {
+            switchState(ANIM_RUN);
+        } else {
+            switchState(ANIM_ROLL);
         }
-    } else if (currentAnimation == ANIM_WAIT) {
-        if (framesSinceBeat % 30 == 0) {
-            incrementFrame();
-        }
-    } else {
-        framesSinceStanding = 0;
+        framesSinceBeat = 0;
     }
 }
