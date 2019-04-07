@@ -13,6 +13,7 @@
 #define midi_test(test) cmocka_unit_test_setup(test, test_midi_setup)
 #define synth_test(test) cmocka_unit_test_setup(test, test_synth_setup)
 #define comm_test(test) cmocka_unit_test_setup(test, test_comm_setup)
+#define sonic_test(test) cmocka_unit_test_setup(test, test_sonic_setup)
 
 int main(void)
 {
@@ -118,8 +119,8 @@ int main(void)
         comm_test(test_comm_clamps_idle_count),
         comm_test(test_comm_clamps_busy_count),
 
-        cmocka_unit_test(test_sonic_init),
-        cmocka_unit_test(test_sonic_single_vsync_does_nothing) };
+        sonic_test(test_sonic_init),
+        sonic_test(test_sonic_single_vsync_does_nothing) };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
 }
