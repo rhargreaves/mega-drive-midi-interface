@@ -35,7 +35,7 @@ static u16 framesSinceBeat;
 static u16 framesSinceStanding;
 static u16 framesSinceWait;
 static u16 lastClock;
-static u8 sixteenth;
+static u8 lastSixteenth;
 
 static void switchState(SonicState state);
 static void incrementFrame(void);
@@ -65,7 +65,7 @@ void sonic_reset(void)
     framesSinceStanding = 0;
     framesSinceWait = 0;
     lastClock = 0;
-    sixteenth = 0;
+    lastSixteenth = 0;
 }
 
 void sonic_vsync(void)
@@ -139,8 +139,8 @@ static void checkMidiClock(void)
 
 static void switchStateToMatchSpeed(void)
 {
-    if (sixteenth++ == 3) {
-        sixteenth = 0;
+    if (lastSixteenth++ == 3) {
+        lastSixteenth = 0;
         if (framesSinceBeat > 30) {
             switchState(WALK);
         } else if (framesSinceBeat > 22) {
