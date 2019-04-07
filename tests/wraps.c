@@ -338,4 +338,7 @@ void __wrap_SPR_setFrame(Sprite* sprite, s16 frame)
 
 void __wrap_SPR_setAnimAndFrame(Sprite* sprite, s16 anim, s16 frame)
 {
+    check_expected(sprite);
+    check_expected(anim);
+    check_expected(frame);
 }
