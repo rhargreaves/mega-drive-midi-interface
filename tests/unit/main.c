@@ -6,6 +6,7 @@
 #include "test_interface.c"
 #include "test_midi.c"
 #include "test_psg_chip.c"
+#include "test_sonic.c"
 #include "test_synth.c"
 #include <cmocka.h>
 
@@ -115,7 +116,9 @@ int main(void)
         comm_test(test_comm_idle_count_is_correct),
         comm_test(test_comm_busy_count_is_correct),
         comm_test(test_comm_clamps_idle_count),
-        comm_test(test_comm_clamps_busy_count) };
+        comm_test(test_comm_clamps_busy_count),
+
+        cmocka_unit_test(test_sonic_init) };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

@@ -5,3 +5,4 @@ tests/cmocka/
 tests/bin/
 out/
 .idea/
+.vscode/ipch/
