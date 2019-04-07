@@ -8,6 +8,8 @@
 #include <sprite_eng.h>
 #include <types.h>
 
+#define FRAMES_PER_SEC 50
+
 static int test_sonic_setup(UNUSED void** state)
 {
     sonic_reset();
@@ -38,7 +40,7 @@ static void test_sonic_goes_into_idle_mode(UNUSED void** state)
     expect_value(__wrap_SPR_setAnimAndFrame, anim, ANIM_WAIT);
     expect_any(__wrap_SPR_setAnimAndFrame, frame);
 
-    for (u16 i = 0; i < 50 * 200; i++) {
+    for (u16 i = 0; i < FRAMES_PER_SEC * 200; i++) {
         sonic_vsync();
     }
 }
