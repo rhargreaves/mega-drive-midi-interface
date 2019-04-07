@@ -33,6 +33,9 @@ static Sprite* sprite;
 static s16 animationFrame;
 static u16 framesSinceBeat;
 static u16 framesSinceStanding;
+static u16 framesSinceWait;
+static u16 lastClock;
+static u8 sixteenth;
 
 static void switchState(SonicState state);
 static void incrementFrame(void);
@@ -56,9 +59,13 @@ void sonic_init(const SpriteDefinition* sonicSprite)
 
 void sonic_reset(void)
 {
+    currentState = STAND;
     animationFrame = 0;
     framesSinceBeat = 0;
     framesSinceStanding = 0;
+    framesSinceWait = 0;
+    lastClock = 0;
+    sixteenth = 0;
 }
 
 void sonic_vsync(void)
@@ -114,7 +121,6 @@ static void switchToWaitIfIdle(void)
 
 static void animateWaitState(void)
 {
-    static u16 framesSinceWait = 0;
     if (++framesSinceWait == 25) {
         framesSinceWait = 0;
         incrementFrame();
@@ -123,7 +129,6 @@ static void animateWaitState(void)
 
 static void checkMidiClock(void)
 {
-    static u16 lastClock = 0;
     u16 clock = midi_timing()->clocks / 6;
     if (clock != lastClock) {
         switchStateToMatchSpeed();
@@ -134,7 +139,6 @@ static void checkMidiClock(void)
 
 static void switchStateToMatchSpeed(void)
 {
-    static u8 sixteenth = 0;
     if (sixteenth++ == 3) {
         sixteenth = 0;
         if (framesSinceBeat > 30) {

@@ -91,3 +91,24 @@ static void test_sonic_spins(UNUSED void** state)
         sonic_vsync();
     }
 }
+
+static void test_sonic_walks(UNUSED void** state)
+{
+    const int ANIM_WALK = 2;
+
+    Timing timing = {};
+
+    expect_any(__wrap_SPR_setAnimAndFrame, sprite);
+    expect_value(__wrap_SPR_setAnimAndFrame, anim, ANIM_WALK);
+    expect_any(__wrap_SPR_setAnimAndFrame, frame);
+
+    for (u16 i = 0; i < FRAMES_PER_SEC * 200; i++) {
+        if (i % 2 == 0) {
+            timing.clocks++;
+        }
+
+        will_return(__wrap_midi_timing, &timing);
+
+        sonic_vsync();
+    }
+}
