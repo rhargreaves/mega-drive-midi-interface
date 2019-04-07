@@ -118,7 +118,8 @@ int main(void)
         comm_test(test_comm_clamps_idle_count),
         comm_test(test_comm_clamps_busy_count),
 
-        cmocka_unit_test(test_sonic_init) };
+        cmocka_unit_test(test_sonic_init),
+        cmocka_unit_test(test_sonic_single_vsync_does_nothing) };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

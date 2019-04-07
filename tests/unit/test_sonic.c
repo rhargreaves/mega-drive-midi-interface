@@ -20,3 +20,8 @@ static void test_sonic_init(void** state)
 
     sonic_init(dummySpriteDef);
 }
+
+static void test_sonic_single_vsync_does_nothing(void** state)
+{
+    sonic_vsync();
+}
