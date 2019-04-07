@@ -121,7 +121,7 @@ int main(void)
 
         sonic_test(test_sonic_init), sonic_test(test_sonic_goes_into_idle_mode),
         sonic_test(test_sonic_single_vsync_does_nothing),
-        sonic_test(test_sonic_runs) };
+        sonic_test(test_sonic_runs), sonic_test(test_sonic_spins) };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
 }
