@@ -2,6 +2,7 @@
 #include <stdarg.h>
 #include <stddef.h>
 
+#include "midi.h"
 #include "sonic.h"
 #include "unused.h"
 #include <cmocka.h>
@@ -29,6 +30,10 @@ static void test_sonic_init(UNUSED void** state)
 
 static void test_sonic_single_vsync_does_nothing(UNUSED void** state)
 {
+    Timing timing = {};
+
+    will_return(__wrap_midi_timing, &timing);
+
     sonic_vsync();
 }
 
@@ -36,11 +41,15 @@ static void test_sonic_goes_into_idle_mode(UNUSED void** state)
 {
     const int ANIM_WAIT = 1;
 
+    Timing timing = {};
+
     expect_any(__wrap_SPR_setAnimAndFrame, sprite);
     expect_value(__wrap_SPR_setAnimAndFrame, anim, ANIM_WAIT);
     expect_any(__wrap_SPR_setAnimAndFrame, frame);
 
     for (u16 i = 0; i < FRAMES_PER_SEC * 200; i++) {
+        will_return(__wrap_midi_timing, &timing);
+
         sonic_vsync();
     }
 }

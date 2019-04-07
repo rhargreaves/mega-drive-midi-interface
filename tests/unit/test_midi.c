@@ -4,6 +4,7 @@
 
 #include "midi.h"
 #include "synth.h"
+#include "unused.h"
 #include <cmocka.h>
 
 extern void __real_midi_noteOn(u8 chan, u8 pitch, u8 velocity);
@@ -14,11 +15,12 @@ extern void __real_midi_cc(u8 chan, u8 controller, u8 value);
 extern void __real_midi_clock(void);
 extern void __real_midi_start(void);
 extern void __real_midi_position(u16 beat);
+extern Timing* __real_midi_timing(void);
 
 static const u16 A_SHARP = 106;
 static const u16 B = 107;
 
-static int test_midi_setup(void** state)
+static int test_midi_setup(UNUSED void** state)
 {
     midi_reset();
 
@@ -576,7 +578,7 @@ static void test_midi_increments_beat_every_24th_clock(void** state)
         __real_midi_clock();
     }
 
-    assert_int_equal(midi_timing()->barBeat, 2);
+    assert_int_equal(__real_midi_timing()->barBeat, 2);
 }
 
 static void test_midi_increments_clocks(void** state)
@@ -585,7 +587,7 @@ static void test_midi_increments_clocks(void** state)
         __real_midi_clock();
     }
 
-    assert_int_equal(midi_timing()->clocks, 48);
+    assert_int_equal(__real_midi_timing()->clocks, 48);
 }
 
 static void test_midi_start_resets_clock(void** state)
@@ -593,10 +595,10 @@ static void test_midi_start_resets_clock(void** state)
     for (u16 i = 0; i < 24; i++) {
         __real_midi_clock();
     }
-    assert_int_equal(midi_timing()->clocks, 24);
+    assert_int_equal(__real_midi_timing()->clocks, 24);
 
     __real_midi_start();
-    assert_int_equal(midi_timing()->clocks, 0);
+    assert_int_equal(__real_midi_timing()->clocks, 0);
 }
 
 static void test_midi_position_sets_correct_timing(void** state)
@@ -609,7 +611,7 @@ static void test_midi_position_sets_correct_timing(void** state)
 
     __real_midi_position(midiBeats);
 
-    Timing* timing = midi_timing();
+    Timing* timing = __real_midi_timing();
     assert_int_equal(timing->bar, bars);
     assert_int_equal(timing->barBeat, quarterNotes);
     assert_int_equal(timing->sixteenth, sixteenths);
@@ -624,7 +626,7 @@ static void test_midi_timing_sets_bar_number(void** state)
         __real_midi_clock();
     };
 
-    Timing* timing = midi_timing();
+    Timing* timing = __real_midi_timing();
     assert_int_equal(timing->bar, 1);
     assert_int_equal(timing->barBeat, 2);
     assert_int_equal(timing->sixteenth, 1);
