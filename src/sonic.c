@@ -54,6 +54,13 @@ void sonic_init(SpriteDefinition sonicSprite)
     SYS_enableInts();
 }
 
+void sonic_reset(void)
+{
+    animationFrame = 0;
+    framesSinceBeat = 0;
+    framesSinceStanding = 0;
+}
+
 void sonic_vsync(void)
 {
     framesSinceBeat++;

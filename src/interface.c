@@ -28,6 +28,7 @@ static void pitchBend(u8 status);
 static void systemMessage(u8 status);
 static void setUnknownStatus(u8 status);
 static void songPosition(void);
+static u16 read_14bit_value(void);
 
 void interface_init(void)
 {
@@ -114,18 +115,21 @@ static void noteOff(u8 status)
 static void pitchBend(u8 status)
 {
     u8 chan = STATUS_LOWER(status);
-    u16 lowerBend = comm_read();
-    u16 upperBend = comm_read();
-    u16 bend = (upperBend << 7) + lowerBend;
+    u16 bend = read_14bit_value();
     midi_pitchBend(chan, bend);
 }
 
 static void songPosition(void)
 {
-    u16 lowerBeat = comm_read();
-    u16 upperBeat = comm_read();
-    u16 beat = (upperBeat << 7) + lowerBeat;
+    u16 beat = read_14bit_value();
     midi_position(beat);
+}
+
+static u16 read_14bit_value(void)
+{
+    u16 lower = comm_read();
+    u16 upper = comm_read();
+    return (upper << 7) + lower;
 }
 
 static void systemMessage(u8 status)

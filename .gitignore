@@ -6,3 +6,4 @@ tests/bin/
 out/
 .idea/
 .vscode/ipch/
+*.swp

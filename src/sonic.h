@@ -3,3 +3,4 @@
 
 void sonic_init(SpriteDefinition sonicSprite);
 void sonic_vsync(void);
+void sonic_reset(void);
