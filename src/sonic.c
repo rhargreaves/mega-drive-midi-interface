@@ -41,16 +41,16 @@ static void checkMidiClock(void);
 static void switchToWaitIfIdle(void);
 static void animateWaitState(void);
 
-void sonic_init(SpriteDefinition sonicSprite)
+void sonic_init(const SpriteDefinition* sonicSprite)
 {
     SYS_disableInts();
     SPR_init(16, 256, 256);
-    sprite = SPR_addSprite(&sonicSprite, fix32ToInt(FIX32(0)),
+    sprite = SPR_addSprite(sonicSprite, fix32ToInt(FIX32(0)),
         fix32ToInt(FIX32(8)), TILE_ATTR(PAL3, TRUE, FALSE, FALSE));
     SPR_setAnim(sprite, (s16)currentState);
     SPR_update();
     VDP_setPaletteColors(
-        (PAL3 * 16), sonicSprite.palette->data, sonicSprite.palette->length);
+        (PAL3 * 16), sonicSprite->palette->data, sonicSprite->palette->length);
     SYS_enableInts();
 }
 

@@ -21,11 +21,11 @@ static void test_sonic_init(UNUSED void** state)
 {
     Sprite dummySprite = {};
     Palette dummyPalette = {};
-    SpriteDefinition dummySpriteDef = { .palette = &dummyPalette };
+    const SpriteDefinition dummySpriteDef = { .palette = &dummyPalette };
 
     will_return(__wrap_SPR_addSprite, &dummySprite);
 
-    sonic_init(dummySpriteDef);
+    sonic_init(&dummySpriteDef);
 }
 
 static void test_sonic_single_vsync_does_nothing(UNUSED void** state)

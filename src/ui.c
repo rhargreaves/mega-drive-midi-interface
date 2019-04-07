@@ -4,9 +4,9 @@
 #include "midi.h"
 #include "psg_chip.h"
 #include "sonic.h"
+#include "sprite.h"
 #include "synth.h"
 #include <genesis.h>
-#include "sprite.h"
 
 #define MAX_Y 27
 #define MAX_X 39
@@ -54,7 +54,7 @@ static u16 loadPercentSum = 0;
 
 void ui_init(void)
 {
-    sonic_init(sonic_sprite);
+    sonic_init(&sonic_sprite);
     printHeader();
     printChannels();
     printLoad();
