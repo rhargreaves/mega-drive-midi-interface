@@ -39,6 +39,7 @@ You can download pre-built ROMs from [releases](https://github.com/rhargreaves/m
 
 - Note On/Off
 - Pitch Bend
+- Program Change (Select FM Preset)
 
 ## Control Change Messages
 
@@ -103,6 +104,13 @@ polyphony within a single MIDI channel.
 In addition, any FM parameter change made will be sent to all FM channels.
 
 If all FM channels are busy, the note on event is dropped.
+
+## FM Presets
+
+Sending a MIDI program change (0xC) message will select a pre-defined FM preset.
+The full list of presets available are defined in
+[`synth_preset()`](https://github.com/rhargreaves/mega-drive-midi-interface/blob/784032b361344d4acea55668033cb8c96895e6a1/src/synth.c#L226)
+and [`presets.h`](https://github.com/rhargreaves/mega-drive-midi-interface/blob/master/src/presets.h). I have tried to associated appropriate presets to adhere to the General MIDI specification, although this is a work in progress.
 
 ## System Real-Time Messages
 
