@@ -108,6 +108,7 @@ int main(void)
         synth_test(test_synth_sets_global_LFO_enable_and_frequency),
         synth_test(test_synth_sets_busy_indicators),
         synth_test(test_synth_sets_preset),
+        synth_test(test_synth_sets_default_preset),
 
         cmocka_unit_test(test_psg_chip_sets_note_on_psg),
         cmocka_unit_test(test_psg_chip_sets_note_off_psg),

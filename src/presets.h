@@ -49,6 +49,8 @@ const Channel PRESET_DEFAULT = { .algorithm = 2,
             .secondaryDecayRate = 2,
             .totalLevel = 0 } } };
 
+/* Source: http://www.deflemask.com/forum/general/instrument-presets-(ym2612)/
+ * Wolf Team Instruments */
 const Channel PRESET_DEEP_PAD = { 5, 0, 3, 0, 0, 0, 0,
     { { 1, 0, 20, 1, 6, 0, 2, 5, 9, 19 }, { 1, 3, 18, 0, 4, 0, 1, 3, 9, 19 },
         { 7, 5, 7, 2, 8, 0, 1, 10, 9, 19 },

@@ -225,7 +225,16 @@ u8 synth_busy(void)
 
 void synth_preset(u8 channel, u8 preset)
 {
-    memcpy(&channels[channel], &PRESET_DEEP_PAD, sizeof(Channel));
+    const Channel* data;
+    switch (preset) {
+    case 1:
+        data = &PRESET_DEEP_PAD;
+        break;
+    default:
+        data = &PRESET_DEFAULT;
+        break;
+    }
+    memcpy(&channels[channel], data, sizeof(Channel));
     updateChannel(channel);
 }
 
