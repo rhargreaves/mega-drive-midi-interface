@@ -5,6 +5,7 @@
 #include "asserts.h"
 #include "interface.h"
 #include "midi.h"
+#include "unused.h"
 #include "wraps.h"
 #include <cmocka.h>
 #include <types.h>
@@ -18,7 +19,8 @@
 #define STATUS_CONTINUE 0xFB
 #define STATUS_SONG_POSITION 0xF2
 
-static void test_interface_tick_passes_note_on_to_midi_processor(void** state)
+static void test_interface_tick_passes_note_on_to_midi_processor(
+    UNUSED void** state)
 {
     const u8 expectedData = 60;
     const u8 expectedData2 = 127;
@@ -37,7 +39,8 @@ static void test_interface_tick_passes_note_on_to_midi_processor(void** state)
     }
 }
 
-static void test_interface_tick_passes_note_off_to_midi_processor(void** state)
+static void test_interface_tick_passes_note_off_to_midi_processor(
+    UNUSED void** state)
 {
     u8 expectedStatus = 0x80;
     u8 expectedData = 60;
@@ -52,7 +55,7 @@ static void test_interface_tick_passes_note_off_to_midi_processor(void** state)
     interface_tick();
 }
 
-static void test_interface_does_nothing_for_control_change(void** state)
+static void test_interface_does_nothing_for_control_change(UNUSED void** state)
 {
     u8 expectedStatus = 0xA0;
     u8 expectedData = 106;
@@ -66,7 +69,8 @@ static void test_interface_does_nothing_for_control_change(void** state)
     interface_tick();
 }
 
-static void test_interface_sets_unknown_event_for_unknown_status(void** state)
+static void test_interface_sets_unknown_event_for_unknown_status(
+    UNUSED void** state)
 {
     u8 expectedStatus = 0xD0;
 
@@ -89,7 +93,7 @@ static void test_interface_sets_unknown_event_for_unknown_system_message(
     assert_int_equal(interface_lastUnknownStatus(), expectedStatus);
 }
 
-static void test_interface_sets_CC(void** state)
+static void test_interface_sets_CC(UNUSED void** state)
 {
     u8 expectedStatus = STATUS_CC;
     u8 expectedController = CC_VOLUME;
@@ -109,13 +113,13 @@ static void test_interface_sets_CC(void** state)
     assert_int_not_equal(cc->value, expectedValue);
 }
 
-static void test_interface_initialises_synth(void** state)
+static void test_interface_initialises_synth(UNUSED void** state)
 {
     expect_function_call(__wrap_synth_init);
     interface_init();
 }
 
-static void test_interface_sets_pitch_bend(void** state)
+static void test_interface_sets_pitch_bend(UNUSED void** state)
 {
     u8 expectedStatus = STATUS_PITCH_BEND;
     u16 expectedValue = 12000;
@@ -131,7 +135,7 @@ static void test_interface_sets_pitch_bend(void** state)
     interface_tick();
 }
 
-static void test_interface_increments_midi_clock(void** state)
+static void test_interface_increments_midi_clock(UNUSED void** state)
 {
     u8 status = STATUS_CLOCK;
     will_return(__wrap_comm_read, status);
@@ -141,7 +145,7 @@ static void test_interface_increments_midi_clock(void** state)
     interface_tick();
 }
 
-static void test_interface_starts_midi(void** state)
+static void test_interface_starts_midi(UNUSED void** state)
 {
     u8 status = STATUS_START;
     will_return(__wrap_comm_read, status);
@@ -151,7 +155,7 @@ static void test_interface_starts_midi(void** state)
     interface_tick();
 }
 
-static void test_interface_swallows_midi_stop(void** state)
+static void test_interface_swallows_midi_stop(UNUSED void** state)
 {
     interface_reset();
 
@@ -163,7 +167,7 @@ static void test_interface_swallows_midi_stop(void** state)
     assert_int_equal(interface_lastUnknownStatus(), 0);
 }
 
-static void test_interface_swallows_midi_continue(void** state)
+static void test_interface_swallows_midi_continue(UNUSED void** state)
 {
     interface_reset();
 
@@ -175,7 +179,7 @@ static void test_interface_swallows_midi_continue(void** state)
     assert_int_equal(interface_lastUnknownStatus(), 0);
 }
 
-static void test_interface_sets_position(void** state)
+static void test_interface_sets_position(UNUSED void** state)
 {
     u8 status = STATUS_SONG_POSITION;
     u16 beat = 0x3FFF;
