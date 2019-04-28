@@ -59,3 +59,7 @@ void midi_psg_pitchBend(u8 chan, u16 bend)
 
     psg_frequency(psgChan, freq);
 }
+
+void midi_psg_program(u8 chan, u8 program)
+{
+}

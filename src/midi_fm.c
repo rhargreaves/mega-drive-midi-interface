@@ -48,6 +48,11 @@ void midi_fm_pitchBend(u8 chan, u16 bend)
     synth_pitch(chan, octave(pitch), freq);
 }
 
+void midi_fm_program(u8 chan, u8 program)
+{
+    synth_preset(chan, program);
+}
+
 static u8 octave(u8 pitch)
 {
     return (pitch - MIN_MIDI_PITCH) / SEMITONES;

@@ -16,16 +16,17 @@ struct VTable {
     void (*noteOff)(u8 chan, u8 pitch);
     void (*channelVolume)(u8 chan, u8 volume);
     void (*pitchBend)(u8 chan, u16 bend);
+    void (*program)(u8 chan, u8 program);
 };
 
 static const VTable PSG_VTable = { midi_psg_noteOn, midi_psg_noteOff,
-    midi_psg_channelVolume, midi_psg_pitchBend };
+    midi_psg_channelVolume, midi_psg_pitchBend, midi_psg_program };
 
 static const VTable FM_VTable = { midi_fm_noteOn, midi_fm_noteOff,
-    midi_fm_channelVolume, midi_fm_pitchBend };
+    midi_fm_channelVolume, midi_fm_pitchBend, midi_fm_program };
 
 static const VTable NOP_VTable = { midi_nop_noteOn, midi_nop_noteOff,
-    midi_nop_channelVolume, midi_nop_pitchBend };
+    midi_nop_channelVolume, midi_nop_pitchBend, midi_nop_program };
 
 static const VTable* CHANNEL_OPS[16]
     = { &FM_VTable, &FM_VTable, &FM_VTable, &FM_VTable, &FM_VTable, &FM_VTable,
@@ -243,6 +244,7 @@ void midi_position(u16 midiBeat)
 
 void midi_program(u8 chan, u8 program)
 {
+    CHANNEL_OPS[chan]->program(chan, program);
 }
 
 ControlChange* midi_lastUnknownCC(void)

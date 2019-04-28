@@ -15,6 +15,7 @@ extern void __real_midi_cc(u8 chan, u8 controller, u8 value);
 extern void __real_midi_clock(void);
 extern void __real_midi_start(void);
 extern void __real_midi_position(u16 beat);
+extern void __real_midi_program(u8 chan, u8 program);
 extern Timing* __real_midi_timing(void);
 
 static const u16 A_SHARP = 106;
@@ -228,7 +229,7 @@ static void test_midi_polyphonic_mode_uses_multiple_fm_channels(
 }
 
 static void test_midi_polyphonic_mode_note_off_silences_all_matching_pitch(
-    void** state)
+    UNUSED void** state)
 {
     __real_midi_cc(0, CC_POLYPHONIC_MODE, 127);
 
@@ -632,4 +633,15 @@ static void test_midi_timing_sets_bar_number(UNUSED void** state)
     assert_int_equal(timing->bar, 1);
     assert_int_equal(timing->barBeat, 2);
     assert_int_equal(timing->sixteenth, 1);
+}
+
+static void test_midi_sets_fm_preset(UNUSED void** state)
+{
+    const u8 program = 1;
+    const u8 chan = 0;
+
+    expect_value(__wrap_synth_preset, channel, chan);
+    expect_value(__wrap_synth_preset, preset, program);
+
+    __real_midi_program(chan, program);
 }
