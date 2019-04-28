@@ -1,5 +1,6 @@
 #include "synth.h"
 #include "bits.h"
+#include "presets.h"
 #include <memory.h>
 #include <ym2612.h>
 
@@ -11,88 +12,8 @@ struct Global {
 };
 
 static Global global = { .lfoEnable = 0, .lfoFrequency = 0 };
-
-typedef struct Operator Operator;
-
-struct Operator {
-    u8 multiple;
-    u8 detune;
-    u8 attackRate;
-    u8 rateScaling;
-    u8 firstDecayRate;
-    u8 amplitudeModulation;
-    u8 secondaryAmplitude;
-    u8 secondaryDecayRate;
-    u8 releaseRate;
-    u8 totalLevel;
-};
-
-typedef struct Channel Channel;
-
-struct Channel {
-    u8 algorithm;
-    u8 feedback;
-    u8 stereo;
-    u8 ams;
-    u8 fms;
-    u8 octave;
-    u16 freqNumber;
-    Operator operators[MAX_FM_OPERATORS];
-};
-
 static Channel channels[MAX_FM_CHANS];
-
 static u8 noteOn;
-
-static const Channel DEFAULT_CHANNEL = { .algorithm = 2,
-    .feedback = 6,
-    .stereo = 3,
-    .ams = 0,
-    .fms = 0,
-    .octave = 0,
-    .freqNumber = 0,
-    .operators = {
-        { .multiple = 1,
-            .detune = 7,
-            .attackRate = 31,
-            .rateScaling = 1,
-            .amplitudeModulation = 0,
-            .firstDecayRate = 5,
-            .releaseRate = 1,
-            .secondaryAmplitude = 1,
-            .secondaryDecayRate = 2,
-            .totalLevel = 0x23 },
-        { .multiple = 13,
-            .detune = 0,
-            .attackRate = 25,
-            .rateScaling = 2,
-            .amplitudeModulation = 0,
-            .firstDecayRate = 5,
-            .releaseRate = 1,
-            .secondaryAmplitude = 1,
-            .secondaryDecayRate = 2,
-            .totalLevel = 0x2D },
-        { .multiple = 3,
-            .detune = 2,
-            .attackRate = 31,
-            .rateScaling = 1,
-            .amplitudeModulation = 0,
-            .firstDecayRate = 5,
-            .releaseRate = 1,
-            .secondaryAmplitude = 1,
-            .secondaryDecayRate = 2,
-            .totalLevel = 0x26 },
-        { .multiple = 1,
-            .detune = 0,
-            .attackRate = 25,
-            .rateScaling = 2,
-            .amplitudeModulation = 0,
-            .firstDecayRate = 7,
-            .releaseRate = 6,
-            .secondaryAmplitude = 10,
-            .secondaryDecayRate = 2,
-            .totalLevel = 0 },
-    } };
 
 static void initChannel(u8 chan);
 static void updateGlobalLfo(void);
@@ -128,7 +49,7 @@ void synth_init(void)
 
 static void initChannel(u8 chan)
 {
-    memcpy(&channels[chan], &DEFAULT_CHANNEL, sizeof(Channel));
+    memcpy(&channels[chan], &PRESET_DEFAULT, sizeof(Channel));
     updateAlgorithmAndFeedback(chan);
     updateStereoAmsFms(chan);
     for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {

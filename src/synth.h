@@ -1,3 +1,4 @@
+#pragma once
 #include <types.h>
 
 #define MAX_FM_OPERATORS 4
@@ -6,6 +7,34 @@
 #define STEREO_MODE_CENTRE 3
 #define STEREO_MODE_RIGHT 1
 #define STEREO_MODE_LEFT 2
+
+typedef struct Operator Operator;
+
+struct Operator {
+    u8 multiple;
+    u8 detune;
+    u8 attackRate;
+    u8 rateScaling;
+    u8 firstDecayRate;
+    u8 amplitudeModulation;
+    u8 secondaryAmplitude;
+    u8 secondaryDecayRate;
+    u8 releaseRate;
+    u8 totalLevel;
+};
+
+typedef struct Channel Channel;
+
+struct Channel {
+    u8 algorithm;
+    u8 feedback;
+    u8 stereo;
+    u8 ams;
+    u8 fms;
+    u8 octave;
+    u16 freqNumber;
+    Operator operators[MAX_FM_OPERATORS];
+};
 
 void synth_init(void);
 void synth_noteOn(u8 channel);
