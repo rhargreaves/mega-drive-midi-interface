@@ -85,4 +85,5 @@ bool midi_overflow(void);
 void midi_clock(void);
 void midi_start(void);
 void midi_position(u16 beat);
+void midi_program(u8 chan, u8 program);
 Timing* midi_timing(void);

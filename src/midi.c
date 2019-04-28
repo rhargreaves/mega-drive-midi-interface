@@ -241,6 +241,10 @@ void midi_position(u16 midiBeat)
     timing.sixteenth = midiBeat % 4;
 }
 
+void midi_program(u8 chan, u8 program)
+{
+}
+
 ControlChange* midi_lastUnknownCC(void)
 {
     return &lastUnknownControlChange;

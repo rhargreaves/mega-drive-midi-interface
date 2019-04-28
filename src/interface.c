@@ -11,6 +11,7 @@
 #define EVENT_NOTE_ON 0x9
 #define EVENT_NODE_OFF 0x8
 #define EVENT_CC 0xB
+#define EVENT_PROGRAM 0xC
 #define EVENT_SYSTEM 0xF
 
 #define SYSTEM_CLOCK 0x8
@@ -28,6 +29,7 @@ static void pitchBend(u8 status);
 static void systemMessage(u8 status);
 static void setUnknownStatus(u8 status);
 static void songPosition(void);
+static void program(u8 status);
 static u16 read_14bit_value(void);
 
 void interface_init(void)
@@ -63,6 +65,9 @@ void interface_tick(void)
         break;
     case EVENT_PITCH_BEND:
         pitchBend(status);
+        break;
+    case EVENT_PROGRAM:
+        program(status);
         break;
     case EVENT_SYSTEM:
         systemMessage(status);
@@ -117,6 +122,13 @@ static void pitchBend(u8 status)
     u8 chan = STATUS_LOWER(status);
     u16 bend = read_14bit_value();
     midi_pitchBend(chan, bend);
+}
+
+static void program(u8 status)
+{
+    u8 chan = STATUS_LOWER(status);
+    u8 program = comm_read();
+    midi_program(chan, program);
 }
 
 static void songPosition(void)

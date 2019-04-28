@@ -18,6 +18,7 @@
 #define STATUS_START 0xFA
 #define STATUS_CONTINUE 0xFB
 #define STATUS_SONG_POSITION 0xF2
+#define STATUS_PROGRAM 0xC0
 
 static void test_interface_tick_passes_note_on_to_midi_processor(
     UNUSED void** state)
@@ -82,7 +83,7 @@ static void test_interface_sets_unknown_event_for_unknown_status(
 }
 
 static void test_interface_sets_unknown_event_for_unknown_system_message(
-    void** state)
+    UNUSED void** state)
 {
     u8 expectedStatus = 0xF1;
 
@@ -191,6 +192,20 @@ static void test_interface_sets_position(UNUSED void** state)
     will_return(__wrap_comm_read, beatMSB);
 
     expect_value(__wrap_midi_position, beat, beat);
+
+    interface_tick();
+}
+
+static void test_interface_sets_midi_program(UNUSED void** state)
+{
+    u8 status = STATUS_PROGRAM;
+    u8 program = 12;
+
+    will_return(__wrap_comm_read, status);
+    will_return(__wrap_comm_read, program);
+
+    expect_value(__wrap_midi_program, chan, 0);
+    expect_value(__wrap_midi_program, program, program);
 
     interface_tick();
 }
