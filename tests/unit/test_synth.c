@@ -4,6 +4,7 @@
 
 #include "asserts.h"
 #include "synth.h"
+#include "unused.h"
 #include <cmocka.h>
 #include <types.h>
 
@@ -34,6 +35,7 @@ extern void __real_synth_operatorAmplitudeModulation(
     u8 channel, u8 op, u8 amplitudeModulation);
 extern void __real_synth_operatorReleaseRate(u8 channel, u8 op, u8 releaseRate);
 extern void __real_synth_pitchBend(u8 channel, u16 bend);
+extern void __real_synth_preset(u8 channel, u8 preset);
 
 static void set_initial_registers()
 {
@@ -45,18 +47,18 @@ static void set_initial_registers()
     __real_synth_init();
 }
 
-static int test_synth_setup(void** state)
+static int test_synth_setup(UNUSED void** state)
 {
     set_initial_registers();
     return 0;
 }
 
-static void test_synth_init_sets_initial_registers(void** state)
+static void test_synth_init_sets_initial_registers(UNUSED void** state)
 {
     set_initial_registers();
 }
 
-static void test_synth_sets_note_on_fm_reg_chan_0_to_2(void** state)
+static void test_synth_sets_note_on_fm_reg_chan_0_to_2(UNUSED void** state)
 {
     for (u8 chan = 0; chan < 3; chan++) {
         expect_ym2612_write_reg(0, 0x28, 0xF0 + chan);
@@ -64,7 +66,7 @@ static void test_synth_sets_note_on_fm_reg_chan_0_to_2(void** state)
     }
 }
 
-static void test_synth_sets_note_on_fm_reg_chan_3_to_5(void** state)
+static void test_synth_sets_note_on_fm_reg_chan_3_to_5(UNUSED void** state)
 {
     for (u8 chan = 3; chan < MAX_FM_CHANS; chan++) {
         expect_ym2612_write_reg(0, 0x28, 0xF1 + chan);
@@ -72,7 +74,7 @@ static void test_synth_sets_note_on_fm_reg_chan_3_to_5(void** state)
     }
 }
 
-static void test_synth_sets_note_off_fm_reg_chan_0_to_2(void** state)
+static void test_synth_sets_note_off_fm_reg_chan_0_to_2(UNUSED void** state)
 {
     for (u8 chan = 0; chan < 3; chan++) {
         expect_ym2612_write_reg(0, 0x28, chan);
@@ -80,7 +82,7 @@ static void test_synth_sets_note_off_fm_reg_chan_0_to_2(void** state)
     }
 }
 
-static void test_synth_sets_note_off_fm_reg_chan_3_to_5(void** state)
+static void test_synth_sets_note_off_fm_reg_chan_3_to_5(UNUSED void** state)
 {
     for (u8 chan = 3; chan < MAX_FM_CHANS; chan++) {
         expect_ym2612_write_reg(0, 0x28, 1 + chan);
@@ -88,7 +90,7 @@ static void test_synth_sets_note_off_fm_reg_chan_3_to_5(void** state)
     }
 }
 
-static void test_synth_sets_octave_and_freq_reg_chan(void** state)
+static void test_synth_sets_octave_and_freq_reg_chan(UNUSED void** state)
 {
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         expect_ym2612_write_channel(chan, 0xA4, 0x22);
@@ -98,7 +100,7 @@ static void test_synth_sets_octave_and_freq_reg_chan(void** state)
 }
 
 static void test_synth_sets_total_level_reg_chan_for_algorithms_0_to_3(
-    void** state)
+    UNUSED void** state)
 {
     for (u8 algorithm = 0; algorithm < 4; algorithm++)
         for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
@@ -109,7 +111,8 @@ static void test_synth_sets_total_level_reg_chan_for_algorithms_0_to_3(
         }
 }
 
-static void test_synth_sets_total_level_reg_chan_for_algorithm_4(void** state)
+static void test_synth_sets_total_level_reg_chan_for_algorithm_4(
+    UNUSED void** state)
 {
     const u8 algorithm = 4;
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
@@ -122,7 +125,7 @@ static void test_synth_sets_total_level_reg_chan_for_algorithm_4(void** state)
 }
 
 static void test_synth_sets_total_level_reg_chan_for_algorithms_5_and_6(
-    void** state)
+    UNUSED void** state)
 {
     for (u8 algorithm = 5; algorithm < 6; algorithm++)
         for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
@@ -135,7 +138,8 @@ static void test_synth_sets_total_level_reg_chan_for_algorithms_5_and_6(
         }
 }
 
-static void test_synth_sets_total_level_reg_chan_for_algorithm_7(void** state)
+static void test_synth_sets_total_level_reg_chan_for_algorithm_7(
+    UNUSED void** state)
 {
     const u8 algorithm = 7;
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
@@ -149,7 +153,7 @@ static void test_synth_sets_total_level_reg_chan_for_algorithm_7(void** state)
     }
 }
 
-static void test_synth_sets_stereo_ams_and_freq(void** state)
+static void test_synth_sets_stereo_ams_and_freq(UNUSED void** state)
 {
     const u8 ams = 1;
     const u8 fms = 1;
@@ -166,7 +170,7 @@ static void test_synth_sets_stereo_ams_and_freq(void** state)
     }
 }
 
-static void test_synth_sets_algorithm(void** state)
+static void test_synth_sets_algorithm(UNUSED void** state)
 {
     const u8 defaultFeedback = 6;
     const u8 algorithm = 1;
@@ -177,7 +181,7 @@ static void test_synth_sets_algorithm(void** state)
     }
 }
 
-static void test_synth_sets_feedback(void** state)
+static void test_synth_sets_feedback(UNUSED void** state)
 {
     const u8 defaultAlgorithm = 2;
     const u8 feedback = 1;
@@ -188,7 +192,7 @@ static void test_synth_sets_feedback(void** state)
     }
 }
 
-static void test_synth_sets_feedback_and_algorithm(void** state)
+static void test_synth_sets_feedback_and_algorithm(UNUSED void** state)
 {
     const u8 baseReg = 0xB0;
     const u8 defaultFeedback = 6;
@@ -207,7 +211,7 @@ static void test_synth_sets_feedback_and_algorithm(void** state)
     }
 }
 
-static void test_synth_sets_operator_total_level(void** state)
+static void test_synth_sets_operator_total_level(UNUSED void** state)
 {
     const u8 baseReg = 0x40;
     const u8 totalLevel = 50;
@@ -219,7 +223,7 @@ static void test_synth_sets_operator_total_level(void** state)
     }
 }
 
-static void test_synth_sets_operator_multiple_and_detune(void** state)
+static void test_synth_sets_operator_multiple_and_detune(UNUSED void** state)
 {
     const u8 baseReg = 0x30;
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
@@ -237,7 +241,8 @@ static void test_synth_sets_operator_multiple_and_detune(void** state)
     }
 }
 
-static void test_synth_sets_operator_attack_rate_and_rate_scaling(void** state)
+static void test_synth_sets_operator_attack_rate_and_rate_scaling(
+    UNUSED void** state)
 {
     const u8 baseReg = 0x50;
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
@@ -255,7 +260,7 @@ static void test_synth_sets_operator_attack_rate_and_rate_scaling(void** state)
     }
 }
 
-static void test_synth_sets_operator_second_decay_rate(void** state)
+static void test_synth_sets_operator_second_decay_rate(UNUSED void** state)
 {
     const u8 baseReg = 0x70;
     u8 secondDecayRate = 16;
@@ -268,7 +273,7 @@ static void test_synth_sets_operator_second_decay_rate(void** state)
 }
 
 static void test_synth_sets_operator_release_rate_and_secondary_amplitude(
-    void** state)
+    UNUSED void** state)
 {
     const u8 baseReg = 0x80;
     u8 secondaryAmplitude = 16;
@@ -286,7 +291,7 @@ static void test_synth_sets_operator_release_rate_and_secondary_amplitude(
 }
 
 static void test_synth_sets_operator_amplitude_modulation_and_first_decay_rate(
-    void** state)
+    UNUSED void** state)
 {
     const u8 baseReg = 0x60;
     u8 amplitudeModulation = 1;
@@ -303,7 +308,7 @@ static void test_synth_sets_operator_amplitude_modulation_and_first_decay_rate(
     }
 }
 
-static void test_synth_sets_global_LFO_enable_and_frequency(void** state)
+static void test_synth_sets_global_LFO_enable_and_frequency(UNUSED void** state)
 {
     const u8 baseReg = 0x22;
     expect_ym2612_write_reg_any_data(0, baseReg);
@@ -312,7 +317,7 @@ static void test_synth_sets_global_LFO_enable_and_frequency(void** state)
     __real_synth_globalLfoFrequency(1);
 }
 
-static void test_synth_sets_busy_indicators(void** state)
+static void test_synth_sets_busy_indicators(UNUSED void** state)
 {
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan += 2) {
         expect_ym2612_write_reg_any_data(0, 0x28);
@@ -320,4 +325,39 @@ static void test_synth_sets_busy_indicators(void** state)
     }
     u8 busy = synth_busy();
     assert_int_equal(busy, 0b00010101);
+}
+
+static void test_synth_sets_preset(UNUSED void** state)
+{
+    const u8 chan = 0;
+    const u8 preset = 1;
+
+    expect_ym2612_write_channel(chan, 0xB0, 5);
+    expect_ym2612_write_channel(chan, 0xB4, 0xC0);
+    expect_ym2612_write_channel(chan, 0x30, 1);
+    expect_ym2612_write_channel(chan, 0x50, 0x54);
+    expect_ym2612_write_channel(chan, 0x60, 6);
+    expect_ym2612_write_channel(chan, 0x70, 5);
+    expect_ym2612_write_channel(chan, 0x80, 0x29);
+    expect_ym2612_write_channel(chan, 0x40, 0x13);
+    expect_ym2612_write_channel(chan, 0x34, 0x31);
+    expect_ym2612_write_channel(chan, 0x54, 0x12);
+    expect_ym2612_write_channel(chan, 0x64, 4);
+    expect_ym2612_write_channel(chan, 0x74, 3);
+    expect_ym2612_write_channel(chan, 0x84, 0x19);
+    expect_ym2612_write_channel(chan, 0x44, 0x13);
+    expect_ym2612_write_channel(chan, 0x38, 0x57);
+    expect_ym2612_write_channel(chan, 0x58, 0x87);
+    expect_ym2612_write_channel(chan, 0x68, 0x8);
+    expect_ym2612_write_channel(chan, 0x78, 0xA);
+    expect_ym2612_write_channel(chan, 0x88, 0x19);
+    expect_ym2612_write_channel(chan, 0x48, 0x13);
+    expect_ym2612_write_channel(chan, 0x3C, 0x31);
+    expect_ym2612_write_channel(chan, 0x5C, 0x55);
+    expect_ym2612_write_channel(chan, 0x6C, 4);
+    expect_ym2612_write_channel(chan, 0x7C, 6);
+    expect_ym2612_write_channel(chan, 0x8C, 0x19);
+    expect_ym2612_write_channel(chan, 0x4C, 0x13);
+
+    __real_synth_preset(chan, preset);
 }

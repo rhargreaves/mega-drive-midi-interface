@@ -16,6 +16,7 @@ static Channel channels[MAX_FM_CHANS];
 static u8 noteOn;
 
 static void initChannel(u8 chan);
+static void updateChannel(u8 chan);
 static void updateGlobalLfo(void);
 static void updateOperatorMultipleAndDetune(u8 channel, u8 op);
 static void updateAlgorithmAndFeedback(u8 channel);
@@ -50,6 +51,11 @@ void synth_init(void)
 static void initChannel(u8 chan)
 {
     memcpy(&channels[chan], &PRESET_DEFAULT, sizeof(Channel));
+    updateChannel(chan);
+}
+
+static void updateChannel(u8 chan)
+{
     updateAlgorithmAndFeedback(chan);
     updateStereoAmsFms(chan);
     for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
@@ -219,6 +225,8 @@ u8 synth_busy(void)
 
 void synth_preset(u8 channel, u8 preset)
 {
+    memcpy(&channels[channel], &PRESET_DEEP_PAD, sizeof(Channel));
+    updateChannel(channel);
 }
 
 static void writeChannelReg(u8 channel, u8 baseReg, u8 data)
