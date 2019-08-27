@@ -66,6 +66,7 @@ int main(void)
         midi_test(test_midi_sets_operator_secondary_amplitude),
         midi_test(test_midi_sets_operator_amplitude_modulation),
         midi_test(test_midi_sets_operator_release_rate),
+        midi_test(test_midi_sets_operator_ssg_eg),
         midi_test(test_midi_sets_global_LFO_enable),
         midi_test(test_midi_sets_global_LFO_frequency),
         midi_test(test_midi_sets_channel_AMS),

@@ -470,6 +470,23 @@ static void test_midi_sets_operator_release_rate(UNUSED void** state)
     }
 }
 
+static void test_midi_sets_operator_ssg_eg(UNUSED void** state)
+{
+    const u8 expectedValue = 11;
+
+    const u8 MIN_CC = 90;
+    const u8 MAX_CC = 93;
+
+    for (u8 cc = MIN_CC; cc <= MAX_CC; cc++) {
+        u8 expectedOp = cc - MIN_CC;
+        expect_value(__wrap_synth_operatorSsgEg, channel, 0);
+        expect_value(__wrap_synth_operatorSsgEg, op, expectedOp);
+        expect_value(__wrap_synth_operatorSsgEg, ssgEg, expectedValue);
+
+        __real_midi_cc(0, cc, 88);
+    }
+}
+
 static void test_midi_sets_global_LFO_enable(UNUSED void** state)
 {
     expect_value(__wrap_synth_enableLfo, enable, 1);

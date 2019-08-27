@@ -43,6 +43,7 @@ MOCKS=midi_process \
 	synth_operatorSecondaryAmplitude \
 	synth_operatorAmplitudeModulation \
 	synth_operatorReleaseRate \
+	synth_operatorSsgEg \
 	synth_enableLfo \
 	synth_globalLfoFrequency \
 	synth_preset \

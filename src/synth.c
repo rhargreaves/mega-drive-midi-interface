@@ -175,6 +175,10 @@ void synth_operatorReleaseRate(u8 channel, u8 op, u8 releaseRate)
     updateOperatorReleaseRateAndSecondaryAmplitude(channel, op);
 }
 
+void synth_operatorSsgEg(u8 channel, u8 op, u8 ssgEg)
+{
+}
+
 void synth_operatorSecondaryAmplitude(u8 channel, u8 op, u8 secondaryAmplitude)
 {
     getOperator(channel, op)->secondaryAmplitude = secondaryAmplitude;

@@ -178,6 +178,13 @@ static void cc(u8 chan, u8 controller, u8 value)
         synth_operatorAmplitudeModulation(chan,
             controller - CC_GENMDM_AMPLITUDE_MODULATION_OP1, RANGE(value, 2));
         break;
+    case CC_GENMDM_SSG_EG_OP1:
+    case CC_GENMDM_SSG_EG_OP2:
+    case CC_GENMDM_SSG_EG_OP3:
+    case CC_GENMDM_SSG_EG_OP4:
+        synth_operatorSsgEg(
+            chan, controller - CC_GENMDM_SSG_EG_OP1, RANGE(value, 16));
+        break;
     case CC_GENMDM_GLOBAL_LFO_ENABLE:
         synth_enableLfo(RANGE(value, 2));
         break;

@@ -145,6 +145,13 @@ void __wrap_synth_operatorReleaseRate(u8 channel, u8 op, u8 releaseRate)
     check_expected(releaseRate);
 }
 
+void __wrap_synth_operatorSsgEg(u8 channel, u8 op, u8 ssgEg)
+{
+    check_expected(channel);
+    check_expected(op);
+    check_expected(ssgEg);
+}
+
 void __wrap_synth_preset(u8 channel, u8 preset)
 {
     check_expected(channel);
