@@ -18,8 +18,8 @@ static u8 noteOn;
 static void initChannel(u8 chan);
 static void updateChannel(u8 chan);
 static void updateGlobalLfo(void);
-static void updateOperatorMultipleAndDetune(u8 channel, u8 op);
 static void updateAlgorithmAndFeedback(u8 channel);
+static void updateOperatorMultipleAndDetune(u8 channel, u8 op);
 static void updateOperatorRateScalingAndAttackRate(u8 channel, u8 operator);
 static void updateOperatorAmplitudeModulationAndFirstDecayRate(
     u8 channel, u8 operator);
@@ -27,6 +27,7 @@ static void updateOperatorReleaseRateAndSecondaryAmplitude(
     u8 channel, u8 operator);
 static void updateOperatorTotalLevel(u8 channel, u8 operator);
 static void updateOperatorSecondaryDecayRate(u8 channel, u8 operator);
+static void updateOperatorSsgEg(u8 channel, u8 operator);
 static void updateStereoAmsFms(u8 channel);
 static void writeChannelReg(u8 channel, u8 baseReg, u8 data);
 static void writeOperatorReg(u8 channel, u8 op, u8 baseReg, u8 data);
@@ -42,10 +43,6 @@ void synth_init(void)
         synth_noteOff(chan);
         initChannel(chan);
     }
-    YM2612_writeReg(0, 0x90, 0); // Proprietary
-    YM2612_writeReg(0, 0x94, 0);
-    YM2612_writeReg(0, 0x98, 0);
-    YM2612_writeReg(0, 0x9C, 0);
 }
 
 static void initChannel(u8 chan)
@@ -65,6 +62,7 @@ static void updateChannel(u8 chan)
         updateOperatorSecondaryDecayRate(chan, op);
         updateOperatorReleaseRateAndSecondaryAmplitude(chan, op);
         updateOperatorTotalLevel(chan, op);
+        updateOperatorSsgEg(chan, op);
     }
 }
 
@@ -177,6 +175,8 @@ void synth_operatorReleaseRate(u8 channel, u8 op, u8 releaseRate)
 
 void synth_operatorSsgEg(u8 channel, u8 op, u8 ssgEg)
 {
+    getOperator(channel, op)->ssgEg = ssgEg;
+    updateOperatorSsgEg(channel, op);
 }
 
 void synth_operatorSecondaryAmplitude(u8 channel, u8 op, u8 secondaryAmplitude)
@@ -326,6 +326,12 @@ static void updateOperatorReleaseRateAndSecondaryAmplitude(
     Operator* op = getOperator(channel, operator);
     writeOperatorReg(channel, operator, 0x80,
         op->releaseRate +(op->secondaryAmplitude << 4));
+}
+
+static void updateOperatorSsgEg(u8 channel, u8 operator)
+{
+    Operator* op = getOperator(channel, operator);
+    writeOperatorReg(channel, operator, 0x90, op->ssgEg);
 }
 
 static void updateOperatorTotalLevel(u8 channel, u8 operator)

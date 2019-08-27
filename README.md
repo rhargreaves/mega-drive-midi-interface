@@ -94,6 +94,7 @@ Each CC relates to one of the four FM channel operators for the parameter type
 | 55-58 | Secondary Amplitude (D1L) | 16    |
 | 59-62 | Release Rate (RR)         | 16    |
 | 70-73 | Amplitude Modulation (AM) | 2     |
+| 90-93 | SSG-EG                    | 16    |
 
 ## Polyphonic Mode (CC 80)
 

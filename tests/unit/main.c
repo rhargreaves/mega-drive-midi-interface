@@ -106,6 +106,7 @@ int main(void)
             test_synth_sets_operator_release_rate_and_secondary_amplitude),
         synth_test(
             test_synth_sets_operator_amplitude_modulation_and_first_decay_rate),
+        synth_test(test_synth_sets_operator_ssg_eg),
         synth_test(test_synth_sets_global_LFO_enable_and_frequency),
         synth_test(test_synth_sets_busy_indicators),
         synth_test(test_synth_sets_preset),

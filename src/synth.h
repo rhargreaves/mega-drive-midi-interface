@@ -21,6 +21,7 @@ struct Operator {
     u8 secondaryDecayRate;
     u8 releaseRate;
     u8 totalLevel;
+    u8 ssgEg;
 };
 
 typedef struct Channel Channel;

@@ -34,12 +34,13 @@ extern void __real_synth_operatorSecondaryAmplitude(
 extern void __real_synth_operatorAmplitudeModulation(
     u8 channel, u8 op, u8 amplitudeModulation);
 extern void __real_synth_operatorReleaseRate(u8 channel, u8 op, u8 releaseRate);
+extern void __real_synth_operatorSsgEg(u8 channel, u8 op, u8 ssgEg);
 extern void __real_synth_pitchBend(u8 channel, u16 bend);
 extern void __real_synth_preset(u8 channel, u8 preset);
 
 static void set_initial_registers()
 {
-    const u16 count = 167;
+    const u16 count = 187;
     expect_any_count(__wrap_YM2612_writeReg, part, count);
     expect_any_count(__wrap_YM2612_writeReg, reg, count);
     expect_any_count(__wrap_YM2612_writeReg, data, count);
@@ -308,6 +309,18 @@ static void test_synth_sets_operator_amplitude_modulation_and_first_decay_rate(
     }
 }
 
+static void test_synth_sets_operator_ssg_eg(UNUSED void** state)
+{
+    const u8 baseReg = 0x90;
+    const u8 ssgEg = 11;
+    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
+        for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
+            expect_ym2612_write_operator(chan, op, baseReg, ssgEg);
+            __real_synth_operatorSsgEg(chan, op, ssgEg);
+        }
+    }
+}
+
 static void test_synth_sets_global_LFO_enable_and_frequency(UNUSED void** state)
 {
     const u8 baseReg = 0x22;
@@ -340,24 +353,28 @@ static void test_synth_sets_preset(UNUSED void** state)
     expect_ym2612_write_channel(chan, 0x70, 5);
     expect_ym2612_write_channel(chan, 0x80, 0x29);
     expect_ym2612_write_channel(chan, 0x40, 0x13);
+    expect_ym2612_write_channel(chan, 0x90, 0x00);
     expect_ym2612_write_channel(chan, 0x34, 0x31);
     expect_ym2612_write_channel(chan, 0x54, 0x12);
     expect_ym2612_write_channel(chan, 0x64, 4);
     expect_ym2612_write_channel(chan, 0x74, 3);
     expect_ym2612_write_channel(chan, 0x84, 0x19);
     expect_ym2612_write_channel(chan, 0x44, 0x13);
+    expect_ym2612_write_channel(chan, 0x94, 0x00);
     expect_ym2612_write_channel(chan, 0x38, 0x57);
     expect_ym2612_write_channel(chan, 0x58, 0x87);
     expect_ym2612_write_channel(chan, 0x68, 0x8);
     expect_ym2612_write_channel(chan, 0x78, 0xA);
     expect_ym2612_write_channel(chan, 0x88, 0x19);
     expect_ym2612_write_channel(chan, 0x48, 0x13);
+    expect_ym2612_write_channel(chan, 0x98, 0x00);
     expect_ym2612_write_channel(chan, 0x3C, 0x31);
     expect_ym2612_write_channel(chan, 0x5C, 0x55);
     expect_ym2612_write_channel(chan, 0x6C, 4);
     expect_ym2612_write_channel(chan, 0x7C, 6);
     expect_ym2612_write_channel(chan, 0x8C, 0x19);
     expect_ym2612_write_channel(chan, 0x4C, 0x13);
+    expect_ym2612_write_channel(chan, 0x9C, 0x00);
 
     __real_synth_preset(chan, preset);
 }
@@ -375,24 +392,28 @@ static void test_synth_sets_default_preset(UNUSED void** state)
     expect_ym2612_write_channel(chan, 0x70, 2);
     expect_ym2612_write_channel(chan, 0x80, 0x11);
     expect_ym2612_write_channel(chan, 0x40, 0x23);
+    expect_ym2612_write_channel(chan, 0x90, 0x00);
     expect_ym2612_write_channel_any_data(chan, 0x34);
     expect_ym2612_write_channel_any_data(chan, 0x54);
     expect_ym2612_write_channel_any_data(chan, 0x64);
     expect_ym2612_write_channel_any_data(chan, 0x74);
     expect_ym2612_write_channel_any_data(chan, 0x84);
     expect_ym2612_write_channel_any_data(chan, 0x44);
+    expect_ym2612_write_channel_any_data(chan, 0x94);
     expect_ym2612_write_channel_any_data(chan, 0x38);
     expect_ym2612_write_channel_any_data(chan, 0x58);
     expect_ym2612_write_channel_any_data(chan, 0x68);
     expect_ym2612_write_channel_any_data(chan, 0x78);
     expect_ym2612_write_channel_any_data(chan, 0x88);
     expect_ym2612_write_channel_any_data(chan, 0x48);
+    expect_ym2612_write_channel_any_data(chan, 0x98);
     expect_ym2612_write_channel_any_data(chan, 0x3C);
     expect_ym2612_write_channel_any_data(chan, 0x5C);
     expect_ym2612_write_channel_any_data(chan, 0x6C);
     expect_ym2612_write_channel_any_data(chan, 0x7C);
     expect_ym2612_write_channel_any_data(chan, 0x8C);
     expect_ym2612_write_channel_any_data(chan, 0x4C);
+    expect_ym2612_write_channel_any_data(chan, 0x9C);
 
     __real_synth_preset(chan, preset);
 }
