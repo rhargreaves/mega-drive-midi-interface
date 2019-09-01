@@ -110,8 +110,7 @@ If all FM channels are busy, the note on event is dropped.
 
 Sending a MIDI program change (0xC) message will select a pre-defined FM preset.
 The full list of presets available are defined in
-[`synth_preset()`](https://github.com/rhargreaves/mega-drive-midi-interface/blob/784032b361344d4acea55668033cb8c96895e6a1/src/synth.c#L226)
-and [`presets.h`](https://github.com/rhargreaves/mega-drive-midi-interface/blob/master/src/presets.h). I have tried to associated appropriate presets to adhere to the General MIDI specification, although this is a work in progress.
+[`presets.h`](https://github.com/rhargreaves/mega-drive-midi-interface/blob/master/src/presets.h). They are based on [Wohlstand's XG bank from libOPNMIDI](https://github.com/Wohlstand/libOPNMIDI/blob/master/fm_banks/xg.wopn). The interface defaults to instrument 0 (Grand Piano) on start-up.
 
 ## System Real-Time Messages
 
