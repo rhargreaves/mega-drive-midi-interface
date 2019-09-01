@@ -47,7 +47,7 @@ void synth_init(void)
 
 static void initChannel(u8 chan)
 {
-    memcpy(&channels[chan], &PRESET_DEFAULT, sizeof(Channel));
+    memcpy(&channels[chan], M_BANK_0[0], sizeof(Channel));
     updateChannel(chan);
 }
 
@@ -229,15 +229,7 @@ u8 synth_busy(void)
 
 void synth_preset(u8 channel, u8 preset)
 {
-    const Channel* data;
-    switch (preset) {
-    case 1:
-        data = &PRESET_DEEP_PAD;
-        break;
-    default:
-        data = &PRESET_DEFAULT;
-        break;
-    }
+    const Channel* const data = M_BANK_0[preset];
     memcpy(&channels[channel], data, sizeof(Channel));
     updateChannel(channel);
 }
