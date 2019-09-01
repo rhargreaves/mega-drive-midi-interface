@@ -2,5 +2,5 @@
 
 for chan in {1..16}
 do
-	~/sendmidi-macos-1.0.13/sendmidi dev "IAC Bus 1" ch $chan cc 123 0
+	./reset-midi-chan $chan
 done
