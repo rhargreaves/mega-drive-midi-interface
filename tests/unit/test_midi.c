@@ -3,6 +3,7 @@
 #include <stddef.h>
 
 #include "midi.h"
+#include "psg_chip.h"
 #include "synth.h"
 #include "unused.h"
 #include <cmocka.h>
@@ -24,6 +25,7 @@ static const u16 B = 107;
 static int test_midi_setup(UNUSED void** state)
 {
     midi_reset();
+    midi_psg_reset();
 
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         expect_any(__wrap_synth_pitch, channel);
@@ -76,9 +78,12 @@ static void test_midi_triggers_psg_note_on(UNUSED void** state)
 
             u16 expectedFrequency = freqs[i];
             u8 expectedMidiKey = midiKeys[i];
+            u8 expectedPsgChan = chan - MIN_PSG_CHAN;
 
-            expect_value(__wrap_psg_noteOn, channel, chan - MIN_PSG_CHAN);
-            expect_value(__wrap_psg_noteOn, freq, expectedFrequency);
+            expect_value(__wrap_psg_frequency, channel, expectedPsgChan);
+            expect_value(__wrap_psg_frequency, freq, expectedFrequency);
+            expect_value(__wrap_psg_attenuation, channel, expectedPsgChan);
+            expect_value(__wrap_psg_attenuation, attenuation, 0);
 
             __real_midi_noteOn(chan, expectedMidiKey, 127);
         }
@@ -88,9 +93,28 @@ static void test_midi_triggers_psg_note_on(UNUSED void** state)
 static void test_midi_triggers_psg_note_off(UNUSED void** state)
 {
     for (u8 chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN; chan++) {
-        expect_value(__wrap_psg_noteOff, channel, chan - MIN_PSG_CHAN);
+        u8 expectedPsgChan = chan - MIN_PSG_CHAN;
+        expect_value(__wrap_psg_attenuation, channel, expectedPsgChan);
+        expect_value(
+            __wrap_psg_attenuation, attenuation, PSG_ATTENUATION_SILENCE);
 
         __real_midi_noteOff(chan, 0);
+    }
+}
+
+static void
+test_midi_triggers_psg_note_off_and_volume_change_does_not_cause_psg_channel_to_play(
+    UNUSED void** state)
+{
+    for (u8 chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN; chan++) {
+        u8 expectedPsgChan = chan - MIN_PSG_CHAN;
+        expect_value(__wrap_psg_attenuation, channel, expectedPsgChan);
+        expect_value(
+            __wrap_psg_attenuation, attenuation, PSG_ATTENUATION_SILENCE);
+
+        __real_midi_noteOff(chan, 0);
+
+        __real_midi_cc(MIN_PSG_CHAN, CC_VOLUME, 96);
     }
 }
 
@@ -104,18 +128,26 @@ static void test_midi_channel_volume_sets_total_level(UNUSED void** state)
 
 static void test_midi_channel_volume_sets_psg_attenuation(UNUSED void** state)
 {
+    __real_midi_cc(MIN_PSG_CHAN, CC_VOLUME, 96);
+
+    expect_value(__wrap_psg_frequency, channel, 0);
+    expect_value(__wrap_psg_frequency, freq, 65);
     expect_value(__wrap_psg_attenuation, channel, 0);
     expect_value(__wrap_psg_attenuation, attenuation, 1);
 
-    __real_midi_cc(MIN_PSG_CHAN, CC_VOLUME, 96);
+    __real_midi_noteOn(MIN_PSG_CHAN, 36, 127);
 }
 
 static void test_midi_channel_volume_sets_psg_attenuation_2(UNUSED void** state)
 {
+    __real_midi_cc(MIN_PSG_CHAN, CC_VOLUME, 127);
+
+    expect_value(__wrap_psg_frequency, channel, 0);
+    expect_value(__wrap_psg_frequency, freq, 65);
     expect_value(__wrap_psg_attenuation, channel, 0);
     expect_value(__wrap_psg_attenuation, attenuation, 0);
 
-    __real_midi_cc(MIN_PSG_CHAN, CC_VOLUME, 127);
+    __real_midi_noteOn(MIN_PSG_CHAN, 36, 127);
 }
 
 static void test_midi_pan_sets_synth_stereo_mode_right(UNUSED void** state)
@@ -175,12 +207,17 @@ static void test_midi_sets_synth_pitch_bend(UNUSED void** state)
 static void test_midi_sets_psg_pitch_bend(UNUSED void** state)
 {
     for (int chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN; chan++) {
-        expect_value(__wrap_psg_noteOn, channel, chan - MIN_PSG_CHAN);
-        expect_value(__wrap_psg_noteOn, freq, 262);
+
+        u8 expectedPsgChan = chan - MIN_PSG_CHAN;
+
+        expect_value(__wrap_psg_frequency, channel, expectedPsgChan);
+        expect_value(__wrap_psg_frequency, freq, 262);
+        expect_value(__wrap_psg_attenuation, channel, expectedPsgChan);
+        expect_value(__wrap_psg_attenuation, attenuation, 0);
 
         __real_midi_noteOn(chan, 60, 127);
 
-        expect_value(__wrap_psg_frequency, channel, chan - MIN_PSG_CHAN);
+        expect_value(__wrap_psg_frequency, channel, expectedPsgChan);
         expect_value(__wrap_psg_frequency, freq, 191);
 
         __real_midi_pitchBend(chan, 1000);

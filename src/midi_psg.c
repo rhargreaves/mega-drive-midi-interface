@@ -1,5 +1,6 @@
 #include "midi_psg.h"
 #include "psg_chip.h"
+#include <stdbool.h>
 
 #define MIN_PSG_CHAN 6
 #define MAX_PSG_CHAN 9
@@ -25,6 +26,9 @@ static const u8 ATTENUATIONS[] = { 15, 14, 14, 14, 13, 13, 13, 13, 12, 12, 12,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 static u8 pitches[MAX_PSG_CHANS];
+static u8 attenuations[] = { PSG_ATTENUATION_LOUDEST, PSG_ATTENUATION_LOUDEST,
+    PSG_ATTENUATION_LOUDEST, PSG_ATTENUATION_LOUDEST };
+static bool notesOn[MAX_PSG_CHAN];
 
 static u8 psgChannel(u8 midiChannel)
 {
@@ -35,17 +39,25 @@ void midi_psg_noteOn(u8 chan, u8 pitch, u8 velocity)
 {
     u8 psgChan = psgChannel(chan);
     pitches[psgChan] = pitch;
-    psg_noteOn(psgChan, FREQUENCIES[pitch]);
+    psg_frequency(psgChan, FREQUENCIES[pitch]);
+    psg_attenuation(psgChan, attenuations[psgChan]);
+    notesOn[psgChan] = true;
 }
 
 void midi_psg_noteOff(u8 chan, u8 pitch)
 {
-    psg_noteOff(psgChannel(chan));
+    u8 psgChan = psgChannel(chan);
+    psg_attenuation(psgChan, PSG_ATTENUATION_SILENCE);
+    notesOn[psgChan] = false;
 }
 
 void midi_psg_channelVolume(u8 chan, u8 volume)
 {
-    psg_attenuation(psgChannel(chan), ATTENUATIONS[volume]);
+    u8 psgChan = psgChannel(chan);
+    attenuations[psgChan] = ATTENUATIONS[volume];
+    if (notesOn[psgChan]) {
+        psg_attenuation(psgChan, attenuations[psgChan]);
+    }
 }
 
 void midi_psg_pitchBend(u8 chan, u16 bend)
@@ -62,4 +74,13 @@ void midi_psg_pitchBend(u8 chan, u16 bend)
 
 void midi_psg_program(u8 chan, u8 program)
 {
+}
+
+void midi_psg_reset(void)
+{
+    for(u8 chan = 0; chan < MAX_PSG_CHANS; chan++)
+    {
+        notesOn[chan] = false;
+        attenuations[chan] = PSG_ATTENUATION_LOUDEST;
+    }
 }

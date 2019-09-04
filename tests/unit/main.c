@@ -39,6 +39,8 @@ int main(void)
         midi_test(test_midi_triggers_synth_note_off),
         midi_test(test_midi_triggers_psg_note_on),
         midi_test(test_midi_triggers_psg_note_off),
+        midi_test(
+            test_midi_triggers_psg_note_off_and_volume_change_does_not_cause_psg_channel_to_play),
         midi_test(test_midi_channel_volume_sets_total_level),
         midi_test(test_midi_pan_sets_synth_stereo_mode_right),
         midi_test(test_midi_pan_sets_synth_stereo_mode_left),
@@ -111,11 +113,8 @@ int main(void)
         synth_test(test_synth_sets_busy_indicators),
         synth_test(test_synth_sets_preset),
 
-        cmocka_unit_test(test_psg_chip_sets_note_on_psg),
-        cmocka_unit_test(test_psg_chip_sets_note_off_psg),
         cmocka_unit_test(test_psg_chip_sets_attenuation),
         cmocka_unit_test(test_psg_chip_sets_frequency),
-        cmocka_unit_test(test_psg_chip_sets_note_on_psg_with_attenuation),
         cmocka_unit_test(test_psg_sets_busy_indicators),
 
         comm_test(test_comm_reads_when_ready),

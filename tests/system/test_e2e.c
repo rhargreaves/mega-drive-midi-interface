@@ -3,8 +3,8 @@
 #include <stddef.h>
 
 #include "asserts.h"
-#include "interface.h"
 #include "comm.h"
+#include "interface.h"
 #include "midi.h"
 #include "wraps.h"
 #include <cmocka.h>
@@ -13,9 +13,9 @@ static int test_e2e_setup(void** state)
 {
     comm_resetCounts();
     midi_reset();
+    midi_psg_reset();
     return 0;
 }
-
 
 static void test_midi_note_on_event_sent_to_ym2612(void** state)
 {
@@ -88,9 +88,7 @@ static void test_polyphonic_midi_sent_to_separate_ym2612_channels(void** state)
     interface_tick();
 }
 
-static void
-test_psg_audible_if_note_on_event_triggered(
-    void** state)
+static void test_psg_audible_if_note_on_event_triggered(void** state)
 {
     const u8 psgMidiChannel1 = 6;
     const u8 noteOnStatus = 0x90 + psgMidiChannel1;
@@ -109,13 +107,10 @@ test_psg_audible_if_note_on_event_triggered(
     interface_tick();
 }
 
-
 static void
 test_psg_not_audible_if_midi_channel_volume_set_and_there_is_no_note_on_event(
     void** state)
 {
-    skip(); // WIP
-
     const u8 psgMidiChannel1 = 6;
     const u8 ccStatus = 0xB0 + psgMidiChannel1;
     const u8 ccVolume = 0x7;
