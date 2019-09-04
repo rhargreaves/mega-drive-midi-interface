@@ -4,8 +4,18 @@
 
 #include "asserts.h"
 #include "interface.h"
+#include "comm.h"
+#include "midi.h"
 #include "wraps.h"
 #include <cmocka.h>
+
+static int test_e2e_setup(void** state)
+{
+    comm_resetCounts();
+    midi_reset();
+    return 0;
+}
+
 
 static void test_midi_note_on_event_sent_to_ym2612(void** state)
 {
@@ -74,6 +84,46 @@ static void test_polyphonic_midi_sent_to_separate_ym2612_channels(void** state)
     expect_ym2612_write_channel(0, 0xA5, 0x1A);
     expect_ym2612_write_channel(0, 0xA1, 0xB4);
     expect_ym2612_write_reg(0, 0x28, 0xF1);
+
+    interface_tick();
+}
+
+static void
+test_psg_audible_if_note_on_event_triggered(
+    void** state)
+{
+    const u8 psgMidiChannel1 = 6;
+    const u8 noteOnStatus = 0x90 + psgMidiChannel1;
+    const u8 noteOnKey = 60;
+    const u8 noteOnVelocity = 127;
+
+    stub_usb_receive_byte(noteOnStatus);
+    stub_usb_receive_byte(noteOnKey);
+    stub_usb_receive_byte(noteOnVelocity);
+
+    expect_any(__wrap_PSG_setFrequency, channel);
+    expect_any(__wrap_PSG_setFrequency, value);
+    expect_any(__wrap_PSG_setEnvelope, channel);
+    expect_any(__wrap_PSG_setEnvelope, value);
+
+    interface_tick();
+}
+
+
+static void
+test_psg_not_audible_if_midi_channel_volume_set_and_there_is_no_note_on_event(
+    void** state)
+{
+    skip(); // WIP
+
+    const u8 psgMidiChannel1 = 6;
+    const u8 ccStatus = 0xB0 + psgMidiChannel1;
+    const u8 ccVolume = 0x7;
+    const u8 ccVolumeValue = 127;
+
+    stub_usb_receive_byte(ccStatus);
+    stub_usb_receive_byte(ccVolume);
+    stub_usb_receive_byte(ccVolumeValue);
 
     interface_tick();
 }
