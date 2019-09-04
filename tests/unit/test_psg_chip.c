@@ -74,16 +74,13 @@ static void test_psg_sets_busy_indicators(void** state)
     for (u8 chan = 0; chan < MAX_PSG_CHANS; chan++) {
         expect_any(__wrap_PSG_setEnvelope, channel);
         expect_any(__wrap_PSG_setEnvelope, value);
-        __real_psg_noteOff(chan);
+        __real_psg_attenuation(chan, 0xf);
     }
 
     for (u8 chan = 0; chan < MAX_PSG_CHANS; chan += 2) {
         expect_value(__wrap_PSG_setEnvelope, channel, chan);
         expect_value(__wrap_PSG_setEnvelope, value, 2);
-        expect_value(__wrap_PSG_setFrequency, channel, chan);
-        expect_value(__wrap_PSG_setFrequency, value, 440);
-
-        __real_psg_noteOn(chan, 440);
+        __real_psg_attenuation(chan, 2);
     }
     u8 busy = psg_busy();
     assert_int_equal(busy, 0b0101);
