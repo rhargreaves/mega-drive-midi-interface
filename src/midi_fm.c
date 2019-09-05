@@ -1,7 +1,7 @@
 #include "midi_fm.h"
 #include "synth.h"
 
-static const u8 MIN_MIDI_PITCH = 23;
+static const u8 MIN_MIDI_PITCH = 11;
 static const u8 SEMITONES = 12;
 static const u16 FREQ_NUMBERS[] = {
     617, // B
@@ -55,7 +55,7 @@ void midi_fm_program(u8 chan, u8 program)
 
 static u8 octave(u8 pitch)
 {
-    return ((pitch - MIN_MIDI_PITCH) / SEMITONES) + 1;
+    return (pitch - MIN_MIDI_PITCH) / SEMITONES;
 }
 
 static u16 freqNumber(u8 pitch)
