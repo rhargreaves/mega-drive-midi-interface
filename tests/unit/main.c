@@ -35,6 +35,7 @@ int main(void)
         cmocka_unit_test(test_interface_sets_midi_program),
 
         midi_test(test_midi_triggers_synth_note_on),
+        midi_test(test_midi_triggers_synth_note_on_extreme_values),
         midi_test(test_midi_triggers_synth_note_on_2),
         midi_test(test_midi_triggers_synth_note_off),
         midi_test(test_midi_triggers_psg_note_on),
