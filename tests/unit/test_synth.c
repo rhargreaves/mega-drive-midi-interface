@@ -118,7 +118,7 @@ static void test_synth_sets_total_level_reg_chan_for_algorithm_4(
     const u8 algorithm = 4;
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         expect_ym2612_write_channel_any_data(chan, 0xB0);
-        expect_ym2612_write_operator(chan, 1, 0x40, 0);
+        expect_ym2612_write_operator(chan, 2, 0x40, 0);
         expect_ym2612_write_operator(chan, 3, 0x40, 0);
         __real_synth_algorithm(chan, algorithm);
         __real_synth_totalLevel(chan, 0);
