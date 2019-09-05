@@ -51,8 +51,8 @@ static void test_midi_triggers_synth_note_on(UNUSED void** state)
 
 static void test_midi_triggers_synth_note_on_extreme_values(UNUSED void** state)
 {
-    const u8 keys[] = { 23, 95 };
-    const u16 expectedFrequencies[] = { 0x269, 0x269 };
+    const u8 keys[] = { 23, 106 };
+    const u16 expectedFrequencies[] = { 617, 1164 };
     const u8 expectedOctaves[] = { 1, 7 };
 
     for (int index = 0; index < 2; index++ ) {
