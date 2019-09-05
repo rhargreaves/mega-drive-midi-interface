@@ -24,6 +24,9 @@ static u8 pitches[MAX_FM_CHANS];
 
 void midi_fm_noteOn(u8 chan, u8 pitch, u8 velocity)
 {
+    if (pitch < 11 || pitch > 106) {
+        return;
+    }
     pitches[chan] = pitch;
     synth_pitch(chan, octave(pitch), freqNumber(pitch));
     synth_noteOn(chan);

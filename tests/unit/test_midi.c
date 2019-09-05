@@ -49,7 +49,8 @@ static void test_midi_triggers_synth_note_on(UNUSED void** state)
     }
 }
 
-static void test_midi_triggers_synth_note_on_extreme_values(UNUSED void** state)
+static void test_midi_triggers_synth_note_on_boundary_values(
+    UNUSED void** state)
 {
     const u8 keys[] = { 11, 106 };
     const u16 expectedFrequencies[] = { 617, 1164 };
@@ -63,6 +64,18 @@ static void test_midi_triggers_synth_note_on_extreme_values(UNUSED void** state)
                 __wrap_synth_pitch, freqNumber, expectedFrequencies[index]);
             expect_value(__wrap_synth_noteOn, channel, chan);
 
+            __real_midi_noteOn(chan, keys[index], 127);
+        }
+    }
+}
+
+static void test_midi_does_not_trigger_synth_note_on_out_of_bound_values(
+    UNUSED void** state)
+{
+    const u8 keys[] = { 0, 10, 107, 127 };
+
+    for (int index = 0; index < 2; index++) {
+        for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
             __real_midi_noteOn(chan, keys[index], 127);
         }
     }
