@@ -55,7 +55,7 @@ void midi_fm_program(u8 chan, u8 program)
 
 static u8 octave(u8 pitch)
 {
-    return (pitch - MIN_MIDI_PITCH) / SEMITONES;
+    return ((pitch - MIN_MIDI_PITCH) / SEMITONES) + 1;
 }
 
 static u16 freqNumber(u8 pitch)

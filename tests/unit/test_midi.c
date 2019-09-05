@@ -19,8 +19,8 @@ extern void __real_midi_position(u16 beat);
 extern void __real_midi_program(u8 chan, u8 program);
 extern Timing* __real_midi_timing(void);
 
-static const u16 A_SHARP = 106;
-static const u16 B = 107;
+static const u16 A_SHARP = 94;
+static const u16 B = 95;
 
 static int test_midi_setup(UNUSED void** state)
 {
@@ -41,7 +41,7 @@ static void test_midi_triggers_synth_note_on(UNUSED void** state)
 {
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         expect_value(__wrap_synth_pitch, channel, chan);
-        expect_value(__wrap_synth_pitch, octave, 3);
+        expect_value(__wrap_synth_pitch, octave, 4);
         expect_value(__wrap_synth_pitch, freqNumber, 653);
         expect_value(__wrap_synth_noteOn, channel, chan);
 
@@ -190,14 +190,14 @@ static void test_midi_sets_synth_pitch_bend(UNUSED void** state)
 {
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         expect_value(__wrap_synth_pitch, channel, chan);
-        expect_value(__wrap_synth_pitch, octave, 3);
+        expect_value(__wrap_synth_pitch, octave, 4);
         expect_value(__wrap_synth_pitch, freqNumber, 653);
         expect_value(__wrap_synth_noteOn, channel, chan);
 
         __real_midi_noteOn(chan, 60, 127);
 
         expect_value(__wrap_synth_pitch, channel, chan);
-        expect_value(__wrap_synth_pitch, octave, 3);
+        expect_value(__wrap_synth_pitch, octave, 4);
         expect_value(__wrap_synth_pitch, freqNumber, 582);
 
         __real_midi_pitchBend(chan, 1000);

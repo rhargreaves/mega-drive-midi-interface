@@ -20,7 +20,7 @@ static int test_e2e_setup(void** state)
 static void test_midi_note_on_event_sent_to_ym2612(void** state)
 {
     const u8 noteOnStatus = 0x90;
-    const u8 noteOnKey = 60;
+    const u8 noteOnKey = 48;
     const u8 noteOnVelocity = 127;
 
     stub_usb_receive_byte(noteOnStatus);
@@ -57,8 +57,8 @@ static void test_polyphonic_midi_sent_to_separate_ym2612_channels(void** state)
     const u8 ccStatus = 0xB0;
     const u8 ccPolyphonic = 80;
     const u8 ccPolyphonicOnValue = 0x7F;
-    const u8 noteOnKey1 = 60;
-    const u8 noteOnKey2 = 61;
+    const u8 noteOnKey1 = 48;
+    const u8 noteOnKey2 = 49;
     const u8 noteOnVelocity = 127;
 
     stub_usb_receive_byte(ccStatus);
