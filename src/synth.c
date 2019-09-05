@@ -14,6 +14,9 @@ struct Global {
 static Global global = { .lfoEnable = 0, .lfoFrequency = 0 };
 static Channel channels[MAX_FM_CHANS];
 static u8 noteOn;
+static u8 volumes[MAX_FM_CHANS];
+
+static const u8 MAX_VOLUME = 0x7F;
 
 static void initChannel(u8 chan);
 static void updateChannel(u8 chan);
@@ -35,11 +38,13 @@ static void updateOctaveAndFrequency(u8 channel);
 static u8 keyOnOffRegOffset(u8 channel);
 static Channel* getChannel(u8 channel);
 static Operator* getOperator(u8 channel, u8 operator);
+static u8 effectiveTotalLevel(u8 channel, u8 operator, u8 totalLevel);
 
 void synth_init(void)
 {
     YM2612_writeReg(0, 0x27, 0); // Ch 3 Normal
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
+        volumes[chan] = MAX_VOLUME;
         synth_noteOff(chan);
         initChannel(chan);
     }
@@ -110,6 +115,14 @@ void synth_totalLevel(u8 channel, u8 totalLevel)
     default:
         writeOperatorReg(channel, 3, REG_TOTAL_LEVEL, totalLevel);
         break;
+    }
+}
+
+void synth_volume(u8 channel, u8 volume)
+{
+    volumes[channel] = volume;
+    for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
+        updateOperatorTotalLevel(channel, op);
     }
 }
 
@@ -329,5 +342,15 @@ static void updateOperatorSsgEg(u8 channel, u8 operator)
 static void updateOperatorTotalLevel(u8 channel, u8 operator)
 {
     Operator* op = getOperator(channel, operator);
-    writeOperatorReg(channel, operator, 0x40, op->totalLevel);
+    writeOperatorReg(channel, operator, 0x40,
+        effectiveTotalLevel(channel, operator, op->totalLevel));
+}
+
+static u8 effectiveTotalLevel(u8 channel, u8 operator, u8 totalLevel)
+{
+    u8 volume = volumes[channel];
+    u8 inverseTotalLevel = 0x7F - totalLevel;
+    u8 inverseNewTotalLevel = (u16)inverseTotalLevel * (u16)volume / (u16)0x7F;
+    u8 newTotalLevel = 0x7F - inverseNewTotalLevel;
+    return newTotalLevel;
 }

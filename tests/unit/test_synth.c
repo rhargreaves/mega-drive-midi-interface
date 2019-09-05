@@ -37,6 +37,7 @@ extern void __real_synth_operatorReleaseRate(u8 channel, u8 op, u8 releaseRate);
 extern void __real_synth_operatorSsgEg(u8 channel, u8 op, u8 ssgEg);
 extern void __real_synth_pitchBend(u8 channel, u16 bend);
 extern void __real_synth_preset(u8 channel, u8 preset);
+extern void __real_synth_volume(u8 channel, u8 volume);
 
 static void set_initial_registers()
 {
@@ -376,5 +377,38 @@ static void test_synth_sets_preset(UNUSED void** state)
         expect_ym2612_write_channel_any_data(chan, 0x9C);
 
         __real_synth_preset(chan, preset);
+    }
+}
+
+static void test_synth_applies_volume_modifier_to_output_operators(
+    UNUSED void** state)
+{
+    const u8 algorithm = 7;
+    const u8 totalLevelReg = 0x40;
+    const u8 algorithmReg = 0xB0;
+    const u8 loudestTotalLevel = 0;
+    const u8 loudestVolume = 0x7F;
+    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++)
+    {
+        expect_ym2612_write_channel_any_data(chan, algorithmReg);
+        __real_synth_algorithm(chan, algorithm);
+
+        for(u8 op = 0; op < MAX_FM_OPERATORS; op++) {
+            expect_ym2612_write_operator(chan, op, totalLevelReg, loudestTotalLevel);
+        }
+        for(u8 op = 0; op < MAX_FM_OPERATORS; op++) {
+            __real_synth_operatorTotalLevel(chan, op, loudestTotalLevel);
+        }
+
+        const u8 expectedTotalLevel = 0x40;
+        for(u8 op = 0; op < MAX_FM_OPERATORS; op++) {
+            expect_ym2612_write_operator(chan, op, totalLevelReg, expectedTotalLevel);
+        }
+        __real_synth_volume(chan, loudestVolume / 2);
+
+        for(u8 op = 0; op < MAX_FM_OPERATORS; op++) {
+            expect_ym2612_write_operator(chan, op, totalLevelReg, loudestTotalLevel);
+        }
+        __real_synth_volume(chan, loudestVolume);
     }
 }

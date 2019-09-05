@@ -29,6 +29,7 @@ void __wrap_synth_operatorAmplitudeModulation(
 void __wrap_synth_operatorReleaseRate(u8 channel, u8 op, u8 releaseRate);
 void __wrap_synth_operatorSsgEg(u8 channel, u8 op, u8 ssgEg);
 void __wrap_synth_preset(u8 channel, u8 preset);
+void __wrap_synth_volume(u8 channel, u8 volume);
 u8 __wrap_comm_read(void);
 void __wrap_fm_writeReg(u16 part, u8 reg, u8 data);
 void __wrap_psg_noteOn(u8 channel, u16 freq);

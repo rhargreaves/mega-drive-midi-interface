@@ -158,6 +158,12 @@ void __wrap_synth_preset(u8 channel, u8 preset)
     check_expected(preset);
 }
 
+void __wrap_synth_volume(u8 channel, u8 volume)
+{
+    check_expected(channel);
+    check_expected(volume);
+}
+
 u8 __wrap_comm_read(void)
 {
     return mock_type(u8);
