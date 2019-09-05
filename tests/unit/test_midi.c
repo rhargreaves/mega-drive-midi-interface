@@ -150,10 +150,10 @@ test_midi_triggers_psg_note_off_and_volume_change_does_not_cause_psg_channel_to_
     }
 }
 
-static void test_midi_channel_volume_sets_total_level(UNUSED void** state)
+static void test_midi_channel_volume_sets_volume(UNUSED void** state)
 {
-    expect_value(__wrap_synth_totalLevel, channel, 0);
-    expect_value(__wrap_synth_totalLevel, totalLevel, 12);
+    expect_value(__wrap_synth_volume, channel, 0);
+    expect_value(__wrap_synth_volume, volume, 60);
 
     __real_midi_cc(0, CC_VOLUME, 60);
 }
