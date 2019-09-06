@@ -117,6 +117,7 @@ int main(void)
         synth_test(test_synth_applies_volume_modifier_to_output_operators_algorithm_7),
         synth_test(test_synth_applies_volume_modifier_to_output_operators_algorithm_7_quieter),
         synth_test(test_synth_applies_volume_modifier_to_output_operators_algorithms_0_to_3),
+        synth_test(test_synth_applies_volume_modifier_to_output_operators_algorithm_4),
 
         cmocka_unit_test(test_psg_chip_sets_attenuation),
         cmocka_unit_test(test_psg_chip_sets_frequency),
