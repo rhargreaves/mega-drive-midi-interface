@@ -442,7 +442,7 @@ static void test_synth_applies_volume_modifier_to_output_operators_algorithm_7_q
     }
 }
 
-static void test_synth_does_not_apply_volume_modifier_to_output_operators_non_algorithm_7(
+static void test_synth_applies_volume_modifier_to_output_operators_algorithm_0(
     UNUSED void** state)
 {
     const u8 algorithm = 0;
@@ -458,7 +458,7 @@ static void test_synth_does_not_apply_volume_modifier_to_output_operators_non_al
         expect_ym2612_write_operator(chan, 0, totalLevelReg, 0x27);
         expect_ym2612_write_operator(chan, 1, totalLevelReg, 0x24);
         expect_ym2612_write_operator(chan, 2, totalLevelReg, 0x4);
-        expect_ym2612_write_operator(chan, 3, totalLevelReg, 0x2);
+        expect_ym2612_write_operator(chan, 3, totalLevelReg, 0x28);
         __real_synth_volume(chan, loudestVolume / 4);
     }
 }
