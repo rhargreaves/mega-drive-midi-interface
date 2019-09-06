@@ -359,12 +359,9 @@ static void updateOperatorTotalLevel(u8 channel, u8 operator)
 
 static u8 effectiveTotalLevel(u8 channel, u8 operator, u8 totalLevel)
 {
-    Channel* chan = getChannel(channel);
-    if(isOutputOperator(chan->algorithm, operator))
-    {
-        return volumeAdjustedTotalLevel(channel, totalLevel);
-    }
-    return totalLevel;
+    return isOutputOperator(getChannel(channel)->algorithm, operator) ?
+        volumeAdjustedTotalLevel(channel, totalLevel) :
+        totalLevel;
 }
 
 static bool isOutputOperator(u8 algorithm, u8 operator)
