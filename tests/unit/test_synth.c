@@ -442,10 +442,9 @@ static void test_synth_applies_volume_modifier_to_output_operators_algorithm_7_q
     }
 }
 
-static void test_synth_applies_volume_modifier_to_output_operators_algorithm_0(
+static void test_synth_applies_volume_modifier_to_output_operators_algorithms_0_to_3(
     UNUSED void** state)
 {
-
     const u8 totalLevelReg = 0x40;
     const u8 algorithmReg = 0xB0;
     const u8 loudestVolume = 0x7F;
