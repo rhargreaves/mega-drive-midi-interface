@@ -357,7 +357,7 @@ static void updateOperatorTotalLevel(u8 channel, u8 operator)
 static u8 effectiveTotalLevel(u8 channel, u8 operator, u8 totalLevel)
 {
     Channel* chan = getChannel(channel);
-    if(chan->algorithm == 7 || (chan->algorithm == 0 && operator == 3))
+    if(chan->algorithm == 7 || (chan->algorithm < 4 && operator == 3))
     {
         u8 volume = volumes[channel];
         u8 logarithmicVolume = 0x7F - VOLUME_TO_TOTAL_LEVELS[volume];
