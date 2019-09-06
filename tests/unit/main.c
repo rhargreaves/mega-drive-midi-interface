@@ -114,8 +114,9 @@ int main(void)
         synth_test(test_synth_sets_global_LFO_enable_and_frequency),
         synth_test(test_synth_sets_busy_indicators),
         synth_test(test_synth_sets_preset),
-        synth_test(test_synth_applies_volume_modifier_to_output_operators),
-        synth_test(test_synth_applies_volume_modifier_to_output_operators_2),
+        synth_test(test_synth_applies_volume_modifier_to_output_operators_algorithm_7),
+        synth_test(test_synth_applies_volume_modifier_to_output_operators_algorithm_7_quieter),
+        synth_test(test_synth_does_not_apply_volume_modifier_to_output_operators_non_algorithm_7),
 
         cmocka_unit_test(test_psg_chip_sets_attenuation),
         cmocka_unit_test(test_psg_chip_sets_frequency),

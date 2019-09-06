@@ -356,10 +356,15 @@ static void updateOperatorTotalLevel(u8 channel, u8 operator)
 
 static u8 effectiveTotalLevel(u8 channel, u8 operator, u8 totalLevel)
 {
-    u8 volume = volumes[channel];
-    u8 logarithmicVolume = 0x7F - VOLUME_TO_TOTAL_LEVELS[volume];
-    u8 inverseTotalLevel = 0x7F - totalLevel;
-    u8 inverseNewTotalLevel = (u16)inverseTotalLevel * (u16)logarithmicVolume / (u16)0x7F;
-    u8 newTotalLevel = 0x7F - inverseNewTotalLevel;
-    return newTotalLevel;
+    Channel* chan = getChannel(channel);
+    if(chan->algorithm == 7)
+    {
+        u8 volume = volumes[channel];
+        u8 logarithmicVolume = 0x7F - VOLUME_TO_TOTAL_LEVELS[volume];
+        u8 inverseTotalLevel = 0x7F - totalLevel;
+        u8 inverseNewTotalLevel = (u16)inverseTotalLevel * (u16)logarithmicVolume / (u16)0x7F;
+        u8 newTotalLevel = 0x7F - inverseNewTotalLevel;
+        return newTotalLevel;
+    }
+    return totalLevel;
 }
