@@ -3,6 +3,7 @@
 #include "presets.h"
 #include <memory.h>
 #include <ym2612.h>
+#include <stdbool.h>
 
 typedef struct Global Global;
 
@@ -47,6 +48,8 @@ static u8 keyOnOffRegOffset(u8 channel);
 static Channel* getChannel(u8 channel);
 static Operator* getOperator(u8 channel, u8 operator);
 static u8 effectiveTotalLevel(u8 channel, u8 operator, u8 totalLevel);
+static bool isOutputOperator(u8 algorithm, u8 operator);
+static u8 volumeAdjustedTotalLevel(u8 channel, u8 totalLevel);
 
 void synth_init(void)
 {
@@ -357,17 +360,26 @@ static void updateOperatorTotalLevel(u8 channel, u8 operator)
 static u8 effectiveTotalLevel(u8 channel, u8 operator, u8 totalLevel)
 {
     Channel* chan = getChannel(channel);
-    if(chan->algorithm == 7 ||
-        (chan->algorithm < 4 && operator == 3) ||
-        (chan->algorithm == 4 && (operator == 2 || operator == 3)) ||
-        ((chan->algorithm == 5 || chan->algorithm == 6) && operator > 0))
+    if(isOutputOperator(chan->algorithm, operator))
     {
-        u8 volume = volumes[channel];
-        u8 logarithmicVolume = 0x7F - VOLUME_TO_TOTAL_LEVELS[volume];
-        u8 inverseTotalLevel = 0x7F - totalLevel;
-        u8 inverseNewTotalLevel = (u16)inverseTotalLevel * (u16)logarithmicVolume / (u16)0x7F;
-        u8 newTotalLevel = 0x7F - inverseNewTotalLevel;
-        return newTotalLevel;
+        return volumeAdjustedTotalLevel(channel, totalLevel);
     }
     return totalLevel;
+}
+
+static bool isOutputOperator(u8 algorithm, u8 operator)
+{
+    return (algorithm < 4 && operator == 3) ||
+        (algorithm == 4 && (operator == 2 || operator == 3)) ||
+        ((algorithm == 5 || algorithm == 6) && operator > 0) ||
+        algorithm == 7;
+}
+
+static u8 volumeAdjustedTotalLevel(u8 channel, u8 totalLevel)
+{
+    u8 volume = volumes[channel];
+    u8 logarithmicVolume = 0x7F - VOLUME_TO_TOTAL_LEVELS[volume];
+    u8 inverseTotalLevel = 0x7F - totalLevel;
+    u8 inverseNewTotalLevel = (u16)inverseTotalLevel * (u16)logarithmicVolume / (u16)0x7F;
+    return 0x7F - inverseNewTotalLevel;
 }
