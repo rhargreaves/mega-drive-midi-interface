@@ -453,7 +453,7 @@ static void test_synth_applies_volume_modifier_to_output_operators_algorithms_0_
     {
         for(u8 algorithm = 0; algorithm < 4; algorithm++)
         {
-            print_message("Algorithm %d", algorithm);
+            print_message("Chan %d Algorithm %d\n", chan, algorithm);
             expect_ym2612_write_channel(chan, algorithmReg, algorithm);
             __real_synth_algorithm(chan, algorithm);
 
@@ -476,7 +476,7 @@ static void test_synth_applies_volume_modifier_to_output_operators_algorithm_4(
 
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++)
     {
-        print_message("Algorithm %d", algorithm);
+        print_message("Chan %d Algorithm %d\n", chan, algorithm);
         expect_ym2612_write_channel(chan, algorithmReg, algorithm);
         __real_synth_algorithm(chan, algorithm);
 
@@ -485,5 +485,29 @@ static void test_synth_applies_volume_modifier_to_output_operators_algorithm_4(
         expect_ym2612_write_operator(chan, 2, totalLevelReg, 0x29);
         expect_ym2612_write_operator(chan, 3, totalLevelReg, 0x28);
         __real_synth_volume(chan, loudestVolume / 4);
+    }
+}
+
+static void test_synth_applies_volume_modifier_to_output_operators_algorithms_5_and_6(
+    UNUSED void** state)
+{
+    const u8 totalLevelReg = 0x40;
+    const u8 algorithmReg = 0xB0;
+    const u8 loudestVolume = 0x7F;
+
+    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++)
+    {
+        for(u8 algorithm = 5; algorithm < 7; algorithm++)
+        {
+            print_message("Chan %d Algorithm %d\n", chan, algorithm);
+            expect_ym2612_write_channel(chan, algorithmReg, algorithm);
+            __real_synth_algorithm(chan, algorithm);
+
+            expect_ym2612_write_operator(chan, 0, totalLevelReg, 0x27);
+            expect_ym2612_write_operator(chan, 1, totalLevelReg, 0x40);
+            expect_ym2612_write_operator(chan, 2, totalLevelReg, 0x29);
+            expect_ym2612_write_operator(chan, 3, totalLevelReg, 0x28);
+            __real_synth_volume(chan, loudestVolume / 4);
+        }
     }
 }
