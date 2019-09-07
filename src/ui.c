@@ -3,8 +3,10 @@
 #include "interface.h"
 #include "midi.h"
 #include "psg_chip.h"
+#ifdef SONIC_RUNNER
 #include "sonic.h"
 #include "sprite.h"
+#endif
 #include "synth.h"
 #include <genesis.h>
 
@@ -54,7 +56,9 @@ static u16 loadPercentSum = 0;
 
 void ui_init(void)
 {
+#ifdef SONIC_RUNNER
     sonic_init(&sonic_sprite);
+#endif
     printHeader();
     printChannels();
     printLoad();
@@ -63,8 +67,9 @@ void ui_init(void)
 
 void ui_vsync(void)
 {
+#ifdef SONIC_RUNNER
     sonic_vsync();
-
+#endif
     static u8 activityFrame = 0;
     if (++activityFrame == FRAMES_BEFORE_UPDATE_ACTIVITY) {
         printActivity();
