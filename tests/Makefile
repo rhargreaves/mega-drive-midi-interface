@@ -27,7 +27,6 @@ MOCKS=midi_process \
 	synth_noteOn \
 	synth_noteOff \
 	synth_pitch \
-	synth_totalLevel \
 	synth_stereo \
 	synth_algorithm \
 	synth_feedback \

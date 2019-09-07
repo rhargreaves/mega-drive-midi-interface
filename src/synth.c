@@ -102,33 +102,6 @@ void synth_pitch(u8 channel, u8 octave, u16 freqNumber)
     updateOctaveAndFrequency(channel);
 }
 
-void synth_totalLevel(u8 channel, u8 totalLevel)
-{
-    const u8 REG_TOTAL_LEVEL = 0x40;
-    Channel* chan = getChannel(channel);
-    switch (chan->algorithm) {
-    case 7:
-        writeOperatorReg(channel, 0, REG_TOTAL_LEVEL, totalLevel);
-        writeOperatorReg(channel, 1, REG_TOTAL_LEVEL, totalLevel);
-        writeOperatorReg(channel, 2, REG_TOTAL_LEVEL, totalLevel);
-        writeOperatorReg(channel, 3, REG_TOTAL_LEVEL, totalLevel);
-        break;
-    case 6:
-    case 5:
-        writeOperatorReg(channel, 1, REG_TOTAL_LEVEL, totalLevel);
-        writeOperatorReg(channel, 2, REG_TOTAL_LEVEL, totalLevel);
-        writeOperatorReg(channel, 3, REG_TOTAL_LEVEL, totalLevel);
-        break;
-    case 4:
-        writeOperatorReg(channel, 2, REG_TOTAL_LEVEL, totalLevel);
-        writeOperatorReg(channel, 3, REG_TOTAL_LEVEL, totalLevel);
-        break;
-    default:
-        writeOperatorReg(channel, 3, REG_TOTAL_LEVEL, totalLevel);
-        break;
-    }
-}
-
 void synth_volume(u8 channel, u8 volume)
 {
     volumes[channel] = volume;
