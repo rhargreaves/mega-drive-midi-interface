@@ -755,3 +755,11 @@ static void test_midi_sysex_sends_all_notes_off(UNUSED void** state)
     __real_midi_sysex(
         sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
 }
+
+static void test_midi_sysex_ignores_unknown_sysex(UNUSED void** state)
+{
+    u8 sysExGeneralMidiResetSequence[] = { 0x12 };
+
+   __real_midi_sysex(
+        sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
+}

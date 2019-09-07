@@ -89,6 +89,7 @@ int main(void)
         midi_test(test_midi_increments_clocks),
         midi_test(test_midi_sets_fm_preset),
         midi_test(test_midi_sysex_sends_all_notes_off),
+        midi_test(test_midi_sysex_ignores_unknown_sysex),
 
         synth_test(test_synth_init_sets_initial_registers),
         synth_test(test_synth_sets_note_on_fm_reg_chan_0_to_2),
@@ -112,11 +113,16 @@ int main(void)
         synth_test(test_synth_sets_global_LFO_enable_and_frequency),
         synth_test(test_synth_sets_busy_indicators),
         synth_test(test_synth_sets_preset),
-        synth_test(test_synth_applies_volume_modifier_to_output_operators_algorithm_7),
-        synth_test(test_synth_applies_volume_modifier_to_output_operators_algorithm_7_quieter),
-        synth_test(test_synth_applies_volume_modifier_to_output_operators_algorithms_0_to_3),
-        synth_test(test_synth_applies_volume_modifier_to_output_operators_algorithm_4),
-        synth_test(test_synth_applies_volume_modifier_to_output_operators_algorithms_5_and_6),
+        synth_test(
+            test_synth_applies_volume_modifier_to_output_operators_algorithm_7),
+        synth_test(
+            test_synth_applies_volume_modifier_to_output_operators_algorithm_7_quieter),
+        synth_test(
+            test_synth_applies_volume_modifier_to_output_operators_algorithms_0_to_3),
+        synth_test(
+            test_synth_applies_volume_modifier_to_output_operators_algorithm_4),
+        synth_test(
+            test_synth_applies_volume_modifier_to_output_operators_algorithms_5_and_6),
 
         cmocka_unit_test(test_psg_chip_sets_attenuation),
         cmocka_unit_test(test_psg_chip_sets_frequency),

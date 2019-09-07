@@ -1,4 +1,5 @@
 #include "midi.h"
+#include "memcmp.h"
 #include "memory.h"
 #include "midi_fm.h"
 #include "midi_nop.h"
@@ -46,6 +47,7 @@ static void channelVolume(u8 chan, u8 volume);
 static void pan(u8 chan, u8 pan);
 static void setPolyphonic(bool state);
 static void cc(u8 chan, u8 controller, u8 value);
+static void generalMidiReset(void);
 
 void midi_reset(void)
 {
@@ -313,10 +315,18 @@ Timing* midi_timing(void)
     return &timing;
 }
 
-void midi_sysex(u8 *data, u16 length)
+void midi_sysex(u8* data, u16 length)
 {
-    for(u8 chan = 0; chan < MIDI_CHANNELS; chan++)
-    {
+    const u8 GENERAL_MIDI_RESET_SEQUENCE[] = { 0x7E, 0x7F, 0x09, 0x01 };
+
+    if (memcmp(GENERAL_MIDI_RESET_SEQUENCE, data, length) == 0) {
+        generalMidiReset();
+    }
+}
+
+static void generalMidiReset(void)
+{
+    for (u8 chan = 0; chan < MIDI_CHANNELS; chan++) {
         allNotesOff(chan);
     }
 }
