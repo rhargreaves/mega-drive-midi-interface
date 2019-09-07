@@ -18,6 +18,7 @@ extern void __real_midi_start(void);
 extern void __real_midi_position(u16 beat);
 extern void __real_midi_program(u8 chan, u8 program);
 extern Timing* __real_midi_timing(void);
+extern void __real_midi_sysex(u8* data, u16 length);
 
 static const u16 A_SHARP = 94;
 static const u16 B = 95;
@@ -730,4 +731,27 @@ static void test_midi_sets_fm_preset(UNUSED void** state)
     expect_value(__wrap_synth_preset, preset, program);
 
     __real_midi_program(chan, program);
+}
+
+static void test_midi_sysex_sends_all_notes_off(UNUSED void** state)
+{
+    u8 sysExGeneralMidiResetSequence[] = { 0x7E, 0x7F, 0x09, 0x01 };
+
+    expect_value(__wrap_synth_noteOff, channel, 0);
+    expect_value(__wrap_synth_noteOff, channel, 1);
+    expect_value(__wrap_synth_noteOff, channel, 2);
+    expect_value(__wrap_synth_noteOff, channel, 3);
+    expect_value(__wrap_synth_noteOff, channel, 4);
+    expect_value(__wrap_synth_noteOff, channel, 5);
+    expect_value(__wrap_psg_attenuation, channel, 0);
+    expect_value(__wrap_psg_attenuation, attenuation, PSG_ATTENUATION_SILENCE);
+    expect_value(__wrap_psg_attenuation, channel, 1);
+    expect_value(__wrap_psg_attenuation, attenuation, PSG_ATTENUATION_SILENCE);
+    expect_value(__wrap_psg_attenuation, channel, 2);
+    expect_value(__wrap_psg_attenuation, attenuation, PSG_ATTENUATION_SILENCE);
+    expect_value(__wrap_psg_attenuation, channel, 3);
+    expect_value(__wrap_psg_attenuation, attenuation, PSG_ATTENUATION_SILENCE);
+
+    __real_midi_sysex(
+        sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
 }

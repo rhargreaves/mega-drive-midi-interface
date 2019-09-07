@@ -88,6 +88,7 @@ int main(void)
         midi_test(test_midi_timing_sets_bar_number),
         midi_test(test_midi_increments_clocks),
         midi_test(test_midi_sets_fm_preset),
+        midi_test(test_midi_sysex_sends_all_notes_off),
 
         synth_test(test_synth_init_sets_initial_registers),
         synth_test(test_synth_sets_note_on_fm_reg_chan_0_to_2),
