@@ -122,6 +122,23 @@ The full list of presets available are defined in
 | 0xFB   | Continue              | None                   |
 | 0xFC   | Stop                  | None                   |
 
+## Algorithm Operator Arrangement (CC 14)
+
+Output operators (or "slots") are coloured blue.
+
+_Note: Documentation on the YM2612 frequently muddles the second and third operators of algorithms 0 to 4 and 6._
+
+| Algorithm | Operator Arrangement                |
+| --------- | ----------------------------------- |
+| 0         | <img src="docs/algorithms/0.svg" /> |
+| 1         | <img src="docs/algorithms/1.svg" /> |
+| 2         | <img src="docs/algorithms/2.svg" /> |
+| 3         | <img src="docs/algorithms/3.svg" /> |
+| 4         | <img src="docs/algorithms/4.svg" /> |
+| 5         | <img src="docs/algorithms/5.svg" /> |
+| 6         | <img src="docs/algorithms/6.svg" /> |
+| 7         | <img src="docs/algorithms/7.svg" /> |
+
 ## Build & Test
 
 Unit & system tests are compiled and ran as x86 binaries using CMocka. Mega Drive interfaces are mocked.
