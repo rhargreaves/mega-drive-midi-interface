@@ -124,7 +124,7 @@ The full list of presets available are defined in
 
 ## Algorithm Operator Arrangement (CC 14)
 
-Output operators (or "slots") are coloured blue.
+Output operators are coloured blue. Operator 1 can also feedback into itself (see CC 15).
 
 _Note: Documentation on the YM2612 frequently muddles the second and third operators of algorithms 0 to 4 and 6._
 
