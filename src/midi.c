@@ -312,3 +312,11 @@ Timing* midi_timing(void)
 {
     return &timing;
 }
+
+void midi_sysex(u8 *data, u16 length)
+{
+    for(u8 chan = 0; chan < MIDI_CHANNELS; chan++)
+    {
+        allNotesOff(chan);
+    }
+}

@@ -12,13 +12,14 @@
 
 #define STATUS_CC 0xB0
 #define STATUS_PITCH_BEND 0xE0
-#define STATUS_SYSTEM 0xF0
 #define STATUS_CLOCK 0xF8
 #define STATUS_STOP 0xFC
 #define STATUS_START 0xFA
 #define STATUS_CONTINUE 0xFB
 #define STATUS_SONG_POSITION 0xF2
 #define STATUS_PROGRAM 0xC0
+#define STATUS_SYSEX_START 0xF0
+#define SYSEX_END 0xF7
 
 static void test_interface_tick_passes_note_on_to_midi_processor(
     UNUSED void** state)
@@ -206,6 +207,22 @@ static void test_interface_sets_midi_program(UNUSED void** state)
 
     expect_value(__wrap_midi_program, chan, 0);
     expect_value(__wrap_midi_program, program, program);
+
+    interface_tick();
+}
+
+
+static void test_interface_sends_sysex_to_midi_layer(UNUSED void** state)
+{
+    const u8 command = 0x12;
+    will_return(__wrap_comm_read, STATUS_SYSEX_START);
+    will_return(__wrap_comm_read, command);
+    will_return(__wrap_comm_read, SYSEX_END);
+
+    u8 data[1] = { command };
+
+    expect_memory(__wrap_midi_sysex, data, &data, 1);
+    expect_value(__wrap_midi_sysex, length, 1);
 
     interface_tick();
 }

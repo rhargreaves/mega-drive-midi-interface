@@ -19,6 +19,7 @@
 #define SYSTEM_STOP 0xC
 #define SYSTEM_CONTINUE 0xB
 #define SYSTEM_SONG_POSITION 0x2
+#define SYSTEM_SYSEX 0x0
 
 static u8 lastUnknownStatus = 0;
 
@@ -31,6 +32,7 @@ static void setUnknownStatus(u8 status);
 static void songPosition(void);
 static void program(u8 status);
 static u16 read_14bit_value(void);
+static void readSysEx(void);
 
 void interface_init(void)
 {
@@ -160,8 +162,27 @@ static void systemMessage(u8 status)
     case SYSTEM_CONTINUE:
     case SYSTEM_STOP:
         break;
+    case SYSTEM_SYSEX:
+        readSysEx();
+        break;
     default:
         setUnknownStatus(status);
         break;
     }
+}
+
+static void readSysEx(void)
+{
+    const u16 BUFFER_LENGTH = 256;
+    const u8 SYSEX_END = 0xF7;
+
+    u8 buffer[BUFFER_LENGTH];
+    u8 data;
+    u8 index = 0;
+    while((data = comm_read()) != SYSEX_END)
+    {
+        buffer[index] = data;
+        index++;
+    }
+    midi_sysex(buffer, index);
 }

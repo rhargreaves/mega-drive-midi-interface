@@ -122,3 +122,44 @@ test_psg_not_audible_if_midi_channel_volume_set_and_there_is_no_note_on_event(
 
     interface_tick();
 }
+
+static void test_general_midi_reset_sysex_stops_all_notes(void** state)
+{
+    print_message("Playing note\n");
+    const u8 noteOnStatus = 0x90;
+    const u8 noteOnKey = 48;
+    const u8 noteOnVelocity = 127;
+
+    stub_usb_receive_byte(noteOnStatus);
+    stub_usb_receive_byte(noteOnKey);
+    stub_usb_receive_byte(noteOnVelocity);
+
+    expect_ym2612_write_channel(0, 0xA4, 0x1A);
+    expect_ym2612_write_channel(0, 0xA0, 0x8D);
+    expect_ym2612_write_reg(0, 0x28, 0xF0);
+
+    interface_tick();
+
+    print_message("Sending reset\n");
+    const u8 sysExGeneralMidiResetSequence[]
+        = { 0xF0, 0x7E, 0x7F, 0x09, 0x01, 0xF7 };
+    for (int i = 0; i < sizeof(sysExGeneralMidiResetSequence); i++) {
+        stub_usb_receive_byte(sysExGeneralMidiResetSequence[i]);
+    }
+
+    expect_ym2612_write_reg(0, 0x28, 0x00);
+    expect_ym2612_write_reg(0, 0x28, 0x01);
+    expect_ym2612_write_reg(0, 0x28, 0x02);
+    expect_ym2612_write_reg(0, 0x28, 0x04);
+    expect_ym2612_write_reg(0, 0x28, 0x05);
+    expect_ym2612_write_reg(0, 0x28, 0x06);
+    expect_value(__wrap_PSG_setEnvelope, channel, 0);
+    expect_value(__wrap_PSG_setEnvelope, value, 0xF);
+    expect_value(__wrap_PSG_setEnvelope, channel, 1);
+    expect_value(__wrap_PSG_setEnvelope, value, 0xF);
+    expect_value(__wrap_PSG_setEnvelope, channel, 2);
+    expect_value(__wrap_PSG_setEnvelope, value, 0xF);
+    expect_value(__wrap_PSG_setEnvelope, channel, 3);
+    expect_value(__wrap_PSG_setEnvelope, value, 0xF);
+    interface_tick();
+}

@@ -61,7 +61,8 @@ MOCKS=midi_process \
 	midi_start \
 	midi_position \
 	midi_timing \
-	midi_program
+	midi_program \
+	midi_sysex
 
 MD_MOCKS=SYS_setVIntCallback \
 	VDP_setTextPalette \

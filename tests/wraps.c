@@ -257,6 +257,12 @@ Timing* __wrap_midi_timing(void)
     return mock_type(Timing*);
 }
 
+void __wrap_midi_sysex(u8 *data, u16 length)
+{
+    check_expected(data);
+    check_expected(length);
+}
+
 void __wrap_fm_writeReg(u16 part, u8 reg, u8 data)
 {
     check_expected(part);

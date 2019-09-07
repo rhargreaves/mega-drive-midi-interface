@@ -33,6 +33,7 @@ int main(void)
         cmocka_unit_test(test_interface_swallows_midi_continue),
         cmocka_unit_test(test_interface_sets_position),
         cmocka_unit_test(test_interface_sets_midi_program),
+        cmocka_unit_test(test_interface_sends_sysex_to_midi_layer),
 
         midi_test(test_midi_triggers_synth_note_on),
         midi_test(test_midi_triggers_synth_note_on_boundary_values),
