@@ -20,10 +20,9 @@ void __wrap_synth_globalLfoFrequency(u8 freq)
     check_expected(freq);
 }
 
-void __wrap_synth_noteOn(u8 channel, u8 velocity)
+void __wrap_synth_noteOn(u8 channel)
 {
     check_expected(channel);
-    check_expected(velocity);
 }
 
 void __wrap_synth_noteOff(u8 channel)
