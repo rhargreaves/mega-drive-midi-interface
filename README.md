@@ -125,7 +125,7 @@ The full list of presets available are defined in
 
 ## Algorithm Operator Arrangement (CC 14)
 
-Output operators are coloured blue. Operator 1 can also feedback into itself (see CC 15).
+Output operators are coloured blue. Operator 1 can also feedback into itself (see CC 15). Operators are numbered in the same order as the register placement (e.g. 0x30, 0x34, 0x38, 0x3C).
 
 _Note: Documentation on the YM2612 frequently muddles the second and third operators of algorithms 0 to 4 and 6._
 
