@@ -36,6 +36,7 @@ int main(void)
         cmocka_unit_test(test_interface_sends_sysex_to_midi_layer),
 
         midi_test(test_midi_triggers_synth_note_on),
+        midi_test(test_midi_triggers_synth_note_on_with_velocity),
         midi_test(test_midi_triggers_synth_note_on_boundary_values),
         midi_test(test_midi_does_not_trigger_synth_note_on_out_of_bound_values),
         midi_test(test_midi_triggers_synth_note_on_2),

@@ -22,6 +22,7 @@ void midi_fm_noteOn(u8 chan, u8 pitch, u8 velocity)
         return;
     }
     pitches[chan] = pitch;
+    synth_volume(chan, velocity);
     synth_pitch(chan, octave(pitch), freqNumber(pitch));
     synth_noteOn(chan);
 }
