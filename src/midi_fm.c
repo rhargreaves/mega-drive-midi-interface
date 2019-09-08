@@ -14,6 +14,7 @@ static const u16 FREQ_NUMBERS[] = {
 static u8 octave(u8 pitch);
 static u16 freqNumber(u8 pitch);
 static u8 pitchIsOutOfRange(u8 pitch);
+static u8 effectiveVolume(u8 channel, u8 velocity);
 
 static u8 pitches[MAX_FM_CHANS];
 static u8 volumes[MAX_FM_CHANS];
@@ -30,9 +31,8 @@ void midi_fm_noteOn(u8 chan, u8 pitch, u8 velocity)
     if (pitchIsOutOfRange(pitch)) {
         return;
     }
+    synth_volume(chan, effectiveVolume(chan, velocity));
     pitches[chan] = pitch;
-    u8 effectiveVolume = (volumes[chan] * velocity) / 0x7F;
-    synth_volume(chan, effectiveVolume);
     synth_pitch(chan, octave(pitch), freqNumber(pitch));
     synth_noteOn(chan);
 }
@@ -80,4 +80,9 @@ static u16 freqNumber(u8 pitch)
 static u8 pitchIsOutOfRange(u8 pitch)
 {
     return pitch < MIN_MIDI_PITCH || pitch > MAX_MIDI_PITCH;
+}
+
+static u8 effectiveVolume(u8 channel, u8 velocity)
+{
+    return (volumes[channel] * velocity) / 0x7F;
 }
