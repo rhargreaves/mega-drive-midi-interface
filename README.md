@@ -127,8 +127,6 @@ The full list of presets available are defined in
 
 Output operators are coloured blue. Operator 1 can also feedback into itself (see CC 15). Operators are numbered in the same order as the register placement (e.g. 0x30, 0x34, 0x38, 0x3C).
 
-_Note: Documentation on the YM2612 frequently muddles the second and third operators of algorithms 0 to 4 and 6._
-
 | Algorithm | Operator Arrangement                |
 | --------- | ----------------------------------- |
 | 0         | <img src="docs/algorithms/0.svg" /> |
@@ -139,6 +137,8 @@ _Note: Documentation on the YM2612 frequently muddles the second and third opera
 | 5         | <img src="docs/algorithms/5.svg" /> |
 | 6         | <img src="docs/algorithms/6.svg" /> |
 | 7         | <img src="docs/algorithms/7.svg" /> |
+
+_Note: Documentation on the YM2612 frequently muddles the second and third operators of algorithms 0 to 4 and 6. This is likely due to the original SEGA documentation incorrectly labelling the operator register addresses in sequential order, rather than 1st, 3rd, 2nd, 4th. That said, it seems to be generally common to keep the sequential order of the register addresses and simply correct the layout diagrams. This project favours this approach._
 
 ## System Exclusive
 
