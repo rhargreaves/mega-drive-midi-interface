@@ -3,6 +3,7 @@
 
 #define MAX_FM_CHAN 5
 
+void midi_fm_init(void);
 void midi_fm_noteOn(u8 chan, u8 pitch, u8 velocity);
 void midi_fm_noteOff(u8 chan, u8 pitch);
 void midi_fm_channelVolume(u8 chan, u8 volume);

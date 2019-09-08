@@ -4,8 +4,10 @@
 #include <stdbool.h>
 #include <types.h>
 
+#define MAX_MIDI_VOLUME 127
 #define MAX_MIDI_CHANS 9
 #define MIDI_CHANNELS 16
+
 #define CC_VOLUME 7
 #define CC_PAN 10
 #define CC_GENMDM_FM_ALGORITHM 14
@@ -91,4 +93,4 @@ void midi_start(void);
 void midi_position(u16 beat);
 void midi_program(u8 chan, u8 program);
 Timing* midi_timing(void);
-void midi_sysex(u8 *data, u16 length);
+void midi_sysex(u8* data, u16 length);

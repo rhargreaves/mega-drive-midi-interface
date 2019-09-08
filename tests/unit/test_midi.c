@@ -28,6 +28,7 @@ static int test_midi_setup(UNUSED void** state)
 {
     midi_reset();
     midi_psg_init();
+    midi_fm_init();
 
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         expect_any(__wrap_synth_pitch, channel);
@@ -64,6 +65,27 @@ static void test_midi_triggers_synth_note_on_with_velocity(UNUSED void** state)
         expect_value(__wrap_synth_noteOn, channel, chan);
 
         __real_midi_noteOn(chan, 60, 63);
+    }
+}
+
+static void test_midi_triggers_synth_note_on_with_velocity_and_channel_volume(
+    UNUSED void** state)
+{
+    for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
+
+        expect_value(__wrap_synth_volume, channel, chan);
+        expect_value(__wrap_synth_volume, volume, MAX_MIDI_VOLUME / 2);
+
+        __real_midi_cc(chan, CC_VOLUME, MAX_MIDI_VOLUME / 2);
+
+        expect_value(__wrap_synth_pitch, channel, chan);
+        expect_value(__wrap_synth_pitch, octave, 4);
+        expect_value(__wrap_synth_pitch, freqNumber, 653);
+        expect_value(__wrap_synth_volume, channel, chan);
+        expect_value(__wrap_synth_volume, volume, MAX_MIDI_VOLUME / 4);
+        expect_value(__wrap_synth_noteOn, channel, chan);
+
+        __real_midi_noteOn(chan, 60, MAX_MIDI_VOLUME / 2);
     }
 }
 

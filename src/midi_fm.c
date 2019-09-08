@@ -1,4 +1,5 @@
 #include "midi_fm.h"
+#include "midi.h"
 #include "synth.h"
 
 static const u8 MIN_MIDI_PITCH = 11;
@@ -15,6 +16,14 @@ static u16 freqNumber(u8 pitch);
 static u8 pitch_is_out_of_range(u8 pitch);
 
 static u8 pitches[MAX_FM_CHANS];
+static u8 volumes[MAX_FM_CHANS];
+
+void midi_fm_init(void)
+{
+    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
+        volumes[chan] = MAX_MIDI_VOLUME;
+    }
+}
 
 void midi_fm_noteOn(u8 chan, u8 pitch, u8 velocity)
 {
@@ -22,7 +31,8 @@ void midi_fm_noteOn(u8 chan, u8 pitch, u8 velocity)
         return;
     }
     pitches[chan] = pitch;
-    synth_volume(chan, velocity);
+    u8 effectiveVolume = (volumes[chan] * velocity) / 0x7F;
+    synth_volume(chan, effectiveVolume);
     synth_pitch(chan, octave(pitch), freqNumber(pitch));
     synth_noteOn(chan);
 }
@@ -34,6 +44,7 @@ void midi_fm_noteOff(u8 chan, u8 pitch)
 
 void midi_fm_channelVolume(u8 chan, u8 volume)
 {
+    volumes[chan] = volume;
     synth_volume(chan, volume);
 }
 
