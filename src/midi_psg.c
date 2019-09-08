@@ -1,4 +1,5 @@
 #include "midi_psg.h"
+#include "midi.h"
 #include "psg_chip.h"
 #include <stdbool.h>
 
@@ -27,6 +28,7 @@ struct PsgChannelState {
     u8 key;
     u8 attenuation;
     bool noteOn;
+    u8 volume;
 };
 
 static PsgChannelState channelState[MAX_PSG_CHANS];
@@ -40,7 +42,7 @@ void midi_psg_init(void)
     for (u8 chan = 0; chan < MAX_PSG_CHANS; chan++) {
         PsgChannelState* state = getChannelState(chan);
         state->noteOn = false;
-        state->attenuation = PSG_ATTENUATION_LOUDEST;
+        state->volume = MAX_MIDI_VOLUME;
     }
 }
 
@@ -52,7 +54,7 @@ void midi_psg_noteOn(u8 chan, u8 key, u8 velocity)
     u8 psgChan = psgChannel(chan);
     PsgChannelState* state = getChannelState(psgChan);
     psg_frequency(psgChan, freqForMidiKey(key));
-    psg_attenuation(psgChan, state->attenuation);
+    psg_attenuation(psgChan, ATTENUATIONS[(state->volume * velocity) / 0x7F]);
     state->key = key;
     state->noteOn = true;
 }
@@ -78,9 +80,9 @@ void midi_psg_channelVolume(u8 chan, u8 volume)
 {
     u8 psgChan = psgChannel(chan);
     PsgChannelState* state = getChannelState(psgChan);
-    state->attenuation = ATTENUATIONS[volume];
+    state->volume = volume;
     if (state->noteOn) {
-        psg_attenuation(psgChan, state->attenuation);
+        psg_attenuation(psgChan, ATTENUATIONS[state->volume]);
     }
 }
 

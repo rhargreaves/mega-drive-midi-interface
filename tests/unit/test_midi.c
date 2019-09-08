@@ -166,6 +166,19 @@ static void test_midi_triggers_psg_note_on(UNUSED void** state)
     }
 }
 
+static void test_midi_triggers_psg_note_on_with_velocity(UNUSED void** state)
+{
+    u8 chan = MIN_PSG_CHAN;
+    u8 expectedPsgChan = chan - MIN_PSG_CHAN;
+
+    expect_any(__wrap_psg_frequency, channel);
+    expect_any(__wrap_psg_frequency, freq);
+    expect_value(__wrap_psg_attenuation, channel, expectedPsgChan);
+    expect_value(__wrap_psg_attenuation, attenuation, 0x3);
+
+    __real_midi_noteOn(chan, 60, MAX_MIDI_VOLUME / 2);
+}
+
 static void test_midi_triggers_psg_note_off(UNUSED void** state)
 {
     for (u8 chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN; chan++) {
