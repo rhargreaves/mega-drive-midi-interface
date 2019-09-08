@@ -128,8 +128,8 @@ $(ASSEMBLY_OUT):
 %.s: %.rawpcm
 	$(BINTOS) -align 128 -sizealign 128 -nullfill 136 $<
 
-%.s: %.res
-	$(RESCOMP) $< $@
+# %.s: %.res
+# 	$(RESCOMP) $< $@
 
 boot/rom_head.bin: boot/rom_head.o
 	$(LD) $(LINKFLAGS) --oformat binary -o $@ $<
