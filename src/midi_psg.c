@@ -38,10 +38,7 @@ static PsgChannelState* getChannelState(u8 psgChan);
 
 void midi_psg_init(void)
 {
-    for(u8 chan = 0; chan < MAX_PSG_CHANS; chan++)
-    {
-        channelState[chan].attenuation = PSG_ATTENUATION_LOUDEST;
-    }
+    midi_psg_reset();
 }
 
 void midi_psg_noteOn(u8 chan, u8 key, u8 velocity)
@@ -51,9 +48,9 @@ void midi_psg_noteOn(u8 chan, u8 key, u8 velocity)
     }
     u8 psgChan = psgChannel(chan);
     PsgChannelState *state = getChannelState(psgChan);
-    state->key = key;
     psg_frequency(psgChan, freqForMidiKey(key));
     psg_attenuation(psgChan, state->attenuation);
+    state->key = key;
     state->noteOn = true;
 }
 
