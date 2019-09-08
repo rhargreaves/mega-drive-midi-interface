@@ -45,6 +45,8 @@ int main(void)
         midi_test(test_midi_triggers_synth_note_off),
         midi_test(test_midi_triggers_psg_note_on),
         midi_test(test_midi_triggers_psg_note_on_with_velocity),
+        midi_test(
+            test_midi_triggers_psg_note_on_with_velocity_and_channel_volume),
         midi_test(test_midi_triggers_psg_note_off),
         midi_test(test_midi_drops_psg_key_below_45),
         midi_test(test_midi_psg_note_off_only_triggered_if_specific_note_is_on),
