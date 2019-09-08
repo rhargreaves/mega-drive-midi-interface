@@ -37,6 +37,9 @@ static u8 psgChannel(u8 midiChannel)
 
 void midi_psg_noteOn(u8 chan, u8 pitch, u8 velocity)
 {
+    if(pitch < 45) {
+        return;
+    }
     u8 psgChan = psgChannel(chan);
     pitches[psgChan] = pitch;
     psg_frequency(psgChan, FREQUENCIES[pitch]);
