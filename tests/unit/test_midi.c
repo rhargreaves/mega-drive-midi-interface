@@ -128,11 +128,21 @@ static void test_midi_triggers_psg_note_off(UNUSED void** state)
 {
     for (u8 chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN; chan++) {
         u8 expectedPsgChan = chan - MIN_PSG_CHAN;
+        u8 midiKey = 60;
+
+        expect_any(__wrap_psg_frequency, channel);
+        expect_any(__wrap_psg_frequency, freq);
+        expect_value(__wrap_psg_attenuation, channel, expectedPsgChan);
+        expect_value(
+            __wrap_psg_attenuation, attenuation, PSG_ATTENUATION_LOUDEST);
+
+        __real_midi_noteOn(chan, midiKey, 127);
+
         expect_value(__wrap_psg_attenuation, channel, expectedPsgChan);
         expect_value(
             __wrap_psg_attenuation, attenuation, PSG_ATTENUATION_SILENCE);
 
-        __real_midi_noteOff(chan, 0);
+        __real_midi_noteOff(chan, midiKey);
     }
 }
 
@@ -149,16 +159,48 @@ static void
 test_midi_triggers_psg_note_off_and_volume_change_does_not_cause_psg_channel_to_play(
     UNUSED void** state)
 {
+    u8 midiKey = 60;
     for (u8 chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN; chan++) {
         u8 expectedPsgChan = chan - MIN_PSG_CHAN;
+
+        expect_any(__wrap_psg_frequency, channel);
+        expect_any(__wrap_psg_frequency, freq);
+        expect_value(__wrap_psg_attenuation, channel, expectedPsgChan);
+        expect_value(
+            __wrap_psg_attenuation, attenuation, PSG_ATTENUATION_LOUDEST);
+
+        __real_midi_noteOn(chan, midiKey, 127);
+
         expect_value(__wrap_psg_attenuation, channel, expectedPsgChan);
         expect_value(
             __wrap_psg_attenuation, attenuation, PSG_ATTENUATION_SILENCE);
 
-        __real_midi_noteOff(chan, 0);
+        __real_midi_noteOff(chan, midiKey);
 
         __real_midi_cc(MIN_PSG_CHAN, CC_VOLUME, 96);
     }
+}
+
+static void test_midi_psg_note_off_only_triggered_if_specific_note_is_on(
+    UNUSED void** state)
+{
+    u8 chan = MIN_PSG_CHAN;
+
+    expect_value(__wrap_psg_attenuation, channel, 0);
+    expect_value(__wrap_psg_attenuation, attenuation, PSG_ATTENUATION_LOUDEST);
+    expect_value(__wrap_psg_frequency, channel, 0);
+    expect_value(__wrap_psg_frequency, freq, 0x106);
+
+    __real_midi_noteOn(chan, 60, 127);
+
+    expect_value(__wrap_psg_attenuation, channel, 0);
+    expect_value(__wrap_psg_attenuation, attenuation, PSG_ATTENUATION_LOUDEST);
+    expect_value(__wrap_psg_frequency, channel, 0);
+    expect_value(__wrap_psg_frequency, freq, 0x115);
+
+    __real_midi_noteOn(chan, 61, 127);
+
+    __real_midi_noteOff(chan, 60);
 }
 
 static void test_midi_channel_volume_sets_volume(UNUSED void** state)
@@ -747,6 +789,15 @@ static void test_midi_sysex_sends_all_notes_off(UNUSED void** state)
 {
     u8 sysExGeneralMidiResetSequence[] = { 0x7E, 0x7F, 0x09, 0x01 };
 
+    for (u8 chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN; chan++) {
+        expect_any(__wrap_psg_frequency, channel);
+        expect_any(__wrap_psg_frequency, freq);
+        expect_any(__wrap_psg_attenuation, channel);
+        expect_any(__wrap_psg_attenuation, attenuation);
+
+        __real_midi_noteOn(chan, 60, 127);
+    }
+
     expect_value(__wrap_synth_noteOff, channel, 0);
     expect_value(__wrap_synth_noteOff, channel, 1);
     expect_value(__wrap_synth_noteOff, channel, 2);
@@ -770,6 +821,6 @@ static void test_midi_sysex_ignores_unknown_sysex(UNUSED void** state)
 {
     u8 sysExGeneralMidiResetSequence[] = { 0x12 };
 
-   __real_midi_sysex(
+    __real_midi_sysex(
         sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
 }

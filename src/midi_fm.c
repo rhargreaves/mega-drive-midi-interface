@@ -50,6 +50,11 @@ void midi_fm_program(u8 chan, u8 program)
     synth_preset(chan, program);
 }
 
+void midi_fm_allNotesOff(u8 chan)
+{
+    midi_fm_noteOff(chan, 0);
+}
+
 static u8 octave(u8 pitch)
 {
     return (pitch - MIN_MIDI_PITCH) / SEMITONES;

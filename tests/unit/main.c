@@ -43,6 +43,7 @@ int main(void)
         midi_test(test_midi_triggers_psg_note_on),
         midi_test(test_midi_triggers_psg_note_off),
         midi_test(test_midi_drops_psg_key_below_45),
+        midi_test(test_midi_psg_note_off_only_triggered_if_specific_note_is_on),
         midi_test(
             test_midi_triggers_psg_note_off_and_volume_change_does_not_cause_psg_channel_to_play),
         midi_test(test_midi_channel_volume_sets_volume),
