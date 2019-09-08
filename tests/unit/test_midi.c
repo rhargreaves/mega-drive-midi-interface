@@ -3,6 +3,7 @@
 #include <stddef.h>
 
 #include "midi.h"
+#include "midi_psg.h"
 #include "psg_chip.h"
 #include "synth.h"
 #include "unused.h"
@@ -26,7 +27,7 @@ static const u16 B = 95;
 static int test_midi_setup(UNUSED void** state)
 {
     midi_reset();
-    midi_psg_reset();
+    midi_psg_init();
 
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         expect_any(__wrap_synth_pitch, channel);

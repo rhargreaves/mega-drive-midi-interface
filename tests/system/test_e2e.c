@@ -6,6 +6,7 @@
 #include "comm.h"
 #include "interface.h"
 #include "midi.h"
+#include "midi_psg.h"
 #include "wraps.h"
 #include <cmocka.h>
 
@@ -13,7 +14,7 @@ static int test_e2e_setup(void** state)
 {
     comm_resetCounts();
     midi_reset();
-    midi_psg_reset();
+    midi_psg_init();
     return 0;
 }
 
