@@ -34,6 +34,8 @@ You can download pre-built ROMs from [releases](https://github.com/rhargreaves/m
 | 1 - 6    | YM2612 FM Synthesis  |
 | 7 - 9    | PSG Square Wave Tone |
 | 10       | PSG Noise            |
+| 11 - 13    | As 7 - 9   |
+| 15 - 16    | As 7 - 9   |
 
 ## Supported Events
 

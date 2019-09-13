@@ -335,9 +335,14 @@ static void test_midi_pan_sets_synth_stereo_mode_centre(UNUSED void** state)
     __real_midi_cc(0, CC_PAN, 95);
 }
 
-static void test_midi_ignores_channels_above_10(UNUSED void** state)
+static void test_midi_directs_channels_above_10_to_psg(UNUSED void** state)
 {
     for (int chan = 11; chan < 16; chan++) {
+        expect_any(__wrap_psg_frequency, channel);
+        expect_any(__wrap_psg_frequency, freq);
+        expect_any(__wrap_psg_attenuation, channel);
+        expect_any(__wrap_psg_attenuation, attenuation);
+
         __real_midi_noteOn(chan, 60, 127);
     }
 }

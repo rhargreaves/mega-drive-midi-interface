@@ -59,7 +59,7 @@ void midi_psg_noteOn(u8 chan, u8 key, u8 velocity)
 void midi_psg_noteOff(u8 chan, u8 pitch)
 {
     PsgChannelState* state = getChannelState(chan);
-    if (state->key == pitch) {
+    if (state->noteOn && state->key == pitch) {
         psg_attenuation(chan, PSG_ATTENUATION_SILENCE);
         state->noteOn = false;
     }

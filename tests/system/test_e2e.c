@@ -154,6 +154,17 @@ static void test_general_midi_reset_sysex_stops_all_notes(void** state)
 
     interface_tick();
 
+    stub_usb_receive_byte(noteOnStatus + MIN_PSG_CHAN);
+    stub_usb_receive_byte(noteOnKey);
+    stub_usb_receive_byte(noteOnVelocity);
+
+    expect_value(__wrap_PSG_setFrequency, channel, 0);
+    expect_any(__wrap_PSG_setFrequency, value);
+    expect_value(__wrap_PSG_setEnvelope, channel, 0);
+    expect_value(__wrap_PSG_setEnvelope, value, 0);
+
+    interface_tick();
+
     print_message("Sending reset\n");
     const u8 sysExGeneralMidiResetSequence[]
         = { 0xF0, 0x7E, 0x7F, 0x09, 0x01, 0xF7 };
@@ -168,12 +179,6 @@ static void test_general_midi_reset_sysex_stops_all_notes(void** state)
     expect_ym2612_write_reg(0, 0x28, 0x05);
     expect_ym2612_write_reg(0, 0x28, 0x06);
     expect_value(__wrap_PSG_setEnvelope, channel, 0);
-    expect_value(__wrap_PSG_setEnvelope, value, 0xF);
-    expect_value(__wrap_PSG_setEnvelope, channel, 1);
-    expect_value(__wrap_PSG_setEnvelope, value, 0xF);
-    expect_value(__wrap_PSG_setEnvelope, channel, 2);
-    expect_value(__wrap_PSG_setEnvelope, value, 0xF);
-    expect_value(__wrap_PSG_setEnvelope, channel, 3);
     expect_value(__wrap_PSG_setEnvelope, value, 0xF);
     interface_tick();
 }

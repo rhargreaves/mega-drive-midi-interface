@@ -37,17 +37,13 @@ static const VTable FM_VTable
     = { midi_fm_noteOn, midi_fm_noteOff, midi_fm_channelVolume,
           midi_fm_pitchBend, midi_fm_program, midi_fm_allNotesOff };
 
-static const VTable NOP_VTable
-    = { midi_nop_noteOn, midi_nop_noteOff, midi_nop_channelVolume,
-          midi_nop_pitchBend, midi_nop_program, midi_nop_allNotesOff };
-
 static ChannelMapping ChannelMappings[MIDI_CHANNELS] = {
     { &FM_VTable, 0 }, { &FM_VTable, 1 }, { &FM_VTable, 2 }, { &FM_VTable, 3 },
     { &FM_VTable, 4 }, { &FM_VTable, 5 }, { &PSG_VTable, 0 },
     { &PSG_VTable, 1 }, { &PSG_VTable, 2 }, { &PSG_VTable, 3 },
-    { &NOP_VTable, CHANNEL_UNASSIGNED }, { &NOP_VTable, CHANNEL_UNASSIGNED },
-    { &NOP_VTable, CHANNEL_UNASSIGNED }, { &NOP_VTable, CHANNEL_UNASSIGNED },
-    { &NOP_VTable, CHANNEL_UNASSIGNED }, { &NOP_VTable, CHANNEL_UNASSIGNED }
+    { &PSG_VTable, 0 },
+    { &PSG_VTable, 1 }, { &PSG_VTable, 2 }, { &PSG_VTable, 0 },
+    { &PSG_VTable, 1 }, { &PSG_VTable, 2 }
 };
 
 static u8 polyphonicPitches[MAX_FM_CHANS];
