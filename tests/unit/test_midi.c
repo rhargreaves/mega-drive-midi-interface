@@ -202,19 +202,38 @@ static void test_midi_triggers_psg_note_on_with_velocity(UNUSED void** state)
 }
 
 static void test_midi_triggers_psg_note_on_with_velocity_and_channel_volume(
+     UNUSED void** state)
+ {
+     u8 chan = MIN_PSG_CHAN;
+     u8 expectedPsgChan = chan - MIN_PSG_CHAN;
+
+    __real_midi_cc(chan, CC_VOLUME, MAX_MIDI_VOLUME / 2);
+
+     expect_any(__wrap_psg_frequency, channel);
+     expect_any(__wrap_psg_frequency, freq);
+     expect_value(__wrap_psg_attenuation, channel, expectedPsgChan);
+     expect_value(__wrap_psg_attenuation, attenuation, 0x7);
+
+     __real_midi_noteOn(chan, 60, MAX_MIDI_VOLUME / 2);
+ }
+
+static void test_midi_changing_volume_during_psg_note_on_respects_velocity(
     UNUSED void** state)
 {
     u8 chan = MIN_PSG_CHAN;
     u8 expectedPsgChan = chan - MIN_PSG_CHAN;
 
-    __real_midi_cc(chan, CC_VOLUME, MAX_MIDI_VOLUME / 2);
-
     expect_any(__wrap_psg_frequency, channel);
     expect_any(__wrap_psg_frequency, freq);
     expect_value(__wrap_psg_attenuation, channel, expectedPsgChan);
-    expect_value(__wrap_psg_attenuation, attenuation, 0x7);
+    expect_value(__wrap_psg_attenuation, attenuation, 0x3);
 
     __real_midi_noteOn(chan, 60, MAX_MIDI_VOLUME / 2);
+
+    expect_value(__wrap_psg_attenuation, channel, expectedPsgChan);
+    expect_value(__wrap_psg_attenuation, attenuation, 0x7);
+
+    __real_midi_cc(chan, CC_VOLUME, MAX_MIDI_VOLUME / 2);
 }
 
 static void test_midi_triggers_psg_note_off(UNUSED void** state)

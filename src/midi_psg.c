@@ -29,6 +29,7 @@ struct PsgChannelState {
     u8 attenuation;
     bool noteOn;
     u8 volume;
+    u8 velocity;
 };
 
 static PsgChannelState channelState[MAX_PSG_CHANS];
@@ -41,6 +42,7 @@ void midi_psg_init(void)
         PsgChannelState* state = getChannelState(chan);
         state->noteOn = false;
         state->volume = MAX_MIDI_VOLUME;
+        state->velocity = MAX_MIDI_VOLUME;
     }
 }
 
@@ -53,6 +55,7 @@ void midi_psg_noteOn(u8 chan, u8 key, u8 velocity)
     psg_frequency(chan, freqForMidiKey(key));
     psg_attenuation(chan, ATTENUATIONS[(state->volume * velocity) / 0x7F]);
     state->key = key;
+    state->velocity = velocity;
     state->noteOn = true;
 }
 
@@ -76,7 +79,7 @@ void midi_psg_channelVolume(u8 chan, u8 volume)
     PsgChannelState* state = getChannelState(chan);
     state->volume = volume;
     if (state->noteOn) {
-        psg_attenuation(chan, ATTENUATIONS[state->volume]);
+        psg_attenuation(chan, ATTENUATIONS[(state->volume * state->velocity) / 0x7F]);
     }
 }
 
