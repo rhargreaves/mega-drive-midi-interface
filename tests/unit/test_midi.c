@@ -89,6 +89,28 @@ static void test_midi_triggers_synth_note_on_with_velocity_and_channel_volume(
     }
 }
 
+
+static void test_midi_changing_volume_during_note_on_respects_velocity(
+    UNUSED void** state)
+{
+    for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
+        expect_value(__wrap_synth_pitch, channel, chan);
+        expect_value(__wrap_synth_pitch, octave, 4);
+        expect_value(__wrap_synth_pitch, freqNumber, 653);
+        expect_value(__wrap_synth_volume, channel, chan);
+        expect_value(__wrap_synth_volume, volume, MAX_MIDI_VOLUME / 2);
+        expect_value(__wrap_synth_noteOn, channel, chan);
+
+        __real_midi_noteOn(chan, 60, MAX_MIDI_VOLUME / 2);
+
+        expect_value(__wrap_synth_volume, channel, chan);
+        expect_value(__wrap_synth_volume, volume, MAX_MIDI_VOLUME / 4);
+
+        __real_midi_cc(chan, CC_VOLUME, MAX_MIDI_VOLUME / 2);
+
+    }
+}
+
 static void test_midi_triggers_synth_note_on_boundary_values(
     UNUSED void** state)
 {
