@@ -25,19 +25,19 @@ struct VTable {
 typedef struct ChannelMapping ChannelMapping;
 
 struct ChannelMapping {
-    VTable* ops;
+    const VTable* ops;
     u8 channel;
 };
 
-static VTable PSG_VTable
+static const VTable PSG_VTable
     = { midi_psg_noteOn, midi_psg_noteOff, midi_psg_channelVolume,
           midi_psg_pitchBend, midi_psg_program, midi_psg_allNotesOff };
 
-static VTable FM_VTable
+static const VTable FM_VTable
     = { midi_fm_noteOn, midi_fm_noteOff, midi_fm_channelVolume,
           midi_fm_pitchBend, midi_fm_program, midi_fm_allNotesOff };
 
-static VTable NOP_VTable
+static const VTable NOP_VTable
     = { midi_nop_noteOn, midi_nop_noteOff, midi_nop_channelVolume,
           midi_nop_pitchBend, midi_nop_program, midi_nop_allNotesOff };
 
