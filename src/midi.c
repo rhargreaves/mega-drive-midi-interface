@@ -22,26 +22,33 @@ struct VTable {
     void (*allNotesOff)(u8 chan);
 };
 
-static const VTable PSG_VTable
+typedef struct ChannelMapping ChannelMapping;
+
+struct ChannelMapping {
+    VTable* ops;
+    u8 channel;
+};
+
+static VTable PSG_VTable
     = { midi_psg_noteOn, midi_psg_noteOff, midi_psg_channelVolume,
           midi_psg_pitchBend, midi_psg_program, midi_psg_allNotesOff };
 
-static const VTable FM_VTable
+static VTable FM_VTable
     = { midi_fm_noteOn, midi_fm_noteOff, midi_fm_channelVolume,
           midi_fm_pitchBend, midi_fm_program, midi_fm_allNotesOff };
 
-static const VTable NOP_VTable
+static VTable NOP_VTable
     = { midi_nop_noteOn, midi_nop_noteOff, midi_nop_channelVolume,
           midi_nop_pitchBend, midi_nop_program, midi_nop_allNotesOff };
 
-static const VTable* CHANNEL_OPS[16]
-    = { &FM_VTable, &FM_VTable, &FM_VTable, &FM_VTable, &FM_VTable, &FM_VTable,
-          &PSG_VTable, &PSG_VTable, &PSG_VTable, &PSG_VTable, &NOP_VTable,
-          &NOP_VTable, &NOP_VTable, &NOP_VTable, &NOP_VTable, &NOP_VTable };
-
-static const u8 CHANNEL_ASSIGN[MIDI_CHANNELS] = { 0, 1, 2, 3, 4, 5, 0, 1, 2, 3,
-    CHANNEL_UNASSIGNED, CHANNEL_UNASSIGNED, CHANNEL_UNASSIGNED,
-    CHANNEL_UNASSIGNED, CHANNEL_UNASSIGNED, CHANNEL_UNASSIGNED };
+static ChannelMapping ChannelMappings[MIDI_CHANNELS] = {
+    { &FM_VTable, 0 }, { &FM_VTable, 1 }, { &FM_VTable, 2 }, { &FM_VTable, 3 },
+    { &FM_VTable, 4 }, { &FM_VTable, 5 }, { &PSG_VTable, 0 },
+    { &PSG_VTable, 1 }, { &PSG_VTable, 2 }, { &PSG_VTable, 3 },
+    { &NOP_VTable, CHANNEL_UNASSIGNED }, { &NOP_VTable, CHANNEL_UNASSIGNED },
+    { &NOP_VTable, CHANNEL_UNASSIGNED }, { &NOP_VTable, CHANNEL_UNASSIGNED },
+    { &NOP_VTable, CHANNEL_UNASSIGNED }, { &NOP_VTable, CHANNEL_UNASSIGNED }
+};
 
 static u8 polyphonicPitches[MAX_FM_CHANS];
 static ControlChange lastUnknownControlChange;
@@ -57,6 +64,7 @@ static void pan(u8 chan, u8 pan);
 static void setPolyphonic(bool state);
 static void cc(u8 chan, u8 controller, u8 value);
 static void generalMidiReset(void);
+static ChannelMapping* channelMapping(u8 midiChannel);
 
 void midi_reset(void)
 {
@@ -67,12 +75,18 @@ void midi_reset(void)
     polyphonic = false;
 }
 
+static ChannelMapping* channelMapping(u8 midiChannel)
+{
+    return &ChannelMappings[midiChannel];
+}
+
 void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
 {
     if (polyphonic) {
         pooledNoteOn(chan, pitch, velocity);
     } else {
-        CHANNEL_OPS[chan]->noteOn(CHANNEL_ASSIGN[chan], pitch, velocity);
+        ChannelMapping* mapping = channelMapping(chan);
+        mapping->ops->noteOn(mapping->channel, pitch, velocity);
     }
 }
 
@@ -81,7 +95,8 @@ void midi_noteOff(u8 chan, u8 pitch)
     if (polyphonic) {
         pooledNoteOff(chan, pitch);
     } else {
-        CHANNEL_OPS[chan]->noteOff(CHANNEL_ASSIGN[chan], pitch);
+        ChannelMapping* mapping = channelMapping(chan);
+        mapping->ops->noteOff(mapping->channel, pitch);
     }
 }
 
@@ -103,7 +118,7 @@ bool midi_overflow(void)
 
 static void cc(u8 chan, u8 controller, u8 value)
 {
-
+    ChannelMapping* mapping = channelMapping(chan);
     switch (controller) {
     case CC_VOLUME:
         channelVolume(chan, value);
@@ -115,87 +130,87 @@ static void cc(u8 chan, u8 controller, u8 value)
         allNotesOff(chan);
         break;
     case CC_GENMDM_FM_ALGORITHM:
-        synth_algorithm(CHANNEL_ASSIGN[chan], RANGE(value, 8));
+        synth_algorithm(mapping->channel, RANGE(value, 8));
         break;
     case CC_GENMDM_FM_FEEDBACK:
-        synth_feedback(CHANNEL_ASSIGN[chan], RANGE(value, 8));
+        synth_feedback(mapping->channel, RANGE(value, 8));
         break;
     case CC_GENMDM_TOTAL_LEVEL_OP1:
     case CC_GENMDM_TOTAL_LEVEL_OP2:
     case CC_GENMDM_TOTAL_LEVEL_OP3:
     case CC_GENMDM_TOTAL_LEVEL_OP4:
-        synth_operatorTotalLevel(CHANNEL_ASSIGN[chan],
-            controller - CC_GENMDM_TOTAL_LEVEL_OP1, value);
+        synth_operatorTotalLevel(
+            mapping->channel, controller - CC_GENMDM_TOTAL_LEVEL_OP1, value);
         break;
     case CC_GENMDM_MULTIPLE_OP1:
     case CC_GENMDM_MULTIPLE_OP2:
     case CC_GENMDM_MULTIPLE_OP3:
     case CC_GENMDM_MULTIPLE_OP4:
-        synth_operatorMultiple(CHANNEL_ASSIGN[chan],
+        synth_operatorMultiple(mapping->channel,
             controller - CC_GENMDM_MULTIPLE_OP1, RANGE(value, 16));
         break;
     case CC_GENMDM_DETUNE_OP1:
     case CC_GENMDM_DETUNE_OP2:
     case CC_GENMDM_DETUNE_OP3:
     case CC_GENMDM_DETUNE_OP4:
-        synth_operatorDetune(CHANNEL_ASSIGN[chan],
+        synth_operatorDetune(mapping->channel,
             controller - CC_GENMDM_DETUNE_OP1, RANGE(value, 8));
         break;
     case CC_GENMDM_RATE_SCALING_OP1:
     case CC_GENMDM_RATE_SCALING_OP2:
     case CC_GENMDM_RATE_SCALING_OP3:
     case CC_GENMDM_RATE_SCALING_OP4:
-        synth_operatorRateScaling(CHANNEL_ASSIGN[chan],
+        synth_operatorRateScaling(mapping->channel,
             controller - CC_GENMDM_RATE_SCALING_OP1, RANGE(value, 4));
         break;
     case CC_GENMDM_ATTACK_RATE_OP1:
     case CC_GENMDM_ATTACK_RATE_OP2:
     case CC_GENMDM_ATTACK_RATE_OP3:
     case CC_GENMDM_ATTACK_RATE_OP4:
-        synth_operatorAttackRate(CHANNEL_ASSIGN[chan],
+        synth_operatorAttackRate(mapping->channel,
             controller - CC_GENMDM_ATTACK_RATE_OP1, RANGE(value, 32));
         break;
     case CC_GENMDM_FIRST_DECAY_RATE_OP1:
     case CC_GENMDM_FIRST_DECAY_RATE_OP2:
     case CC_GENMDM_FIRST_DECAY_RATE_OP3:
     case CC_GENMDM_FIRST_DECAY_RATE_OP4:
-        synth_operatorFirstDecayRate(CHANNEL_ASSIGN[chan],
+        synth_operatorFirstDecayRate(mapping->channel,
             controller - CC_GENMDM_FIRST_DECAY_RATE_OP1, RANGE(value, 32));
         break;
     case CC_GENMDM_SECOND_DECAY_RATE_OP1:
     case CC_GENMDM_SECOND_DECAY_RATE_OP2:
     case CC_GENMDM_SECOND_DECAY_RATE_OP3:
     case CC_GENMDM_SECOND_DECAY_RATE_OP4:
-        synth_operatorSecondDecayRate(CHANNEL_ASSIGN[chan],
+        synth_operatorSecondDecayRate(mapping->channel,
             controller - CC_GENMDM_SECOND_DECAY_RATE_OP1, RANGE(value, 16));
         break;
     case CC_GENMDM_SECOND_AMPLITUDE_OP1:
     case CC_GENMDM_SECOND_AMPLITUDE_OP2:
     case CC_GENMDM_SECOND_AMPLITUDE_OP3:
     case CC_GENMDM_SECOND_AMPLITUDE_OP4:
-        synth_operatorSecondaryAmplitude(CHANNEL_ASSIGN[chan],
+        synth_operatorSecondaryAmplitude(mapping->channel,
             controller - CC_GENMDM_SECOND_AMPLITUDE_OP1, RANGE(value, 16));
         break;
     case CC_GENMDM_RELEASE_RATE_OP1:
     case CC_GENMDM_RELEASE_RATE_OP2:
     case CC_GENMDM_RELEASE_RATE_OP3:
     case CC_GENMDM_RELEASE_RATE_OP4:
-        synth_operatorReleaseRate(CHANNEL_ASSIGN[chan],
+        synth_operatorReleaseRate(mapping->channel,
             controller - CC_GENMDM_RELEASE_RATE_OP1, RANGE(value, 16));
         break;
     case CC_GENMDM_AMPLITUDE_MODULATION_OP1:
     case CC_GENMDM_AMPLITUDE_MODULATION_OP2:
     case CC_GENMDM_AMPLITUDE_MODULATION_OP3:
     case CC_GENMDM_AMPLITUDE_MODULATION_OP4:
-        synth_operatorAmplitudeModulation(CHANNEL_ASSIGN[chan],
+        synth_operatorAmplitudeModulation(mapping->channel,
             controller - CC_GENMDM_AMPLITUDE_MODULATION_OP1, RANGE(value, 2));
         break;
     case CC_GENMDM_SSG_EG_OP1:
     case CC_GENMDM_SSG_EG_OP2:
     case CC_GENMDM_SSG_EG_OP3:
     case CC_GENMDM_SSG_EG_OP4:
-        synth_operatorSsgEg(CHANNEL_ASSIGN[chan],
-            controller - CC_GENMDM_SSG_EG_OP1, RANGE(value, 16));
+        synth_operatorSsgEg(mapping->channel, controller - CC_GENMDM_SSG_EG_OP1,
+            RANGE(value, 16));
         break;
     case CC_GENMDM_GLOBAL_LFO_ENABLE:
         synth_enableLfo(RANGE(value, 2));
@@ -204,10 +219,10 @@ static void cc(u8 chan, u8 controller, u8 value)
         synth_globalLfoFrequency(RANGE(value, 8));
         break;
     case CC_GENMDM_AMS:
-        synth_ams(CHANNEL_ASSIGN[chan], RANGE(value, 4));
+        synth_ams(mapping->channel, RANGE(value, 4));
         break;
     case CC_GENMDM_FMS:
-        synth_fms(CHANNEL_ASSIGN[chan], RANGE(value, 8));
+        synth_fms(mapping->channel, RANGE(value, 8));
         break;
     case CC_POLYPHONIC_MODE:
         setPolyphonic(RANGE(value, 2) != 0);
@@ -221,7 +236,8 @@ static void cc(u8 chan, u8 controller, u8 value)
 
 void midi_pitchBend(u8 chan, u16 bend)
 {
-    CHANNEL_OPS[chan]->pitchBend(CHANNEL_ASSIGN[chan], bend);
+    ChannelMapping* mapping = channelMapping(chan);
+    mapping->ops->pitchBend(mapping->channel, bend);
 }
 
 bool midi_getPolyphonic(void)
@@ -263,7 +279,8 @@ void midi_position(u16 midiBeat)
 
 void midi_program(u8 chan, u8 program)
 {
-    CHANNEL_OPS[chan]->program(chan, program);
+    ChannelMapping* mapping = channelMapping(chan);
+    mapping->ops->program(mapping->channel, program);
 }
 
 ControlChange* midi_lastUnknownCC(void)
@@ -273,23 +290,26 @@ ControlChange* midi_lastUnknownCC(void)
 
 static void channelVolume(u8 chan, u8 volume)
 {
-    CHANNEL_OPS[chan]->channelVolume(CHANNEL_ASSIGN[chan], volume);
+    ChannelMapping* mapping = channelMapping(chan);
+    mapping->ops->channelVolume(mapping->channel, volume);
 }
 
 static void pan(u8 chan, u8 pan)
 {
+     ChannelMapping* mapping = channelMapping(chan);
     if (pan > 96) {
-        synth_stereo(CHANNEL_ASSIGN[chan], STEREO_MODE_RIGHT);
+        synth_stereo(mapping->channel, STEREO_MODE_RIGHT);
     } else if (pan > 31) {
-        synth_stereo(CHANNEL_ASSIGN[chan], STEREO_MODE_CENTRE);
+        synth_stereo(mapping->channel, STEREO_MODE_CENTRE);
     } else {
-        synth_stereo(CHANNEL_ASSIGN[chan], STEREO_MODE_LEFT);
+        synth_stereo(mapping->channel, STEREO_MODE_LEFT);
     }
 }
 
 static void allNotesOff(u8 chan)
 {
-    CHANNEL_OPS[chan]->allNotesOff(CHANNEL_ASSIGN[chan]);
+    ChannelMapping* mapping = channelMapping(chan);
+    mapping->ops->allNotesOff(mapping->channel);
 }
 
 static void setPolyphonic(bool state)
@@ -300,9 +320,10 @@ static void setPolyphonic(bool state)
 static void pooledNoteOn(u8 chan, u8 pitch, u8 velocity)
 {
     for (u8 c = 0; c < MAX_FM_CHANS; c++) {
+        ChannelMapping* mapping = channelMapping(c);
         if (polyphonicPitches[c] == 0) {
             polyphonicPitches[c] = pitch;
-            CHANNEL_OPS[chan]->noteOn(c, pitch, velocity);
+            mapping->ops->noteOn(mapping->channel, pitch, velocity);
             overflow = false;
             return;
         }
@@ -313,9 +334,10 @@ static void pooledNoteOn(u8 chan, u8 pitch, u8 velocity)
 static void pooledNoteOff(u8 chan, u8 pitch)
 {
     for (u8 c = 0; c < MAX_FM_CHANS; c++) {
+         ChannelMapping* mapping = channelMapping(c);
         if (polyphonicPitches[c] == pitch) {
             polyphonicPitches[c] = 0;
-            CHANNEL_OPS[chan]->noteOff(c, pitch);
+             mapping->ops->noteOff(mapping->channel, pitch);
         }
     }
 }
