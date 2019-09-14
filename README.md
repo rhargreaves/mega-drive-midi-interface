@@ -35,7 +35,7 @@ You can download pre-built ROMs from [releases](https://github.com/rhargreaves/m
 | 7 - 9    | PSG Square Wave Tone |
 | 10       | PSG Noise            |
 | 11 - 13    | As 7 - 9   |
-| 15 - 16    | As 7 - 9   |
+| 14 - 16    | As 7 - 9   |
 
 ## Supported Events
 
