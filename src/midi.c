@@ -37,14 +37,12 @@ static const VTable FM_VTable
     = { midi_fm_noteOn, midi_fm_noteOff, midi_fm_channelVolume,
           midi_fm_pitchBend, midi_fm_program, midi_fm_allNotesOff };
 
-static ChannelMapping ChannelMappings[MIDI_CHANNELS] = {
-    { &FM_VTable, 0 }, { &FM_VTable, 1 }, { &FM_VTable, 2 }, { &FM_VTable, 3 },
-    { &FM_VTable, 4 }, { &FM_VTable, 5 }, { &PSG_VTable, 0 },
-    { &PSG_VTable, 1 }, { &PSG_VTable, 2 }, { &PSG_VTable, 3 },
-    { &PSG_VTable, 0 },
+static ChannelMapping ChannelMappings[MIDI_CHANNELS] = { { &FM_VTable, 0 },
+    { &FM_VTable, 1 }, { &FM_VTable, 2 }, { &FM_VTable, 3 }, { &FM_VTable, 4 },
+    { &FM_VTable, 5 }, { &PSG_VTable, 0 }, { &PSG_VTable, 1 },
+    { &PSG_VTable, 2 }, { &PSG_VTable, 3 }, { &PSG_VTable, 0 },
     { &PSG_VTable, 1 }, { &PSG_VTable, 2 }, { &PSG_VTable, 0 },
-    { &PSG_VTable, 1 }, { &PSG_VTable, 2 }
-};
+    { &PSG_VTable, 1 }, { &PSG_VTable, 2 } };
 
 static u8 polyphonicPitches[MAX_FM_CHANS];
 static ControlChange lastUnknownControlChange;
@@ -292,7 +290,7 @@ static void channelVolume(u8 chan, u8 volume)
 
 static void pan(u8 chan, u8 pan)
 {
-     ChannelMapping* mapping = channelMapping(chan);
+    ChannelMapping* mapping = channelMapping(chan);
     if (pan > 96) {
         synth_stereo(mapping->channel, STEREO_MODE_RIGHT);
     } else if (pan > 31) {
@@ -330,10 +328,10 @@ static void pooledNoteOn(u8 chan, u8 pitch, u8 velocity)
 static void pooledNoteOff(u8 chan, u8 pitch)
 {
     for (u8 c = 0; c < MAX_FM_CHANS; c++) {
-         ChannelMapping* mapping = channelMapping(c);
+        ChannelMapping* mapping = channelMapping(c);
         if (polyphonicPitches[c] == pitch) {
             polyphonicPitches[c] = 0;
-             mapping->ops->noteOff(mapping->channel, pitch);
+            mapping->ops->noteOff(mapping->channel, pitch);
         }
     }
 }

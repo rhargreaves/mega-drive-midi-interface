@@ -2,8 +2,8 @@
 #include "bits.h"
 #include "presets.h"
 #include <memory.h>
-#include <ym2612.h>
 #include <stdbool.h>
+#include <ym2612.h>
 
 typedef struct Global Global;
 
@@ -19,13 +19,13 @@ static u8 volumes[MAX_FM_CHANS];
 
 static const u8 MAX_VOLUME = 0x7F;
 
-static const u8 VOLUME_TO_TOTAL_LEVELS[] = { 127, 122, 117, 113, 108, 104, 100, 97, 93,
-    89, 86, 83, 80, 77, 74, 71, 68, 66, 63, 61, 58, 56, 54, 52, 50, 48, 46, 44,
-    43, 41, 40, 38, 37, 35, 34, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21,
-    20, 19, 19, 18, 17, 17, 16, 15, 15, 14, 13, 13, 12, 12, 11, 11, 11, 10, 10,
-    9, 9, 9, 8, 8, 7, 7, 7, 7, 6, 6, 6, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 3, 3, 3,
-    3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+static const u8 VOLUME_TO_TOTAL_LEVELS[] = { 127, 122, 117, 113, 108, 104, 100,
+    97, 93, 89, 86, 83, 80, 77, 74, 71, 68, 66, 63, 61, 58, 56, 54, 52, 50, 48,
+    46, 44, 43, 41, 40, 38, 37, 35, 34, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23,
+    22, 21, 20, 19, 19, 18, 17, 17, 16, 15, 15, 14, 13, 13, 12, 12, 11, 11, 11,
+    10, 10, 9, 9, 9, 8, 8, 7, 7, 7, 7, 6, 6, 6, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 3,
+    3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 static void initChannel(u8 chan);
 static void updateChannel(u8 chan);
@@ -332,17 +332,17 @@ static void updateOperatorTotalLevel(u8 channel, u8 operator)
 
 static u8 effectiveTotalLevel(u8 channel, u8 operator, u8 totalLevel)
 {
-    return isOutputOperator(getChannel(channel)->algorithm, operator) ?
-        volumeAdjustedTotalLevel(channel, totalLevel) :
-        totalLevel;
+    return isOutputOperator(getChannel(channel)->algorithm, operator)
+        ? volumeAdjustedTotalLevel(channel, totalLevel)
+        : totalLevel;
 }
 
 static bool isOutputOperator(u8 algorithm, u8 operator)
 {
-    return (algorithm < 4 && operator == 3) ||
-        (algorithm == 4 && (operator == 2 || operator == 3)) ||
-        ((algorithm == 5 || algorithm == 6) && operator > 0) ||
-        algorithm == 7;
+    return (algorithm < 4 && operator== 3)
+        || (algorithm == 4 && (operator== 2 || operator== 3))
+        || ((algorithm == 5 || algorithm == 6) && operator> 0)
+        || algorithm == 7;
 }
 
 static u8 volumeAdjustedTotalLevel(u8 channel, u8 totalLevel)
@@ -350,6 +350,7 @@ static u8 volumeAdjustedTotalLevel(u8 channel, u8 totalLevel)
     u8 volume = volumes[channel];
     u8 logarithmicVolume = 0x7F - VOLUME_TO_TOTAL_LEVELS[volume];
     u8 inverseTotalLevel = 0x7F - totalLevel;
-    u8 inverseNewTotalLevel = (u16)inverseTotalLevel * (u16)logarithmicVolume / (u16)0x7F;
+    u8 inverseNewTotalLevel
+        = (u16)inverseTotalLevel * (u16)logarithmicVolume / (u16)0x7F;
     return 0x7F - inverseNewTotalLevel;
 }

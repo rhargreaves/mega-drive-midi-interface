@@ -79,7 +79,8 @@ void midi_psg_channelVolume(u8 chan, u8 volume)
     PsgChannelState* state = getChannelState(chan);
     state->volume = volume;
     if (state->noteOn) {
-        psg_attenuation(chan, ATTENUATIONS[(state->volume * state->velocity) / 0x7F]);
+        psg_attenuation(
+            chan, ATTENUATIONS[(state->volume * state->velocity) / 0x7F]);
     }
 }
 

@@ -24,7 +24,7 @@ static FmChannelState FmChannelStates[MAX_FM_CHANS];
 static u8 octave(u8 pitch);
 static u16 freqNumber(u8 pitch);
 static u8 pitchIsOutOfRange(u8 pitch);
-static u8 effectiveVolume(FmChannelState *channelState);
+static u8 effectiveVolume(FmChannelState* channelState);
 
 void midi_fm_init(void)
 {
@@ -94,7 +94,7 @@ static u8 pitchIsOutOfRange(u8 pitch)
     return pitch < MIN_MIDI_PITCH || pitch > MAX_MIDI_PITCH;
 }
 
-static u8 effectiveVolume(FmChannelState *channelState)
+static u8 effectiveVolume(FmChannelState* channelState)
 {
     return (channelState->volume * channelState->velocity) / 0x7F;
 }
