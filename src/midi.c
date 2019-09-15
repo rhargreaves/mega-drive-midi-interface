@@ -345,8 +345,23 @@ void midi_sysex(u8* data, u16 length)
 {
     const u8 GENERAL_MIDI_RESET_SEQUENCE[] = { 0x7E, 0x7F, 0x09, 0x01 };
 
+    const u8 SYSEX_EXTENDED_MANU_ID_SECTION = 0x00;
+    const u8 SYSEX_UNUSED_EUROPEAN_SECTION = 0x22;
+    const u8 SYSEX_UNUSED_MANU_ID = 0x77;
+    const u8 SYSEX_REMAP_COMMAND_ID = 0x00;
+
+    const u8 REMAP_SEQUENCE[]
+        = { SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
+              SYSEX_UNUSED_MANU_ID, SYSEX_REMAP_COMMAND_ID };
+
     if (memcmp(GENERAL_MIDI_RESET_SEQUENCE, data, length) == 0) {
         generalMidiReset();
+    } else if (memcmp(REMAP_SEQUENCE, data, sizeof(REMAP_SEQUENCE)) == 0) {
+        u8 midiChannel = data[4];
+        u8 deviceChannel = data[5];
+        ChannelMapping* mapping = channelMapping(midiChannel);
+        mapping->channel = deviceChannel - MIN_PSG_CHAN;
+        mapping->ops = &PSG_VTable;
     }
 }
 

@@ -182,3 +182,40 @@ static void test_general_midi_reset_sysex_stops_all_notes(void** state)
     expect_value(__wrap_PSG_setEnvelope, value, 0xF);
     interface_tick();
 }
+
+static void test_remap_midi_channel_1_to_psg_channel_1()
+{
+    const u8 SYSEX_START = 0xF0;
+    const u8 SYSEX_EXTENDED_MANU_ID_SECTION = 0x00;
+    const u8 SYSEX_UNUSED_EUROPEAN_SECTION = 0x22;
+    const u8 SYSEX_UNUSED_MANU_ID = 0x77;
+    const u8 SYSEX_REMAP_COMMAND_ID = 0x00;
+    const u8 SYSEX_REMAP_MIDI_CHANNEL = 0x00;
+    const u8 SYSEX_REMAP_DESTINATION_FIRST_PSG_CHANNEL = 0x06;
+    const u8 SYSEX_END = 0xF7;
+
+    const u8 sysExRemapSequence[] = { SYSEX_START,
+        SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
+        SYSEX_UNUSED_MANU_ID, SYSEX_REMAP_COMMAND_ID, SYSEX_REMAP_MIDI_CHANNEL,
+        SYSEX_REMAP_DESTINATION_FIRST_PSG_CHANNEL, SYSEX_END };
+    for (int i = 0; i < sizeof(sysExRemapSequence); i++) {
+        stub_usb_receive_byte(sysExRemapSequence[i]);
+    }
+
+    interface_tick();
+
+    const u8 noteOnStatus = 0x90;
+    const u8 noteOnKey = 48;
+    const u8 noteOnVelocity = 127;
+
+    stub_usb_receive_byte(noteOnStatus);
+    stub_usb_receive_byte(noteOnKey);
+    stub_usb_receive_byte(noteOnVelocity);
+
+    expect_value(__wrap_PSG_setFrequency, channel, 0);
+    expect_any(__wrap_PSG_setFrequency, value);
+    expect_value(__wrap_PSG_setEnvelope, channel, 0);
+    expect_value(__wrap_PSG_setEnvelope, value, 0);
+
+    interface_tick();
+}

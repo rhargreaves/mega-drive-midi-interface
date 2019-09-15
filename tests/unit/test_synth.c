@@ -333,33 +333,35 @@ static void test_synth_applies_volume_modifier_to_output_operators_algorithm_7(
     const u8 algorithmReg = 0xB0;
     const u8 loudestTotalLevel = 0;
     const u8 loudestVolume = 0x7F;
-    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++)
-    {
+    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         expect_ym2612_write_channel_any_data(chan, algorithmReg);
         __real_synth_algorithm(chan, algorithm);
 
-        for(u8 op = 0; op < MAX_FM_OPERATORS; op++) {
-            expect_ym2612_write_operator(chan, op, totalLevelReg, loudestTotalLevel);
+        for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
+            expect_ym2612_write_operator(
+                chan, op, totalLevelReg, loudestTotalLevel);
         }
-        for(u8 op = 0; op < MAX_FM_OPERATORS; op++) {
+        for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
             __real_synth_operatorTotalLevel(chan, op, loudestTotalLevel);
         }
 
         const u8 expectedTotalLevel = 0xb;
-        for(u8 op = 0; op < MAX_FM_OPERATORS; op++) {
-            expect_ym2612_write_operator(chan, op, totalLevelReg, expectedTotalLevel);
+        for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
+            expect_ym2612_write_operator(
+                chan, op, totalLevelReg, expectedTotalLevel);
         }
         __real_synth_volume(chan, loudestVolume / 2);
 
-        for(u8 op = 0; op < MAX_FM_OPERATORS; op++) {
-            expect_ym2612_write_operator(chan, op, totalLevelReg, loudestTotalLevel);
+        for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
+            expect_ym2612_write_operator(
+                chan, op, totalLevelReg, loudestTotalLevel);
         }
         __real_synth_volume(chan, loudestVolume);
     }
 }
 
-
-static void test_synth_applies_volume_modifier_to_output_operators_algorithm_7_quieter(
+static void
+test_synth_applies_volume_modifier_to_output_operators_algorithm_7_quieter(
     UNUSED void** state)
 {
     const u8 algorithm = 7;
@@ -367,37 +369,37 @@ static void test_synth_applies_volume_modifier_to_output_operators_algorithm_7_q
     const u8 algorithmReg = 0xB0;
     const u8 loudestTotalLevel = 0;
     const u8 loudestVolume = 0x7F;
-    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++)
-    {
+    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         expect_ym2612_write_channel_any_data(chan, algorithmReg);
         __real_synth_algorithm(chan, algorithm);
 
-        for(u8 op = 0; op < MAX_FM_OPERATORS; op++) {
-            expect_ym2612_write_operator(chan, op, totalLevelReg, loudestTotalLevel);
+        for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
+            expect_ym2612_write_operator(
+                chan, op, totalLevelReg, loudestTotalLevel);
         }
-        for(u8 op = 0; op < MAX_FM_OPERATORS; op++) {
+        for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
             __real_synth_operatorTotalLevel(chan, op, loudestTotalLevel);
         }
 
         const u8 expectedTotalLevel = 0x26;
-        for(u8 op = 0; op < MAX_FM_OPERATORS; op++) {
-            expect_ym2612_write_operator(chan, op, totalLevelReg, expectedTotalLevel);
+        for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
+            expect_ym2612_write_operator(
+                chan, op, totalLevelReg, expectedTotalLevel);
         }
         __real_synth_volume(chan, loudestVolume / 4);
     }
 }
 
-static void test_synth_applies_volume_modifier_to_output_operators_algorithms_0_to_3(
+static void
+test_synth_applies_volume_modifier_to_output_operators_algorithms_0_to_3(
     UNUSED void** state)
 {
     const u8 totalLevelReg = 0x40;
     const u8 algorithmReg = 0xB0;
     const u8 loudestVolume = 0x7F;
 
-    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++)
-    {
-        for(u8 algorithm = 0; algorithm < 4; algorithm++)
-        {
+    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
+        for (u8 algorithm = 0; algorithm < 4; algorithm++) {
             print_message("Chan %d Algorithm %d\n", chan, algorithm);
             expect_ym2612_write_channel(chan, algorithmReg, algorithm);
             __real_synth_algorithm(chan, algorithm);
@@ -419,8 +421,7 @@ static void test_synth_applies_volume_modifier_to_output_operators_algorithm_4(
     const u8 loudestVolume = 0x7F;
     const u8 algorithm = 4;
 
-    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++)
-    {
+    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         print_message("Chan %d Algorithm %d\n", chan, algorithm);
         expect_ym2612_write_channel(chan, algorithmReg, algorithm);
         __real_synth_algorithm(chan, algorithm);
@@ -433,17 +434,16 @@ static void test_synth_applies_volume_modifier_to_output_operators_algorithm_4(
     }
 }
 
-static void test_synth_applies_volume_modifier_to_output_operators_algorithms_5_and_6(
+static void
+test_synth_applies_volume_modifier_to_output_operators_algorithms_5_and_6(
     UNUSED void** state)
 {
     const u8 totalLevelReg = 0x40;
     const u8 algorithmReg = 0xB0;
     const u8 loudestVolume = 0x7F;
 
-    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++)
-    {
-        for(u8 algorithm = 5; algorithm < 7; algorithm++)
-        {
+    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
+        for (u8 algorithm = 5; algorithm < 7; algorithm++) {
             print_message("Chan %d Algorithm %d\n", chan, algorithm);
             expect_ym2612_write_channel(chan, algorithmReg, algorithm);
             __real_synth_algorithm(chan, algorithm);

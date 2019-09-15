@@ -47,8 +47,9 @@ int main(void)
         midi_test(test_midi_triggers_psg_note_on_with_velocity),
         midi_test(
             test_midi_triggers_psg_note_on_with_velocity_and_channel_volume),
-            midi_test(test_midi_changing_volume_during_psg_note_on_respects_velocity),
-            midi_test(test_midi_changing_volume_during_note_on_respects_velocity),
+        midi_test(
+            test_midi_changing_volume_during_psg_note_on_respects_velocity),
+        midi_test(test_midi_changing_volume_during_note_on_respects_velocity),
         midi_test(test_midi_triggers_psg_note_off),
         midi_test(test_midi_drops_psg_key_below_45),
         midi_test(test_midi_psg_note_off_only_triggered_if_specific_note_is_on),
@@ -100,6 +101,7 @@ int main(void)
         midi_test(test_midi_sets_fm_preset),
         midi_test(test_midi_sysex_sends_all_notes_off),
         midi_test(test_midi_sysex_ignores_unknown_sysex),
+        midi_test(test_midi_sysex_remaps_midi_channel),
 
         synth_test(test_synth_init_sets_initial_registers),
         synth_test(test_synth_sets_note_on_fm_reg_chan_0_to_2),
