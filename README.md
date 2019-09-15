@@ -43,18 +43,18 @@ You can download pre-built ROMs from [releases](https://github.com/rhargreaves/m
 | 11 - 13  | As 7 - 9                    |
 | 14 - 16  | As 7 - 9                    |
 
-You can also [re-configure the MIDI mappings](#system-exclusive) via SysEx.
+You can also [re-configure the MIDI mappings](#system-exclusive) via SysEx
 
-## Supported Events
+## Events
 
 - Note On/Off
 - Pitch Bend
 - Program Change (Select FM Preset)
 - Universal SysEx Messages
 
-## Control Change Messages
+## Common MIDI CCs
 
-### MIDI Specification
+These are supported across FM and PSG channels
 
 | CC  | Description    | Effect                     | Values                                             |
 | --- | -------------- | -------------------------- | -------------------------------------------------- |
@@ -64,23 +64,21 @@ You can also [re-configure the MIDI mappings](#system-exclusive) via SysEx.
 | 123 | All Notes Off  | FM: Key Off                | 0                                                  |
 |     |                | PSG: Max. Attenuation      | 0                                                  |
 
-### GenMDM Compatibility
+## FM Parameters
 
-Range determines how the possible 128 MIDI values are divided to give the respective YM2612 register value, using the formula:
+These only apply to channels mapped to FM channels
 
-_midiValue / (128 / range) = registerValue_
+#### Global
 
-For example: A MIDI value of 32, with CC range of 8 translates into to a YM2612 register value of 2.
+| CC  | Description       | Range\* |
+| --- | ----------------- | ------- |
+| 74  | LFO Enable        | 2       |
+| 1   | LFO Frequency     | 8       |
+| 80  | Polyphonic Mode\* | 2       |
 
-#### Global FM Parameters
+_Range determines how the possible 128 MIDI values are divided to give the respective YM2612 register value, using the formula `_midiValue / (128 / range) = registerValue` (e.g. MIDI value of 32, with a range of 8 translates into to a YM2612 register value of 2)_
 
-| CC  | Description          | Range |
-| --- | -------------------- | ----- |
-| 74  | Global LFO Enable    | 2     |
-| 1   | Global LFO Frequency | 8     |
-| 80  | Polyphonic Mode\*    | 2     |
-
-#### FM Channels
+#### Per Channel
 
 | CC  | Description                      | Range |
 | --- | -------------------------------- | ----- |
@@ -89,11 +87,9 @@ For example: A MIDI value of 32, with CC range of 8 translates into to a YM2612 
 | 75  | Frequency Modulation Level (FMS) | 8     |
 | 76  | Amplitude Modulation Level (AMS) | 4     |
 
-#### FM Channel Operators
+#### Per Channel & Operator
 
-Each CC relates to one of the four FM channel operators for the parameter type
-
-| CC    | Description               | Range |
+| CCs   | Description               | Range |
 | ----- | ------------------------- | ----- |
 | 16-19 | Total Level (TL)          | 128   |
 | 20-23 | Multiple (MUL)            | 16    |
