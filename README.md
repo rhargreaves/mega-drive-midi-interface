@@ -160,13 +160,13 @@ Unit & system tests are compiled and ran as x86 binaries using CMocka. Mega Driv
 Docker:
 
 ```sh
-./docker-make all
+./docker-make
 ```
 
 Linux (requires `cmake` & [gendev](https://github.com/kubilus1/gendev)):
 
 ```sh
-make all
+make
 ```
 
 ## Stretch Goals
