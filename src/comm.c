@@ -36,6 +36,13 @@ void comm_resetCounts(void)
     reads = 0;
 }
 
+void comm_write(u8 data)
+{
+    while (!ssf_usb_wr_ready())
+        ;
+    ssf_usb_write(data);
+}
+
 static void waitForReady(void)
 {
     while (!ssf_usb_rd_ready()) {

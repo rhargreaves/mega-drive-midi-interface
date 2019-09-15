@@ -1,11 +1,11 @@
 #include "midi.h"
+#include "comm.h"
 #include "memcmp.h"
 #include "memory.h"
 #include "midi_fm.h"
 #include "midi_nop.h"
 #include "midi_psg.h"
 #include "psg_chip.h"
-#include "ssf.h"
 #include "synth.h"
 #include <stdbool.h>
 
@@ -382,19 +382,12 @@ void midi_sysex(u8* data, u16 length)
     } else if (memcmp(REMAP_SEQUENCE, data, sizeof(REMAP_SEQUENCE)) == 0) {
         remapChannel(data[4], data[5]);
     } else if (memcmp(PING_SEQUENCE, data, length) == 0) {
-
-        while (!ssf_usb_wr_ready())
-            ;
-        ssf_usb_write(0xF0);
+        comm_write(0xF0);
         for (u16 i = 0; i < sizeof(PING_SEQUENCE); i++) {
 
-            while (!ssf_usb_wr_ready())
-                ;
-            ssf_usb_write(PONG_SEQUENCE[i]);
+            comm_write(PONG_SEQUENCE[i]);
         }
-        while (!ssf_usb_wr_ready())
-            ;
-        ssf_usb_write(0xF7);
+        comm_write(0xF7);
     }
 }
 
