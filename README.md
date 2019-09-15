@@ -1,18 +1,18 @@
 # Sega Mega Drive MIDI Interface [![CircleCI](https://circleci.com/gh/rhargreaves/mega-drive-midi-interface.svg?style=svg)](https://circleci.com/gh/rhargreaves/mega-drive-midi-interface) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/rhargreaves/mega-drive-midi-interface?style=plastic)](https://github.com/rhargreaves/mega-drive-midi-interface/releases)
 
-Exposes the Mega Drive's YM2612 FM Synth and PSG as a MIDI interface
+Control the Yamaha YM2612 and PSG chips of the SEGA Mega Drive via MIDI.
 
 <p align="center">
     <img src="https://github.com/rhargreaves/mega-drive-midi-interface/raw/master/docs/screenshot.png" width="600" />
 </p>
 
-## Goal
+## Features
 
-The main goal of this project is to allow the Mega Drive's FM synthesis chip & PSG to be controlled via MIDI over a serial link (such as the USB interface provided by the Mega EverDrive X7 flash cart) so that it can be sequenced by a modern DAW like Albeton Live.
-
-The project will also support [GenMDM-style](https://catskullelectronics.com/public/genMDM.pdf) CC messages for compatibility with existing GenMDM-based applications.
-
-Check out the [development board](https://github.com/rhargreaves/mega-drive-midi-interface/projects/1) for a snapshot view of what's in progress. See also [stretch goals](#stretch-goals).
+- Built-in FM presets for General MIDI compatibility
+- Supports MIDI 1.0 CCs & events (e.g. panning, volume, pitch bending)
+- Polythonic support via FM channel pooling
+- Connectivity via the Mega Everdrive's X7 USB port
+- Fine-grained control of YM2612 registers via [GenMDM-style CCs](https://catskullelectronics.com/public/genMDM.pdf)
 
 ## Getting Started
 
@@ -23,17 +23,30 @@ Check out the [development board](https://github.com/rhargreaves/mega-drive-midi
 
 ### Software Requirements
 
-- MIDI to serial port virtual device, e.g.
-
-  - [Hairless MIDI<->Serial Bridge](http://projectgus.github.io/hairless-midiserial/)
-
+- MIDI to serial port virtual device, e.g. [Hairless MIDI<->Serial Bridge](http://projectgus.github.io/hairless-midiserial/)
 - Optional: MIDI loop device (so software running on the same PC as the USB connection can use the MIDI interface). In macOS this is possible via the use of a ["IAC Device Bus" creatable from the Audio MIDI Setup utility](https://help.ableton.com/hc/en-us/articles/209774225-Using-virtual-MIDI-buses).
 
 ### Download
 
 You can download pre-built ROMs from [releases](https://github.com/rhargreaves/mega-drive-midi-interface/releases).
 
-## MIDI Channel Mapping
+## FM Presets
+
+Sending a MIDI program change (0xC) message will select a pre-defined FM preset.
+The full list of presets available are defined in
+[`presets.h`](https://github.com/rhargreaves/mega-drive-midi-interface/blob/master/src/presets.h). They are based on [Wohlstand's XG bank from libOPNMIDI](https://github.com/Wohlstand/libOPNMIDI/blob/master/fm_banks/xg.wopn). The interface defaults to instrument 0 (Grand Piano) on start-up.
+
+## Polyphonic Mode
+
+When polyphonic mode is enabled (CC 80), all note on/off events are routed to a pool of
+FM channels, ignoring the specific MIDI channel the event is sent to. This allows for
+polyphony within a single MIDI channel. In addition, any FM parameter change made will be sent to all FM channels. If all FM channels are busy, the note on event is dropped.
+
+## MIDI Message Reference
+
+### Channel Mappings
+
+By default, MIDI channels are assigned in a one-to-one arrangement to FM or PSG channels as follows:
 
 | Channels | Assignment                  |
 | -------- | --------------------------- |
@@ -45,16 +58,16 @@ You can download pre-built ROMs from [releases](https://github.com/rhargreaves/m
 
 You can also [re-configure the MIDI mappings](#system-exclusive) via SysEx
 
-## Events
+### Events
 
 - Note On/Off
 - Pitch Bend
-- Program Change (Select FM Preset)
+- Program Change (FM only: selects preset)
 - Universal SysEx Messages
 
-## Common MIDI CCs
+### Common MIDI CCs
 
-These are supported across FM and PSG channels
+These are supported across FM and PSG channels:
 
 | CC  | Description    | Effect                     | Values                                             |
 | --- | -------------- | -------------------------- | -------------------------------------------------- |
@@ -66,7 +79,7 @@ These are supported across FM and PSG channels
 
 ## FM Parameters
 
-These only apply to channels mapped to FM channels
+These only apply to channels mapped to FM channels:
 
 #### Global
 
@@ -103,22 +116,6 @@ _Range determines how the possible 128 MIDI values are divided to give the respe
 | 70-73 | Amplitude Modulation (AM) | 2     |
 | 90-93 | SSG-EG                    | 16    |
 
-## Polyphonic Mode (CC 80)
-
-When polyphonic mode is enabled, all note on/off events are routed to a pool of
-FM channels, ignoring the specific MIDI channel the event is sent to. This allows for
-polyphony within a single MIDI channel.
-
-In addition, any FM parameter change made will be sent to all FM channels.
-
-If all FM channels are busy, the note on event is dropped.
-
-## FM Presets
-
-Sending a MIDI program change (0xC) message will select a pre-defined FM preset.
-The full list of presets available are defined in
-[`presets.h`](https://github.com/rhargreaves/mega-drive-midi-interface/blob/master/src/presets.h). They are based on [Wohlstand's XG bank from libOPNMIDI](https://github.com/Wohlstand/libOPNMIDI/blob/master/fm_banks/xg.wopn). The interface defaults to instrument 0 (Grand Piano) on start-up.
-
 ## System Real-Time Messages
 
 | Status | Description           | Effect                 |
@@ -129,7 +126,7 @@ The full list of presets available are defined in
 | 0xFB   | Continue              | None                   |
 | 0xFC   | Stop                  | None                   |
 
-## Algorithm Operator Arrangement (CC 14)
+## FM Algorithm Operator Routing
 
 Output operators are coloured blue. Operator 1 can also feedback into itself (see CC 15). Operators are numbered in the same order as the register placement (e.g. 0x30, 0x34, 0x38, 0x3C).
 
