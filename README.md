@@ -16,26 +16,34 @@ Check out the [development board](https://github.com/rhargreaves/mega-drive-midi
 
 ## Getting Started
 
-### Requirements
+### Hardware Requirements
 
-- Mega Drive/Genesis Console (PAL or NTSC)
+- SEGA Mega Drive/Genesis Console
 - [Mega EverDrive X7 cart](https://krikzz.com/store/home/33-mega-everdrive-v2.html)
-- A MIDI-to-Serial virtual device (such as [Hairless MIDI<->Serial Bridge](http://projectgus.github.io/hairless-midiserial/))
+
+### Software Requirements
+
+- MIDI to serial port virtual device, e.g.
+
+  - [Hairless MIDI<->Serial Bridge](http://projectgus.github.io/hairless-midiserial/)
+
 - Optional: MIDI loop device (so software running on the same PC as the USB connection can use the MIDI interface). In macOS this is possible via the use of a ["IAC Device Bus" creatable from the Audio MIDI Setup utility](https://help.ableton.com/hc/en-us/articles/209774225-Using-virtual-MIDI-buses).
 
 ### Download
 
-You can download pre-built ROMs from [releases](https://github.com/rhargreaves/mega-drive-midi-interface/releases). Alternatively you can download the source and compile the ROM yourself (see [Build & Test](#build--test))
+You can download pre-built ROMs from [releases](https://github.com/rhargreaves/mega-drive-midi-interface/releases).
 
-## Channel Mapping
+## MIDI Channel Mapping
 
-| Channels | Assignment           |
-| -------- | -------------------- |
-| 1 - 6    | YM2612 FM Synthesis  |
-| 7 - 9    | PSG Square Wave Tone |
-| 10       | PSG Noise            |
-| 11 - 13  | As 7 - 9             |
-| 14 - 16  | As 7 - 9             |
+| Channels | Assignment                  |
+| -------- | --------------------------- |
+| 1 - 6    | YM2612 FM Channels 1 - 6    |
+| 7 - 9    | PSG Square Wave Tones 1 - 3 |
+| 10       | PSG Noise Channel           |
+| 11 - 13  | As 7 - 9                    |
+| 14 - 16  | As 7 - 9                    |
+
+You can also [re-configure the MIDI mappings](#system-exclusive) via SysEx.
 
 ## Supported Events
 
