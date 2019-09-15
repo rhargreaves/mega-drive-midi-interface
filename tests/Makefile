@@ -20,6 +20,7 @@ CFLAGS=$(INCLUDE_DIRS) \
  # list of function signature to mock
 MOCKS=midi_process \
 	comm_read \
+	comm_write \
 	comm_idleCount \
 	comm_busyCount \
 	comm_resetCounts \

@@ -143,6 +143,7 @@ int main(void)
         cmocka_unit_test(test_psg_sets_busy_indicators),
 
         comm_test(test_comm_reads_when_ready),
+        comm_test(test_comm_writes_when_ready),
         comm_test(test_comm_idle_count_is_correct),
         comm_test(test_comm_busy_count_is_correct),
         comm_test(test_comm_clamps_idle_count),

@@ -8,6 +8,7 @@
 static const u16 MAX_COMM_IDLE = 0x28F;
 static const u16 MAX_COMM_BUSY = 0x28F;
 
+extern void __real_comm_write(u8 data);
 extern u8 __real_comm_read(void);
 extern u16 __real_comm_idleCount(void);
 extern u16 __real_comm_busyCount(void);
@@ -29,6 +30,18 @@ static void test_comm_reads_when_ready(void** state)
     u8 read = __real_comm_read();
 
     assert_int_equal(read, 50);
+}
+
+static void test_comm_writes_when_ready(void** state)
+{
+    const u8 test_data = 50;
+
+    will_return(__wrap_ssf_usb_wr_ready, 0);
+    will_return(__wrap_ssf_usb_wr_ready, 1);
+    expect_value(__wrap_ssf_usb_write, data, test_data);
+    will_return(__wrap_ssf_usb_write, test_data);
+
+    __real_comm_write(test_data);
 }
 
 static void test_comm_idle_count_is_correct(void** state)
