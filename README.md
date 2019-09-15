@@ -116,16 +116,6 @@ _Range determines how the possible 128 MIDI values are divided to give the respe
 | 70-73 | Amplitude Modulation (AM) | 2     |
 | 90-93 | SSG-EG                    | 16    |
 
-## System Real-Time Messages
-
-| Status | Description           | Effect                 |
-| ------ | --------------------- | ---------------------- |
-| 0xF2   | Song Position Pointer | Set Beat Counter       |
-| 0xF8   | Timing Clock          | Increment Beat Counter |
-| 0xFA   | Start                 | Reset Beat Counter     |
-| 0xFB   | Continue              | None                   |
-| 0xFC   | Stop                  | None                   |
-
 ## FM Algorithm Operator Routing
 
 Output operators are coloured blue. Operator 1 can also feedback into itself (see CC 15). Operators are numbered in the same order as the register placement (e.g. 0x30, 0x34, 0x38, 0x3C).
@@ -143,9 +133,17 @@ Output operators are coloured blue. Operator 1 can also feedback into itself (se
 
 _Note: Documentation on the YM2612 frequently muddles the second and third operators of algorithms 0 to 4 and 6. This is likely due to the original SEGA documentation incorrectly labelling the operator register addresses in sequential order, rather than 1st, 3rd, 2nd, 4th. That said, it seems to be generally common to keep the sequential order of the register addresses and simply correct the layout diagrams. This project favours this approach._
 
-## System Exclusive
+## System Real-Time Messages
 
-The interface supports the following SysEx messages:
+| Status | Description           | Effect                 |
+| ------ | --------------------- | ---------------------- |
+| 0xF2   | Song Position Pointer | Set Beat Counter       |
+| 0xF8   | Timing Clock          | Increment Beat Counter |
+| 0xFA   | Start                 | Reset Beat Counter     |
+| 0xFB   | Continue              | None                   |
+| 0xFC   | Stop                  | None                   |
+
+## System Exclusive
 
 | Name               | Sequence            | Description                                                                                                                    |
 | ------------------ | ------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
