@@ -36,11 +36,6 @@ static void readSysEx(void);
 
 void interface_init(void)
 {
-    synth_init();
-}
-
-void interface_reset(void)
-{
     lastUnknownStatus = 0;
 }
 

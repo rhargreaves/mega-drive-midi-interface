@@ -17,8 +17,7 @@
 
 int main(void)
 {
-    const struct CMUnitTest tests[] = { cmocka_unit_test(
-                                            test_interface_initialises_synth),
+    const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_interface_tick_passes_note_on_to_midi_processor),
         cmocka_unit_test(test_interface_tick_passes_note_off_to_midi_processor),
         cmocka_unit_test(test_interface_does_nothing_for_control_change),
@@ -152,7 +151,8 @@ int main(void)
         sonic_test(test_sonic_init), sonic_test(test_sonic_goes_into_idle_mode),
         sonic_test(test_sonic_single_vsync_does_nothing),
         sonic_test(test_sonic_runs), sonic_test(test_sonic_walks),
-        sonic_test(test_sonic_spins) };
+        sonic_test(test_sonic_spins)
+    };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

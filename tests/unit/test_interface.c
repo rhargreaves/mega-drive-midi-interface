@@ -115,12 +115,6 @@ static void test_interface_sets_CC(UNUSED void** state)
     assert_int_not_equal(cc->value, expectedValue);
 }
 
-static void test_interface_initialises_synth(UNUSED void** state)
-{
-    expect_function_call(__wrap_synth_init);
-    interface_init();
-}
-
 static void test_interface_sets_pitch_bend(UNUSED void** state)
 {
     u8 expectedStatus = STATUS_PITCH_BEND;
@@ -159,7 +153,7 @@ static void test_interface_starts_midi(UNUSED void** state)
 
 static void test_interface_swallows_midi_stop(UNUSED void** state)
 {
-    interface_reset();
+    interface_init();
 
     u8 status = STATUS_STOP;
     will_return(__wrap_comm_read, status);
@@ -171,7 +165,7 @@ static void test_interface_swallows_midi_stop(UNUSED void** state)
 
 static void test_interface_swallows_midi_continue(UNUSED void** state)
 {
-    interface_reset();
+    interface_init();
 
     u8 status = STATUS_CONTINUE;
     will_return(__wrap_comm_read, status);
@@ -210,7 +204,6 @@ static void test_interface_sets_midi_program(UNUSED void** state)
 
     interface_tick();
 }
-
 
 static void test_interface_sends_sysex_to_midi_layer(UNUSED void** state)
 {
