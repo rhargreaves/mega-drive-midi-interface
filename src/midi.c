@@ -5,12 +5,17 @@
 #include "midi_fm.h"
 #include "midi_nop.h"
 #include "midi_psg.h"
+#include "midi_sender.h"
 #include "psg_chip.h"
 #include "synth.h"
 #include <stdbool.h>
 
 #define RANGE(value, range) (value / (128 / range))
 #define CHANNEL_UNASSIGNED 0x7F
+
+static const u8 SYSEX_EXTENDED_MANU_ID_SECTION = 0x00;
+static const u8 SYSEX_UNUSED_EUROPEAN_SECTION = 0x22;
+static const u8 SYSEX_UNUSED_MANU_ID = 0x77;
 
 typedef struct VTable VTable;
 
@@ -68,6 +73,7 @@ static void cc(u8 chan, u8 controller, u8 value);
 static void generalMidiReset(void);
 static ChannelMapping* channelMapping(u8 midiChannel);
 static void remapChannel(u8 midiChannel, u8 deviceChannel);
+static void sendPong(void);
 
 void midi_init(void)
 {
@@ -358,12 +364,8 @@ void midi_sysex(u8* data, u16 length)
 {
     const u8 GENERAL_MIDI_RESET_SEQUENCE[] = { 0x7E, 0x7F, 0x09, 0x01 };
 
-    const u8 SYSEX_EXTENDED_MANU_ID_SECTION = 0x00;
-    const u8 SYSEX_UNUSED_EUROPEAN_SECTION = 0x22;
-    const u8 SYSEX_UNUSED_MANU_ID = 0x77;
     const u8 SYSEX_REMAP_COMMAND_ID = 0x00;
     const u8 SYSEX_PING_COMMAND_ID = 0x01;
-    const u8 SYSEX_PONG_COMMAND_ID = 0x02;
 
     const u8 REMAP_SEQUENCE[]
         = { SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
@@ -373,22 +375,24 @@ void midi_sysex(u8* data, u16 length)
         = { SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
               SYSEX_UNUSED_MANU_ID, SYSEX_PING_COMMAND_ID };
 
-    const u8 PONG_SEQUENCE[]
-        = { SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
-              SYSEX_UNUSED_MANU_ID, SYSEX_PONG_COMMAND_ID };
-
     if (memcmp(GENERAL_MIDI_RESET_SEQUENCE, data, length) == 0) {
         generalMidiReset();
     } else if (memcmp(REMAP_SEQUENCE, data, sizeof(REMAP_SEQUENCE)) == 0) {
         remapChannel(data[4], data[5]);
     } else if (memcmp(PING_SEQUENCE, data, length) == 0) {
-        comm_write(0xF0);
-        for (u16 i = 0; i < sizeof(PING_SEQUENCE); i++) {
-
-            comm_write(PONG_SEQUENCE[i]);
-        }
-        comm_write(0xF7);
+        sendPong();
     }
+}
+
+static void sendPong(void)
+{
+    const u8 SYSEX_PONG_COMMAND_ID = 0x02;
+
+    const u8 pongSequence[]
+        = { SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
+              SYSEX_UNUSED_MANU_ID, SYSEX_PONG_COMMAND_ID };
+
+    midi_sender_send_sysex(pongSequence, sizeof(pongSequence));
 }
 
 static void remapChannel(u8 midiChannel, u8 deviceChannel)
