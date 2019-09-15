@@ -37,6 +37,10 @@ static const VTable FM_VTable
     = { midi_fm_noteOn, midi_fm_noteOff, midi_fm_channelVolume,
           midi_fm_pitchBend, midi_fm_program, midi_fm_allNotesOff };
 
+static const VTable NOP_VTable
+    = { midi_nop_noteOn, midi_nop_noteOff, midi_nop_channelVolume,
+          midi_nop_pitchBend, midi_nop_program, midi_nop_allNotesOff };
+
 static const ChannelMapping DefaultChannelMappings[MIDI_CHANNELS]
     = { { &FM_VTable, 0 }, { &FM_VTable, 1 }, { &FM_VTable, 2 },
           { &FM_VTable, 3 }, { &FM_VTable, 4 }, { &FM_VTable, 5 },
@@ -372,12 +376,15 @@ void midi_sysex(u8* data, u16 length)
 static void remapChannel(u8 midiChannel, u8 deviceChannel)
 {
     ChannelMapping* mapping = channelMapping(midiChannel);
-    if (deviceChannel >= MIN_PSG_CHAN) {
+    if (deviceChannel < MIN_PSG_CHAN) {
+        mapping->channel = deviceChannel;
+        mapping->ops = &FM_VTable;
+    } else if (deviceChannel <= MAX_PSG_CHAN) {
         mapping->channel = deviceChannel - MIN_PSG_CHAN;
         mapping->ops = &PSG_VTable;
     } else {
-        mapping->channel = deviceChannel;
-        mapping->ops = &FM_VTable;
+        mapping->channel = 0;
+        mapping->ops = &NOP_VTable;
     }
 }
 

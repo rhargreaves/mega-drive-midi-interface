@@ -146,10 +146,10 @@ _Note: Documentation on the YM2612 frequently muddles the second and third opera
 
 The interface supports the following SysEx messages:
 
-| Name               | Sequence            | Description                                                                                                  |
-| ------------------ | ------------------- | ------------------------------------------------------------------------------------------------------------ |
-| General MIDI Reset | `7E 7F 09 01`       | Force all notes off on all channels                                                                          |
-| Remap MIDI Channel | `00 22 77 00 xx yy` | Remap MIDI channel _xx_ to device channel _yy_<br/>_xx_ = MIDI channel (0-15)<br/>_yy_ = FM (0-5), PSG (6-9) |
+| Name               | Sequence            | Description                                                                                                                    |
+| ------------------ | ------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| General MIDI Reset | `7E 7F 09 01`       | Force all notes off on all channels                                                                                            |
+| Remap MIDI Channel | `00 22 77 00 xx yy` | Remap MIDI channel _xx_ to device channel _yy_<br/>_xx_ = MIDI channel (0-15)<br/>_yy_ = FM (0-5), PSG (6-9), unassigned (127) |
 
 All other messages are ignored.
 
