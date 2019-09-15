@@ -81,7 +81,9 @@ MD_MOCKS=SYS_setVIntCallback \
 	SPR_setAnimAndFrame \
 	VDP_setPaletteColors \
 	ssf_usb_read \
-    ssf_usb_rd_ready
+    ssf_usb_rd_ready \
+	ssf_usb_write \
+	ssf_usb_wr_ready
 
 LDFLAGS=-ffreestanding -l cmocka -L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src
 LDFLAGS+=$(foreach MOCK,$(MD_MOCKS),-Wl,--wrap=$(MOCK))

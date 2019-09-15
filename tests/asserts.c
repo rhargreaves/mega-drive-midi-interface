@@ -15,6 +15,13 @@ void stub_usb_receive_byte(u8 value)
     will_return(__wrap_ssf_usb_read, value);
 }
 
+void expect_usb_sent_byte(u8 value)
+{
+    will_return(__wrap_ssf_usb_wr_ready, 1);
+    expect_value(__wrap_ssf_usb_write, data, value);
+    will_return(__wrap_ssf_usb_write, value);
+}
+
 void stub_comm_read_returns_midi_event(u8 status, u8 data, u8 data2)
 {
     will_return(__wrap_comm_read, status);

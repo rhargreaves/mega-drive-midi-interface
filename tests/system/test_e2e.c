@@ -9,6 +9,12 @@
 #include "wraps.h"
 #include <cmocka.h>
 
+static const u8 SYSEX_START = 0xF0;
+static const u8 SYSEX_EXTENDED_MANU_ID_SECTION = 0x00;
+static const u8 SYSEX_UNUSED_EUROPEAN_SECTION = 0x22;
+static const u8 SYSEX_UNUSED_MANU_ID = 0x77;
+static const u8 SYSEX_END = 0xF7;
+
 static int test_e2e_setup(void** state)
 {
     comm_resetCounts();
@@ -183,14 +189,9 @@ static void test_general_midi_reset_sysex_stops_all_notes(void** state)
 
 static void test_remap_midi_channel_1_to_psg_channel_1()
 {
-    const u8 SYSEX_START = 0xF0;
-    const u8 SYSEX_EXTENDED_MANU_ID_SECTION = 0x00;
-    const u8 SYSEX_UNUSED_EUROPEAN_SECTION = 0x22;
-    const u8 SYSEX_UNUSED_MANU_ID = 0x77;
     const u8 SYSEX_REMAP_COMMAND_ID = 0x00;
     const u8 SYSEX_REMAP_MIDI_CHANNEL = 0x00;
     const u8 SYSEX_REMAP_DESTINATION_FIRST_PSG_CHANNEL = 0x06;
-    const u8 SYSEX_END = 0xF7;
 
     const u8 sysExRemapSequence[] = { SYSEX_START,
         SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
@@ -214,6 +215,30 @@ static void test_remap_midi_channel_1_to_psg_channel_1()
     expect_any(__wrap_PSG_setFrequency, value);
     expect_value(__wrap_PSG_setEnvelope, channel, 0);
     expect_value(__wrap_PSG_setEnvelope, value, 0);
+
+    interface_tick();
+}
+
+static void test_pong_received_after_ping_sent()
+{
+    const u8 SYSEX_PING_COMMAND_ID = 0x01;
+    const u8 SYSEX_PONG_COMMAND_ID = 0x02;
+
+    const u8 sysExPingSequence[] = { SYSEX_START,
+        SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
+        SYSEX_UNUSED_MANU_ID, SYSEX_PING_COMMAND_ID, SYSEX_END };
+
+    const u8 sysExPongSequence[] = { SYSEX_START,
+        SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
+        SYSEX_UNUSED_MANU_ID, SYSEX_PONG_COMMAND_ID, SYSEX_END };
+
+    for (int i = 0; i < sizeof(sysExPingSequence); i++) {
+        stub_usb_receive_byte(sysExPingSequence[i]);
+    }
+
+    for (int i = 0; i < sizeof(sysExPongSequence); i++) {
+        expect_usb_sent_byte(sysExPongSequence[i]);
+    }
 
     interface_tick();
 }

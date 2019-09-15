@@ -5,6 +5,7 @@
 #include "midi_nop.h"
 #include "midi_psg.h"
 #include "psg_chip.h"
+#include "ssf.h"
 #include "synth.h"
 #include <stdbool.h>
 
@@ -361,15 +362,39 @@ void midi_sysex(u8* data, u16 length)
     const u8 SYSEX_UNUSED_EUROPEAN_SECTION = 0x22;
     const u8 SYSEX_UNUSED_MANU_ID = 0x77;
     const u8 SYSEX_REMAP_COMMAND_ID = 0x00;
+    const u8 SYSEX_PING_COMMAND_ID = 0x01;
+    const u8 SYSEX_PONG_COMMAND_ID = 0x02;
 
     const u8 REMAP_SEQUENCE[]
         = { SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
               SYSEX_UNUSED_MANU_ID, SYSEX_REMAP_COMMAND_ID };
 
+    const u8 PING_SEQUENCE[]
+        = { SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
+              SYSEX_UNUSED_MANU_ID, SYSEX_PING_COMMAND_ID };
+
+    const u8 PONG_SEQUENCE[]
+        = { SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
+              SYSEX_UNUSED_MANU_ID, SYSEX_PONG_COMMAND_ID };
+
     if (memcmp(GENERAL_MIDI_RESET_SEQUENCE, data, length) == 0) {
         generalMidiReset();
     } else if (memcmp(REMAP_SEQUENCE, data, sizeof(REMAP_SEQUENCE)) == 0) {
         remapChannel(data[4], data[5]);
+    } else if (memcmp(PING_SEQUENCE, data, length) == 0) {
+
+        while (!ssf_usb_wr_ready())
+            ;
+        ssf_usb_write(0xF0);
+        for (u16 i = 0; i < sizeof(PING_SEQUENCE); i++) {
+
+            while (!ssf_usb_wr_ready())
+                ;
+            ssf_usb_write(PONG_SEQUENCE[i]);
+        }
+        while (!ssf_usb_wr_ready())
+            ;
+        ssf_usb_write(0xF7);
     }
 }
 

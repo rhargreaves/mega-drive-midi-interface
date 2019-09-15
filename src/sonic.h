@@ -1,6 +1,5 @@
 #pragma once
 #include <types.h>
-
 #include <sprite_eng.h>
 
 void sonic_init(const SpriteDefinition* sonicSprite);
