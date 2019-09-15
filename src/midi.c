@@ -62,6 +62,7 @@ static void setPolyphonic(bool state);
 static void cc(u8 chan, u8 controller, u8 value);
 static void generalMidiReset(void);
 static ChannelMapping* channelMapping(u8 midiChannel);
+static void remapChannel(u8 midiChannel, u8 deviceChannel);
 
 void midi_init(void)
 {
@@ -364,16 +365,19 @@ void midi_sysex(u8* data, u16 length)
     if (memcmp(GENERAL_MIDI_RESET_SEQUENCE, data, length) == 0) {
         generalMidiReset();
     } else if (memcmp(REMAP_SEQUENCE, data, sizeof(REMAP_SEQUENCE)) == 0) {
-        u8 midiChannel = data[4];
-        u8 deviceChannel = data[5];
-        ChannelMapping* mapping = channelMapping(midiChannel);
-        if (deviceChannel >= MIN_PSG_CHAN) {
-            mapping->channel = deviceChannel - MIN_PSG_CHAN;
-            mapping->ops = &PSG_VTable;
-        } else {
-            mapping->channel = deviceChannel;
-            mapping->ops = &FM_VTable;
-        }
+        remapChannel(data[4], data[5]);
+    }
+}
+
+static void remapChannel(u8 midiChannel, u8 deviceChannel)
+{
+    ChannelMapping* mapping = channelMapping(midiChannel);
+    if (deviceChannel >= MIN_PSG_CHAN) {
+        mapping->channel = deviceChannel - MIN_PSG_CHAN;
+        mapping->ops = &PSG_VTable;
+    } else {
+        mapping->channel = deviceChannel;
+        mapping->ops = &FM_VTable;
     }
 }
 
