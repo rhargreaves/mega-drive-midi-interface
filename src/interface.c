@@ -98,11 +98,6 @@ static void controlChange(u8 status)
     midi_cc(chan, controller, value);
 }
 
-bool interface_polyphonic(void)
-{
-    return midi_getPolyphonic();
-}
-
 static void noteOn(u8 status)
 {
     u8 chan = STATUS_LOWER(status);

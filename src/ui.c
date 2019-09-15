@@ -238,7 +238,7 @@ static void printErrorText(const char* text)
 static void printPolyphonicMode(void)
 {
     static bool lastStatus = false;
-    bool status = interface_polyphonic();
+    bool status = midi_getPolyphonic();
     if (status != lastStatus) {
         VDP_setTextPalette(PAL2);
         if (status) {
