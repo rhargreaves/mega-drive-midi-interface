@@ -26,10 +26,7 @@ static const u16 B = 95;
 
 static int test_midi_setup(UNUSED void** state)
 {
-    midi_reset();
-    midi_psg_init();
-    midi_fm_init();
-
+    midi_init();
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         expect_any(__wrap_synth_pitch, channel);
         expect_any(__wrap_synth_pitch, octave);
@@ -960,7 +957,7 @@ static void test_midi_sysex_ignores_unknown_sysex(UNUSED void** state)
         sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
 }
 
-static void test_midi_sysex_remaps_midi_channel(UNUSED void** state)
+static void test_midi_sysex_remaps_midi_channel_to_psg(UNUSED void** state)
 {
     const u8 SYSEX_EXTENDED_MANU_ID_SECTION = 0x00;
     const u8 SYSEX_UNUSED_EUROPEAN_SECTION = 0x22;
@@ -980,6 +977,32 @@ static void test_midi_sysex_remaps_midi_channel(UNUSED void** state)
     expect_any(__wrap_psg_frequency, freq);
     expect_value(__wrap_psg_attenuation, channel, 0);
     expect_any(__wrap_psg_attenuation, attenuation);
+
+    __real_midi_noteOn(0, 60, 127);
+}
+
+static void test_midi_sysex_remaps_midi_channel_to_fm(UNUSED void** state)
+{
+    const u8 SYSEX_EXTENDED_MANU_ID_SECTION = 0x00;
+    const u8 SYSEX_UNUSED_EUROPEAN_SECTION = 0x22;
+    const u8 SYSEX_UNUSED_MANU_ID = 0x77;
+    const u8 SYSEX_REMAP_COMMAND_ID = 0x00;
+    const u8 SYSEX_REMAP_MIDI_CHANNEL = 0x00;
+    const u8 SYSEX_REMAP_DESTINATION_SECOND_FM_CHANNEL = 0x01;
+
+    u8 sequence[] = { SYSEX_EXTENDED_MANU_ID_SECTION,
+        SYSEX_UNUSED_EUROPEAN_SECTION, SYSEX_UNUSED_MANU_ID,
+        SYSEX_REMAP_COMMAND_ID, SYSEX_REMAP_MIDI_CHANNEL,
+        SYSEX_REMAP_DESTINATION_SECOND_FM_CHANNEL };
+
+    __real_midi_sysex(sequence, sizeof(sequence));
+
+    expect_value(__wrap_synth_pitch, channel, 1);
+    expect_any(__wrap_synth_pitch, octave);
+    expect_any(__wrap_synth_pitch, freqNumber);
+    expect_any(__wrap_synth_volume, channel);
+    expect_any(__wrap_synth_volume, volume);
+    expect_value(__wrap_synth_noteOn, channel, 1);
 
     __real_midi_noteOn(0, 60, 127);
 }

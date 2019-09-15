@@ -37,12 +37,15 @@ static const VTable FM_VTable
     = { midi_fm_noteOn, midi_fm_noteOff, midi_fm_channelVolume,
           midi_fm_pitchBend, midi_fm_program, midi_fm_allNotesOff };
 
-static ChannelMapping ChannelMappings[MIDI_CHANNELS] = { { &FM_VTable, 0 },
-    { &FM_VTable, 1 }, { &FM_VTable, 2 }, { &FM_VTable, 3 }, { &FM_VTable, 4 },
-    { &FM_VTable, 5 }, { &PSG_VTable, 0 }, { &PSG_VTable, 1 },
-    { &PSG_VTable, 2 }, { &PSG_VTable, 3 }, { &PSG_VTable, 0 },
-    { &PSG_VTable, 1 }, { &PSG_VTable, 2 }, { &PSG_VTable, 0 },
-    { &PSG_VTable, 1 }, { &PSG_VTable, 2 } };
+static const ChannelMapping DefaultChannelMappings[MIDI_CHANNELS]
+    = { { &FM_VTable, 0 }, { &FM_VTable, 1 }, { &FM_VTable, 2 },
+          { &FM_VTable, 3 }, { &FM_VTable, 4 }, { &FM_VTable, 5 },
+          { &PSG_VTable, 0 }, { &PSG_VTable, 1 }, { &PSG_VTable, 2 },
+          { &PSG_VTable, 3 }, { &PSG_VTable, 0 }, { &PSG_VTable, 1 },
+          { &PSG_VTable, 2 }, { &PSG_VTable, 0 }, { &PSG_VTable, 1 },
+          { &PSG_VTable, 2 } };
+
+static ChannelMapping ChannelMappings[MIDI_CHANNELS];
 
 static u8 polyphonicPitches[MAX_FM_CHANS];
 static ControlChange lastUnknownControlChange;
@@ -60,13 +63,17 @@ static void cc(u8 chan, u8 controller, u8 value);
 static void generalMidiReset(void);
 static ChannelMapping* channelMapping(u8 midiChannel);
 
-void midi_reset(void)
+void midi_init(void)
 {
+    memcpy(&ChannelMappings, DefaultChannelMappings, sizeof(ChannelMappings));
     memset(&timing, 0, sizeof(Timing));
     memset(&lastUnknownControlChange, 0, sizeof(ControlChange));
     memset(&polyphonicPitches, 0, sizeof(polyphonicPitches));
     overflow = false;
     polyphonic = false;
+
+    midi_psg_init();
+    midi_fm_init();
 }
 
 static ChannelMapping* channelMapping(u8 midiChannel)
@@ -360,8 +367,13 @@ void midi_sysex(u8* data, u16 length)
         u8 midiChannel = data[4];
         u8 deviceChannel = data[5];
         ChannelMapping* mapping = channelMapping(midiChannel);
-        mapping->channel = deviceChannel - MIN_PSG_CHAN;
-        mapping->ops = &PSG_VTable;
+        if (deviceChannel >= MIN_PSG_CHAN) {
+            mapping->channel = deviceChannel - MIN_PSG_CHAN;
+            mapping->ops = &PSG_VTable;
+        } else {
+            mapping->channel = deviceChannel;
+            mapping->ops = &FM_VTable;
+        }
     }
 }
 
