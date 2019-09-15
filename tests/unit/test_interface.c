@@ -3,8 +3,8 @@
 #include <stddef.h>
 
 #include "asserts.h"
-#include "interface.h"
 #include "midi.h"
+#include "midi_receiver.h"
 #include "unused.h"
 #include "wraps.h"
 #include <cmocka.h>
@@ -21,7 +21,7 @@
 #define STATUS_SYSEX_START 0xF0
 #define SYSEX_END 0xF7
 
-static void test_interface_tick_passes_note_on_to_midi_processor(
+static void test_midi_receiver_read_passes_note_on_to_midi_processor(
     UNUSED void** state)
 {
     const u8 expectedData = 60;
@@ -37,11 +37,11 @@ static void test_interface_tick_passes_note_on_to_midi_processor(
         expect_value(__wrap_midi_noteOn, pitch, expectedData);
         expect_value(__wrap_midi_noteOn, velocity, expectedData2);
 
-        interface_tick();
+        midi_receiver_read();
     }
 }
 
-static void test_interface_tick_passes_note_off_to_midi_processor(
+static void test_midi_receiver_read_passes_note_off_to_midi_processor(
     UNUSED void** state)
 {
     u8 expectedStatus = 0x80;
@@ -54,7 +54,7 @@ static void test_interface_tick_passes_note_off_to_midi_processor(
     expect_value(__wrap_midi_noteOff, chan, 0);
     expect_value(__wrap_midi_noteOff, pitch, expectedData);
 
-    interface_tick();
+    midi_receiver_read();
 }
 
 static void test_interface_does_nothing_for_control_change(UNUSED void** state)
@@ -66,9 +66,9 @@ static void test_interface_does_nothing_for_control_change(UNUSED void** state)
     stub_comm_read_returns_midi_event(
         expectedStatus, expectedData, expectedData2);
 
-    interface_tick();
-    interface_tick();
-    interface_tick();
+    midi_receiver_read();
+    midi_receiver_read();
+    midi_receiver_read();
 }
 
 static void test_interface_sets_unknown_event_for_unknown_status(
@@ -78,9 +78,9 @@ static void test_interface_sets_unknown_event_for_unknown_status(
 
     will_return(__wrap_comm_read, expectedStatus);
 
-    interface_tick();
+    midi_receiver_read();
 
-    assert_int_equal(interface_lastUnknownStatus(), expectedStatus);
+    assert_int_equal(midi_receiver_lastUnknownStatus(), expectedStatus);
 }
 
 static void test_interface_sets_unknown_event_for_unknown_system_message(
@@ -90,9 +90,9 @@ static void test_interface_sets_unknown_event_for_unknown_system_message(
 
     will_return(__wrap_comm_read, expectedStatus);
 
-    interface_tick();
+    midi_receiver_read();
 
-    assert_int_equal(interface_lastUnknownStatus(), expectedStatus);
+    assert_int_equal(midi_receiver_lastUnknownStatus(), expectedStatus);
 }
 
 static void test_interface_sets_CC(UNUSED void** state)
@@ -108,7 +108,7 @@ static void test_interface_sets_CC(UNUSED void** state)
     expect_value(__wrap_midi_cc, controller, expectedController);
     expect_value(__wrap_midi_cc, value, expectedValue);
 
-    interface_tick();
+    midi_receiver_read();
 
     ControlChange* cc = midi_lastUnknownCC();
     assert_int_not_equal(cc->controller, expectedController);
@@ -128,7 +128,7 @@ static void test_interface_sets_pitch_bend(UNUSED void** state)
     expect_value(__wrap_midi_pitchBend, chan, 0);
     expect_value(__wrap_midi_pitchBend, bend, expectedValue);
 
-    interface_tick();
+    midi_receiver_read();
 }
 
 static void test_interface_increments_midi_clock(UNUSED void** state)
@@ -138,7 +138,7 @@ static void test_interface_increments_midi_clock(UNUSED void** state)
 
     expect_function_call(__wrap_midi_clock);
 
-    interface_tick();
+    midi_receiver_read();
 }
 
 static void test_interface_starts_midi(UNUSED void** state)
@@ -148,31 +148,31 @@ static void test_interface_starts_midi(UNUSED void** state)
 
     expect_function_call(__wrap_midi_start);
 
-    interface_tick();
+    midi_receiver_read();
 }
 
 static void test_interface_swallows_midi_stop(UNUSED void** state)
 {
-    interface_init();
+    midi_receiver_init();
 
     u8 status = STATUS_STOP;
     will_return(__wrap_comm_read, status);
 
-    interface_tick();
+    midi_receiver_read();
 
-    assert_int_equal(interface_lastUnknownStatus(), 0);
+    assert_int_equal(midi_receiver_lastUnknownStatus(), 0);
 }
 
 static void test_interface_swallows_midi_continue(UNUSED void** state)
 {
-    interface_init();
+    midi_receiver_init();
 
     u8 status = STATUS_CONTINUE;
     will_return(__wrap_comm_read, status);
 
-    interface_tick();
+    midi_receiver_read();
 
-    assert_int_equal(interface_lastUnknownStatus(), 0);
+    assert_int_equal(midi_receiver_lastUnknownStatus(), 0);
 }
 
 static void test_interface_sets_position(UNUSED void** state)
@@ -188,7 +188,7 @@ static void test_interface_sets_position(UNUSED void** state)
 
     expect_value(__wrap_midi_position, beat, beat);
 
-    interface_tick();
+    midi_receiver_read();
 }
 
 static void test_interface_sets_midi_program(UNUSED void** state)
@@ -202,7 +202,7 @@ static void test_interface_sets_midi_program(UNUSED void** state)
     expect_value(__wrap_midi_program, chan, 0);
     expect_value(__wrap_midi_program, program, program);
 
-    interface_tick();
+    midi_receiver_read();
 }
 
 static void test_interface_sends_sysex_to_midi_layer(UNUSED void** state)
@@ -217,5 +217,5 @@ static void test_interface_sends_sysex_to_midi_layer(UNUSED void** state)
     expect_memory(__wrap_midi_sysex, data, &data, 1);
     expect_value(__wrap_midi_sysex, length, 1);
 
-    interface_tick();
+    midi_receiver_read();
 }

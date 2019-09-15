@@ -1,5 +1,5 @@
-#include "interface.h"
 #include "midi.h"
+#include "midi_receiver.h"
 #include "synth.h"
 #include "sys.h"
 #include "ui.h"
@@ -11,9 +11,9 @@ int main(void)
     synth_init();
     ui_init();
     midi_init();
-    interface_init();
+    midi_receiver_init();
     SYS_setVIntCallback(vsync);
-    interface_loop();
+    midi_receiver_perpectual_read();
 }
 
 static void vsync(void)

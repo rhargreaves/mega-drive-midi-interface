@@ -18,8 +18,10 @@
 int main(void)
 {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_interface_tick_passes_note_on_to_midi_processor),
-        cmocka_unit_test(test_interface_tick_passes_note_off_to_midi_processor),
+        cmocka_unit_test(
+            test_midi_receiver_read_passes_note_on_to_midi_processor),
+        cmocka_unit_test(
+            test_midi_receiver_read_passes_note_off_to_midi_processor),
         cmocka_unit_test(test_interface_does_nothing_for_control_change),
         cmocka_unit_test(test_interface_sets_unknown_event_for_unknown_status),
         cmocka_unit_test(

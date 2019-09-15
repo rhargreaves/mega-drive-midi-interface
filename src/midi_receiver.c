@@ -1,4 +1,4 @@
-#include "interface.h"
+#include "midi_receiver.h"
 #include "comm.h"
 #include "midi.h"
 #include "synth.h"
@@ -34,19 +34,19 @@ static void program(u8 status);
 static u16 read_14bit_value(void);
 static void readSysEx(void);
 
-void interface_init(void)
+void midi_receiver_init(void)
 {
     lastUnknownStatus = 0;
 }
 
-void interface_loop(void)
+void midi_receiver_perpectual_read(void)
 {
     while (TRUE) {
-        interface_tick();
+        midi_receiver_read();
     }
 }
 
-void interface_tick(void)
+void midi_receiver_read(void)
 {
     u8 status = comm_read();
     u8 event = STATUS_UPPER(status);
@@ -75,7 +75,7 @@ void interface_tick(void)
     }
 }
 
-u8 interface_lastUnknownStatus(void)
+u8 midi_receiver_lastUnknownStatus(void)
 {
     return lastUnknownStatus;
 }

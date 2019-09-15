@@ -4,8 +4,8 @@
 
 #include "asserts.h"
 #include "comm.h"
-#include "interface.h"
 #include "midi.h"
+#include "midi_receiver.h"
 #include "wraps.h"
 #include <cmocka.h>
 
@@ -46,7 +46,7 @@ static void test_midi_note_on_event_sent_to_ym2612(void** state)
 
     expect_ym2612_write_reg(0, 0x28, 0xF0);
 
-    interface_tick();
+    midi_receiver_read();
 }
 
 static void test_midi_pitch_bend_sent_to_ym2612(void** state)
@@ -63,7 +63,7 @@ static void test_midi_pitch_bend_sent_to_ym2612(void** state)
     expect_ym2612_write_channel(0, 0xA4, 0x1A);
     expect_ym2612_write_channel(0, 0xA0, 0x77);
 
-    interface_tick();
+    midi_receiver_read();
 }
 
 static void test_polyphonic_midi_sent_to_separate_ym2612_channels(void** state)
@@ -80,7 +80,7 @@ static void test_polyphonic_midi_sent_to_separate_ym2612_channels(void** state)
     stub_usb_receive_byte(ccPolyphonic);
     stub_usb_receive_byte(ccPolyphonicOnValue);
 
-    interface_tick();
+    midi_receiver_read();
 
     stub_usb_receive_byte(noteOnStatus);
     stub_usb_receive_byte(noteOnKey1);
@@ -91,7 +91,7 @@ static void test_polyphonic_midi_sent_to_separate_ym2612_channels(void** state)
     expect_ym2612_write_channel(0, 0xA0, 0x8D);
     expect_ym2612_write_reg(0, 0x28, 0xF0);
 
-    interface_tick();
+    midi_receiver_read();
 
     stub_usb_receive_byte(noteOnStatus);
     stub_usb_receive_byte(noteOnKey2);
@@ -102,7 +102,7 @@ static void test_polyphonic_midi_sent_to_separate_ym2612_channels(void** state)
     expect_ym2612_write_channel(1, 0xA0, 0xB4);
     expect_ym2612_write_reg(0, 0x28, 0xF1);
 
-    interface_tick();
+    midi_receiver_read();
 }
 
 static void test_psg_audible_if_note_on_event_triggered(void** state)
@@ -121,7 +121,7 @@ static void test_psg_audible_if_note_on_event_triggered(void** state)
     expect_any(__wrap_PSG_setEnvelope, channel);
     expect_any(__wrap_PSG_setEnvelope, value);
 
-    interface_tick();
+    midi_receiver_read();
 }
 
 static void
@@ -137,7 +137,7 @@ test_psg_not_audible_if_midi_channel_volume_set_and_there_is_no_note_on_event(
     stub_usb_receive_byte(ccVolume);
     stub_usb_receive_byte(ccVolumeValue);
 
-    interface_tick();
+    midi_receiver_read();
 }
 
 static void test_general_midi_reset_sysex_stops_all_notes(void** state)
@@ -156,7 +156,7 @@ static void test_general_midi_reset_sysex_stops_all_notes(void** state)
     expect_ym2612_write_channel(0, 0xA0, 0x8D);
     expect_ym2612_write_reg(0, 0x28, 0xF0);
 
-    interface_tick();
+    midi_receiver_read();
 
     stub_usb_receive_byte(noteOnStatus + MIN_PSG_CHAN);
     stub_usb_receive_byte(noteOnKey);
@@ -167,7 +167,7 @@ static void test_general_midi_reset_sysex_stops_all_notes(void** state)
     expect_value(__wrap_PSG_setEnvelope, channel, 0);
     expect_value(__wrap_PSG_setEnvelope, value, 0);
 
-    interface_tick();
+    midi_receiver_read();
 
     print_message("Sending reset\n");
     const u8 sysExGeneralMidiResetSequence[]
@@ -184,7 +184,7 @@ static void test_general_midi_reset_sysex_stops_all_notes(void** state)
     expect_ym2612_write_reg(0, 0x28, 0x06);
     expect_value(__wrap_PSG_setEnvelope, channel, 0);
     expect_value(__wrap_PSG_setEnvelope, value, 0xF);
-    interface_tick();
+    midi_receiver_read();
 }
 
 static void test_remap_midi_channel_1_to_psg_channel_1()
@@ -201,7 +201,7 @@ static void test_remap_midi_channel_1_to_psg_channel_1()
         stub_usb_receive_byte(sysExRemapSequence[i]);
     }
 
-    interface_tick();
+    midi_receiver_read();
 
     const u8 noteOnStatus = 0x90;
     const u8 noteOnKey = 48;
@@ -216,7 +216,7 @@ static void test_remap_midi_channel_1_to_psg_channel_1()
     expect_value(__wrap_PSG_setEnvelope, channel, 0);
     expect_value(__wrap_PSG_setEnvelope, value, 0);
 
-    interface_tick();
+    midi_receiver_read();
 }
 
 static void test_pong_received_after_ping_sent()
@@ -240,5 +240,5 @@ static void test_pong_received_after_ping_sent()
         expect_usb_sent_byte(sysExPongSequence[i]);
     }
 
-    interface_tick();
+    midi_receiver_read();
 }

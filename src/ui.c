@@ -1,7 +1,7 @@
 #include "ui.h"
 #include "comm.h"
-#include "interface.h"
 #include "midi.h"
+#include "midi_receiver.h"
 #include "psg_chip.h"
 #ifdef SONIC_RUNNER
 #include "sonic.h"
@@ -195,7 +195,7 @@ static void printLastError(void)
     static u8 lastStatus = 0;
     static char text[MAX_ERROR_X];
 
-    u8 unknownStatus = interface_lastUnknownStatus();
+    u8 unknownStatus = midi_receiver_lastUnknownStatus();
     if (unknownStatus != lastStatus && unknownStatus != 0) {
         sprintf(text, "Unknown Status %02X", unknownStatus);
         printErrorText(text);
