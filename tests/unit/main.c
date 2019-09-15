@@ -3,8 +3,8 @@
 #include <stddef.h>
 
 #include "test_comm.c"
-#include "test_interface.c"
 #include "test_midi.c"
+#include "test_midi_receiver.c"
 #include "test_psg_chip.c"
 #include "test_sonic.c"
 #include "test_synth.c"
@@ -22,19 +22,20 @@ int main(void)
             test_midi_receiver_read_passes_note_on_to_midi_processor),
         cmocka_unit_test(
             test_midi_receiver_read_passes_note_off_to_midi_processor),
-        cmocka_unit_test(test_interface_does_nothing_for_control_change),
-        cmocka_unit_test(test_interface_sets_unknown_event_for_unknown_status),
+        cmocka_unit_test(test_midi_receiver_does_nothing_for_control_change),
         cmocka_unit_test(
-            test_interface_sets_unknown_event_for_unknown_system_message),
-        cmocka_unit_test(test_interface_sets_CC),
-        cmocka_unit_test(test_interface_sets_pitch_bend),
-        cmocka_unit_test(test_interface_increments_midi_clock),
-        cmocka_unit_test(test_interface_starts_midi),
-        cmocka_unit_test(test_interface_swallows_midi_stop),
-        cmocka_unit_test(test_interface_swallows_midi_continue),
-        cmocka_unit_test(test_interface_sets_position),
-        cmocka_unit_test(test_interface_sets_midi_program),
-        cmocka_unit_test(test_interface_sends_sysex_to_midi_layer),
+            test_midi_receiver_sets_unknown_event_for_unknown_status),
+        cmocka_unit_test(
+            test_midi_receiver_sets_unknown_event_for_unknown_system_message),
+        cmocka_unit_test(test_midi_receiver_sets_CC),
+        cmocka_unit_test(test_midi_receiver_sets_pitch_bend),
+        cmocka_unit_test(test_midi_receiver_increments_midi_clock),
+        cmocka_unit_test(test_midi_receiver_starts_midi),
+        cmocka_unit_test(test_midi_receiver_swallows_midi_stop),
+        cmocka_unit_test(test_midi_receiver_swallows_midi_continue),
+        cmocka_unit_test(test_midi_receiver_sets_position),
+        cmocka_unit_test(test_midi_receiver_sets_midi_program),
+        cmocka_unit_test(test_midi_receiver_sends_sysex_to_midi_layer),
 
         midi_test(test_midi_triggers_synth_note_on),
         midi_test(test_midi_triggers_synth_note_on_with_velocity),
