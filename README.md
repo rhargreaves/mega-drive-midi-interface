@@ -30,6 +30,22 @@ Control the Yamaha YM2612 and PSG chips of the SEGA Mega Drive via MIDI.
 
 You can download pre-built ROMs from [releases](https://github.com/rhargreaves/mega-drive-midi-interface/releases).
 
+## Build & Test
+
+Unit & system tests are compiled and ran as x86 binaries using CMocka. Mega Drive interfaces are mocked.
+
+Docker:
+
+```sh
+./docker-make
+```
+
+Linux (requires `cmake` & [gendev](https://github.com/kubilus1/gendev)):
+
+```sh
+make
+```
+
 ## FM Presets
 
 Sending a MIDI program change (0xC) message will select a pre-defined FM preset.
@@ -77,7 +93,7 @@ These are supported across FM and PSG channels:
 | 123 | All Notes Off  | FM: Key Off                | 0                                                  |
 |     |                | PSG: Max. Attenuation      | 0                                                  |
 
-## FM Parameters
+### FM Parameters
 
 These only apply to channels mapped to FM channels:
 
@@ -116,7 +132,7 @@ _Range determines how the possible 128 MIDI values are divided to give the respe
 | 70-73 | Amplitude Modulation (AM) | 2     |
 | 90-93 | SSG-EG                    | 16    |
 
-## FM Algorithm Operator Routing
+### FM Algorithm Operator Routing
 
 Output operators are coloured blue. Operator 1 can also feedback into itself (see CC 15). Operators are numbered in the same order as the register placement (e.g. 0x30, 0x34, 0x38, 0x3C).
 
@@ -133,7 +149,7 @@ Output operators are coloured blue. Operator 1 can also feedback into itself (se
 
 _Note: Documentation on the YM2612 frequently muddles the second and third operators of algorithms 0 to 4 and 6. This is likely due to the original SEGA documentation incorrectly labelling the operator register addresses in sequential order, rather than 1st, 3rd, 2nd, 4th. That said, it seems to be generally common to keep the sequential order of the register addresses and simply correct the layout diagrams. This project favours this approach._
 
-## System Real-Time Messages
+### System Real-Time Messages
 
 | Status | Description           | Effect                 |
 | ------ | --------------------- | ---------------------- |
@@ -143,7 +159,7 @@ _Note: Documentation on the YM2612 frequently muddles the second and third opera
 | 0xFB   | Continue              | None                   |
 | 0xFC   | Stop                  | None                   |
 
-## System Exclusive Messages
+### System Exclusive Messages
 
 | Name               | Sequence            | Description                                                                                                                    |
 | ------------------ | ------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
@@ -152,22 +168,6 @@ _Note: Documentation on the YM2612 frequently muddles the second and third opera
 | Ping               | `00 22 77 01`       | Interface responds with a _pong_ SysEx reply (`00 22 77 02`). Intended for use in measuring MIDI round-trip latency.           |
 
 All other messages are ignored.
-
-## Build & Test
-
-Unit & system tests are compiled and ran as x86 binaries using CMocka. Mega Drive interfaces are mocked.
-
-Docker:
-
-```sh
-./docker-make
-```
-
-Linux (requires `cmake` & [gendev](https://github.com/kubilus1/gendev)):
-
-```sh
-make
-```
 
 ## Stretch Goals
 
