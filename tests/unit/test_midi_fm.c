@@ -412,7 +412,7 @@ static void test_midi_fm_note_on_percussion_channel_sets_percussion_preset(
         sizeof(P_BANK_0_INST_30_CASTANETS));
 
     expect_synth_volume_any();
-    expect_synth_pitch_any();
+    expect_synth_pitch(FM_CHANNEL, 0, 0x337);
     expect_value(__wrap_synth_noteOn, channel, FM_CHANNEL);
 
     __real_midi_noteOn(MIDI_PERCUSSION_CHANNEL, MIDI_KEY, MAX_MIDI_VOLUME);

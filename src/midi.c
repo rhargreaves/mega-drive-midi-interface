@@ -76,7 +76,8 @@ static ChannelMapping* channelMapping(u8 midiChannel);
 static void remapChannel(u8 midiChannel, u8 deviceChannel);
 static void sendPong(void);
 
-void midi_init(Channel** defaultPresets, Channel** defaultPercussionPresets)
+void midi_init(
+    Channel** defaultPresets, PercussionPreset** defaultPercussionPresets)
 {
     memcpy(&ChannelMappings, DefaultChannelMappings, sizeof(ChannelMappings));
     memset(&timing, 0, sizeof(Timing));

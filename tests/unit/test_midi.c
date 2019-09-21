@@ -27,7 +27,7 @@ static int test_midi_setup(UNUSED void** state)
     P_BANK_0[30] = &P_BANK_0_INST_30_CASTANETS;
 
     expect_any(__wrap_synth_init, defaultPreset);
-    midi_init((Channel**)M_BANK_0, (Channel**)P_BANK_0);
+    midi_init((Channel**)M_BANK_0, (PercussionPreset**)P_BANK_0);
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         expect_synth_pitch_any();
 

@@ -28,9 +28,10 @@ static u8 pitchIsOutOfRange(u8 pitch);
 static u8 effectiveVolume(FmChannelState* channelState);
 
 static Channel** presets;
-static Channel** percussionPresets;
+static PercussionPreset** percussionPresets;
 
-void midi_fm_init(Channel** defaultPresets, Channel** defaultPercussionPresets)
+void midi_fm_init(
+    Channel** defaultPresets, PercussionPreset** defaultPercussionPresets)
 {
     presets = defaultPresets;
     percussionPresets = defaultPercussionPresets;
@@ -49,7 +50,9 @@ void midi_fm_noteOn(u8 chan, u8 pitch, u8 velocity)
     }
     FmChannelState* state = &FmChannelStates[chan];
     if (state->percussive) {
-        synth_preset(chan, percussionPresets[pitch]);
+        PercussionPreset* percussionPreset = percussionPresets[pitch];
+        synth_preset(chan, &percussionPreset->channel);
+        pitch = percussionPreset->key;
     }
     state->velocity = velocity;
     synth_volume(chan, effectiveVolume(state));

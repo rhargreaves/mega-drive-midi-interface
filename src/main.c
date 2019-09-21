@@ -17,7 +17,7 @@ int main(void)
 static void initAllModules(void)
 {
     ui_init();
-    midi_init((Channel**)M_BANK_0, (Channel**)P_BANK_0);
+    midi_init((Channel**)M_BANK_0, (PercussionPreset**)P_BANK_0);
     midi_receiver_init();
 }
 

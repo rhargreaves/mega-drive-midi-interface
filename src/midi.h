@@ -80,7 +80,8 @@ struct Timing {
     u16 clocks;
 };
 
-void midi_init(Channel** defaultPresets, Channel** defaultPercussionPresets);
+void midi_init(
+    Channel** defaultPresets, PercussionPreset** defaultPercussionPresets);
 void midi_noteOn(u8 chan, u8 pitch, u8 velocity);
 void midi_noteOff(u8 chan, u8 pitch);
 void midi_pitchBend(u8 chan, u16 bend);
