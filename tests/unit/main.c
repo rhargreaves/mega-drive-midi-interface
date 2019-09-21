@@ -4,7 +4,10 @@
 
 #include "test_comm.c"
 #include "test_midi.c"
+#include "test_midi_fm.c"
 #include "test_midi_receiver.c"
+#include "test_midi_sysex.c"
+#include "test_midi_timing.c"
 #include "test_psg_chip.c"
 #include "test_sonic.c"
 #include "test_synth.c"
