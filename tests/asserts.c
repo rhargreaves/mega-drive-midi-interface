@@ -81,3 +81,15 @@ void expect_synth_pitch(u8 channel, u8 octave, u16 freqNumber)
     expect_value(__wrap_synth_pitch, octave, octave);
     expect_value(__wrap_synth_pitch, freqNumber, freqNumber);
 }
+
+void expect_synth_volume(u8 channel, u8 volume)
+{
+    expect_value(__wrap_synth_volume, channel, channel);
+    expect_value(__wrap_synth_volume, volume, volume);
+}
+
+void expect_synth_volume_any(void)
+{
+    expect_any(__wrap_synth_volume, channel);
+    expect_any(__wrap_synth_volume, volume);
+}
