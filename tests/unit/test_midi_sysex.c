@@ -107,3 +107,11 @@ static void test_midi_sysex_unassigns_midi_channel(UNUSED void** state)
 
     __real_midi_noteOn(0, 60, 127);
 }
+
+static void test_midi_sysex_does_nothing_for_empty_payload(UNUSED void** state)
+{
+    const u16 length = 0;
+    u8 seq[1];
+
+    __real_midi_sysex(seq, length);
+}

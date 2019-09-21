@@ -12,6 +12,7 @@
 
 #define RANGE(value, range) (value / (128 / range))
 #define CHANNEL_UNASSIGNED 0x7F
+#define LENGTH_OF(x) (sizeof(x) / sizeof(x[0]))
 
 static const u8 SYSEX_EXTENDED_MANU_ID_SECTION = 0x00;
 static const u8 SYSEX_UNUSED_EUROPEAN_SECTION = 0x22;
@@ -360,12 +361,21 @@ Timing* midi_timing(void)
     return &timing;
 }
 
+static bool sysex_equal(const u8* sourceData, const u16 sourceLength,
+    const u8* comparisonData, const u16 comparisonLength)
+{
+    if (sourceLength < comparisonLength) {
+        return false;
+    }
+    return memcmp(sourceData, comparisonData, comparisonLength) == 0;
+}
+
 void midi_sysex(u8* data, u16 length)
 {
-    const u8 GENERAL_MIDI_RESET_SEQUENCE[] = { 0x7E, 0x7F, 0x09, 0x01 };
-
     const u8 SYSEX_REMAP_COMMAND_ID = 0x00;
     const u8 SYSEX_PING_COMMAND_ID = 0x01;
+
+    const u8 GENERAL_MIDI_RESET_SEQUENCE[] = { 0x7E, 0x7F, 0x09, 0x01 };
 
     const u8 REMAP_SEQUENCE[]
         = { SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
@@ -375,11 +385,14 @@ void midi_sysex(u8* data, u16 length)
         = { SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
               SYSEX_UNUSED_MANU_ID, SYSEX_PING_COMMAND_ID };
 
-    if (memcmp(GENERAL_MIDI_RESET_SEQUENCE, data, length) == 0) {
+    if (sysex_equal(data, length, GENERAL_MIDI_RESET_SEQUENCE,
+            LENGTH_OF(GENERAL_MIDI_RESET_SEQUENCE))) {
         generalMidiReset();
-    } else if (memcmp(REMAP_SEQUENCE, data, sizeof(REMAP_SEQUENCE)) == 0) {
+    } else if (sysex_equal(
+                   data, length, REMAP_SEQUENCE, LENGTH_OF(REMAP_SEQUENCE))) {
         remapChannel(data[4], data[5]);
-    } else if (memcmp(PING_SEQUENCE, data, length) == 0) {
+    } else if (sysex_equal(
+                   data, length, PING_SEQUENCE, LENGTH_OF(PING_SEQUENCE))) {
         sendPong();
     }
 }
