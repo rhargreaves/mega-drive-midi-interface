@@ -1,25 +1,4 @@
-#include <setjmp.h>
-#include <stdarg.h>
-#include <stddef.h>
-
-#include "asserts.h"
-#include "constants.h"
-#include "midi.h"
-#include "midi_psg.h"
-#include "psg_chip.h"
-#include "synth.h"
-#include "unused.h"
-#include <cmocka.h>
-
-extern void __real_midi_noteOn(u8 chan, u8 pitch, u8 velocity);
-extern void __real_midi_noteOff(u8 chan, u8 pitch);
-extern void __real_midi_pitchBend(u8 chan, u16 bend);
-extern bool __real_midi_getPolyphonic(void);
-extern void __real_midi_cc(u8 chan, u8 controller, u8 value);
-extern void __real_midi_clock(void);
-extern void __real_midi_start(void);
-extern void __real_midi_position(u16 beat);
-extern void __real_midi_program(u8 chan, u8 program);
+#include "test_midi.h"
 
 static void test_midi_triggers_synth_note_on(UNUSED void** state)
 {
@@ -377,4 +356,17 @@ static void test_midi_sets_fm_preset(UNUSED void** state)
     expect_value(__wrap_synth_preset, preset, program);
 
     __real_midi_program(chan, program);
+}
+
+static void test_midi_sets_synth_pitch_bend(UNUSED void** state)
+{
+    for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
+        expect_synth_pitch(chan, 4, 653);
+        expect_synth_volume_any();
+        expect_value(__wrap_synth_noteOn, channel, chan);
+        __real_midi_noteOn(chan, 60, 127);
+
+        expect_synth_pitch(chan, 4, 582);
+        __real_midi_pitchBend(chan, 1000);
+    }
 }

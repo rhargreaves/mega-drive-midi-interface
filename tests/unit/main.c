@@ -5,6 +5,8 @@
 #include "test_comm.c"
 #include "test_midi.c"
 #include "test_midi_fm.c"
+#include "test_midi_polyphony.c"
+#include "test_midi_psg.c"
 #include "test_midi_receiver.c"
 #include "test_midi_sysex.c"
 #include "test_midi_timing.c"

@@ -1,18 +1,4 @@
-
-#include <setjmp.h>
-#include <stdarg.h>
-#include <stddef.h>
-
-#include "asserts.h"
-#include "midi.h"
-#include "midi_psg.h"
-#include "psg_chip.h"
-#include "synth.h"
-#include "unused.h"
-#include <cmocka.h>
-
-extern void __real_midi_noteOn(u8 chan, u8 pitch, u8 velocity);
-extern void __real_midi_sysex(u8* data, u16 length);
+#include "test_midi.h"
 
 static void test_midi_sysex_sends_all_notes_off(UNUSED void** state)
 {

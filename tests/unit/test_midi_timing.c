@@ -1,19 +1,4 @@
-#include <setjmp.h>
-#include <stdarg.h>
-#include <stddef.h>
-
-#include "asserts.h"
-#include "midi.h"
-#include "midi_psg.h"
-#include "psg_chip.h"
-#include "synth.h"
-#include "unused.h"
-#include <cmocka.h>
-
-extern void __real_midi_clock(void);
-extern void __real_midi_start(void);
-extern void __real_midi_position(u16 beat);
-extern Timing* __real_midi_timing(void);
+#include "test_midi.h"
 
 static void test_midi_increments_beat_every_24th_clock(UNUSED void** state)
 {
