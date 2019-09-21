@@ -67,3 +67,17 @@ void expect_ym2612_write_channel_any_data(u8 chan, u8 baseReg)
     expect_ym2612_write_reg_any_data(
         REG_PART(chan), baseReg + REG_OFFSET(chan));
 }
+
+void expect_synth_pitch_any(void)
+{
+    expect_any(__wrap_synth_pitch, channel);
+    expect_any(__wrap_synth_pitch, octave);
+    expect_any(__wrap_synth_pitch, freqNumber);
+}
+
+void expect_synth_pitch(u8 channel, u8 octave, u16 freqNumber)
+{
+    expect_value(__wrap_synth_pitch, channel, channel);
+    expect_value(__wrap_synth_pitch, octave, octave);
+    expect_value(__wrap_synth_pitch, freqNumber, freqNumber);
+}

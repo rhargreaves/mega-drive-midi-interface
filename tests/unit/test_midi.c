@@ -2,6 +2,7 @@
 #include <stdarg.h>
 #include <stddef.h>
 
+#include "asserts.h"
 #include "midi.h"
 #include "midi_psg.h"
 #include "psg_chip.h"
@@ -28,9 +29,7 @@ static int test_midi_setup(UNUSED void** state)
 {
     midi_init();
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
-        expect_any(__wrap_synth_pitch, channel);
-        expect_any(__wrap_synth_pitch, octave);
-        expect_any(__wrap_synth_pitch, freqNumber);
+        expect_synth_pitch_any();
 
         __real_midi_pitchBend(chan, 0);
     }
@@ -40,9 +39,7 @@ static int test_midi_setup(UNUSED void** state)
 static void test_midi_triggers_synth_note_on(UNUSED void** state)
 {
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
-        expect_value(__wrap_synth_pitch, channel, chan);
-        expect_value(__wrap_synth_pitch, octave, 4);
-        expect_value(__wrap_synth_pitch, freqNumber, 653);
+        expect_synth_pitch(chan, 4, 653);
         expect_any(__wrap_synth_volume, channel);
         expect_any(__wrap_synth_volume, volume);
         expect_value(__wrap_synth_noteOn, channel, chan);
@@ -54,9 +51,7 @@ static void test_midi_triggers_synth_note_on(UNUSED void** state)
 static void test_midi_triggers_synth_note_on_with_velocity(UNUSED void** state)
 {
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
-        expect_value(__wrap_synth_pitch, channel, chan);
-        expect_value(__wrap_synth_pitch, octave, 4);
-        expect_value(__wrap_synth_pitch, freqNumber, 653);
+        expect_synth_pitch(chan, 4, 653);
         expect_value(__wrap_synth_volume, channel, chan);
         expect_value(__wrap_synth_volume, volume, 63);
         expect_value(__wrap_synth_noteOn, channel, chan);
@@ -75,9 +70,7 @@ static void test_midi_triggers_synth_note_on_with_velocity_and_channel_volume(
 
         __real_midi_cc(chan, CC_VOLUME, MAX_MIDI_VOLUME / 2);
 
-        expect_value(__wrap_synth_pitch, channel, chan);
-        expect_value(__wrap_synth_pitch, octave, 4);
-        expect_value(__wrap_synth_pitch, freqNumber, 653);
+        expect_synth_pitch(chan, 4, 653);
         expect_value(__wrap_synth_volume, channel, chan);
         expect_value(__wrap_synth_volume, volume, MAX_MIDI_VOLUME / 4);
         expect_value(__wrap_synth_noteOn, channel, chan);
@@ -90,9 +83,7 @@ static void test_midi_changing_volume_during_note_on_respects_velocity(
     UNUSED void** state)
 {
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
-        expect_value(__wrap_synth_pitch, channel, chan);
-        expect_value(__wrap_synth_pitch, octave, 4);
-        expect_value(__wrap_synth_pitch, freqNumber, 653);
+        expect_synth_pitch(chan, 4, 653);
         expect_value(__wrap_synth_volume, channel, chan);
         expect_value(__wrap_synth_volume, volume, MAX_MIDI_VOLUME / 2);
         expect_value(__wrap_synth_noteOn, channel, chan);
@@ -115,10 +106,8 @@ static void test_midi_triggers_synth_note_on_boundary_values(
 
     for (int index = 0; index < 2; index++) {
         for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
-            expect_value(__wrap_synth_pitch, channel, chan);
-            expect_value(__wrap_synth_pitch, octave, expectedOctaves[index]);
-            expect_value(
-                __wrap_synth_pitch, freqNumber, expectedFrequencies[index]);
+            expect_synth_pitch(
+                chan, expectedOctaves[index], expectedFrequencies[index]);
             expect_any(__wrap_synth_volume, channel);
             expect_any(__wrap_synth_volume, volume);
             expect_value(__wrap_synth_noteOn, channel, chan);
@@ -151,9 +140,7 @@ static void test_midi_triggers_synth_note_off(UNUSED void** state)
 
 static void test_midi_triggers_synth_note_on_2(UNUSED void** state)
 {
-    expect_value(__wrap_synth_pitch, channel, 0);
-    expect_value(__wrap_synth_pitch, octave, 6);
-    expect_value(__wrap_synth_pitch, freqNumber, 1164);
+    expect_synth_pitch(0, 6, 1164);
     expect_any(__wrap_synth_volume, channel);
     expect_any(__wrap_synth_volume, volume);
     expect_value(__wrap_synth_noteOn, channel, 0);
@@ -386,9 +373,7 @@ static void test_midi_directs_channels_above_10_to_psg(UNUSED void** state)
 static void test_midi_sets_synth_pitch_bend(UNUSED void** state)
 {
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
-        expect_value(__wrap_synth_pitch, channel, chan);
-        expect_value(__wrap_synth_pitch, octave, 4);
-        expect_value(__wrap_synth_pitch, freqNumber, 653);
+        expect_synth_pitch(chan, 4, 653);
         expect_any(__wrap_synth_volume, channel);
         expect_any(__wrap_synth_volume, volume);
         expect_value(__wrap_synth_noteOn, channel, chan);
@@ -438,18 +423,14 @@ static void test_midi_polyphonic_mode_uses_multiple_fm_channels(
     __real_midi_cc(0, CC_POLYPHONIC_MODE, 127);
 
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
-        expect_value(__wrap_synth_pitch, channel, 0);
-        expect_value(__wrap_synth_pitch, octave, 6);
-        expect_value(__wrap_synth_pitch, freqNumber, 1164);
+        expect_synth_pitch(0, 6, 1164);
         expect_any(__wrap_synth_volume, channel);
         expect_any(__wrap_synth_volume, volume);
         expect_value(__wrap_synth_noteOn, channel, 0);
 
         __real_midi_noteOn(chan, A_SHARP, 127);
 
-        expect_value(__wrap_synth_pitch, channel, 1);
-        expect_value(__wrap_synth_pitch, octave, 7);
-        expect_value(__wrap_synth_pitch, freqNumber, 0x269);
+        expect_synth_pitch(1, 7, 0x269);
         expect_any(__wrap_synth_volume, channel);
         expect_any(__wrap_synth_volume, volume);
         expect_value(__wrap_synth_noteOn, channel, 1);
@@ -474,18 +455,14 @@ static void test_midi_polyphonic_mode_note_off_silences_all_matching_pitch(
     __real_midi_cc(0, CC_POLYPHONIC_MODE, 127);
 
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
-        expect_value(__wrap_synth_pitch, channel, 0);
-        expect_value(__wrap_synth_pitch, octave, 6);
-        expect_value(__wrap_synth_pitch, freqNumber, 1164);
+        expect_synth_pitch(0, 6, 1164);
         expect_any(__wrap_synth_volume, channel);
         expect_any(__wrap_synth_volume, volume);
         expect_value(__wrap_synth_noteOn, channel, 0);
 
         __real_midi_noteOn(chan, A_SHARP, 127);
 
-        expect_value(__wrap_synth_pitch, channel, 1);
-        expect_value(__wrap_synth_pitch, octave, 6);
-        expect_value(__wrap_synth_pitch, freqNumber, 1164);
+        expect_synth_pitch(1, 6, 1164);
         expect_any(__wrap_synth_volume, channel);
         expect_any(__wrap_synth_volume, volume);
         expect_value(__wrap_synth_noteOn, channel, 1);
@@ -794,9 +771,7 @@ static void test_midi_set_overflow_flag_on_polyphony_breach(UNUSED void** state)
     __real_midi_cc(0, CC_POLYPHONIC_MODE, 127);
 
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
-        expect_value(__wrap_synth_pitch, channel, chan);
-        expect_value(__wrap_synth_pitch, octave, 6);
-        expect_value(__wrap_synth_pitch, freqNumber, 1164);
+        expect_synth_pitch(chan, 6, 1164);
         expect_any(__wrap_synth_volume, channel);
         expect_any(__wrap_synth_volume, volume);
         expect_value(__wrap_synth_noteOn, channel, chan);

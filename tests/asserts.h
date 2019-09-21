@@ -9,3 +9,5 @@ void expect_ym2612_write_operator(u8 chan, u8 op, u8 baseReg, u8 data);
 void expect_ym2612_write_operator_any_data(u8 chan, u8 op, u8 baseReg);
 void expect_ym2612_write_channel(u8 chan, u8 baseReg, u8 data);
 void expect_ym2612_write_channel_any_data(u8 chan, u8 baseReg);
+void expect_synth_pitch_any(void);
+void expect_synth_pitch(u8 channel, u8 octave, u16 freqNumber);
