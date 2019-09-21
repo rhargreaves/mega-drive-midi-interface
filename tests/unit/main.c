@@ -112,6 +112,7 @@ int main(void)
         midi_test(test_midi_sysex_remaps_midi_channel_to_fm),
         midi_test(test_midi_sysex_unassigns_midi_channel),
         midi_test(test_midi_sysex_does_nothing_for_empty_payload),
+        midi_test(test_midi_sysex_handles_incomplete_channel_mapping_command),
 
         synth_test(test_synth_init_sets_initial_registers),
         synth_test(test_synth_sets_note_on_fm_reg_chan_0_to_2),
