@@ -23,7 +23,7 @@ static int test_e2e_setup(void** state)
     expect_any_count(__wrap_YM2612_writeReg, part, times);
     expect_any_count(__wrap_YM2612_writeReg, reg, times);
     expect_any_count(__wrap_YM2612_writeReg, data, times);
-    midi_init((Channel**)M_BANK_0);
+    midi_init((Channel**)M_BANK_0, (Channel**)P_BANK_0);
     return 0;
 }
 

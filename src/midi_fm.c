@@ -17,6 +17,7 @@ struct FmChannelState {
     u8 pitch;
     u8 volume;
     u8 velocity;
+    bool percussive;
 };
 
 static FmChannelState FmChannelStates[MAX_FM_CHANS];
@@ -27,10 +28,12 @@ static u8 pitchIsOutOfRange(u8 pitch);
 static u8 effectiveVolume(FmChannelState* channelState);
 
 static Channel** presets;
+static Channel** percussionPresets;
 
-void midi_fm_init(Channel** defaultPresets)
+void midi_fm_init(Channel** defaultPresets, Channel** defaultPercussionPresets)
 {
     presets = defaultPresets;
+    percussionPresets = defaultPercussionPresets;
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         FmChannelState* state = &FmChannelStates[chan];
         state->volume = MAX_MIDI_VOLUME;
@@ -45,6 +48,9 @@ void midi_fm_noteOn(u8 chan, u8 pitch, u8 velocity)
         return;
     }
     FmChannelState* state = &FmChannelStates[chan];
+    if (state->percussive) {
+        synth_preset(chan, percussionPresets[pitch]);
+    }
     state->velocity = velocity;
     synth_volume(chan, effectiveVolume(state));
     state->pitch = pitch;
@@ -82,6 +88,12 @@ void midi_fm_program(u8 chan, u8 program)
 void midi_fm_allNotesOff(u8 chan)
 {
     midi_fm_noteOff(chan, 0);
+}
+
+void midi_fm_percussive(u8 chan, bool enabled)
+{
+    FmChannelState* state = &FmChannelStates[chan];
+    state->percussive = enabled;
 }
 
 static u8 octave(u8 pitch)

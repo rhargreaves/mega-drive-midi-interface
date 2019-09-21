@@ -377,3 +377,43 @@ static void test_midi_sets_synth_pitch_bend(UNUSED void** state)
         __real_midi_pitchBend(chan, 1000);
     }
 }
+
+static void remap_midi_channel(u8 midiChannel, u8 deviceChannel)
+{
+    const u8 SYSEX_EXTENDED_MANU_ID_SECTION = 0x00;
+    const u8 SYSEX_UNUSED_EUROPEAN_SECTION = 0x22;
+    const u8 SYSEX_UNUSED_MANU_ID = 0x77;
+    const u8 SYSEX_REMAP_COMMAND_ID = 0x00;
+
+    u8 sequence[] = { SYSEX_EXTENDED_MANU_ID_SECTION,
+        SYSEX_UNUSED_EUROPEAN_SECTION, SYSEX_UNUSED_MANU_ID,
+        SYSEX_REMAP_COMMAND_ID, midiChannel, deviceChannel };
+
+    __real_midi_sysex(sequence, sizeof(sequence) / sizeof(sequence[0]));
+}
+
+static void test_midi_fm_note_on_percussion_channel_sets_percussion_preset(
+    UNUSED void** state)
+{
+    const u8 MIDI_PERCUSSION_CHANNEL = 9;
+    const u8 FM_CHANNEL = 5;
+    const u8 MIDI_KEY = 30;
+
+    remap_midi_channel(MIDI_PERCUSSION_CHANNEL, FM_CHANNEL);
+
+    const Channel P_BANK_0_INST_30_CASTANETS = { 4, 3, 3, 0, 0, 0, 0,
+        { { 9, 0, 31, 0, 11, 0, 15, 0, 15, 23, 0 },
+            { 1, 0, 31, 0, 19, 0, 15, 0, 15, 15, 0 },
+            { 4, 0, 31, 2, 20, 0, 15, 0, 15, 13, 0 },
+            { 2, 0, 31, 2, 20, 0, 15, 0, 15, 13, 0 } } };
+
+    expect_value(__wrap_synth_preset, channel, FM_CHANNEL);
+    expect_memory(__wrap_synth_preset, preset, &P_BANK_0_INST_30_CASTANETS,
+        sizeof(P_BANK_0_INST_30_CASTANETS));
+
+    expect_synth_volume_any();
+    expect_synth_pitch_any();
+    expect_value(__wrap_synth_noteOn, channel, FM_CHANNEL);
+
+    __real_midi_noteOn(MIDI_PERCUSSION_CHANNEL, MIDI_KEY, MAX_MIDI_VOLUME);
+}

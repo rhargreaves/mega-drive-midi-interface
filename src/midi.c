@@ -76,7 +76,7 @@ static ChannelMapping* channelMapping(u8 midiChannel);
 static void remapChannel(u8 midiChannel, u8 deviceChannel);
 static void sendPong(void);
 
-void midi_init(Channel** defaultPresets)
+void midi_init(Channel** defaultPresets, Channel** defaultPercussionPresets)
 {
     memcpy(&ChannelMappings, DefaultChannelMappings, sizeof(ChannelMappings));
     memset(&timing, 0, sizeof(Timing));
@@ -86,7 +86,7 @@ void midi_init(Channel** defaultPresets)
     polyphonic = false;
 
     midi_psg_init();
-    midi_fm_init(defaultPresets);
+    midi_fm_init(defaultPresets, defaultPercussionPresets);
 }
 
 static ChannelMapping* channelMapping(u8 midiChannel)
@@ -415,6 +415,9 @@ static void remapChannel(u8 midiChannel, u8 deviceChannel)
     if (deviceChannel < MIN_PSG_CHAN) {
         mapping->channel = deviceChannel;
         mapping->ops = &FM_VTable;
+        if (midiChannel == 9) {
+            midi_fm_percussive(deviceChannel, true);
+        }
     } else if (deviceChannel <= MAX_PSG_CHAN) {
         mapping->channel = deviceChannel - MIN_PSG_CHAN;
         mapping->ops = &PSG_VTable;
