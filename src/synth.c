@@ -1,6 +1,5 @@
 #include "synth.h"
 #include "bits.h"
-#include "presets.h"
 #include <memory.h>
 #include <stdbool.h>
 #include <ym2612.h>
@@ -27,7 +26,6 @@ static const u8 VOLUME_TO_TOTAL_LEVELS[] = { 127, 122, 117, 113, 108, 104, 100,
     3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-static void initChannel(u8 chan);
 static void updateChannel(u8 chan);
 static void updateGlobalLfo(void);
 static void updateAlgorithmAndFeedback(u8 channel);
@@ -51,20 +49,15 @@ static u8 effectiveTotalLevel(u8 channel, u8 operator, u8 totalLevel);
 static bool isOutputOperator(u8 algorithm, u8 operator);
 static u8 volumeAdjustedTotalLevel(u8 channel, u8 totalLevel);
 
-void synth_init(void)
+void synth_init(const Channel* initialPreset)
 {
     YM2612_writeReg(0, 0x27, 0); // Ch 3 Normal
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         volumes[chan] = MAX_VOLUME;
         synth_noteOff(chan);
-        initChannel(chan);
+        memcpy(&channels[chan], initialPreset, sizeof(Channel));
+        updateChannel(chan);
     }
-}
-
-static void initChannel(u8 chan)
-{
-    memcpy(&channels[chan], M_BANK_0[0], sizeof(Channel));
-    updateChannel(chan);
 }
 
 static void updateChannel(u8 chan)
@@ -224,10 +217,9 @@ u8 synth_busy(void)
     return noteOn;
 }
 
-void synth_preset(u8 channel, u8 preset)
+void synth_preset(u8 channel, const Channel* preset)
 {
-    const Channel* const data = M_BANK_0[preset];
-    memcpy(&channels[channel], data, sizeof(Channel));
+    memcpy(&channels[channel], preset, sizeof(Channel));
     updateChannel(channel);
 }
 

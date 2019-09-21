@@ -1,6 +1,6 @@
 #include "midi.h"
 #include "midi_receiver.h"
-#include "synth.h"
+#include "presets.h"
 #include "sys.h"
 #include "ui.h"
 
@@ -16,9 +16,8 @@ int main(void)
 
 static void initAllModules(void)
 {
-    synth_init();
     ui_init();
-    midi_init();
+    midi_init((Channel**)M_BANK_0);
     midi_receiver_init();
 }
 

@@ -37,7 +37,7 @@ struct Channel {
     Operator operators[MAX_FM_OPERATORS];
 };
 
-void synth_init(void);
+void synth_init(const Channel* initialPreset);
 void synth_noteOn(u8 channel);
 void synth_noteOff(u8 channel);
 void synth_pitch(u8 channel, u8 octave, u16 freqNumber);
@@ -62,4 +62,4 @@ void synth_globalLfoFrequency(u8 freq);
 void synth_ams(u8 channel, u8 ams);
 void synth_fms(u8 channel, u8 fms);
 u8 synth_busy(void);
-void synth_preset(u8 channel, u8 preset);
+void synth_preset(u8 channel, const Channel* preset);

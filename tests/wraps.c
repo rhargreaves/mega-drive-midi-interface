@@ -2,12 +2,13 @@
 #include <stdarg.h>
 #include <stddef.h>
 
+#include "synth.h"
 #include "wraps.h"
 #include <cmocka.h>
 
-void __wrap_synth_init(void)
+void __wrap_synth_init(const Channel* defaultPreset)
 {
-    function_called();
+    check_expected(defaultPreset);
 }
 
 void __wrap_synth_enableLfo(u8 enable)
@@ -152,7 +153,7 @@ void __wrap_synth_operatorSsgEg(u8 channel, u8 op, u8 ssgEg)
     check_expected(ssgEg);
 }
 
-void __wrap_synth_preset(u8 channel, u8 preset)
+void __wrap_synth_preset(u8 channel, const Channel* preset)
 {
     check_expected(channel);
     check_expected(preset);

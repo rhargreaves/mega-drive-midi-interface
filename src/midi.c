@@ -76,7 +76,7 @@ static ChannelMapping* channelMapping(u8 midiChannel);
 static void remapChannel(u8 midiChannel, u8 deviceChannel);
 static void sendPong(void);
 
-void midi_init(void)
+void midi_init(Channel** defaultPresets)
 {
     memcpy(&ChannelMappings, DefaultChannelMappings, sizeof(ChannelMappings));
     memset(&timing, 0, sizeof(Timing));
@@ -86,7 +86,7 @@ void midi_init(void)
     polyphonic = false;
 
     midi_psg_init();
-    midi_fm_init();
+    midi_fm_init(defaultPresets);
 }
 
 static ChannelMapping* channelMapping(u8 midiChannel)

@@ -26,13 +26,17 @@ static u16 freqNumber(u8 pitch);
 static u8 pitchIsOutOfRange(u8 pitch);
 static u8 effectiveVolume(FmChannelState* channelState);
 
-void midi_fm_init(void)
+static Channel** presets;
+
+void midi_fm_init(Channel** defaultPresets)
 {
+    presets = defaultPresets;
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         FmChannelState* state = &FmChannelStates[chan];
         state->volume = MAX_MIDI_VOLUME;
         state->velocity = MAX_MIDI_VOLUME;
     }
+    synth_init(presets[0]);
 }
 
 void midi_fm_noteOn(u8 chan, u8 pitch, u8 velocity)
@@ -71,7 +75,8 @@ void midi_fm_pitchBend(u8 chan, u16 bend)
 
 void midi_fm_program(u8 chan, u8 program)
 {
-    synth_preset(chan, program);
+    const Channel* data = presets[program];
+    synth_preset(chan, data);
 }
 
 void midi_fm_allNotesOff(u8 chan)

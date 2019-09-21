@@ -6,6 +6,7 @@
 #include "comm.h"
 #include "midi.h"
 #include "midi_receiver.h"
+#include "presets.h"
 #include "wraps.h"
 #include <cmocka.h>
 
@@ -18,7 +19,11 @@ static const u8 SYSEX_END = 0xF7;
 static int test_e2e_setup(void** state)
 {
     comm_resetCounts();
-    midi_init();
+    const u16 times = 187;
+    expect_any_count(__wrap_YM2612_writeReg, part, times);
+    expect_any_count(__wrap_YM2612_writeReg, reg, times);
+    expect_any_count(__wrap_YM2612_writeReg, data, times);
+    midi_init((Channel**)M_BANK_0);
     return 0;
 }
 

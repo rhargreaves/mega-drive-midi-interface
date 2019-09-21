@@ -8,7 +8,7 @@
 #include <cmocka.h>
 #include <types.h>
 
-extern void __real_synth_init(void);
+extern void __real_synth_init(const Channel* defaultPreset);
 extern void __real_synth_noteOn(u8 channel);
 extern void __real_synth_noteOff(u8 channel);
 extern void __real_synth_enableLfo(u8 enable);
@@ -35,7 +35,7 @@ extern void __real_synth_operatorAmplitudeModulation(
 extern void __real_synth_operatorReleaseRate(u8 channel, u8 op, u8 releaseRate);
 extern void __real_synth_operatorSsgEg(u8 channel, u8 op, u8 ssgEg);
 extern void __real_synth_pitchBend(u8 channel, u16 bend);
-extern void __real_synth_preset(u8 channel, u8 preset);
+extern void __real_synth_preset(u8 channel, const Channel* preset);
 extern void __real_synth_volume(u8 channel, u8 volume);
 
 static void set_initial_registers()
@@ -45,7 +45,13 @@ static void set_initial_registers()
     expect_any_count(__wrap_YM2612_writeReg, reg, count);
     expect_any_count(__wrap_YM2612_writeReg, data, count);
 
-    __real_synth_init();
+    const Channel M_BANK_0_INST_0_GRANDPIANO = { 2, 0, 3, 0, 0, 0, 0,
+        { { 1, 0, 26, 1, 7, 0, 7, 4, 1, 39, 0 },
+            { 4, 6, 24, 1, 9, 0, 6, 9, 7, 36, 0 },
+            { 2, 7, 31, 3, 23, 0, 9, 15, 1, 4, 0 },
+            { 1, 3, 27, 2, 4, 0, 10, 4, 6, 2, 0 } } };
+
+    __real_synth_init(&M_BANK_0_INST_0_GRANDPIANO);
 }
 
 static int test_synth_setup(UNUSED void** state)
@@ -289,40 +295,45 @@ static void test_synth_sets_busy_indicators(UNUSED void** state)
 static void test_synth_sets_preset(UNUSED void** state)
 {
     const u8 chan = 0;
-    for (u8 preset = 0; preset < 128; preset++) {
-        expect_ym2612_write_channel_any_data(chan, 0xB0);
-        expect_ym2612_write_channel_any_data(chan, 0xB4);
-        expect_ym2612_write_channel_any_data(chan, 0x30);
-        expect_ym2612_write_channel_any_data(chan, 0x50);
-        expect_ym2612_write_channel_any_data(chan, 0x60);
-        expect_ym2612_write_channel_any_data(chan, 0x70);
-        expect_ym2612_write_channel_any_data(chan, 0x80);
-        expect_ym2612_write_channel_any_data(chan, 0x40);
-        expect_ym2612_write_channel_any_data(chan, 0x90);
-        expect_ym2612_write_channel_any_data(chan, 0x34);
-        expect_ym2612_write_channel_any_data(chan, 0x54);
-        expect_ym2612_write_channel_any_data(chan, 0x64);
-        expect_ym2612_write_channel_any_data(chan, 0x74);
-        expect_ym2612_write_channel_any_data(chan, 0x84);
-        expect_ym2612_write_channel_any_data(chan, 0x44);
-        expect_ym2612_write_channel_any_data(chan, 0x94);
-        expect_ym2612_write_channel_any_data(chan, 0x38);
-        expect_ym2612_write_channel_any_data(chan, 0x58);
-        expect_ym2612_write_channel_any_data(chan, 0x68);
-        expect_ym2612_write_channel_any_data(chan, 0x78);
-        expect_ym2612_write_channel_any_data(chan, 0x88);
-        expect_ym2612_write_channel_any_data(chan, 0x48);
-        expect_ym2612_write_channel_any_data(chan, 0x98);
-        expect_ym2612_write_channel_any_data(chan, 0x3C);
-        expect_ym2612_write_channel_any_data(chan, 0x5C);
-        expect_ym2612_write_channel_any_data(chan, 0x6C);
-        expect_ym2612_write_channel_any_data(chan, 0x7C);
-        expect_ym2612_write_channel_any_data(chan, 0x8C);
-        expect_ym2612_write_channel_any_data(chan, 0x4C);
-        expect_ym2612_write_channel_any_data(chan, 0x9C);
 
-        __real_synth_preset(chan, preset);
-    }
+    const Channel M_BANK_0_INST_7_CLAVINET = { 1, 7, 3, 0, 0, 0, 0,
+        { { 1, 1, 31, 2, 0, 1, 0, 1, 6, 28, 0 },
+            { 1, 5, 31, 3, 0, 1, 0, 0, 2, 30, 0 },
+            { 1, 3, 31, 2, 0, 0, 0, 1, 7, 33, 0 },
+            { 1, 7, 31, 0, 6, 0, 4, 6, 7, 6, 0 } } };
+
+    expect_ym2612_write_channel_any_data(chan, 0xB0);
+    expect_ym2612_write_channel_any_data(chan, 0xB4);
+    expect_ym2612_write_channel_any_data(chan, 0x30);
+    expect_ym2612_write_channel_any_data(chan, 0x50);
+    expect_ym2612_write_channel_any_data(chan, 0x60);
+    expect_ym2612_write_channel_any_data(chan, 0x70);
+    expect_ym2612_write_channel_any_data(chan, 0x80);
+    expect_ym2612_write_channel_any_data(chan, 0x40);
+    expect_ym2612_write_channel_any_data(chan, 0x90);
+    expect_ym2612_write_channel_any_data(chan, 0x34);
+    expect_ym2612_write_channel_any_data(chan, 0x54);
+    expect_ym2612_write_channel_any_data(chan, 0x64);
+    expect_ym2612_write_channel_any_data(chan, 0x74);
+    expect_ym2612_write_channel_any_data(chan, 0x84);
+    expect_ym2612_write_channel_any_data(chan, 0x44);
+    expect_ym2612_write_channel_any_data(chan, 0x94);
+    expect_ym2612_write_channel_any_data(chan, 0x38);
+    expect_ym2612_write_channel_any_data(chan, 0x58);
+    expect_ym2612_write_channel_any_data(chan, 0x68);
+    expect_ym2612_write_channel_any_data(chan, 0x78);
+    expect_ym2612_write_channel_any_data(chan, 0x88);
+    expect_ym2612_write_channel_any_data(chan, 0x48);
+    expect_ym2612_write_channel_any_data(chan, 0x98);
+    expect_ym2612_write_channel_any_data(chan, 0x3C);
+    expect_ym2612_write_channel_any_data(chan, 0x5C);
+    expect_ym2612_write_channel_any_data(chan, 0x6C);
+    expect_ym2612_write_channel_any_data(chan, 0x7C);
+    expect_ym2612_write_channel_any_data(chan, 0x8C);
+    expect_ym2612_write_channel_any_data(chan, 0x4C);
+    expect_ym2612_write_channel_any_data(chan, 0x9C);
+
+    __real_synth_preset(chan, &M_BANK_0_INST_7_CLAVINET);
 }
 
 static void test_synth_applies_volume_modifier_to_output_operators_algorithm_7(

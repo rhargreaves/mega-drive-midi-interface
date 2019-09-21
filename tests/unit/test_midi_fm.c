@@ -352,8 +352,15 @@ static void test_midi_sets_fm_preset(UNUSED void** state)
     const u8 program = 1;
     const u8 chan = 0;
 
+    const Channel M_BANK_0_INST_1_BRIGHTPIANO = { 5, 7, 3, 0, 0, 0, 0,
+        { { 4, 2, 27, 1, 9, 0, 11, 5, 6, 33, 0 },
+            { 4, 5, 27, 1, 9, 0, 7, 9, 7, 18, 0 },
+            { 1, 2, 27, 1, 5, 1, 10, 5, 6, 8, 0 },
+            { 6, 5, 27, 1, 9, 0, 3, 8, 7, 9, 0 } } };
+
     expect_value(__wrap_synth_preset, channel, chan);
-    expect_value(__wrap_synth_preset, preset, program);
+    expect_memory(__wrap_synth_preset, preset, &M_BANK_0_INST_1_BRIGHTPIANO,
+        sizeof(M_BANK_0_INST_1_BRIGHTPIANO));
 
     __real_midi_program(chan, program);
 }
