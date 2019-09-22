@@ -71,6 +71,8 @@ MD_MOCKS=SYS_setVIntCallback \
 	YM2612_writeReg \
 	VDP_drawText \
 	VDP_clearText \
+	VDP_setBackgroundColor \
+	VDP_setPaletteColor \
 	PSG_setEnvelope \
 	PSG_setFrequency \
 	SPR_addSprite \

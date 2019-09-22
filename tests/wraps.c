@@ -327,6 +327,13 @@ void __wrap_VDP_clearText(u16 x, u16 y, u16 w)
 {
 }
 
+void __wrap_VDP_setPaletteColor(u16 index, u16 value)
+{
+}
+void __wrap_VDP_setBackgroundColor(u8 index)
+{
+}
+
 void __wrap_PSG_setEnvelope(u8 channel, u8 value)
 {
     check_expected(channel);

@@ -67,6 +67,8 @@ void __wrap_SYS_disableInts();
 void __wrap_SYS_enableInts();
 void __wrap_SPR_init(u16 maxSprite, u16 vramSize, u16 unpackBufferSize);
 void __wrap_VDP_setPaletteColors(u16 index, const u16* values, u16 count);
+void __wrap_VDP_setPaletteColor(u16 index, u16 value);
+void __wrap_VDP_setBackgroundColor(u8 index);
 u8 __wrap_ssf_usb_read(void);
 u16 __wrap_ssf_usb_rd_ready(void);
 u8 __wrap_ssf_usb_write(u8 data);
