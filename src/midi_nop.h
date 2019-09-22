@@ -7,3 +7,4 @@ void midi_nop_channelVolume(u8 chan, u8 volume);
 void midi_nop_pitchBend(u8 chan, u16 bend);
 void midi_nop_program(u8 chan, u8 program);
 void midi_nop_allNotesOff(u8 chan);
+void midi_nop_pan(u8 chan, u8 pan);

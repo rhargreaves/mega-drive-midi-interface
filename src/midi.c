@@ -27,6 +27,7 @@ struct VTable {
     void (*pitchBend)(u8 chan, u16 bend);
     void (*program)(u8 chan, u8 program);
     void (*allNotesOff)(u8 chan);
+    void (*pan)(u8 chan, u8 pan);
 };
 
 typedef struct ChannelMapping ChannelMapping;
@@ -36,17 +37,17 @@ struct ChannelMapping {
     u8 channel;
 };
 
-static const VTable PSG_VTable
-    = { midi_psg_noteOn, midi_psg_noteOff, midi_psg_channelVolume,
-          midi_psg_pitchBend, midi_psg_program, midi_psg_allNotesOff };
+static const VTable PSG_VTable = { midi_psg_noteOn, midi_psg_noteOff,
+    midi_psg_channelVolume, midi_psg_pitchBend, midi_psg_program,
+    midi_psg_allNotesOff, midi_nop_pan };
 
-static const VTable FM_VTable
-    = { midi_fm_noteOn, midi_fm_noteOff, midi_fm_channelVolume,
-          midi_fm_pitchBend, midi_fm_program, midi_fm_allNotesOff };
+static const VTable FM_VTable = { midi_fm_noteOn, midi_fm_noteOff,
+    midi_fm_channelVolume, midi_fm_pitchBend, midi_fm_program,
+    midi_fm_allNotesOff, midi_fm_pan };
 
-static const VTable NOP_VTable
-    = { midi_nop_noteOn, midi_nop_noteOff, midi_nop_channelVolume,
-          midi_nop_pitchBend, midi_nop_program, midi_nop_allNotesOff };
+static const VTable NOP_VTable = { midi_nop_noteOn, midi_nop_noteOff,
+    midi_nop_channelVolume, midi_nop_pitchBend, midi_nop_program,
+    midi_nop_allNotesOff, midi_nop_pan };
 
 static const ChannelMapping DefaultChannelMappings[MIDI_CHANNELS]
     = { { &FM_VTable, 0 }, { &FM_VTable, 1 }, { &FM_VTable, 2 },
@@ -68,7 +69,6 @@ static void allNotesOff(u8 chan);
 static void pooledNoteOn(u8 chan, u8 pitch, u8 velocity);
 static void pooledNoteOff(u8 chan, u8 pitch);
 static void channelVolume(u8 chan, u8 volume);
-static void pan(u8 chan, u8 pan);
 static void setPolyphonic(bool state);
 static void cc(u8 chan, u8 controller, u8 value);
 static void generalMidiReset(void);
@@ -139,7 +139,7 @@ static void cc(u8 chan, u8 controller, u8 value)
         channelVolume(chan, value);
         break;
     case CC_PAN:
-        pan(chan, value);
+        mapping->ops->pan(mapping->channel, value);
         break;
     case CC_ALL_NOTES_OFF:
         allNotesOff(chan);
@@ -307,18 +307,6 @@ static void channelVolume(u8 chan, u8 volume)
 {
     ChannelMapping* mapping = channelMapping(chan);
     mapping->ops->channelVolume(mapping->channel, volume);
-}
-
-static void pan(u8 chan, u8 pan)
-{
-    ChannelMapping* mapping = channelMapping(chan);
-    if (pan > 96) {
-        synth_stereo(mapping->channel, STEREO_MODE_RIGHT);
-    } else if (pan > 31) {
-        synth_stereo(mapping->channel, STEREO_MODE_CENTRE);
-    } else {
-        synth_stereo(mapping->channel, STEREO_MODE_LEFT);
-    }
 }
 
 static void allNotesOff(u8 chan)

@@ -99,6 +99,17 @@ void midi_fm_percussive(u8 chan, bool enabled)
     state->percussive = enabled;
 }
 
+void midi_fm_pan(u8 chan, u8 pan)
+{
+    if (pan > 96) {
+        synth_stereo(chan, STEREO_MODE_RIGHT);
+    } else if (pan > 31) {
+        synth_stereo(chan, STEREO_MODE_CENTRE);
+    } else {
+        synth_stereo(chan, STEREO_MODE_LEFT);
+    }
+}
+
 static u8 octave(u8 pitch)
 {
     return (pitch - MIN_MIDI_PITCH) / SEMITONES;
