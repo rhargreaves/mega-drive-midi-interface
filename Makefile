@@ -22,9 +22,7 @@ ASMZ80 = $(GENBIN)/zasm
 RM = rm -f
 NM = nm
 
-VERSION := Dev
-BUILD := v$(VERSION)
-
+BUILD := v0.1.0
 INCS = -I. \
 	-I$(GENDEV)/sgdk/inc \
 	-I$(GENDEV)/m86k-elf/include \
@@ -74,6 +72,7 @@ bin/%.bin: %.elf
 	dd if=temp.bin of=$@ bs=8K conv=sync
 	$(OBJDUMP) -D $< --source > $(ASSEMBLY_OUT)/out.s
 	rm temp.bin
+	echo $(BUILD) > bin/version.txt
 
 %.elf: $(OBJS) $(BOOT_RESOURCES)
 	$(LD) -o $@ $(LINKFLAGS) $(BOOT_RESOURCES) $(ARCHIVES) $(OBJS) $(LIBS)

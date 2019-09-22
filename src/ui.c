@@ -130,6 +130,7 @@ static void printChannels(void)
 {
     drawText(CHAN_HEADER, 0, 4);
     drawText(MIDI_HEADER, 0, 6);
+    drawText("Act.", 0, 8);
 }
 
 static void printActivity(void)
