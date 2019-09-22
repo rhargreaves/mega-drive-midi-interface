@@ -130,3 +130,34 @@ static void test_midi_sysex_handles_incomplete_channel_mapping_command(
 
     __real_midi_sysex(sequence, 4);
 }
+
+static void test_midi_sysex_enables_dynamic_channel_mode(UNUSED void** state)
+{
+    const u8 SYSEX_EXTENDED_MANU_ID_SECTION = 0x00;
+    const u8 SYSEX_UNUSED_EUROPEAN_SECTION = 0x22;
+    const u8 SYSEX_UNUSED_MANU_ID = 0x77;
+    const u8 SYSEX_DYNAMIC_COMMAND_ID = 0x03;
+    const u8 SYSEX_DYNAMIC_ENABLED = 0x01;
+
+    const u8 sequence[] = {
+        SYSEX_EXTENDED_MANU_ID_SECTION,
+        SYSEX_UNUSED_EUROPEAN_SECTION,
+        SYSEX_UNUSED_MANU_ID,
+        SYSEX_DYNAMIC_COMMAND_ID,
+        SYSEX_DYNAMIC_ENABLED,
+    };
+
+    __real_midi_sysex(sequence, sizeof(sequence));
+
+    print_message("Initial note");
+    expect_synth_pitch(0, 4, 0x28d);
+    expect_synth_volume_any();
+    expect_value(__wrap_synth_noteOn, channel, 0);
+    __real_midi_noteOn(0, 60, 127);
+
+    print_message("Second note");
+    expect_synth_pitch(1, 4, 0x2b4);
+    expect_synth_volume_any();
+    expect_value(__wrap_synth_noteOn, channel, 1);
+    __real_midi_noteOn(0, 61, 127);
+}

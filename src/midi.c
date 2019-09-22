@@ -37,6 +37,15 @@ struct ChannelMapping {
     u8 channel;
 };
 
+typedef struct ChannelState ChannelState;
+
+struct ChannelState {
+    bool noteOn;
+    u8 destinationChannel;
+};
+
+static ChannelState channelState[MIDI_CHANNELS];
+
 static const VTable PSG_VTable = { midi_psg_noteOn, midi_psg_noteOff,
     midi_psg_channelVolume, midi_psg_pitchBend, midi_psg_program,
     midi_psg_allNotesOff, midi_nop_pan };
@@ -64,6 +73,7 @@ static ControlChange lastUnknownControlChange;
 static Timing timing;
 static bool polyphonic;
 static bool overflow;
+static bool dynamicMode;
 
 static void allNotesOff(u8 chan);
 static void pooledNoteOn(u8 chan, u8 pitch, u8 velocity);
@@ -75,6 +85,7 @@ static void generalMidiReset(void);
 static ChannelMapping* channelMapping(u8 midiChannel);
 static void remapChannel(u8 midiChannel, u8 deviceChannel);
 static void sendPong(void);
+static void setDynamicMode(bool enabled);
 
 void midi_init(
     Channel** defaultPresets, PercussionPreset** defaultPercussionPresets)
@@ -99,6 +110,17 @@ void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
 {
     if (polyphonic) {
         pooledNoteOn(chan, pitch, velocity);
+    } else if (dynamicMode) {
+        ChannelState* state = &channelState[chan];
+        while (state->noteOn) {
+            chan++;
+            state = &channelState[chan];
+        }
+        state->noteOn = true;
+        state->destinationChannel = chan;
+        ChannelMapping* mapping = channelMapping(chan);
+        mapping->ops->noteOn(mapping->channel, pitch, velocity);
+
     } else {
         ChannelMapping* mapping = channelMapping(chan);
         mapping->ops->noteOn(mapping->channel, pitch, velocity);
@@ -109,6 +131,13 @@ void midi_noteOff(u8 chan, u8 pitch)
 {
     if (polyphonic) {
         pooledNoteOff(chan, pitch);
+    } else if (dynamicMode) {
+        ChannelState* state = &channelState[chan];
+        if (state->noteOn) {
+            ChannelMapping* mapping = channelMapping(state->destinationChannel);
+            mapping->ops->noteOff(mapping->channel, pitch);
+            state->noteOn = false;
+        }
     } else {
         ChannelMapping* mapping = channelMapping(chan);
         mapping->ops->noteOff(mapping->channel, pitch);
@@ -382,6 +411,7 @@ void midi_sysex(const u8* data, u16 length)
 {
     const u8 SYSEX_REMAP_COMMAND_ID = 0x00;
     const u8 SYSEX_PING_COMMAND_ID = 0x01;
+    const u8 SYSEX_DYNAMIC_COMMAND_ID = 0x03;
 
     const u8 GENERAL_MIDI_RESET_SEQUENCE[] = { 0x7E, 0x7F, 0x09, 0x01 };
 
@@ -393,6 +423,10 @@ void midi_sysex(const u8* data, u16 length)
         = { SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
               SYSEX_UNUSED_MANU_ID, SYSEX_PING_COMMAND_ID };
 
+    const u8 DYNAMIC_SEQUENCE[]
+        = { SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
+              SYSEX_UNUSED_MANU_ID, SYSEX_DYNAMIC_COMMAND_ID };
+
     if (sysex_valid(data, length, GENERAL_MIDI_RESET_SEQUENCE,
             LENGTH_OF(GENERAL_MIDI_RESET_SEQUENCE), 0)) {
         generalMidiReset();
@@ -402,6 +436,9 @@ void midi_sysex(const u8* data, u16 length)
     } else if (sysex_valid(
                    data, length, PING_SEQUENCE, LENGTH_OF(PING_SEQUENCE), 0)) {
         sendPong();
+    } else if (sysex_valid(data, length, DYNAMIC_SEQUENCE,
+                   LENGTH_OF(DYNAMIC_SEQUENCE), 1)) {
+        setDynamicMode((bool)data[4]);
     }
 }
 
@@ -439,4 +476,9 @@ static void generalMidiReset(void)
     for (u8 chan = 0; chan < MIDI_CHANNELS; chan++) {
         allNotesOff(chan);
     }
+}
+
+static void setDynamicMode(bool enabled)
+{
+    dynamicMode = enabled;
 }
