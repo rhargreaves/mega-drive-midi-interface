@@ -33,7 +33,7 @@ jobs:
             VERSION=$(cat ./bin/version.txt)
             FILENAME=mega-drive-midi-interface-${VERSION}.bin
             mv ./bin/out.bin ./bin/${FILENAME}
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./bin/${FILENAME}
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${VERSION} ./bin/${FILENAME}
 workflows:
   version: 2
   build_and_release:
