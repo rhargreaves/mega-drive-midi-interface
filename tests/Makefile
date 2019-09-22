@@ -113,13 +113,13 @@ CMOCKA_DIR=cmocka
 UNIT_TESTS_TARGET=$(BIN_DIR)/unit_tests
 SYSTEM_TESTS_TARGET=$(BIN_DIR)/system_tests
 
-all: clean-target unit system
+all: unit system
 
-unit: $(CMOCKA_DIR) $(UNIT_TESTS_TARGET)
+unit: $(UNIT_TESTS_TARGET)
 	./$(UNIT_TESTS_TARGET)
 .PHONY: unit
 
-system: $(CMOCKA_DIR) $(SYSTEM_TESTS_TARGET)
+system: $(SYSTEM_TESTS_TARGET)
 	./$(SYSTEM_TESTS_TARGET)
 .PHONY: system
 
@@ -133,11 +133,11 @@ $(OBJ_DIR):
 $(OBJ_DIR)/%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(UNIT_TESTS_TARGET): $(SRC_OBJ) $(UNIT_TEST_OBJ) $(COMMON_TEST_OBJ)
+$(UNIT_TESTS_TARGET): $(CMOCKA_DIR) $(SRC_OBJ) $(UNIT_TEST_OBJ) $(COMMON_TEST_OBJ)
 	mkdir -p $(BIN_DIR)
 	$(CC) -o $@ $^ $(UNIT_TEST_LDFLAGS)
 
-$(SYSTEM_TESTS_TARGET): $(SRC_OBJ) $(SYSTEM_TEST_OBJ) $(COMMON_TEST_OBJ)
+$(SYSTEM_TESTS_TARGET): $(CMOCKA_DIR) $(SRC_OBJ) $(SYSTEM_TEST_OBJ) $(COMMON_TEST_OBJ)
 	mkdir -p $(BIN_DIR)
 	$(CC) -o $@ $^ $(SYSTEM_TEST_LDFLAGS)
 

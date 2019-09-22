@@ -83,13 +83,11 @@ bin/%.bin: %.elf
 %.c: %.o80
 	$(BINTOS) $<
 
-$(ASSEMBLY_OUT):
+%.o: %.c
 	mkdir -p $(ASSEMBLY_OUT)
-
-%.o: %.c $(ASSEMBLY_OUT)
 	$(CC) $(CCFLAGS) $(INCS) -c -Wa,-aln=$(ASSEMBLY_OUT)/$(notdir $(@:.o=.s)) $< -o $@
 
-%.o: %.s
+%.o: %.s res/sprite.s
 	$(AS) $(ASFLAGS) $< -o $@
 
 %.s: %.bmp
