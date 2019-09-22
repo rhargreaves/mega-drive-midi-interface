@@ -239,6 +239,9 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_FMS:
         synth_fms(mapping->channel, RANGE(value, 8));
         break;
+    case CC_GENMDM_STEREO:
+        synth_stereo(mapping->channel, RANGE(value, 4));
+        break;
     case CC_POLYPHONIC_MODE:
         setPolyphonic(RANGE(value, 2) != 0);
         break;

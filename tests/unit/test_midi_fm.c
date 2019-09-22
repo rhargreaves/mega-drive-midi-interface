@@ -333,6 +333,19 @@ static void test_midi_sets_operator_ssg_eg(UNUSED void** state)
     }
 }
 
+static void test_midi_sets_genmdm_stereo_mode(UNUSED void** state)
+{
+    const u8 expectedMode = 3;
+    const u8 value = 127;
+    const u8 cc = 77;
+    const u8 channel = 0;
+
+    expect_value(__wrap_synth_stereo, channel, channel);
+    expect_value(__wrap_synth_stereo, mode, expectedMode);
+
+    __real_midi_cc(channel, cc, value);
+}
+
 static void test_midi_sets_global_LFO_enable(UNUSED void** state)
 {
     expect_value(__wrap_synth_enableLfo, enable, 1);

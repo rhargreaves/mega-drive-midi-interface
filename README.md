@@ -115,6 +115,7 @@ _Range determines how the possible 128 MIDI values are divided to give the respe
 | 15  | Feedback                         | 8     |
 | 75  | Frequency Modulation Level (FMS) | 8     |
 | 76  | Amplitude Modulation Level (AMS) | 4     |
+| 77  | Stereo                           | 4     |
 
 #### Per Channel & Operator
 
