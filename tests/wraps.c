@@ -269,7 +269,7 @@ void __wrap_midi_sysex(u8* data, u16 length)
     check_expected(length);
 }
 
-void __real_midi_mappings(u8* mappingDest)
+void __wrap_midi_mappings(u8* mappingDest)
 {
     check_expected(mappingDest);
 }

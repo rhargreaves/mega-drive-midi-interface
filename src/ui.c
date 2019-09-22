@@ -25,8 +25,7 @@
 #define RIGHTED_TEXT_X(text) (MAX_EFFECTIVE_X - (sizeof(text) - 1) + 1)
 #define CENTRED_TEXT_X(text) ((MAX_EFFECTIVE_X - (sizeof(text) - 1)) / 2)
 #define CHAN_X_GAP 3
-#define ACTIVITY_FM_X 3
-#define ACTIVITY_PSG_X (ACTIVITY_FM_X + ((MAX_FM_CHANS + 1) * CHAN_X_GAP))
+#define ACTIVITY_FM_X 6
 #define ACTIVITY_Y 8
 
 #define FRAMES_BEFORE_UPDATE_ACTIVITY 1
@@ -35,8 +34,8 @@
 #define FRAMES_BEFORE_UPDATE_LOAD_PERCENT 5
 
 static const char HEADER[] = "Mega Drive MIDI Interface";
-static const char CHAN_HEADER1[] = "       FM               PSG    ";
-static const char CHAN_HEADER2[] = "1  2  3  4  5  6     1  2  3  4";
+static const char CHAN_HEADER[] = "Ch.  F1 F2 F3 F4 F5 F6 P1 P2 P3 P4";
+static const char MIDI_HEADER[] = "MIDI";
 
 static void printChannels(void);
 static void printHeader(void);
@@ -129,8 +128,8 @@ static void printHeader(void)
 
 static void printChannels(void)
 {
-    drawText(CHAN_HEADER1, CENTRED_TEXT_X(CHAN_HEADER1), 4);
-    drawText(CHAN_HEADER2, CENTRED_TEXT_X(CHAN_HEADER2), 6);
+    drawText(CHAN_HEADER, 0, 4);
+    drawText(MIDI_HEADER, 0, 6);
 }
 
 static void printActivity(void)
@@ -148,9 +147,44 @@ static void printActivity(void)
     u8 psgBusy = psg_busy();
     if (psgBusy != lastPsgBusy) {
         VDP_setTextPalette(PAL2);
-        printActivityForBusy(psgBusy, MAX_PSG_CHANS, ACTIVITY_PSG_X);
+        printActivityForBusy(psgBusy, MAX_PSG_CHANS,
+            ACTIVITY_FM_X + (CHAN_X_GAP * MAX_FM_CHANS));
         VDP_setTextPalette(PAL0);
         lastPsgBusy = psgBusy;
+    }
+
+    u8 mappings[MIDI_CHANNELS];
+    u8 fmChans[MAX_FM_CHANS] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
+    u8 psgChans[MAX_PSG_CHANS] = { 0xFF, 0xFF, 0xFF, 0xFF };
+
+    midi_mappings(mappings);
+    for (u8 i = 0; i < MIDI_CHANNELS; i++) {
+        u8 chan = mappings[i];
+        if (chan == 0x7F) {
+            continue;
+        }
+        if (chan < MIN_PSG_CHAN) {
+            if (fmChans[chan] == 0xFF) {
+                fmChans[chan] = i;
+            }
+        } else {
+            if (psgChans[chan - MIN_PSG_CHAN] == 0xFF) {
+                psgChans[chan - MIN_PSG_CHAN] = i;
+            }
+        }
+    }
+    for (u8 i = 0; i < MAX_FM_CHANS; i++) {
+        u8 midiChannel = fmChans[i];
+        char buffer[3];
+        sprintf(buffer, "%2d", midiChannel + 1);
+        drawText(buffer, (i * CHAN_X_GAP) + 5, ACTIVITY_Y - 2);
+    }
+    for (u8 i = 0; i < MAX_PSG_CHANS; i++) {
+        u8 midiChannel = psgChans[i];
+        char buffer[3];
+        sprintf(buffer, "%2d", midiChannel + 1);
+        drawText(buffer, ACTIVITY_FM_X - 1 + (CHAN_X_GAP * (MAX_FM_CHANS + i)),
+            ACTIVITY_Y - 2);
     }
 }
 
