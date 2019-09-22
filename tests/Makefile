@@ -89,7 +89,7 @@ MD_MOCKS=SYS_setVIntCallback \
 	ssf_usb_write \
 	ssf_usb_wr_ready
 
-LDFLAGS=-ffreestanding -l cmocka -L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src
+LDFLAGS=-ffreestanding -lcmocka -L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src
 LDFLAGS+=$(foreach MOCK,$(MD_MOCKS),-Wl,--wrap=$(MOCK))
 
 SYSTEM_TEST_LDFLAGS=$(LDFLAGS)
@@ -123,7 +123,7 @@ system: $(SYSTEM_TESTS_TARGET)
 	./$(SYSTEM_TESTS_TARGET)
 .PHONY: system
 
-$(SRC_OBJ): | $(OBJ_DIR)
+$(SRC_OBJ): | $(OBJ_DIR) $(CMOCKA_DIR)
 
 $(OBJ_DIR):
 	mkdir -p $@
@@ -133,11 +133,11 @@ $(OBJ_DIR):
 $(OBJ_DIR)/%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(UNIT_TESTS_TARGET): $(CMOCKA_DIR) $(SRC_OBJ) $(UNIT_TEST_OBJ) $(COMMON_TEST_OBJ)
+$(UNIT_TESTS_TARGET): $(SRC_OBJ) $(UNIT_TEST_OBJ) $(COMMON_TEST_OBJ)
 	mkdir -p $(BIN_DIR)
 	$(CC) -o $@ $^ $(UNIT_TEST_LDFLAGS)
 
-$(SYSTEM_TESTS_TARGET): $(CMOCKA_DIR) $(SRC_OBJ) $(SYSTEM_TEST_OBJ) $(COMMON_TEST_OBJ)
+$(SYSTEM_TESTS_TARGET): $(SRC_OBJ) $(SYSTEM_TEST_OBJ) $(COMMON_TEST_OBJ)
 	mkdir -p $(BIN_DIR)
 	$(CC) -o $@ $^ $(SYSTEM_TEST_LDFLAGS)
 
@@ -148,7 +148,7 @@ $(CMOCKA_DIR):
 	@(cd $@/build && cmake ../ && make -s)
 
 clean-target:
-	rm -rf $(TARGET) $(OBJ_DIR)
+	rm -rf $(UNIT_TESTS_TARGET) $(SYSTEM_TESTS_TARGET) $(OBJ_DIR)
 
 clean: clean-target
 	rm -rf $(CMOCKA_DIR)
