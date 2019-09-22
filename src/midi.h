@@ -96,3 +96,4 @@ void midi_position(u16 beat);
 void midi_program(u8 chan, u8 program);
 Timing* midi_timing(void);
 void midi_sysex(const u8* data, u16 length);
+void midi_mappings(u8* mappingDest);

@@ -76,3 +76,14 @@ static void test_midi_sets_unknown_CC(UNUSED void** state)
     assert_int_equal(cc->controller, expectedController);
     assert_int_equal(cc->value, expectedValue);
 }
+
+static void test_midi_exposes_channel_mappings(UNUSED void** state)
+{
+    const u8 expectedMappings[MIDI_CHANNELS]
+        = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 6, 7, 8, 6, 7, 8 };
+
+    u8 mappings[MIDI_CHANNELS];
+    __real_midi_mappings(mappings);
+
+    assert_memory_equal(mappings, expectedMappings, sizeof(expectedMappings));
+}

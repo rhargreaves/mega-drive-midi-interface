@@ -269,6 +269,11 @@ void __wrap_midi_sysex(u8* data, u16 length)
     check_expected(length);
 }
 
+void __real_midi_mappings(u8* mappingDest)
+{
+    check_expected(mappingDest);
+}
+
 void __wrap_fm_writeReg(u16 part, u8 reg, u8 data)
 {
     check_expected(part);

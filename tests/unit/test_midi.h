@@ -26,3 +26,4 @@ extern void __real_midi_position(u16 beat);
 extern void __real_midi_program(u8 chan, u8 program);
 extern Timing* __real_midi_timing(void);
 extern void __real_midi_sysex(const u8* data, u16 length);
+extern void __real_midi_mappings(u8* mappingDest);

@@ -301,6 +301,21 @@ void midi_program(u8 chan, u8 program)
     mapping->ops->program(mapping->channel, program);
 }
 
+void midi_mappings(u8* mappingDest)
+{
+    const u8 UNMAPPED = 0x7E;
+    for (u8 i = 0; i < MIDI_CHANNELS; i++) {
+        ChannelMapping* mapping = &ChannelMappings[i];
+        if (mapping->ops == &FM_VTable)
+            mappingDest[i] = mapping->channel;
+        else if (mapping->ops == &PSG_VTable)
+            mappingDest[i] = mapping->channel + MIN_PSG_CHAN;
+        else {
+            mappingDest[i] = UNMAPPED;
+        }
+    }
+}
+
 ControlChange* midi_lastUnknownCC(void)
 {
     return &lastUnknownControlChange;
