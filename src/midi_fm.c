@@ -17,6 +17,7 @@ struct FmChannelState {
     u8 pitch;
     u8 volume;
     u8 velocity;
+    u8 pan;
     bool percussive;
 };
 
@@ -26,6 +27,7 @@ static u8 octave(u8 pitch);
 static u16 freqNumber(u8 pitch);
 static u8 pitchIsOutOfRange(u8 pitch);
 static u8 effectiveVolume(FmChannelState* channelState);
+static void updatePan(u8 chan);
 
 static Channel** presets;
 static PercussionPreset** percussionPresets;
@@ -39,6 +41,7 @@ void midi_fm_init(
         FmChannelState* state = &FmChannelStates[chan];
         state->volume = MAX_MIDI_VOLUME;
         state->velocity = MAX_MIDI_VOLUME;
+        state->pan = 0;
     }
     synth_init(presets[0]);
 }
@@ -86,6 +89,7 @@ void midi_fm_program(u8 chan, u8 program)
 {
     const Channel* data = presets[program];
     synth_preset(chan, data);
+    updatePan(chan);
 }
 
 void midi_fm_allNotesOff(u8 chan)
@@ -101,9 +105,17 @@ void midi_fm_percussive(u8 chan, bool enabled)
 
 void midi_fm_pan(u8 chan, u8 pan)
 {
-    if (pan > 96) {
+    FmChannelState* state = &FmChannelStates[chan];
+    state->pan = pan;
+    updatePan(chan);
+}
+
+static void updatePan(u8 chan)
+{
+    FmChannelState* state = &FmChannelStates[chan];
+    if (state->pan > 96) {
         synth_stereo(chan, STEREO_MODE_RIGHT);
-    } else if (pan > 31) {
+    } else if (state->pan > 31) {
         synth_stereo(chan, STEREO_MODE_CENTRE);
     } else {
         synth_stereo(chan, STEREO_MODE_LEFT);

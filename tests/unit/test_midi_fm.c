@@ -361,6 +361,8 @@ static void test_midi_sets_fm_preset(UNUSED void** state)
     expect_value(__wrap_synth_preset, channel, chan);
     expect_memory(__wrap_synth_preset, preset, &M_BANK_0_INST_1_BRIGHTPIANO,
         sizeof(M_BANK_0_INST_1_BRIGHTPIANO));
+    expect_value(__wrap_synth_stereo, channel, chan);
+    expect_any(__wrap_synth_stereo, mode);
 
     __real_midi_program(chan, program);
 }
@@ -416,4 +418,29 @@ static void test_midi_fm_note_on_percussion_channel_sets_percussion_preset(
     expect_value(__wrap_synth_noteOn, channel, FM_CHANNEL);
 
     __real_midi_noteOn(MIDI_PERCUSSION_CHANNEL, MIDI_KEY, MAX_MIDI_VOLUME);
+}
+
+static void test_midi_switching_program_retains_pan_setting(UNUSED void** state)
+{
+    const u8 program = 1;
+    const u8 chan = 0;
+
+    expect_value(__wrap_synth_stereo, channel, chan);
+    expect_value(__wrap_synth_stereo, mode, 1);
+
+    __real_midi_cc(0, CC_PAN, 127);
+
+    const Channel M_BANK_0_INST_1_BRIGHTPIANO = { 5, 7, 3, 0, 0, 0, 0,
+        { { 4, 2, 27, 1, 9, 0, 11, 5, 6, 33, 0 },
+            { 4, 5, 27, 1, 9, 0, 7, 9, 7, 18, 0 },
+            { 1, 2, 27, 1, 5, 1, 10, 5, 6, 8, 0 },
+            { 6, 5, 27, 1, 9, 0, 3, 8, 7, 9, 0 } } };
+
+    expect_value(__wrap_synth_preset, channel, chan);
+    expect_memory(__wrap_synth_preset, preset, &M_BANK_0_INST_1_BRIGHTPIANO,
+        sizeof(M_BANK_0_INST_1_BRIGHTPIANO));
+    expect_value(__wrap_synth_stereo, channel, chan);
+    expect_value(__wrap_synth_stereo, mode, 1);
+
+    __real_midi_program(chan, program);
 }

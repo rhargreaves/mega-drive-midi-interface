@@ -115,6 +115,7 @@ int main(void)
         midi_test(test_midi_sysex_handles_incomplete_channel_mapping_command),
         midi_test(
             test_midi_fm_note_on_percussion_channel_sets_percussion_preset),
+        midi_test(test_midi_switching_program_retains_pan_setting),
 
         synth_test(test_synth_init_sets_initial_registers),
         synth_test(test_synth_sets_note_on_fm_reg_chan_0_to_2),
