@@ -1,0 +1,3 @@
+#!/bin/bash
+sendmidi dev "IAC Bus 1" hex syx 00 22 77 00 09 05
+sendmidi dev "IAC Bus 1" hex syx 00 22 77 00 05 7F
