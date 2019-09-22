@@ -175,16 +175,25 @@ static void printActivity(void)
     }
     for (u8 i = 0; i < MAX_FM_CHANS; i++) {
         u8 midiChannel = fmChans[i];
+        if (midiChannel == 0xFF) {
+            clearText((i * CHAN_X_GAP) + 5, ACTIVITY_Y - 2, 2);
+        } else {
         char buffer[3];
         sprintf(buffer, "%2d", midiChannel + 1);
         drawText(buffer, (i * CHAN_X_GAP) + 5, ACTIVITY_Y - 2);
+        }
     }
     for (u8 i = 0; i < MAX_PSG_CHANS; i++) {
         u8 midiChannel = psgChans[i];
+        if (midiChannel == 0xFF) {
+            clearText(ACTIVITY_FM_X - 1 + (CHAN_X_GAP * (MAX_FM_CHANS + i)),
+                ACTIVITY_Y - 2, 2);
+        } else {
         char buffer[3];
         sprintf(buffer, "%2d", midiChannel + 1);
         drawText(buffer, ACTIVITY_FM_X - 1 + (CHAN_X_GAP * (MAX_FM_CHANS + i)),
             ACTIVITY_Y - 2);
+            }
     }
 }
 
