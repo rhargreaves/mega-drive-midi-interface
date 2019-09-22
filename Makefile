@@ -22,7 +22,8 @@ ASMZ80 = $(GENBIN)/zasm
 RM = rm -f
 NM = nm
 
-BUILD := $(if $(VERSION),v$(VERSION),Dev $(shell date '+%Y-%m-%d %H:%M:%S'))
+VERSION := Dev
+BUILD := v$(VERSION)
 
 INCS = -I. \
 	-I$(GENDEV)/sgdk/inc \
