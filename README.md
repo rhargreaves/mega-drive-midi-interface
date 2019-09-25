@@ -164,11 +164,12 @@ _Note: Documentation on the YM2612 frequently muddles the second and third opera
 
 ### System Exclusive Messages
 
-| Name               | Sequence            | Description                                                                                                                    |
-| ------------------ | ------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| General MIDI Reset | `7E 7F 09 01`       | Force all notes off on all channels                                                                                            |
-| Remap MIDI Channel | `00 22 77 00 xx yy` | Remap MIDI channel _xx_ to device channel _yy_<br/>_xx_ = MIDI channel (0-15)<br/>_yy_ = FM (0-5), PSG (6-9), unassigned (127) |
-| Ping               | `00 22 77 01`       | Interface responds with a _pong_ SysEx reply (`00 22 77 02`). Intended for use in measuring MIDI round-trip latency.           |
+| Name                     | Sequence            | Description                                                                                                                                                                             |
+| ------------------------ | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| General MIDI Reset       | `7E 7F 09 01`       | Force all notes off on all channels                                                                                                                                                     |
+| Remap MIDI Channel       | `00 22 77 00 xx yy` | Remap MIDI channel _xx_ to device channel _yy_<br/>_xx_ = MIDI channel (0-15)<br/>_yy_ = FM (0-5), PSG (6-9), unassigned (127)                                                          |
+| Ping                     | `00 22 77 01`       | Interface responds with a _pong_ SysEx reply (`00 22 77 02`). Intended for use in measuring MIDI round-trip latency.                                                                    |
+| Dynamic Channelling Mode | `00 22 77 03 xx`    | **Under development**. Dynamically assigns MIDI channels to idle FM/PSG channels to allow for maximum polyphony and variation in instrumentation.<br/>_xx_ = Enable (01) / Disable (00) |
 
 All other messages are ignored.
 
