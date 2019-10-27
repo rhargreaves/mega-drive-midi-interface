@@ -173,6 +173,12 @@ _Note: Documentation on the YM2612 frequently muddles the second and third opera
 
 All other messages are ignored.
 
+## Performance
+
+Releases are tested for performance using the [Mega MIDI Ping Pong](https://github.com/rhargreaves/mega-midi-ping-pong) tool which makes use of the "Ping" SysEx message to measure round-trip time.
+
+[Test results](https://github.com/rhargreaves/mega-midi-ping-pong#results)
+
 ## Stretch Goals
 
 - Support for MIDI messages to be received via the controller ports (in serial mode) as an alternative to the EverDrive X7.
