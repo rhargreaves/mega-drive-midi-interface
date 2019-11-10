@@ -1,5 +1,5 @@
 #include <comm.h>
-#include <ssf.h>
+#include <comm_everdrive.h>
 #include <stdbool.h>
 
 static u16 idle = 0;
@@ -17,7 +17,7 @@ u8 comm_read(void)
     if (countsInBounds()) {
         reads++;
     }
-    return ssf_usb_read();
+    return comm_everdrive_read();
 }
 
 u16 comm_idleCount(void)
@@ -38,14 +38,14 @@ void comm_resetCounts(void)
 
 void comm_write(u8 data)
 {
-    while (!ssf_usb_wr_ready())
+    while (!comm_everdrive_writeReady())
         ;
-    ssf_usb_write(data);
+    comm_everdrive_write(data);
 }
 
 static void waitForReady(void)
 {
-    while (!ssf_usb_rd_ready()) {
+    while (!comm_everdrive_readReady()) {
         if (countsInBounds()) {
             idle++;
         }
