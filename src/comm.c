@@ -1,5 +1,6 @@
-#include <comm.h>
-#include <comm_everdrive.h>
+#include "comm.h"
+#include "comm_everdrive.h"
+#include "comm_serial.h"
 #include <stdbool.h>
 
 static u16 idle = 0;
@@ -10,6 +11,10 @@ static const u16 MAX_COMM_BUSY = 0x28F;
 
 static void waitForReady(void);
 static bool countsInBounds(void);
+
+void comm_init(void)
+{
+}
 
 u8 comm_read(void)
 {
