@@ -79,6 +79,9 @@ MD_MOCKS=SYS_setVIntCallback \
 	SPR_update \
 	SYS_disableInts \
 	SYS_enableInts \
+	VDP_setReg \
+	SYS_setExtIntCallback \
+	SYS_setInterruptMaskLevel \
 	SPR_init \
 	SPR_setAnim \
 	SPR_setFrame \

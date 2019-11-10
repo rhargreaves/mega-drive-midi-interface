@@ -407,3 +407,15 @@ void __wrap_SPR_setAnimAndFrame(Sprite* sprite, s16 anim, s16 frame)
     check_expected(anim);
     check_expected(frame);
 }
+
+void __wrap_VDP_setReg(u16 reg, u8 value)
+{
+}
+
+void __wrap_SYS_setExtIntCallback(_voidCallback* CB)
+{
+}
+
+void __wrap_SYS_setInterruptMaskLevel(u16 value)
+{
+}
