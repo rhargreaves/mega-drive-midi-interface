@@ -57,7 +57,7 @@ static u16 loadPercentSum = 0;
 void ui_init(void)
 {
     VDP_setBackgroundColor(0);
-    VDP_setPaletteColor(0, RGB24_TO_VDPCOLOR(0x40));
+    VDP_setPaletteColor(0, RGB24_TO_VDPCOLOR(0x202020));
 
 #ifdef SONIC_RUNNER
     sonic_init(&sonic_sprite);
