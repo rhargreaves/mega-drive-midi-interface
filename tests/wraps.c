@@ -419,3 +419,21 @@ void __wrap_SYS_setExtIntCallback(_voidCallback* CB)
 void __wrap_SYS_setInterruptMaskLevel(u16 value)
 {
 }
+void __wrap_comm_serial_init(void)
+{
+}
+u8 __wrap_comm_serial_readReady(void)
+{
+    return TRUE;
+}
+u8 __wrap_comm_serial_read(void)
+{
+    return 0;
+}
+u8 __wrap_comm_serial_writeReady(void)
+{
+    return TRUE;
+}
+void __wrap_comm_serial_write(u8 data)
+{
+}

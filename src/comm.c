@@ -12,8 +12,35 @@ static const u16 MAX_COMM_BUSY = 0x28F;
 static void waitForReady(void);
 static bool countsInBounds(void);
 
+typedef struct CommVTable CommVTable;
+
+struct CommVTable {
+    void (*init)(void);
+    u8 (*readReady)(void);
+    u8 (*read)(void);
+    u8 (*writeReady)(void);
+    void (*write)(u8 data);
+};
+
+static const CommVTable Everdrive_VTable
+    = { comm_everdrive_init, comm_everdrive_readReady, comm_everdrive_read,
+          comm_everdrive_writeReady, comm_everdrive_write };
+
+static const CommVTable Serial_VTable
+    = { comm_serial_init, comm_serial_readReady, comm_serial_read,
+          comm_serial_writeReady, comm_serial_write };
+
+#if SERIAL
+static const CommVTable* ops = &Serial_VTable;
+#else
+static const CommVTable* ops = &Everdrive_VTable;
+#endif
+
 void comm_init(void)
 {
+    (void)Serial_VTable;
+    (void)Everdrive_VTable;
+    ops->init();
 }
 
 u8 comm_read(void)
@@ -22,7 +49,7 @@ u8 comm_read(void)
     if (countsInBounds()) {
         reads++;
     }
-    return comm_everdrive_read();
+    return ops->read();
 }
 
 u16 comm_idleCount(void)
@@ -43,14 +70,14 @@ void comm_resetCounts(void)
 
 void comm_write(u8 data)
 {
-    while (!comm_everdrive_writeReady())
+    while (!ops->writeReady())
         ;
-    comm_everdrive_write(data);
+    ops->write(data);
 }
 
 static void waitForReady(void)
 {
-    while (!comm_everdrive_readReady()) {
+    while (!ops->readReady()) {
         if (countsInBounds()) {
             idle++;
         }

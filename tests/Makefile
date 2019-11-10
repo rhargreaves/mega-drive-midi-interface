@@ -90,7 +90,13 @@ MD_MOCKS=SYS_setVIntCallback \
 	ssf_usb_read \
     ssf_usb_rd_ready \
 	ssf_usb_write \
-	ssf_usb_wr_ready
+	ssf_usb_wr_ready \
+	comm_serial_init \
+	comm_serial_readReady \
+	comm_serial_read \
+	comm_serial_writeReady \
+	comm_serial_write
+
 
 LDFLAGS=-ffreestanding -lcmocka -L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src
 LDFLAGS+=$(foreach MOCK,$(MD_MOCKS),-Wl,--wrap=$(MOCK))

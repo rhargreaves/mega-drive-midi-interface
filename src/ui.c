@@ -7,6 +7,7 @@
 #include "sonic.h"
 #include "sprite.h"
 #endif
+#include "buffer.h"
 #include "synth.h"
 #include <genesis.h>
 
@@ -133,6 +134,15 @@ static void printChannels(void)
     drawText("Act.", 0, 8);
 }
 
+#if SERIAL
+static void printBufferFree(void)
+{
+    char text[32];
+    sprintf(text, "%4d Free", buffer_available());
+    VDP_drawText(text, 28, 18);
+}
+#endif
+
 static void printActivity(void)
 {
     static u8 lastSynthBusy = 0;
@@ -236,6 +246,9 @@ static void printLoad(void)
     comm_resetCounts();
     drawText(loadText, 0, MAX_EFFECTIVE_Y);
     VDP_setTextPalette(PAL0);
+#if SERIAL
+    printBufferFree();
+#endif
 }
 
 static void printLastError(void)

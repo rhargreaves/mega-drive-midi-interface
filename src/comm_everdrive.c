@@ -20,3 +20,7 @@ void comm_everdrive_write(u8 data)
 {
     ssf_usb_write(data);
 }
+
+void comm_everdrive_init(void)
+{
+}
