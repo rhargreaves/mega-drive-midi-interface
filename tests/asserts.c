@@ -11,15 +11,14 @@
 
 void stub_usb_receive_byte(u8 value)
 {
-    will_return(__wrap_ssf_usb_rd_ready, 1);
-    will_return(__wrap_ssf_usb_read, value);
+    will_return(__wrap_comm_everdrive_readReady, 1);
+    will_return(__wrap_comm_everdrive_read, value);
 }
 
 void expect_usb_sent_byte(u8 value)
 {
-    will_return(__wrap_ssf_usb_wr_ready, 1);
-    expect_value(__wrap_ssf_usb_write, data, value);
-    will_return(__wrap_ssf_usb_write, value);
+    will_return(__wrap_comm_everdrive_writeReady, 1);
+    expect_value(__wrap_comm_everdrive_write, data, value);
 }
 
 void stub_comm_read_returns_midi_event(u8 status, u8 data, u8 data2)

@@ -87,15 +87,16 @@ MD_MOCKS=SYS_setVIntCallback \
 	SPR_setFrame \
 	SPR_setAnimAndFrame \
 	VDP_setPaletteColors \
-	ssf_usb_read \
-    ssf_usb_rd_ready \
-	ssf_usb_write \
-	ssf_usb_wr_ready \
 	comm_serial_init \
 	comm_serial_readReady \
 	comm_serial_read \
 	comm_serial_writeReady \
-	comm_serial_write
+	comm_serial_write \
+	comm_everdrive_init \
+	comm_everdrive_readReady \
+	comm_everdrive_read \
+	comm_everdrive_writeReady \
+	comm_everdrive_write
 
 
 LDFLAGS=-ffreestanding -lcmocka -L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src

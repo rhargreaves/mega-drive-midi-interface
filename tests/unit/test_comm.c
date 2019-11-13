@@ -23,9 +23,9 @@ static int test_comm_setup(void** state)
 
 static void test_comm_reads_when_ready(void** state)
 {
-    will_return(__wrap_ssf_usb_rd_ready, 0);
-    will_return(__wrap_ssf_usb_rd_ready, 1);
-    will_return(__wrap_ssf_usb_read, 50);
+    will_return(__wrap_comm_everdrive_readReady, 0);
+    will_return(__wrap_comm_everdrive_readReady, 1);
+    will_return(__wrap_comm_everdrive_read, 50);
 
     u8 read = __real_comm_read();
 
@@ -36,20 +36,19 @@ static void test_comm_writes_when_ready(void** state)
 {
     const u8 test_data = 50;
 
-    will_return(__wrap_ssf_usb_wr_ready, 0);
-    will_return(__wrap_ssf_usb_wr_ready, 1);
-    expect_value(__wrap_ssf_usb_write, data, test_data);
-    will_return(__wrap_ssf_usb_write, test_data);
+    will_return(__wrap_comm_everdrive_writeReady, 0);
+    will_return(__wrap_comm_everdrive_writeReady, 1);
+    expect_value(__wrap_comm_everdrive_write, data, test_data);
 
     __real_comm_write(test_data);
 }
 
 static void test_comm_idle_count_is_correct(void** state)
 {
-    will_return(__wrap_ssf_usb_rd_ready, 0);
-    will_return(__wrap_ssf_usb_rd_ready, 0);
-    will_return(__wrap_ssf_usb_rd_ready, 1);
-    will_return(__wrap_ssf_usb_read, 50);
+    will_return(__wrap_comm_everdrive_readReady, 0);
+    will_return(__wrap_comm_everdrive_readReady, 0);
+    will_return(__wrap_comm_everdrive_readReady, 1);
+    will_return(__wrap_comm_everdrive_read, 50);
 
     __real_comm_read();
     u16 idle = __real_comm_idleCount();
@@ -59,11 +58,11 @@ static void test_comm_idle_count_is_correct(void** state)
 
 static void test_comm_busy_count_is_correct(void** state)
 {
-    will_return(__wrap_ssf_usb_rd_ready, 0);
-    will_return(__wrap_ssf_usb_rd_ready, 1);
-    will_return(__wrap_ssf_usb_rd_ready, 1);
-    will_return(__wrap_ssf_usb_read, 50);
-    will_return(__wrap_ssf_usb_read, 50);
+    will_return(__wrap_comm_everdrive_readReady, 0);
+    will_return(__wrap_comm_everdrive_readReady, 1);
+    will_return(__wrap_comm_everdrive_readReady, 1);
+    will_return(__wrap_comm_everdrive_read, 50);
+    will_return(__wrap_comm_everdrive_read, 50);
 
     __real_comm_read();
     __real_comm_read();
@@ -75,10 +74,10 @@ static void test_comm_busy_count_is_correct(void** state)
 static void test_comm_clamps_idle_count(void** state)
 {
     for (u16 i = 0; i < MAX_COMM_IDLE + 1; i++) {
-        will_return(__wrap_ssf_usb_rd_ready, 0);
+        will_return(__wrap_comm_everdrive_readReady, 0);
     }
-    will_return(__wrap_ssf_usb_rd_ready, 1);
-    will_return(__wrap_ssf_usb_read, 50);
+    will_return(__wrap_comm_everdrive_readReady, 1);
+    will_return(__wrap_comm_everdrive_read, 50);
 
     __real_comm_read();
     u16 idle = __real_comm_idleCount();
@@ -89,8 +88,8 @@ static void test_comm_clamps_idle_count(void** state)
 static void test_comm_clamps_busy_count(void** state)
 {
     for (u16 i = 0; i < MAX_COMM_BUSY + 1; i++) {
-        will_return(__wrap_ssf_usb_rd_ready, 1);
-        will_return(__wrap_ssf_usb_read, 50);
+        will_return(__wrap_comm_everdrive_readReady, 1);
+        will_return(__wrap_comm_everdrive_read, 50);
         __real_comm_read();
     }
 

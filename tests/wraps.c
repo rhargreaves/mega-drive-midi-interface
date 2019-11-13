@@ -372,25 +372,28 @@ void __wrap_VDP_setPaletteColors(u16 index, const u16* values, u16 count)
 {
 }
 
-u8 __wrap_ssf_usb_read(void)
+void __wrap_comm_everdrive_init(void)
+{
+}
+
+u8 __wrap_comm_everdrive_readReady(void)
 {
     return mock_type(u8);
 }
 
-u16 __wrap_ssf_usb_rd_ready(void)
+u8 __wrap_comm_everdrive_read(void)
 {
-    return mock_type(u16);
+    return mock_type(u8);
 }
 
-u16 __wrap_ssf_usb_wr_ready(void)
+u8 __wrap_comm_everdrive_writeReady(void)
 {
-    return mock_type(u16);
+    return mock_type(u8);
 }
 
-u8 __wrap_ssf_usb_write(u8 data)
+void __wrap_comm_everdrive_write(u8 data)
 {
     check_expected(data);
-    return mock_type(u8);
 }
 
 void __wrap_SPR_setAnim(Sprite* sprite, s16 anim)
