@@ -11,14 +11,12 @@
 #include "test_midi_sysex.c"
 #include "test_midi_timing.c"
 #include "test_psg_chip.c"
-#include "test_sonic.c"
 #include "test_synth.c"
 #include <cmocka.h>
 
 #define midi_test(test) cmocka_unit_test_setup(test, test_midi_setup)
 #define synth_test(test) cmocka_unit_test_setup(test, test_synth_setup)
 #define comm_test(test) cmocka_unit_test_setup(test, test_comm_setup)
-#define sonic_test(test) cmocka_unit_test_setup(test, test_sonic_setup)
 
 int main(void)
 {
@@ -163,12 +161,7 @@ int main(void)
         comm_test(test_comm_idle_count_is_correct),
         comm_test(test_comm_busy_count_is_correct),
         comm_test(test_comm_clamps_idle_count),
-        comm_test(test_comm_clamps_busy_count),
-
-        sonic_test(test_sonic_init), sonic_test(test_sonic_goes_into_idle_mode),
-        sonic_test(test_sonic_single_vsync_does_nothing),
-        sonic_test(test_sonic_runs), sonic_test(test_sonic_walks),
-        sonic_test(test_sonic_spins)
+        comm_test(test_comm_clamps_busy_count)
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);

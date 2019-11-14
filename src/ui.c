@@ -3,10 +3,6 @@
 #include "midi.h"
 #include "midi_receiver.h"
 #include "psg_chip.h"
-#ifdef SONIC_RUNNER
-#include "sonic.h"
-#include "sprite.h"
-#endif
 #include "buffer.h"
 #include "synth.h"
 #include <genesis.h>
@@ -58,10 +54,6 @@ void ui_init(void)
 {
     VDP_setBackgroundColor(0);
     VDP_setPaletteColor(0, RGB24_TO_VDPCOLOR(0x202020));
-
-#ifdef SONIC_RUNNER
-    sonic_init(&sonic_sprite);
-#endif
     printHeader();
     printChannels();
     printLoad();
@@ -70,9 +62,6 @@ void ui_init(void)
 
 void ui_vsync(void)
 {
-#ifdef SONIC_RUNNER
-    sonic_vsync();
-#endif
     static u8 activityFrame = 0;
     if (++activityFrame == FRAMES_BEFORE_UPDATE_ACTIVITY) {
         printActivity();
