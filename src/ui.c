@@ -1,9 +1,9 @@
 #include "ui.h"
+#include "buffer.h"
 #include "comm.h"
 #include "midi.h"
 #include "midi_receiver.h"
 #include "psg_chip.h"
-#include "buffer.h"
 #include "synth.h"
 #include <genesis.h>
 
@@ -62,6 +62,15 @@ void ui_init(void)
 
 void ui_vsync(void)
 {
+    CommMode mode = comm_mode();
+    if (mode == Discovery) {
+        VDP_drawText("DISCO ", 0, 21);
+    } else if (mode == Everdrive) {
+        VDP_drawText("EDUSB ", 0, 21);
+    } else if (mode == Serial) {
+        VDP_drawText("SERIAL", 0, 21);
+    }
+
     static u8 activityFrame = 0;
     if (++activityFrame == FRAMES_BEFORE_UPDATE_ACTIVITY) {
         printActivity();

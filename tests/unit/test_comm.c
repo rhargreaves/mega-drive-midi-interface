@@ -24,7 +24,6 @@ static int test_comm_setup(void** state)
 
 static void switch_comm_type_to_everdrive(void)
 {
-    will_return(__wrap_comm_serial_readReady, 0);
     will_return(__wrap_comm_everdrive_readReady, 1);
     will_return(__wrap_comm_everdrive_read, 50);
     __real_comm_read();
@@ -33,6 +32,7 @@ static void switch_comm_type_to_everdrive(void)
 
 static void test_comm_reads_from_serial_when_ready(void** state)
 {
+    will_return(__wrap_comm_everdrive_readReady, 0);
     will_return(__wrap_comm_serial_readReady, 1);
     will_return(__wrap_comm_serial_read, 50);
 
@@ -43,7 +43,6 @@ static void test_comm_reads_from_serial_when_ready(void** state)
 
 static void test_comm_reads_when_ready(void** state)
 {
-    will_return(__wrap_comm_serial_readReady, 0);
     will_return(__wrap_comm_everdrive_readReady, 0);
     will_return(__wrap_comm_serial_readReady, 0);
     will_return(__wrap_comm_everdrive_readReady, 1);
@@ -56,9 +55,11 @@ static void test_comm_reads_when_ready(void** state)
 
 static void test_comm_writes_when_ready(void** state)
 {
-    switch_comm_type_to_everdrive();
-
     const u8 test_data = 50;
+
+    will_return(__wrap_comm_everdrive_readReady, 1);
+    will_return(__wrap_comm_everdrive_read, 50);
+    __real_comm_read();
 
     will_return(__wrap_comm_everdrive_writeReady, 0);
     will_return(__wrap_comm_everdrive_writeReady, 1);
@@ -69,7 +70,9 @@ static void test_comm_writes_when_ready(void** state)
 
 static void test_comm_idle_count_is_correct(void** state)
 {
-    switch_comm_type_to_everdrive();
+    will_return(__wrap_comm_everdrive_readReady, 1);
+    will_return(__wrap_comm_everdrive_read, 50);
+    __real_comm_read();
 
     will_return(__wrap_comm_everdrive_readReady, 0);
     will_return(__wrap_comm_everdrive_readReady, 0);
@@ -84,9 +87,11 @@ static void test_comm_idle_count_is_correct(void** state)
 
 static void test_comm_busy_count_is_correct(void** state)
 {
-    switch_comm_type_to_everdrive();
+    will_return(__wrap_comm_everdrive_readReady, 1);
+    will_return(__wrap_comm_everdrive_read, 50);
+    __real_comm_read();
+    __real_comm_resetCounts();
 
-    will_return(__wrap_comm_everdrive_readReady, 0);
     will_return(__wrap_comm_everdrive_readReady, 1);
     will_return(__wrap_comm_everdrive_readReady, 1);
     will_return(__wrap_comm_everdrive_read, 50);

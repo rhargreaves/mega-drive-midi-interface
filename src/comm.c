@@ -32,7 +32,7 @@ static const CommVTable Serial_VTable
     = { comm_serial_init, comm_serial_readReady, comm_serial_read,
           comm_serial_writeReady, comm_serial_write };
 
-static const CommVTable* commTypes[] = { &Serial_VTable, &Everdrive_VTable };
+static const CommVTable* commTypes[] = { &Everdrive_VTable, &Serial_VTable };
 
 static const CommVTable* activeCommType = NULL;
 
@@ -74,6 +74,17 @@ void comm_write(u8 data)
     while (!activeCommType->writeReady())
         ;
     activeCommType->write(data);
+}
+
+CommMode comm_mode(void)
+{
+    if (activeCommType == &Everdrive_VTable) {
+        return Everdrive;
+    } else if (activeCommType == &Serial_VTable) {
+        return Serial;
+    } else {
+        return Discovery;
+    }
 }
 
 static void waitForReady(void)
