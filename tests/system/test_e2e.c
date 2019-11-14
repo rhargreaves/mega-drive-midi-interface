@@ -19,6 +19,7 @@ static const u8 SYSEX_END = 0xF7;
 static int test_e2e_setup(void** state)
 {
     comm_resetCounts();
+    comm_init();
     const u16 times = 187;
     expect_any_count(__wrap_YM2612_writeReg, part, times);
     expect_any_count(__wrap_YM2612_writeReg, reg, times);
@@ -41,6 +42,7 @@ static void test_midi_note_on_event_sent_to_ym2612(void** state)
     const u8 noteOnKey = 48;
     const u8 noteOnVelocity = 127;
 
+    will_return(__wrap_comm_serial_readReady, 0);
     stub_usb_receive_byte(noteOnStatus);
     stub_usb_receive_byte(noteOnKey);
     stub_usb_receive_byte(noteOnVelocity);
@@ -61,6 +63,7 @@ static void test_midi_pitch_bend_sent_to_ym2612(void** state)
     const u8 bendLower = bend & 0x007F;
     const u8 bendUpper = bend >> 8;
 
+    will_return(__wrap_comm_serial_readReady, 0);
     stub_usb_receive_byte(bendStatus);
     stub_usb_receive_byte(bendLower);
     stub_usb_receive_byte(bendUpper);
@@ -81,6 +84,7 @@ static void test_polyphonic_midi_sent_to_separate_ym2612_channels(void** state)
     const u8 noteOnKey2 = 49;
     const u8 noteOnVelocity = 127;
 
+    will_return(__wrap_comm_serial_readReady, 0);
     stub_usb_receive_byte(ccStatus);
     stub_usb_receive_byte(ccPolyphonic);
     stub_usb_receive_byte(ccPolyphonicOnValue);
@@ -117,6 +121,7 @@ static void test_psg_audible_if_note_on_event_triggered(void** state)
     const u8 noteOnKey = 60;
     const u8 noteOnVelocity = 127;
 
+    will_return(__wrap_comm_serial_readReady, 0);
     stub_usb_receive_byte(noteOnStatus);
     stub_usb_receive_byte(noteOnKey);
     stub_usb_receive_byte(noteOnVelocity);
@@ -138,6 +143,7 @@ test_psg_not_audible_if_midi_channel_volume_set_and_there_is_no_note_on_event(
     const u8 ccVolume = 0x7;
     const u8 ccVolumeValue = 127;
 
+    will_return(__wrap_comm_serial_readReady, 0);
     stub_usb_receive_byte(ccStatus);
     stub_usb_receive_byte(ccVolume);
     stub_usb_receive_byte(ccVolumeValue);
@@ -152,6 +158,7 @@ static void test_general_midi_reset_sysex_stops_all_notes(void** state)
     const u8 noteOnKey = 48;
     const u8 noteOnVelocity = 127;
 
+    will_return(__wrap_comm_serial_readReady, 0);
     stub_usb_receive_byte(noteOnStatus);
     stub_usb_receive_byte(noteOnKey);
     stub_usb_receive_byte(noteOnVelocity);
@@ -198,6 +205,7 @@ static void test_remap_midi_channel_1_to_psg_channel_1()
     const u8 SYSEX_REMAP_MIDI_CHANNEL = 0x00;
     const u8 SYSEX_REMAP_DESTINATION_FIRST_PSG_CHANNEL = 0x06;
 
+    will_return(__wrap_comm_serial_readReady, 0);
     const u8 sysExRemapSequence[] = { SYSEX_START,
         SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
         SYSEX_UNUSED_MANU_ID, SYSEX_REMAP_COMMAND_ID, SYSEX_REMAP_MIDI_CHANNEL,
@@ -237,6 +245,7 @@ static void test_pong_received_after_ping_sent()
         SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
         SYSEX_UNUSED_MANU_ID, SYSEX_PONG_COMMAND_ID, SYSEX_END };
 
+    will_return(__wrap_comm_serial_readReady, 0);
     for (int i = 0; i < sizeof(sysExPingSequence); i++) {
         stub_usb_receive_byte(sysExPingSequence[i]);
     }

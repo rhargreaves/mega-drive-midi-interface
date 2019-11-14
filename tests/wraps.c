@@ -422,21 +422,31 @@ void __wrap_SYS_setExtIntCallback(_voidCallback* CB)
 void __wrap_SYS_setInterruptMaskLevel(u16 value)
 {
 }
+
+void __wrap_comm_init(void)
+{
+}
+
 void __wrap_comm_serial_init(void)
 {
 }
+
 u8 __wrap_comm_serial_readReady(void)
 {
-    return TRUE;
+    return mock_type(u8);
 }
+
 u8 __wrap_comm_serial_read(void)
 {
-    return 0;
+    return mock_type(u8);
 }
+
 u8 __wrap_comm_serial_writeReady(void)
 {
-    return TRUE;
+    return mock_type(u8);
 }
+
 void __wrap_comm_serial_write(u8 data)
 {
+    check_expected(data);
 }
