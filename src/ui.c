@@ -63,13 +63,20 @@ void ui_init(void)
 void ui_vsync(void)
 {
     CommMode mode = comm_mode();
-    if (mode == Discovery) {
-        VDP_drawText("DISCO ", 0, 21);
-    } else if (mode == Everdrive) {
-        VDP_drawText("EDUSB ", 0, 21);
-    } else if (mode == Serial) {
-        VDP_drawText("SERIAL", 0, 21);
+    const char* MODES_TEXT[] = { "DISCO ", "EDUSB ", "SERIAL" };
+    u16 index;
+    switch (mode) {
+    case Discovery:
+        index = 0;
+        break;
+    case Everdrive:
+        index = 1;
+        break;
+    default:
+        index = 2;
+        break;
     }
+    drawText(MODES_TEXT[index], 10, MAX_EFFECTIVE_Y);
 
     static u8 activityFrame = 0;
     if (++activityFrame == FRAMES_BEFORE_UPDATE_ACTIVITY) {
