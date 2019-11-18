@@ -450,3 +450,8 @@ void __wrap_comm_serial_write(u8 data)
 {
     check_expected(data);
 }
+
+u16 __wrap_SYS_getCPULoad()
+{
+    return 0;
+}

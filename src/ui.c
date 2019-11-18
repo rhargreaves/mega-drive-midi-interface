@@ -78,6 +78,8 @@ void ui_update(void)
         return;
     }
 
+    (void)SYS_getCPULoad();
+
     static u8 activityFrame = 0;
     if (++activityFrame == FRAMES_BEFORE_UPDATE_ACTIVITY) {
         printActivity();
