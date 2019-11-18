@@ -1,6 +1,6 @@
 #include <genesis.h>
 
-#define BUFFER_LEN 2048
+#define BUFFER_LEN 512
 
 static u16 readHead = 0;
 static u16 writeHead = 0;
