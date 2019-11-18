@@ -16,11 +16,16 @@ u16 comm_serial_baudRate(void)
     }
 }
 
-static void recvReadyCallback(void)
+static void updateBuffer(void)
 {
     while (serial_readyToReceive()) {
         buffer_write(serial_receive());
     }
+}
+
+static void recvReadyCallback(void)
+{
+    updateBuffer();
 }
 
 void comm_serial_init(void)

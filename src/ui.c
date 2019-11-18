@@ -55,6 +55,8 @@ static void printCommBuffer(void);
 static u16 loadPercentSum = 0;
 static bool commInited = false;
 static bool commSerial = false;
+static vu16 frame = 0;
+static u16 lastUpdateFrame = 0;
 
 void ui_init(void)
 {
@@ -69,6 +71,18 @@ void ui_init(void)
 
 void ui_vsync(void)
 {
+    frame++;
+    if (frame == 50) {
+        frame = 0;
+    }
+}
+
+void ui_update(void)
+{
+    if (lastUpdateFrame == frame) {
+        return;
+    }
+
     static u8 activityFrame = 0;
     if (++activityFrame == FRAMES_BEFORE_UPDATE_ACTIVITY) {
         printActivity();
@@ -102,6 +116,8 @@ void ui_vsync(void)
         printOverflowStatus();
         errorFrame = 0;
     }
+
+    lastUpdateFrame = frame;
 }
 
 static u16 loadPercent(void)

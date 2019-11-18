@@ -7,3 +7,4 @@
 
 void ui_init(void);
 void ui_vsync(void);
+void ui_update(void);

@@ -2,6 +2,7 @@
 #include "comm.h"
 #include "midi.h"
 #include "synth.h"
+#include "ui.h"
 #include <string.h>
 
 #define STATUS_LOWER(status) (status & 0x0F)
@@ -43,6 +44,7 @@ void midi_receiver_perpectual_read(void)
 {
     while (TRUE) {
         midi_receiver_read();
+        ui_update();
     }
 }
 
