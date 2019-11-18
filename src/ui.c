@@ -55,8 +55,7 @@ static void printCommBuffer(void);
 static u16 loadPercentSum = 0;
 static bool commInited = false;
 static bool commSerial = false;
-static vu16 frame = 0;
-static u16 lastUpdateFrame = 0;
+static u8 lastUpdateVCounter = 0;
 
 void ui_init(void)
 {
@@ -71,15 +70,11 @@ void ui_init(void)
 
 void ui_vsync(void)
 {
-    frame++;
-    if (frame == 50) {
-        frame = 0;
-    }
 }
 
 void ui_update(void)
 {
-    if (lastUpdateFrame == frame) {
+    if (lastUpdateVCounter == GET_VCOUNTER) {
         return;
     }
 
@@ -100,13 +95,8 @@ void ui_update(void)
     if (++loadFrame == FRAMES_BEFORE_UPDATE_LOAD) {
         printLoad();
         printPolyphonicMode();
-
-        if (!commInited) {
-            printCommMode();
-        }
-        if (commSerial) {
-            printCommBuffer();
-        }
+        printCommMode();
+        printCommBuffer();
         loadFrame = 0;
     }
 
@@ -117,7 +107,7 @@ void ui_update(void)
         errorFrame = 0;
     }
 
-    lastUpdateFrame = frame;
+    lastUpdateVCounter = GET_VCOUNTER;
 }
 
 static u16 loadPercent(void)
@@ -155,6 +145,9 @@ static void printChannels(void)
 
 static void printCommBuffer(void)
 {
+    if (!commSerial) {
+        return;
+    }
     char text[32];
     sprintf(text, "%4d Free", buffer_available());
     drawText(text, 29, MAX_EFFECTIVE_Y);
@@ -261,6 +254,9 @@ static void printBaudRate(void)
 
 static void printCommMode(void)
 {
+    if (commInited) {
+        return;
+    }
     const char* MODES_TEXT[] = { "Waiting", "ED USB ", "Serial ", "Unknown" };
     u16 index;
     switch (comm_mode()) {
