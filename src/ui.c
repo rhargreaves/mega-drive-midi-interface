@@ -51,6 +51,7 @@ static void printPolyphonicMode(void);
 static void printBaudRate(void);
 static void printCommMode(void);
 static void printCommBuffer(void);
+static void printMappings(void);
 
 static u16 loadPercentSum = 0;
 static bool commInited = false;
@@ -66,6 +67,7 @@ void ui_init(void)
     printLoad();
     printBeat();
     printCommMode();
+    printMappings();
 }
 
 void ui_vsync(void)
@@ -83,7 +85,10 @@ void ui_update(void)
     static u8 activityFrame = 0;
     if (++activityFrame == FRAMES_BEFORE_UPDATE_ACTIVITY) {
         printActivity();
+        printMappings();
         printBeat();
+        printCommMode();
+        printCommBuffer();
         activityFrame = 0;
     }
 
@@ -97,8 +102,6 @@ void ui_update(void)
     if (++loadFrame == FRAMES_BEFORE_UPDATE_LOAD) {
         printLoad();
         printPolyphonicMode();
-        printCommMode();
-        printCommBuffer();
         loadFrame = 0;
     }
 
@@ -175,7 +178,10 @@ static void printActivity(void)
         VDP_setTextPalette(PAL0);
         lastPsgBusy = psgBusy;
     }
+}
 
+static void printMappings(void)
+{
     u8 mappings[MIDI_CHANNELS];
     u8 fmChans[MAX_FM_CHANS] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
     u8 psgChans[MAX_PSG_CHANS] = { 0xFF, 0xFF, 0xFF, 0xFF };

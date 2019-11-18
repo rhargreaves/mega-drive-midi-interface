@@ -17,10 +17,10 @@ int main(void)
 
 static void initAllModules(void)
 {
-    ui_init();
     comm_init();
     midi_init((Channel**)M_BANK_0, (PercussionPreset**)P_BANK_0);
     midi_receiver_init();
+    ui_init();
 }
 
 static void vsync(void)

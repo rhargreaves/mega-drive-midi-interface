@@ -86,3 +86,4 @@ u8 __wrap_comm_everdrive_readReady(void);
 u8 __wrap_comm_everdrive_read(void);
 u8 __wrap_comm_everdrive_writeReady(void);
 void __wrap_comm_everdrive_write(u8 data);
+u16 __wrap_SYS_getCPULoad();
