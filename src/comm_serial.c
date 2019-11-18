@@ -28,10 +28,18 @@ static void recvReadyCallback(void)
     updateBuffer();
 }
 
+static void flushRRDY(void)
+{
+    while (serial_readyToReceive()) {
+        serial_receive();
+    }
+}
+
 void comm_serial_init(void)
 {
     serial_init(SCTRL_4800_BPS | SCTRL_SIN | SCTRL_SOUT | SCTRL_RINT);
     serial_setReadyToReceiveCallback(&recvReadyCallback);
+    flushRRDY();
 }
 
 u8 comm_serial_readReady(void)
