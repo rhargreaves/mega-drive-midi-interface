@@ -43,7 +43,9 @@ void midi_receiver_init(void)
 void midi_receiver_perpectual_read(void)
 {
     while (TRUE) {
-        midi_receiver_read();
+        while (comm_readReady()) {
+            midi_receiver_read();
+        }
         ui_update();
     }
 }

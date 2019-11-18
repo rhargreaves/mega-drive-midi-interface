@@ -170,6 +170,11 @@ void __wrap_comm_write(u8 data)
     check_expected(data);
 }
 
+bool __wrap_comm_readReady(void)
+{
+    return mock_type(bool);
+}
+
 u8 __wrap_comm_read(void)
 {
     return mock_type(u8);

@@ -8,6 +8,7 @@
 static const u16 MAX_COMM_IDLE = 0x28F;
 static const u16 MAX_COMM_BUSY = 0x28F;
 
+extern bool __real_comm_readReady(void);
 extern void __real_comm_init(void);
 extern void __real_comm_write(u8 data);
 extern u8 __real_comm_read(void);
@@ -25,6 +26,7 @@ static int test_comm_setup(void** state)
 static void switch_comm_type_to_everdrive(void)
 {
     will_return(__wrap_comm_everdrive_readReady, 1);
+    assert_true(__real_comm_readReady());
     will_return(__wrap_comm_everdrive_read, 50);
     __real_comm_read();
     __real_comm_resetCounts();
@@ -34,6 +36,7 @@ static void test_comm_reads_from_serial_when_ready(void** state)
 {
     will_return(__wrap_comm_everdrive_readReady, 0);
     will_return(__wrap_comm_serial_readReady, 1);
+    assert_true(__real_comm_readReady());
     will_return(__wrap_comm_serial_read, 50);
 
     u8 read = __real_comm_read();
@@ -45,7 +48,9 @@ static void test_comm_reads_when_ready(void** state)
 {
     will_return(__wrap_comm_everdrive_readReady, 0);
     will_return(__wrap_comm_serial_readReady, 0);
+    assert_false(__real_comm_readReady());
     will_return(__wrap_comm_everdrive_readReady, 1);
+    assert_true(__real_comm_readReady());
     will_return(__wrap_comm_everdrive_read, 50);
 
     u8 read = __real_comm_read();
@@ -58,6 +63,7 @@ static void test_comm_writes_when_ready(void** state)
     const u8 test_data = 50;
 
     will_return(__wrap_comm_everdrive_readReady, 1);
+    assert_true(__real_comm_readReady());
     will_return(__wrap_comm_everdrive_read, 50);
     __real_comm_read();
 
@@ -71,12 +77,16 @@ static void test_comm_writes_when_ready(void** state)
 static void test_comm_idle_count_is_correct(void** state)
 {
     will_return(__wrap_comm_everdrive_readReady, 1);
+    assert_true(__real_comm_readReady());
     will_return(__wrap_comm_everdrive_read, 50);
     __real_comm_read();
 
     will_return(__wrap_comm_everdrive_readReady, 0);
+    assert_false(__real_comm_readReady());
     will_return(__wrap_comm_everdrive_readReady, 0);
+    assert_false(__real_comm_readReady());
     will_return(__wrap_comm_everdrive_readReady, 1);
+    assert_true(__real_comm_readReady());
     will_return(__wrap_comm_everdrive_read, 50);
 
     __real_comm_read();
@@ -88,12 +98,15 @@ static void test_comm_idle_count_is_correct(void** state)
 static void test_comm_busy_count_is_correct(void** state)
 {
     will_return(__wrap_comm_everdrive_readReady, 1);
+    assert_true(__real_comm_readReady());
     will_return(__wrap_comm_everdrive_read, 50);
     __real_comm_read();
     __real_comm_resetCounts();
 
     will_return(__wrap_comm_everdrive_readReady, 1);
+    assert_true(__real_comm_readReady());
     will_return(__wrap_comm_everdrive_readReady, 1);
+    assert_true(__real_comm_readReady());
     will_return(__wrap_comm_everdrive_read, 50);
     will_return(__wrap_comm_everdrive_read, 50);
 
@@ -110,8 +123,10 @@ static void test_comm_clamps_idle_count(void** state)
 
     for (u16 i = 0; i < MAX_COMM_IDLE + 1; i++) {
         will_return(__wrap_comm_everdrive_readReady, 0);
+        assert_false(__real_comm_readReady());
     }
     will_return(__wrap_comm_everdrive_readReady, 1);
+    assert_true(__real_comm_readReady());
     will_return(__wrap_comm_everdrive_read, 50);
 
     __real_comm_read();
@@ -126,6 +141,7 @@ static void test_comm_clamps_busy_count(void** state)
 
     for (u16 i = 0; i < MAX_COMM_BUSY + 1; i++) {
         will_return(__wrap_comm_everdrive_readReady, 1);
+        assert_true(__real_comm_readReady());
         will_return(__wrap_comm_everdrive_read, 50);
         __real_comm_read();
     }

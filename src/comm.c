@@ -6,12 +6,14 @@
 static u16 idle = 0;
 static u16 reads = 0;
 
+static bool readReady = false;
+
 static const u16 MAX_COMM_IDLE = 0x28F;
 static const u16 MAX_COMM_BUSY = 0x28F;
 
 static const u16 COMM_TYPES = 2;
 
-static void waitForReady(void);
+// static void waitForReady(void);
 static bool countsInBounds(void);
 
 typedef struct CommVTable CommVTable;
@@ -44,9 +46,35 @@ void comm_init(void)
     activeCommType = NULL;
 }
 
+bool comm_readReady(void)
+{
+    if (activeCommType == NULL) {
+        for (u16 i = 0; i < COMM_TYPES; i++) {
+            if (commTypes[i]->readReady()) {
+                activeCommType = commTypes[i];
+                readReady = true;
+                return true;
+            }
+        }
+        readReady = false;
+        return false;
+    } else if (activeCommType->readReady()) {
+        readReady = true;
+        return true;
+    } else {
+        if (countsInBounds()) {
+            idle++;
+        }
+        readReady = false;
+        return false;
+    }
+}
+
 u8 comm_read(void)
 {
-    waitForReady();
+    while (!readReady) {
+        comm_readReady();
+    }
     if (countsInBounds()) {
         reads++;
     }
@@ -84,23 +112,6 @@ CommMode comm_mode(void)
         return Serial;
     } else {
         return Discovery;
-    }
-}
-
-static void waitForReady(void)
-{
-    while (activeCommType == NULL) {
-        for (u16 i = 0; i < COMM_TYPES; i++) {
-            if (commTypes[i]->readReady()) {
-                activeCommType = commTypes[i];
-                return;
-            }
-        }
-    }
-    while (!activeCommType->readReady()) {
-        if (countsInBounds()) {
-            idle++;
-        }
     }
 }
 

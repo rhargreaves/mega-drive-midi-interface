@@ -56,7 +56,8 @@ static void printMappings(void);
 static u16 loadPercentSum = 0;
 static bool commInited = false;
 static bool commSerial = false;
-static u8 lastUpdateVCounter = 0;
+static u16 lastUpdateFrame = 0;
+static u16 frame = 0;
 
 void ui_init(void)
 {
@@ -74,23 +75,14 @@ void ui_init(void)
 
 void ui_vsync(void)
 {
+    frame++;
 }
 
 void ui_update(void)
 {
-    if (lastUpdateVCounter == GET_VCOUNTER) {
+    if (lastUpdateFrame == frame) {
         return;
     }
-
-    drawText("CPU", 0, MAX_EFFECTIVE_Y - 1);
-    char cpuText[5] = { 0 };
-    sprintf(cpuText, "%2d", SYS_getCPULoad());
-    drawText(cpuText, 4, MAX_EFFECTIVE_Y - 1);
-
-    drawText("FPS", 10, MAX_EFFECTIVE_Y - 1);
-    char fpsText[6] = { 0 };
-    sprintf(fpsText, "%5d", GET_VCOUNTER);
-    drawText(fpsText, 14, MAX_EFFECTIVE_Y - 1);
 
     static u8 activityFrame = 0;
     if (++activityFrame == FRAMES_BEFORE_UPDATE_ACTIVITY) {
@@ -122,7 +114,7 @@ void ui_update(void)
         errorFrame = 0;
     }
 
-    lastUpdateVCounter = GET_VCOUNTER;
+    lastUpdateFrame = frame;
 }
 
 static u16 loadPercent(void)

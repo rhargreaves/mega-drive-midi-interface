@@ -25,6 +25,7 @@ MOCKS=midi_process \
 	comm_idleCount \
 	comm_busyCount \
 	comm_resetCounts \
+	comm_readReady \
 	synth_init \
 	synth_noteOn \
 	synth_noteOff \
