@@ -13,7 +13,6 @@
 void stub_usb_receive_byte(u8 value)
 {
     will_return(__wrap_comm_everdrive_readReady, 1);
-    assert_true(comm_readReady());
     will_return(__wrap_comm_everdrive_read, value);
 }
 
