@@ -3,7 +3,8 @@
 #include <stddef.h>
 
 #include "test_comm.c"
-#include "test_midi.c"
+#include "test_midi.h"
+#include "test_midi_dynamic.c"
 #include "test_midi_fm.c"
 #include "test_midi_polyphony.c"
 #include "test_midi_psg.c"
@@ -15,6 +16,8 @@
 #include <cmocka.h>
 
 #define midi_test(test) cmocka_unit_test_setup(test, test_midi_setup)
+#define dynamic_midi_test(test)                                                \
+    cmocka_unit_test_setup(test, test_dynamic_midi_setup)
 #define synth_test(test) cmocka_unit_test_setup(test, test_synth_setup)
 #define comm_test(test) cmocka_unit_test_setup(test, test_comm_setup)
 
@@ -161,7 +164,9 @@ int main(void)
         comm_test(test_comm_idle_count_is_correct),
         comm_test(test_comm_busy_count_is_correct),
         comm_test(test_comm_clamps_idle_count),
-        comm_test(test_comm_clamps_busy_count)
+        comm_test(test_comm_clamps_busy_count),
+
+        dynamic_midi_test(test_midi_dynamic_uses_all_channels),
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);

@@ -1,6 +1,6 @@
 #include "test_midi.h"
 
-static int test_midi_setup(UNUSED void** state)
+int test_midi_setup(UNUSED void** state)
 {
     const Channel M_BANK_0_INST_0_GRANDPIANO = { 2, 0, 3, 0, 0, 0, 0,
         { { 1, 0, 26, 1, 7, 0, 7, 4, 1, 39, 0 },
@@ -36,7 +36,7 @@ static int test_midi_setup(UNUSED void** state)
     return 0;
 }
 
-static void test_midi_directs_channels_above_10_to_psg(UNUSED void** state)
+void test_midi_directs_channels_above_10_to_psg(UNUSED void** state)
 {
     for (int chan = 11; chan < 16; chan++) {
         expect_any(__wrap_psg_frequency, channel);
@@ -48,7 +48,7 @@ static void test_midi_directs_channels_above_10_to_psg(UNUSED void** state)
     }
 }
 
-static void test_midi_polyphonic_mode_returns_state(UNUSED void** state)
+void test_midi_polyphonic_mode_returns_state(UNUSED void** state)
 {
     __real_midi_cc(0, CC_POLYPHONIC_MODE, 127);
 
@@ -57,14 +57,14 @@ static void test_midi_polyphonic_mode_returns_state(UNUSED void** state)
     __real_midi_cc(0, CC_POLYPHONIC_MODE, 0);
 }
 
-static void test_midi_sets_all_notes_off(UNUSED void** state)
+void test_midi_sets_all_notes_off(UNUSED void** state)
 {
     expect_value(__wrap_synth_noteOff, channel, 0);
 
     __real_midi_cc(0, CC_ALL_NOTES_OFF, 0);
 }
 
-static void test_midi_sets_unknown_CC(UNUSED void** state)
+void test_midi_sets_unknown_CC(UNUSED void** state)
 {
     u8 expectedController = 0x9;
     u8 expectedValue = 0x50;
@@ -77,7 +77,7 @@ static void test_midi_sets_unknown_CC(UNUSED void** state)
     assert_int_equal(cc->value, expectedValue);
 }
 
-static void test_midi_exposes_channel_mappings(UNUSED void** state)
+void test_midi_exposes_channel_mappings(UNUSED void** state)
 {
     const u8 expectedMappings[MIDI_CHANNELS]
         = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 6, 7, 8, 6, 7, 8 };
