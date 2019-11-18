@@ -2,9 +2,9 @@
 #include "buffer.h"
 #include "serial.h"
 
-static u16 baudRate(u8 sctrl)
+u16 comm_serial_baudRate(void)
 {
-    switch (sctrl & 0xC0) {
+    switch (serial_sctrl() & 0xC0) {
     case SCTRL_300_BPS:
         return 300;
     case SCTRL_1200_BPS:
@@ -14,13 +14,6 @@ static u16 baudRate(u8 sctrl)
     default:
         return 4800;
     }
-}
-
-static void printBaudRate(void)
-{
-    char baudRateText[9];
-    sprintf(baudRateText, "%d bps", baudRate(serial_sctrl()));
-    VDP_drawText(baudRateText, 0, 18);
 }
 
 static void recvReadyCallback(void)
@@ -34,7 +27,6 @@ void comm_serial_init(void)
 {
     serial_init(SCTRL_4800_BPS | SCTRL_SIN | SCTRL_SOUT | SCTRL_RINT);
     serial_setReadyToReceiveCallback(&recvReadyCallback);
-    printBaudRate();
 }
 
 u8 comm_serial_readReady(void)

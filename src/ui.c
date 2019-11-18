@@ -1,6 +1,7 @@
 #include "ui.h"
 #include "buffer.h"
 #include "comm.h"
+#include "comm_serial.h"
 #include "midi.h"
 #include "midi_receiver.h"
 #include "psg_chip.h"
@@ -47,8 +48,12 @@ static void drawText(const char* text, u16 x, u16 y);
 static void clearText(u16 x, u16 y, u16 w);
 static void printActivityForBusy(u8 busy, u16 maxChannels, u16 x);
 static void printPolyphonicMode(void);
+static void printBaudRate(void);
+static void printCommMode(void);
+static void printCommBuffer(void);
 
 static u16 loadPercentSum = 0;
+static bool commInited = false;
 
 void ui_init(void)
 {
@@ -58,26 +63,12 @@ void ui_init(void)
     printChannels();
     printLoad();
     printBeat();
+    printCommMode();
+    printCommBuffer();
 }
 
 void ui_vsync(void)
 {
-    CommMode mode = comm_mode();
-    const char* MODES_TEXT[] = { "DISCO ", "EDUSB ", "SERIAL" };
-    u16 index;
-    switch (mode) {
-    case Discovery:
-        index = 0;
-        break;
-    case Everdrive:
-        index = 1;
-        break;
-    default:
-        index = 2;
-        break;
-    }
-    drawText(MODES_TEXT[index], 10, MAX_EFFECTIVE_Y);
-
     static u8 activityFrame = 0;
     if (++activityFrame == FRAMES_BEFORE_UPDATE_ACTIVITY) {
         printActivity();
@@ -95,6 +86,10 @@ void ui_vsync(void)
     if (++loadFrame == FRAMES_BEFORE_UPDATE_LOAD) {
         printLoad();
         printPolyphonicMode();
+        printCommBuffer();
+        if (!commInited) {
+            printCommMode();
+        }
         loadFrame = 0;
     }
 
@@ -139,14 +134,12 @@ static void printChannels(void)
     drawText("Act.", 0, 8);
 }
 
-#if SERIAL
-static void printBufferFree(void)
+static void printCommBuffer(void)
 {
     char text[32];
     sprintf(text, "%4d Free", buffer_available());
     VDP_drawText(text, 28, 18);
 }
-#endif
 
 static void printActivity(void)
 {
@@ -240,6 +233,37 @@ static void printBeat(void)
     }
 }
 
+static void printBaudRate(void)
+{
+    char baudRateText[9];
+    sprintf(baudRateText, "%d bps", comm_serial_baudRate());
+    drawText(baudRateText, 17, MAX_EFFECTIVE_Y);
+}
+
+static void printCommMode(void)
+{
+    const char* MODES_TEXT[] = { "Waiting", "ED USB ", "Serial ", "Unknown" };
+    u16 index;
+    switch (comm_mode()) {
+    case Discovery:
+        index = 0;
+        break;
+    case Everdrive:
+        index = 1;
+        commInited = true;
+        break;
+    case Serial:
+        index = 2;
+        commInited = true;
+        printBaudRate();
+        break;
+    default:
+        index = 3;
+        break;
+    }
+    drawText(MODES_TEXT[index], 10, MAX_EFFECTIVE_Y);
+}
+
 static void printLoad(void)
 {
     static char loadText[16];
@@ -251,9 +275,6 @@ static void printLoad(void)
     comm_resetCounts();
     drawText(loadText, 0, MAX_EFFECTIVE_Y);
     VDP_setTextPalette(PAL0);
-#if SERIAL
-    printBufferFree();
-#endif
 }
 
 static void printLastError(void)
