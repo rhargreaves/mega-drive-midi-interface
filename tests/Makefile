@@ -98,7 +98,8 @@ MD_MOCKS=SYS_setVIntCallback \
 	comm_everdrive_read \
 	comm_everdrive_writeReady \
 	comm_everdrive_write \
-	SYS_getCPULoad
+	SYS_getCPULoad \
+	getFPS
 
 LDFLAGS=-ffreestanding -lcmocka -L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src
 LDFLAGS+=$(foreach MOCK,$(MD_MOCKS),-Wl,--wrap=$(MOCK))

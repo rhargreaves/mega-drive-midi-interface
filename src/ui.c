@@ -68,6 +68,8 @@ void ui_init(void)
     printBeat();
     printCommMode();
     printMappings();
+
+    drawText("CPU", 0, MAX_EFFECTIVE_X - 1);
 }
 
 void ui_vsync(void)
@@ -80,7 +82,15 @@ void ui_update(void)
         return;
     }
 
-    (void)SYS_getCPULoad();
+    drawText("CPU", 0, MAX_EFFECTIVE_Y - 1);
+    char cpuText[5] = { 0 };
+    sprintf(cpuText, "%2d", SYS_getCPULoad());
+    drawText(cpuText, 4, MAX_EFFECTIVE_Y - 1);
+
+    drawText("FPS", 10, MAX_EFFECTIVE_Y - 1);
+    char fpsText[6] = { 0 };
+    sprintf(fpsText, "%5d", GET_VCOUNTER);
+    drawText(fpsText, 14, MAX_EFFECTIVE_Y - 1);
 
     static u8 activityFrame = 0;
     if (++activityFrame == FRAMES_BEFORE_UPDATE_ACTIVITY) {

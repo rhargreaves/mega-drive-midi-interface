@@ -455,3 +455,8 @@ u16 __wrap_SYS_getCPULoad()
 {
     return 0;
 }
+
+u32 __wrap_getFPS()
+{
+    return 0;
+}
