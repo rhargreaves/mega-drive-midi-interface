@@ -18,8 +18,19 @@ Control the Yamaha YM2612 and PSG chips of the SEGA Mega Drive via MIDI.
 
 ### Hardware Requirements
 
-- SEGA Mega Drive/Genesis Console
+- SEGA Mega Drive/Genesis Console (Model 1 or 2)
+
+Either:
+
 - [Mega EverDrive X7 cart](https://krikzz.com/store/home/33-mega-everdrive-v2.html)
+- USB cable for connecting your PC to the EverDrive X7.
+
+Or:
+
+- Generic flash cart for loading the ROM
+- USB serial cable for connectivity into Controller Port 2, [based on these specifications](https://github.com/rhargreaves/mega-drive-serial-port#hardware)
+
+**Due to speed limitations on the controller port serial interface, EverDrive X7 USB connectivity is the recommended option, but connectivity via the controller port might be fine for simple use cases.**
 
 ### Software Requirements
 
