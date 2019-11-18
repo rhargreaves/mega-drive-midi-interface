@@ -46,7 +46,7 @@ static void printOverflowStatus(void);
 static void printErrorText(const char* text);
 static void drawText(const char* text, u16 x, u16 y);
 static void clearText(u16 x, u16 y, u16 w);
-static void printActivityForBusy(u8 busy, u16 maxChannels, u16 x);
+static void printActivityForBusy(u16 busy, u16 maxChannels, u16 x);
 static void printPolyphonicMode(void);
 static void printBaudRate(void);
 static void printCommMode(void);
@@ -57,7 +57,7 @@ static u16 loadPercentSum = 0;
 static bool commInited = false;
 static bool commSerial = false;
 static u16 lastUpdateFrame = 0;
-static u16 frame = 0;
+static volatile u16 frame = 0;
 
 void ui_init(void)
 {
@@ -69,8 +69,6 @@ void ui_init(void)
     printBeat();
     printCommMode();
     printMappings();
-
-    drawText("CPU", 0, MAX_EFFECTIVE_X - 1);
 }
 
 void ui_vsync(void)
@@ -162,23 +160,13 @@ static void printCommBuffer(void)
 
 static void printActivity(void)
 {
-    static u8 lastSynthBusy = 0;
-    u8 synthBusy = synth_busy();
-    if (synthBusy != lastSynthBusy) {
+    static u16 lastBusy = 0;
+    u16 busy = synth_busy() | (psg_busy() << 6);
+    if (busy != lastBusy) {
         VDP_setTextPalette(PAL2);
-        printActivityForBusy(synthBusy, MAX_FM_CHANS, ACTIVITY_FM_X);
+        printActivityForBusy(busy, MAX_FM_CHANS + MAX_PSG_CHANS, ACTIVITY_FM_X);
         VDP_setTextPalette(PAL0);
-        lastSynthBusy = synthBusy;
-    }
-
-    static u8 lastPsgBusy = 0;
-    u8 psgBusy = psg_busy();
-    if (psgBusy != lastPsgBusy) {
-        VDP_setTextPalette(PAL2);
-        printActivityForBusy(psgBusy, MAX_PSG_CHANS,
-            ACTIVITY_FM_X + (CHAN_X_GAP * MAX_FM_CHANS));
-        VDP_setTextPalette(PAL0);
-        lastPsgBusy = psgBusy;
+        lastBusy = busy;
     }
 }
 
@@ -229,15 +217,18 @@ static void printMappings(void)
     }
 }
 
-static void printActivityForBusy(u8 busy, u16 maxChannels, u16 x)
+static void printActivityForBusy(u16 busy, u16 maxChannels, u16 x)
 {
+    u8 lineLength = (CHAN_X_GAP * maxChannels) + 2;
+    char line[lineLength];
+    memset(line, ' ', lineLength - 1);
+    line[lineLength] = '\0';
     for (u8 chan = 0; chan < maxChannels; chan++) {
         if ((busy >> chan) & 1) {
-            drawText("*", (chan * CHAN_X_GAP) + x, ACTIVITY_Y);
-        } else {
-            clearText((chan * CHAN_X_GAP) + x, ACTIVITY_Y, 1);
+            line[chan * CHAN_X_GAP] = '*';
         }
     }
+    drawText(line, x, ACTIVITY_Y);
 }
 
 static void printBeat(void)
