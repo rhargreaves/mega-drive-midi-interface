@@ -14,6 +14,11 @@
 #define CHANNEL_UNASSIGNED 0x7F
 #define LENGTH_OF(x) (sizeof(x) / sizeof(x[0]))
 
+#define DEV_CHAN_MIN_FM 0
+#define DEV_CHAN_MAX_FM 5
+#define DEV_CHAN_MIN_PSG 6
+#define DEV_CHAN_MAX_PSG 9
+
 static const u8 SYSEX_EXTENDED_MANU_ID_SECTION = 0x00;
 static const u8 SYSEX_UNUSED_EUROPEAN_SECTION = 0x22;
 static const u8 SYSEX_UNUSED_MANU_ID = 0x77;
@@ -40,11 +45,13 @@ struct ChannelMapping {
 typedef struct ChannelState ChannelState;
 
 struct ChannelState {
+    u8 deviceChannel;
+    const VTable* ops;
     bool noteOn;
-    u8 destinationChannel;
+    u8 midiChannel;
 };
 
-static ChannelState channelState[MIDI_CHANNELS];
+static ChannelState channelState[DEV_CHANS];
 
 static const VTable PSG_VTable = { midi_psg_noteOn, midi_psg_noteOff,
     midi_psg_channelVolume, midi_psg_pitchBend, midi_psg_program,
@@ -87,6 +94,20 @@ static void remapChannel(u8 midiChannel, u8 deviceChannel);
 static void sendPong(void);
 static void setDynamicMode(bool enabled);
 
+static void initChannelState(void)
+{
+    for (u16 i = DEV_CHAN_MIN_FM; i <= DEV_CHAN_MAX_FM; i++) {
+        ChannelState* state = &channelState[i];
+        state->deviceChannel = i;
+        state->ops = &FM_VTable;
+    }
+    for (u16 i = DEV_CHAN_MIN_PSG; i <= DEV_CHAN_MAX_PSG; i++) {
+        ChannelState* state = &channelState[i];
+        state->deviceChannel = i - DEV_CHAN_MIN_PSG;
+        state->ops = &PSG_VTable;
+    }
+}
+
 void midi_init(
     Channel** defaultPresets, PercussionPreset** defaultPercussionPresets)
 {
@@ -97,6 +118,7 @@ void midi_init(
     overflow = false;
     polyphonic = false;
 
+    initChannelState();
     midi_psg_init();
     midi_fm_init(defaultPresets, defaultPercussionPresets);
 }
@@ -106,21 +128,40 @@ static ChannelMapping* channelMapping(u8 midiChannel)
     return &ChannelMappings[midiChannel];
 }
 
+static ChannelState* findChannelPlayingNote(u8 midiChannel, u8 pitch)
+{
+    for (u16 i = 0; i < DEV_CHANS; i++) {
+        ChannelState* chan = &channelState[i];
+        if (chan->noteOn && chan->midiChannel == midiChannel) {
+            return chan;
+        }
+    }
+    return NULL;
+}
+
+static ChannelState* findFreeChannel()
+{
+    for (u16 i = 0; i < DEV_CHANS; i++) {
+        ChannelState* chan = &channelState[i];
+        if (!chan->noteOn) {
+            return chan;
+        }
+    }
+    return NULL;
+}
+
 void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
 {
     if (polyphonic) {
         pooledNoteOn(chan, pitch, velocity);
     } else if (dynamicMode) {
-        ChannelState* state = &channelState[chan];
-        while (state->noteOn) {
-            chan++;
-            state = &channelState[chan];
+        ChannelState* state = findFreeChannel();
+        if (state == NULL) {
+            return;
         }
+        state->midiChannel = chan;
         state->noteOn = true;
-        state->destinationChannel = chan;
-        ChannelMapping* mapping = channelMapping(chan);
-        mapping->ops->noteOn(mapping->channel, pitch, velocity);
-
+        state->ops->noteOn(state->deviceChannel, pitch, velocity);
     } else {
         ChannelMapping* mapping = channelMapping(chan);
         mapping->ops->noteOn(mapping->channel, pitch, velocity);
@@ -132,12 +173,12 @@ void midi_noteOff(u8 chan, u8 pitch)
     if (polyphonic) {
         pooledNoteOff(chan, pitch);
     } else if (dynamicMode) {
-        ChannelState* state = &channelState[chan];
-        if (state->noteOn) {
-            ChannelMapping* mapping = channelMapping(state->destinationChannel);
-            mapping->ops->noteOff(mapping->channel, pitch);
-            state->noteOn = false;
+        ChannelState* state = findChannelPlayingNote(chan, pitch);
+        if (state == NULL) {
+            return;
         }
+        state->noteOn = false;
+        state->ops->noteOff(state->deviceChannel, pitch);
     } else {
         ChannelMapping* mapping = channelMapping(chan);
         mapping->ops->noteOff(mapping->channel, pitch);

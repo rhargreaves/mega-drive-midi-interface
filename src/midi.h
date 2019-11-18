@@ -8,6 +8,8 @@
 #define MAX_MIDI_CHANS 9
 #define MIDI_CHANNELS 16
 
+#define DEV_CHANS 10
+
 #define CC_VOLUME 7
 #define CC_PAN 10
 #define CC_GENMDM_FM_ALGORITHM 14
