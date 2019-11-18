@@ -2,6 +2,7 @@
 #include "buffer.h"
 #include "comm.h"
 #include "comm_serial.h"
+#include "memcmp.h"
 #include "midi.h"
 #include "midi_receiver.h"
 #include "psg_chip.h"
@@ -172,11 +173,17 @@ static void printActivity(void)
 
 static void printMappings(void)
 {
+    static u8 lastMappings[MIDI_CHANNELS] = { 0 };
     u8 mappings[MIDI_CHANNELS];
     u8 fmChans[MAX_FM_CHANS] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
     u8 psgChans[MAX_PSG_CHANS] = { 0xFF, 0xFF, 0xFF, 0xFF };
 
     midi_mappings(mappings);
+    if (memcmp(mappings, lastMappings, sizeof(u8) * MIDI_CHANNELS) == 0) {
+        return;
+    }
+    memcpy(lastMappings, mappings, sizeof(u8) * MIDI_CHANNELS);
+
     for (u8 i = 0; i < MIDI_CHANNELS; i++) {
         u8 chan = mappings[i];
         if (chan == 0x7F) {
