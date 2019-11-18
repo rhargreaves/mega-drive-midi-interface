@@ -54,6 +54,7 @@ static void printCommBuffer(void);
 
 static u16 loadPercentSum = 0;
 static bool commInited = false;
+static bool commSerial = false;
 
 void ui_init(void)
 {
@@ -64,7 +65,6 @@ void ui_init(void)
     printLoad();
     printBeat();
     printCommMode();
-    printCommBuffer();
 }
 
 void ui_vsync(void)
@@ -86,9 +86,12 @@ void ui_vsync(void)
     if (++loadFrame == FRAMES_BEFORE_UPDATE_LOAD) {
         printLoad();
         printPolyphonicMode();
-        printCommBuffer();
+
         if (!commInited) {
             printCommMode();
+        }
+        if (commSerial) {
+            printCommBuffer();
         }
         loadFrame = 0;
     }
@@ -123,8 +126,8 @@ static void drawText(const char* text, u16 x, u16 y)
 
 static void printHeader(void)
 {
-    drawText(HEADER, CENTRED_TEXT_X(HEADER), 0);
-    drawText(BUILD, RIGHTED_TEXT_X(BUILD), MAX_EFFECTIVE_Y);
+    drawText(HEADER, 4, 0);
+    drawText(BUILD, RIGHTED_TEXT_X(BUILD), 0);
 }
 
 static void printChannels(void)
@@ -138,7 +141,7 @@ static void printCommBuffer(void)
 {
     char text[32];
     sprintf(text, "%4d Free", buffer_available());
-    VDP_drawText(text, 28, 18);
+    drawText(text, 29, MAX_EFFECTIVE_Y);
 }
 
 static void printActivity(void)
@@ -255,6 +258,7 @@ static void printCommMode(void)
     case Serial:
         index = 2;
         commInited = true;
+        commSerial = true;
         printBaudRate();
         break;
     default:
