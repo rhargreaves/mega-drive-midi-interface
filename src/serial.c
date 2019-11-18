@@ -1,4 +1,5 @@
 #include "serial.h"
+#include <sys.h>
 
 #define VDP_MODE_REG_3 0xB
 #define VDP_IE2 0x08
@@ -54,9 +55,9 @@ void serial_init(u8 sctrlFlags)
     setSCtrl(sctrlFlags);
     setCtrl(CTRL_PCS_OUT);
     if (sctrlFlags & SCTRL_RINT) {
+        SYS_setInterruptMaskLevel(INT_MASK_LEVEL_ENABLE_ALL);
         VDP_setReg(VDP_MODE_REG_3, VDP_IE2);
         SYS_setExtIntCallback(&extIntCallback);
-        SYS_setInterruptMaskLevel(INT_MASK_LEVEL_ENABLE_ALL);
     }
 }
 
