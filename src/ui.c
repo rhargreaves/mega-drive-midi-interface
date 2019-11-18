@@ -219,7 +219,7 @@ static void printMappings(void)
 
 static void printActivityForBusy(u16 busy, u16 maxChannels, u16 x)
 {
-    u8 lineLength = (CHAN_X_GAP * maxChannels) + 2;
+    u8 lineLength = (CHAN_X_GAP * maxChannels) + 1;
     char line[lineLength];
     memset(line, ' ', lineLength - 1);
     line[lineLength] = '\0';
