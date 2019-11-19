@@ -14,11 +14,6 @@
 #define CHANNEL_UNASSIGNED 0x7F
 #define LENGTH_OF(x) (sizeof(x) / sizeof(x[0]))
 
-#define DEV_CHAN_MIN_FM 0
-#define DEV_CHAN_MAX_FM 5
-#define DEV_CHAN_MIN_PSG 6
-#define DEV_CHAN_MAX_PSG 9
-
 static const u8 SYSEX_EXTENDED_MANU_ID_SECTION = 0x00;
 static const u8 SYSEX_UNUSED_EUROPEAN_SECTION = 0x22;
 static const u8 SYSEX_UNUSED_MANU_ID = 0x77;

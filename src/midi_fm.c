@@ -42,6 +42,7 @@ void midi_fm_init(
         state->volume = MAX_MIDI_VOLUME;
         state->velocity = MAX_MIDI_VOLUME;
         state->pan = 0;
+        state->percussive = false;
     }
     synth_init(presets[0]);
 }
