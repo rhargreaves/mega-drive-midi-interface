@@ -99,11 +99,13 @@ static void initChannelState(void)
     for (u16 i = DEV_CHAN_MIN_FM; i <= DEV_CHAN_MAX_FM; i++) {
         ChannelState* state = &channelState[i];
         state->deviceChannel = i;
+        state->noteOn = false;
         state->ops = &FM_VTable;
     }
     for (u16 i = DEV_CHAN_MIN_PSG; i <= DEV_CHAN_MAX_PSG; i++) {
         ChannelState* state = &channelState[i];
         state->deviceChannel = i - DEV_CHAN_MIN_PSG;
+        state->noteOn = false;
         state->ops = &PSG_VTable;
     }
 }
@@ -117,6 +119,7 @@ void midi_init(
     memset(&polyphonicPitches, 0, sizeof(polyphonicPitches));
     overflow = false;
     polyphonic = false;
+    dynamicMode = false;
 
     initChannelState();
     midi_psg_init();

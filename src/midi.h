@@ -9,6 +9,10 @@
 #define MIDI_CHANNELS 16
 
 #define DEV_CHANS 10
+#define DEV_CHAN_MIN_FM 0
+#define DEV_CHAN_MAX_FM 5
+#define DEV_CHAN_MIN_PSG 6
+#define DEV_CHAN_MAX_PSG 9
 
 #define CC_VOLUME 7
 #define CC_PAN 10
