@@ -187,13 +187,13 @@ static void printDynamicMappings(void)
 {
     ChannelState* mappings = midi_dynamicModeMappings();
     char text[38];
-    sprintf(text, "%-2d %-2d %-2d %-2d %-2d %-2d %-2d %-2d %-2d %-2d",
+    sprintf(text, "%2d %2d %2d %2d %2d %2d %2d %2d %2d %2d",
         midiChannelForUi(mappings, 0), midiChannelForUi(mappings, 1),
         midiChannelForUi(mappings, 2), midiChannelForUi(mappings, 3),
         midiChannelForUi(mappings, 4), midiChannelForUi(mappings, 5),
         midiChannelForUi(mappings, 6), midiChannelForUi(mappings, 7),
         midiChannelForUi(mappings, 8), midiChannelForUi(mappings, 9));
-    drawText(text, 6, 10);
+    drawText(text, 5, 10);
 }
 
 static void printMappings(void)
