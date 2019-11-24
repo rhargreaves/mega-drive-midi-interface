@@ -18,32 +18,11 @@ static const u8 SYSEX_EXTENDED_MANU_ID_SECTION = 0x00;
 static const u8 SYSEX_UNUSED_EUROPEAN_SECTION = 0x22;
 static const u8 SYSEX_UNUSED_MANU_ID = 0x77;
 
-typedef struct VTable VTable;
-
-struct VTable {
-    void (*noteOn)(u8 chan, u8 pitch, u8 velocity);
-    void (*noteOff)(u8 chan, u8 pitch);
-    void (*channelVolume)(u8 chan, u8 volume);
-    void (*pitchBend)(u8 chan, u16 bend);
-    void (*program)(u8 chan, u8 program);
-    void (*allNotesOff)(u8 chan);
-    void (*pan)(u8 chan, u8 pan);
-};
-
 typedef struct ChannelMapping ChannelMapping;
 
 struct ChannelMapping {
     const VTable* ops;
     u8 channel;
-};
-
-typedef struct ChannelState ChannelState;
-
-struct ChannelState {
-    u8 deviceChannel;
-    const VTable* ops;
-    bool noteOn;
-    u8 midiChannel;
 };
 
 static ChannelState channelState[DEV_CHANS];
@@ -393,6 +372,11 @@ void midi_mappings(u8* mappingDest)
 bool midi_dynamicMode(void)
 {
     return dynamicMode;
+}
+
+ChannelState* midi_dynamicModeMappings(void)
+{
+    return channelState;
 }
 
 ControlChange* midi_lastUnknownCC(void)

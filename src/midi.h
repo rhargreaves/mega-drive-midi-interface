@@ -87,6 +87,27 @@ struct Timing {
     u16 clocks;
 };
 
+typedef struct VTable VTable;
+
+struct VTable {
+    void (*noteOn)(u8 chan, u8 pitch, u8 velocity);
+    void (*noteOff)(u8 chan, u8 pitch);
+    void (*channelVolume)(u8 chan, u8 volume);
+    void (*pitchBend)(u8 chan, u16 bend);
+    void (*program)(u8 chan, u8 program);
+    void (*allNotesOff)(u8 chan);
+    void (*pan)(u8 chan, u8 pan);
+};
+
+typedef struct ChannelState ChannelState;
+
+struct ChannelState {
+    u8 deviceChannel;
+    const VTable* ops;
+    bool noteOn;
+    u8 midiChannel;
+};
+
 void midi_init(
     Channel** defaultPresets, PercussionPreset** defaultPercussionPresets);
 void midi_noteOn(u8 chan, u8 pitch, u8 velocity);
@@ -104,3 +125,4 @@ Timing* midi_timing(void);
 void midi_sysex(const u8* data, u16 length);
 void midi_mappings(u8* mappingDest);
 bool midi_dynamicMode(void);
+ChannelState* midi_dynamicModeMappings(void);

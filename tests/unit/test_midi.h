@@ -36,6 +36,7 @@ extern Timing* __real_midi_timing(void);
 extern void __real_midi_sysex(const u8* data, u16 length);
 extern void __real_midi_mappings(u8* mappingDest);
 extern bool __real_midi_dynamicMode(void);
+extern ChannelState* __real_midi_dynamicModeMappings(void);
 
 int test_midi_setup(UNUSED void** state);
 void test_midi_directs_channels_above_10_to_psg(UNUSED void** state);

@@ -82,3 +82,15 @@ static void test_midi_reports_dynamic_mode_disabled(UNUSED void** state)
 
     assert_false(__real_midi_dynamicMode());
 }
+
+static void test_midi_exposes_dynamic_mode_mappings(UNUSED void** state)
+{
+    ChannelState* mappings = __real_midi_dynamicModeMappings();
+    for (u8 i = DEV_CHAN_MIN_FM; i < DEV_CHAN_MAX_FM; i++) {
+        ChannelState* mapping = &mappings[i];
+
+        print_message("Chan %d\n", i);
+        assert_false(mapping->noteOn);
+        assert_int_equal(mapping->deviceChannel, i);
+    }
+}

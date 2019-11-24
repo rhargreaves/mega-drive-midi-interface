@@ -284,6 +284,11 @@ bool __wrap_midi_dynamicMode(void)
     return mock_type(bool);
 }
 
+ChannelState* __wrap_midi_dynamicModeMappings(void)
+{
+    return mock_type(ChannelState*);
+}
+
 void __wrap_fm_writeReg(u16 part, u8 reg, u8 data)
 {
     check_expected(part);
