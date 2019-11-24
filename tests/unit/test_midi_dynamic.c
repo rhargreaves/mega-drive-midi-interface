@@ -46,23 +46,31 @@ static void test_midi_dynamic_uses_all_channels(UNUSED void** state)
     __real_midi_noteOn(0, pitch, 127);
 }
 
-static void test_midi_dynamic_tries_to_use_original_midi_channel_if_available(
+static void test_midi_dynamic_tries_to_reuse_original_midi_channel_if_available(
     UNUSED void** state)
 {
     const u8 octave = 4;
     const u16 freq = 0x28d;
     const u16 pitch = 60;
 
-    const u8 chans[3] = { 0, 2, 5 };
-
-    for (u16 i = 0; i < 3; i++) {
-        u8 chan = chans[i];
+    for (u8 chan = 0; chan < 3; chan++) {
         expect_synth_pitch(chan, octave, freq);
         expect_synth_volume_any();
         expect_value(__wrap_synth_noteOn, channel, chan);
 
         __real_midi_noteOn(chan, pitch, 127);
     }
+
+    const u8 REUSE_MIDI_CHANNEL = 2;
+
+    expect_value(__wrap_synth_noteOff, channel, REUSE_MIDI_CHANNEL);
+    __real_midi_noteOff(REUSE_MIDI_CHANNEL, pitch);
+
+    expect_synth_pitch(REUSE_MIDI_CHANNEL, octave, freq);
+    expect_synth_volume_any();
+    expect_value(__wrap_synth_noteOn, channel, REUSE_MIDI_CHANNEL);
+
+    __real_midi_noteOn(REUSE_MIDI_CHANNEL, pitch, 127);
 }
 
 static void test_midi_reports_dynamic_mode_enabled(UNUSED void** state)
@@ -102,24 +110,22 @@ static void test_midi_dynamic_enables_percussive_mode_if_needed(
 {
     const u8 MIDI_KEY = 30;
 
-    midi_remapChannel(GENERAL_MIDI_PERCUSSION_CHANNEL, 5);
-
-    expect_value(__wrap_synth_preset, channel, 5);
-    expect_any(__wrap_synth_preset, preset);
-
-    expect_synth_pitch_any();
-    expect_synth_volume_any();
-    expect_value(__wrap_synth_noteOn, channel, 5);
-
-    print_message("Playing first drum\n");
-    __real_midi_noteOn(GENERAL_MIDI_PERCUSSION_CHANNEL, MIDI_KEY, 127);
-
     expect_value(__wrap_synth_preset, channel, 0);
     expect_any(__wrap_synth_preset, preset);
 
     expect_synth_pitch_any();
     expect_synth_volume_any();
     expect_value(__wrap_synth_noteOn, channel, 0);
+
+    print_message("Playing first drum\n");
+    __real_midi_noteOn(GENERAL_MIDI_PERCUSSION_CHANNEL, MIDI_KEY, 127);
+
+    expect_value(__wrap_synth_preset, channel, 1);
+    expect_any(__wrap_synth_preset, preset);
+
+    expect_synth_pitch_any();
+    expect_synth_volume_any();
+    expect_value(__wrap_synth_noteOn, channel, 1);
 
     print_message("Playing second drum\n");
     __real_midi_noteOn(GENERAL_MIDI_PERCUSSION_CHANNEL, MIDI_KEY, 127);

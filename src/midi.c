@@ -142,12 +142,14 @@ static bool isChannelSuitable(ChannelState* state, u8 incomingMidiChan)
 
 static ChannelState* findFreeChannel(u8 incomingMidiChan)
 {
-    ChannelMapping* mapping = channelMapping(incomingMidiChan);
-    ChannelState* state = &channelState[mapping->channel];
-    if (isChannelSuitable(state, incomingMidiChan)) {
-        return state;
+    for (u16 i = 0; i < DEV_CHANS; i++) {
+        ChannelState* chan = &channelState[i];
+        if (chan->midiChannel == incomingMidiChan) {
+            if (isChannelSuitable(chan, incomingMidiChan)) {
+                return chan;
+            }
+        }
     }
-
     for (u16 i = 0; i < DEV_CHANS; i++) {
         ChannelState* chan = &channelState[i];
         if (isChannelSuitable(chan, incomingMidiChan)) {

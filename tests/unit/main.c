@@ -168,7 +168,7 @@ int main(void)
 
         dynamic_midi_test(test_midi_dynamic_uses_all_channels),
         dynamic_midi_test(
-            test_midi_dynamic_tries_to_use_original_midi_channel_if_available),
+            test_midi_dynamic_tries_to_reuse_original_midi_channel_if_available),
         dynamic_midi_test(test_midi_reports_dynamic_mode_enabled),
         dynamic_midi_test(test_midi_reports_dynamic_mode_disabled),
         dynamic_midi_test(test_midi_exposes_dynamic_mode_mappings),
