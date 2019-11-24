@@ -180,7 +180,7 @@ static void printActivity(void)
 
 static u8 midiChannelForUi(ChannelState* mappings, u8 index)
 {
-    return (mappings[0].midiChannel) + 1;
+    return (mappings[index].midiChannel) + 1;
 }
 
 static void printDynamicMappings(void)
