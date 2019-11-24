@@ -7,6 +7,7 @@
 #define MAX_MIDI_VOLUME 127
 #define MAX_MIDI_CHANS 9
 #define MIDI_CHANNELS 16
+#define DEV_CHAN_PSG_NOISE 3
 
 #define DEV_CHANS 10
 #define DEV_CHAN_MIN_FM 0

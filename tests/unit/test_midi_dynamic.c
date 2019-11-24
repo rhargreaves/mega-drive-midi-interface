@@ -32,8 +32,8 @@ static void test_midi_dynamic_uses_all_channels(UNUSED void** state)
         __real_midi_noteOn(0, pitch, 127);
     }
 
-    print_message("PSG channels...\n");
-    for (u16 i = DEV_CHAN_MIN_PSG; i <= DEV_CHAN_MAX_PSG; i++) {
+    print_message("PSG channels (except noise)..\n");
+    for (u16 i = DEV_CHAN_MIN_PSG; i <= DEV_CHAN_MAX_PSG - 1; i++) {
         u8 psgChan = i - DEV_CHAN_MIN_PSG;
         expect_value(__wrap_psg_frequency, channel, psgChan);
         expect_any(__wrap_psg_frequency, freq);
@@ -42,6 +42,8 @@ static void test_midi_dynamic_uses_all_channels(UNUSED void** state)
 
         __real_midi_noteOn(0, pitch, 127);
     }
+
+    __real_midi_noteOn(0, pitch, 127);
 }
 
 static void test_midi_dynamic_tries_to_use_original_midi_channel_if_available(

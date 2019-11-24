@@ -120,12 +120,20 @@ static ChannelState* findFreeChannel(u8 incomingChan)
 {
     ChannelMapping* mapping = channelMapping(incomingChan);
     ChannelState* state = &channelState[mapping->channel];
+    if (state->ops == &PSG_VTable
+        && state->deviceChannel == DEV_CHAN_PSG_NOISE) {
+        return NULL;
+    }
     if (!state->noteOn) {
         return state;
     }
 
     for (u16 i = 0; i < DEV_CHANS; i++) {
         ChannelState* chan = &channelState[i];
+        if (chan->ops == &PSG_VTable
+            && chan->deviceChannel == DEV_CHAN_PSG_NOISE) {
+            return NULL;
+        }
         if (!chan->noteOn) {
             return chan;
         }
