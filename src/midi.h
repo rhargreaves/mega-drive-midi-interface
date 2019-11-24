@@ -108,6 +108,7 @@ struct ChannelState {
     const VTable* ops;
     bool noteOn;
     u8 midiChannel;
+    u8 midiProgram;
 };
 
 void midi_init(

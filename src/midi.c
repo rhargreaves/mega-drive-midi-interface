@@ -49,6 +49,8 @@ static const ChannelMapping DefaultChannelMappings[MIDI_CHANNELS]
 
 static ChannelMapping ChannelMappings[MIDI_CHANNELS];
 
+static u8 programs[MIDI_CHANNELS];
+
 static u8 polyphonicPitches[MAX_FM_CHANS];
 static ControlChange lastUnknownControlChange;
 static Timing timing;
@@ -93,7 +95,7 @@ void midi_init(
     overflow = false;
     polyphonic = false;
     dynamicMode = false;
-
+    memset(&programs, 0, sizeof(u8) * MIDI_CHANNELS);
     initChannelState();
     midi_psg_init();
     midi_fm_init(defaultPresets, defaultPercussionPresets);
@@ -150,6 +152,11 @@ void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
         state->midiChannel = chan;
         midi_fm_percussive(
             state->deviceChannel, chan == GENERAL_MIDI_PERCUSSION_CHANNEL);
+        u8 program = programs[state->midiChannel];
+        if (state->midiProgram != program) {
+            state->ops->program(state->deviceChannel, program);
+            state->midiProgram = program;
+        }
         state->noteOn = true;
         state->ops->noteOn(state->deviceChannel, pitch, velocity);
     } else {
@@ -357,6 +364,7 @@ void midi_position(u16 midiBeat)
 
 void midi_program(u8 chan, u8 program)
 {
+    programs[chan] = program;
     ChannelMapping* mapping = channelMapping(chan);
     mapping->ops->program(mapping->channel, program);
 }

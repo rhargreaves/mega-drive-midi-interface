@@ -172,7 +172,8 @@ int main(void)
         dynamic_midi_test(test_midi_reports_dynamic_mode_enabled),
         dynamic_midi_test(test_midi_reports_dynamic_mode_disabled),
         dynamic_midi_test(test_midi_exposes_dynamic_mode_mappings),
-        dynamic_midi_test(test_midi_dynamic_enables_percussive_mode_if_needed)
+        dynamic_midi_test(test_midi_dynamic_enables_percussive_mode_if_needed),
+        dynamic_midi_test(test_midi_sets_presets_on_dynamic_channels)
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
