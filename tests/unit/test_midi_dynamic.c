@@ -102,7 +102,7 @@ static void test_midi_dynamic_enables_percussive_mode_if_needed(
 {
     const u8 MIDI_KEY = 30;
 
-    midi_remapChannel(9, 5);
+    midi_remapChannel(GENERAL_MIDI_PERCUSSION_CHANNEL, 5);
 
     expect_value(__wrap_synth_preset, channel, 5);
     expect_any(__wrap_synth_preset, preset);
@@ -112,7 +112,7 @@ static void test_midi_dynamic_enables_percussive_mode_if_needed(
     expect_value(__wrap_synth_noteOn, channel, 5);
 
     print_message("Playing first drum\n");
-    __real_midi_noteOn(9, MIDI_KEY, 127);
+    __real_midi_noteOn(GENERAL_MIDI_PERCUSSION_CHANNEL, MIDI_KEY, 127);
 
     expect_value(__wrap_synth_preset, channel, 0);
     expect_any(__wrap_synth_preset, preset);
@@ -122,5 +122,5 @@ static void test_midi_dynamic_enables_percussive_mode_if_needed(
     expect_value(__wrap_synth_noteOn, channel, 0);
 
     print_message("Playing second drum\n");
-    __real_midi_noteOn(9, MIDI_KEY, 127);
+    __real_midi_noteOn(GENERAL_MIDI_PERCUSSION_CHANNEL, MIDI_KEY, 127);
 }
