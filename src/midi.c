@@ -134,19 +134,23 @@ static bool isPsgAndIncomingChanIsPercussive(
         && incomingChan == GENERAL_MIDI_PERCUSSION_CHANNEL;
 }
 
-static ChannelState* findFreeChannel(u8 incomingChan)
+static bool isChannelSuitable(ChannelState* state, u8 incomingMidiChan)
 {
-    ChannelMapping* mapping = channelMapping(incomingChan);
+    return !state->noteOn && !isPsgNoise(state)
+        && !isPsgAndIncomingChanIsPercussive(state, incomingMidiChan);
+}
+
+static ChannelState* findFreeChannel(u8 incomingMidiChan)
+{
+    ChannelMapping* mapping = channelMapping(incomingMidiChan);
     ChannelState* state = &channelState[mapping->channel];
-    if (!state->noteOn && !isPsgNoise(state)
-        && !isPsgAndIncomingChanIsPercussive(state, incomingChan)) {
+    if (isChannelSuitable(state, incomingMidiChan)) {
         return state;
     }
 
     for (u16 i = 0; i < DEV_CHANS; i++) {
         ChannelState* chan = &channelState[i];
-        if (!chan->noteOn && !isPsgNoise(chan)
-            && !isPsgAndIncomingChanIsPercussive(chan, incomingChan)) {
+        if (isChannelSuitable(chan, incomingMidiChan)) {
             return chan;
         }
     }
