@@ -137,8 +137,14 @@ static ChannelState* findChannelPlayingNote(u8 midiChannel, u8 pitch)
     return NULL;
 }
 
-static ChannelState* findFreeChannel()
+static ChannelState* findFreeChannel(u8 incomingChan)
 {
+    ChannelMapping* mapping = channelMapping(incomingChan);
+    ChannelState* state = &channelState[mapping->channel];
+    if (!state->noteOn) {
+        return state;
+    }
+
     for (u16 i = 0; i < DEV_CHANS; i++) {
         ChannelState* chan = &channelState[i];
         if (!chan->noteOn) {
@@ -153,7 +159,7 @@ void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
     if (polyphonic) {
         pooledNoteOn(chan, pitch, velocity);
     } else if (dynamicMode) {
-        ChannelState* state = findFreeChannel();
+        ChannelState* state = findFreeChannel(chan);
         if (state == NULL) {
             return;
         }

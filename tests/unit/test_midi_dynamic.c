@@ -49,3 +49,23 @@ static void test_midi_dynamic_uses_all_channels(UNUSED void** state)
         __real_midi_noteOn(0, pitch, 127);
     }
 }
+
+static void test_midi_dynamic_tries_to_use_original_midi_channel_if_available(
+    UNUSED void** state)
+{
+    const u8 octave = 4;
+    const u16 freq = 0x28d;
+    const u16 pitch = 60;
+
+    const u8 chans[3] = { 0, 2, 5 };
+
+    print_message("FM channels...\n");
+    for (u16 i = 0; i < 3; i++) {
+        u8 chan = chans[i];
+        expect_synth_pitch(chan, octave, freq);
+        expect_synth_volume_any();
+        expect_value(__wrap_synth_noteOn, channel, chan);
+
+        __real_midi_noteOn(chan, pitch, 127);
+    }
+}

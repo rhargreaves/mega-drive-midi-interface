@@ -167,6 +167,8 @@ int main(void)
         comm_test(test_comm_clamps_busy_count),
 
         dynamic_midi_test(test_midi_dynamic_uses_all_channels),
+        dynamic_midi_test(
+            test_midi_dynamic_tries_to_use_original_midi_channel_if_available)
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
