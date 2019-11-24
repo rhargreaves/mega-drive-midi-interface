@@ -54,9 +54,11 @@ static void printPolyphonicMode(void);
 static void printBaudRate(void);
 static void printCommMode(void);
 static void printCommBuffer(void);
-static void printMappings(void);
-static void printDynamicMappings(void);
+static void populateDynamicMappings(u8* midiChans);
+static void populateStaticMappings(u8* midiChans);
 static void printLastDynamicMode(void);
+static void printTheMappingsIfNeeded(u8* midiChans);
+static void printMappings(void);
 
 static u16 loadPercentSum = 0;
 static bool commInited = false;
@@ -81,6 +83,17 @@ void ui_vsync(void)
     frame++;
 }
 
+static void printMappings(void)
+{
+    u8 midiChans[DEV_CHANS] = { 0 };
+    if (midi_dynamicMode()) {
+        populateDynamicMappings(midiChans);
+    } else {
+        populateStaticMappings(midiChans);
+    }
+    printTheMappingsIfNeeded(midiChans);
+}
+
 void ui_update(void)
 {
     if (lastUpdateFrame == frame) {
@@ -90,15 +103,10 @@ void ui_update(void)
     static u8 activityFrame = 0;
     if (++activityFrame == FRAMES_BEFORE_UPDATE_ACTIVITY) {
         printActivity();
-        if (midi_dynamicMode()) {
-            printDynamicMappings();
-        } else {
-            printMappings();
-        }
+        printMappings();
         printBeat();
         printCommMode();
         printCommBuffer();
-
         activityFrame = 0;
     }
 
@@ -201,65 +209,25 @@ static void printTheMappingsIfNeeded(u8* midiChans)
     drawText(text, 5, 6);
 }
 
-static void printDynamicMappings(void)
+static void populateDynamicMappings(u8* midiChans)
 {
     ChannelState* chans = midi_dynamicModeMappings();
-    u8 midiChans[DEV_CHANS];
     for (u8 i = 0; i < DEV_CHANS; i++) {
         midiChans[i] = midiChannelForUi(chans, i);
     }
-    printTheMappingsIfNeeded(midiChans);
 }
 
-static void printMappings(void)
+static void populateStaticMappings(u8* midiChans)
 {
-    static u8 lastMappings[MIDI_CHANNELS] = { 0 };
     u8 mappings[MIDI_CHANNELS];
-    u8 fmChans[MAX_FM_CHANS] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
-    u8 psgChans[MAX_PSG_CHANS] = { 0xFF, 0xFF, 0xFF, 0xFF };
-
     midi_mappings(mappings);
-    if (memcmp(mappings, lastMappings, sizeof(u8) * MIDI_CHANNELS) == 0) {
-        return;
-    }
-    memcpy(lastMappings, mappings, sizeof(u8) * MIDI_CHANNELS);
-
-    for (u8 i = 0; i < MIDI_CHANNELS; i++) {
-        u8 chan = mappings[i];
-        if (chan == 0x7F) {
+    for (u8 midiChan = 0; midiChan < MIDI_CHANNELS; midiChan++) {
+        u8 devChan = mappings[midiChan];
+        if (devChan == 0x7F) {
             continue;
         }
-        if (chan < MIN_PSG_CHAN) {
-            if (fmChans[chan] == 0xFF) {
-                fmChans[chan] = i;
-            }
-        } else {
-            if (psgChans[chan - MIN_PSG_CHAN] == 0xFF) {
-                psgChans[chan - MIN_PSG_CHAN] = i;
-            }
-        }
-    }
-    for (u8 i = 0; i < MAX_FM_CHANS; i++) {
-        u8 midiChannel = fmChans[i];
-        if (midiChannel == 0xFF) {
-            clearText((i * CHAN_X_GAP) + 5, ACTIVITY_Y - 2, 2);
-        } else {
-            char buffer[3];
-            sprintf(buffer, "%2d", midiChannel + 1);
-            drawText(buffer, (i * CHAN_X_GAP) + 5, ACTIVITY_Y - 2);
-        }
-    }
-    for (u8 i = 0; i < MAX_PSG_CHANS; i++) {
-        u8 midiChannel = psgChans[i];
-        if (midiChannel == 0xFF) {
-            clearText(ACTIVITY_FM_X - 1 + (CHAN_X_GAP * (MAX_FM_CHANS + i)),
-                ACTIVITY_Y - 2, 2);
-        } else {
-            char buffer[3];
-            sprintf(buffer, "%2d", midiChannel + 1);
-            drawText(buffer,
-                ACTIVITY_FM_X - 1 + (CHAN_X_GAP * (MAX_FM_CHANS + i)),
-                ACTIVITY_Y - 2);
+        if (midiChans[devChan] == 0) {
+            midiChans[devChan] = midiChan + 1;
         }
     }
 }
