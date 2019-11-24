@@ -21,6 +21,8 @@
 #define POLY_Y 2
 #define BEATS_X 6
 #define BEATS_Y 2
+#define DYN_X POLY_X + 5
+#define DYN_Y POLY_Y
 #define RIGHTED_TEXT_X(text) (MAX_EFFECTIVE_X - (sizeof(text) - 1) + 1)
 #define CENTRED_TEXT_X(text) ((MAX_EFFECTIVE_X - (sizeof(text) - 1)) / 2)
 #define CHAN_X_GAP 3
@@ -53,6 +55,7 @@ static void printBaudRate(void);
 static void printCommMode(void);
 static void printCommBuffer(void);
 static void printMappings(void);
+static void printLastDynamicMode(void);
 
 static u16 loadPercentSum = 0;
 static bool commInited = false;
@@ -103,6 +106,7 @@ void ui_update(void)
     if (++loadFrame == FRAMES_BEFORE_UPDATE_LOAD) {
         printLoad();
         printPolyphonicMode();
+        printLastDynamicMode();
         loadFrame = 0;
     }
 
@@ -299,6 +303,23 @@ static void printLoad(void)
     comm_resetCounts();
     drawText(loadText, 0, MAX_EFFECTIVE_Y);
     VDP_setTextPalette(PAL0);
+}
+
+static void printLastDynamicMode(void)
+{
+    static bool lastDynamicModeStatus = false;
+    bool status = midi_dynamicMode();
+    if (lastDynamicModeStatus != status) {
+        VDP_setTextPalette(PAL2);
+        if (status) {
+            const char text[] = "Dyn";
+            drawText(text, DYN_X, DYN_Y);
+        } else {
+            clearText(DYN_X, DYN_Y, 3);
+        }
+        VDP_setTextPalette(PAL0);
+        lastDynamicModeStatus = status;
+    }
 }
 
 static void printLastError(void)

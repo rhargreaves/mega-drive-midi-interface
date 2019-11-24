@@ -1,0 +1,2 @@
+#!/bin/bash
+sendmidi dev "IAC Driver IAC Bus 2" hex syx 00 22 77 03 00
