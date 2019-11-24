@@ -76,12 +76,16 @@ static void initChannelState(void)
         state->deviceChannel = i;
         state->noteOn = false;
         state->ops = &FM_VTable;
+        state->midiProgram = 0;
+        state->midiChannel = 0;
     }
     for (u16 i = DEV_CHAN_MIN_PSG; i <= DEV_CHAN_MAX_PSG; i++) {
         ChannelState* state = &channelState[i];
         state->deviceChannel = i - DEV_CHAN_MIN_PSG;
         state->noteOn = false;
         state->ops = &PSG_VTable;
+        state->midiProgram = 0;
+        state->midiChannel = 0;
     }
 }
 
@@ -119,20 +123,33 @@ static ChannelState* findChannelPlayingNote(u8 midiChannel, u8 pitch)
 
 static bool isPsgNoise(ChannelState* state)
 {
-    return (state->ops == &PSG_VTable
-        && state->deviceChannel == DEV_CHAN_PSG_NOISE);
+    return state->ops == &PSG_VTable
+        && state->deviceChannel == DEV_CHAN_PSG_NOISE;
+}
+
+static bool isPsgAndIncomingChanIsPercussive(
+    ChannelState* state, u8 incomingChan)
+{
+    return state->ops == &PSG_VTable
+        && incomingChan == GENERAL_MIDI_PERCUSSION_CHANNEL;
 }
 
 static ChannelState* findFreeChannel(u8 incomingChan)
 {
     ChannelMapping* mapping = channelMapping(incomingChan);
     ChannelState* state = &channelState[mapping->channel];
+    if (isPsgAndIncomingChanIsPercussive(state, incomingChan)) {
+        return NULL;
+    }
     if (!state->noteOn && !isPsgNoise(state)) {
         return state;
     }
 
     for (u16 i = 0; i < DEV_CHANS; i++) {
         ChannelState* chan = &channelState[i];
+        if (isPsgAndIncomingChanIsPercussive(chan, incomingChan)) {
+            return NULL;
+        }
         if (!chan->noteOn && !isPsgNoise(chan)) {
             return chan;
         }

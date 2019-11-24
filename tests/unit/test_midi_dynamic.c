@@ -155,3 +155,27 @@ static void test_midi_sets_presets_on_dynamic_channels(UNUSED void** state)
     print_message("Playing second note\n");
     __real_midi_noteOn(0, A_SHARP, 127);
 }
+
+static void test_midi_dynamic_does_not_send_percussion_to_psg_channels(
+    UNUSED void** state)
+{
+    const u8 MIDI_KEY = 30;
+    const u8 MIDI_KEY_IN_PSG_RANGE = A_SHARP;
+
+    midi_remapChannel(GENERAL_MIDI_PERCUSSION_CHANNEL, 0);
+
+    for (u8 chan = DEV_CHAN_MIN_FM; chan <= DEV_CHAN_MAX_FM; chan++) {
+        expect_value(__wrap_synth_preset, channel, chan);
+        expect_any(__wrap_synth_preset, preset);
+        expect_synth_pitch_any();
+        expect_synth_volume_any();
+        expect_value(__wrap_synth_noteOn, channel, chan);
+
+        print_message("Playing drum %d\n", chan);
+        __real_midi_noteOn(GENERAL_MIDI_PERCUSSION_CHANNEL, MIDI_KEY, 127);
+    }
+
+    print_message("Drum %d should be dropped.\n", 6);
+    __real_midi_noteOn(
+        GENERAL_MIDI_PERCUSSION_CHANNEL, MIDI_KEY_IN_PSG_RANGE, 127);
+}
