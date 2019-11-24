@@ -90,11 +90,15 @@ void ui_update(void)
     static u8 activityFrame = 0;
     if (++activityFrame == FRAMES_BEFORE_UPDATE_ACTIVITY) {
         printActivity();
-        printMappings();
+        if (midi_dynamicMode()) {
+            printDynamicMappings();
+        } else {
+            printMappings();
+        }
         printBeat();
         printCommMode();
         printCommBuffer();
-        printDynamicMappings();
+
         activityFrame = 0;
     }
 
@@ -185,14 +189,16 @@ static u8 midiChannelForUi(ChannelState* mappings, u8 index)
 
 static void printDynamicMappings(void)
 {
-    ChannelState* mappings = midi_dynamicModeMappings();
+    ChannelState* chans = midi_dynamicModeMappings();
+    u8 midiChans[DEV_CHANS];
+    for (u8 i = 0; i < DEV_CHANS; i++) {
+        midiChans[i] = midiChannelForUi(chans, i);
+    }
+
     char text[38];
-    sprintf(text, "%2d %2d %2d %2d %2d %2d %2d %2d %2d %2d",
-        midiChannelForUi(mappings, 0), midiChannelForUi(mappings, 1),
-        midiChannelForUi(mappings, 2), midiChannelForUi(mappings, 3),
-        midiChannelForUi(mappings, 4), midiChannelForUi(mappings, 5),
-        midiChannelForUi(mappings, 6), midiChannelForUi(mappings, 7),
-        midiChannelForUi(mappings, 8), midiChannelForUi(mappings, 9));
+    sprintf(text, "%2d %2d %2d %2d %2d %2d %2d %2d %2d %2d", midiChans[0],
+        midiChans[1], midiChans[2], midiChans[3], midiChans[4], midiChans[5],
+        midiChans[6], midiChans[7], midiChans[8], midiChans[9]);
     drawText(text, 5, 10);
 }
 
