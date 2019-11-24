@@ -126,19 +126,13 @@ static ChannelState* findFreeChannel(u8 incomingChan)
 {
     ChannelMapping* mapping = channelMapping(incomingChan);
     ChannelState* state = &channelState[mapping->channel];
-    if (isPsgNoise(state)) {
-        return NULL;
-    }
-    if (!state->noteOn) {
+    if (!state->noteOn && !isPsgNoise(state)) {
         return state;
     }
 
     for (u16 i = 0; i < DEV_CHANS; i++) {
         ChannelState* chan = &channelState[i];
-        if (isPsgNoise(chan)) {
-            return NULL;
-        }
-        if (!chan->noteOn) {
+        if (!chan->noteOn && !isPsgNoise(chan)) {
             return chan;
         }
     }
