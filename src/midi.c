@@ -64,7 +64,6 @@ static void setPolyphonic(bool state);
 static void cc(u8 chan, u8 controller, u8 value);
 static void generalMidiReset(void);
 static ChannelMapping* channelMapping(u8 midiChannel);
-static void remapChannel(u8 midiChannel, u8 deviceChannel);
 static void sendPong(void);
 static void setDynamicMode(bool enabled);
 
@@ -149,6 +148,8 @@ void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
             return;
         }
         state->midiChannel = chan;
+        midi_fm_percussive(
+            state->deviceChannel, chan == GENERAL_MIDI_PERCUSSION_CHANNEL);
         state->noteOn = true;
         state->ops->noteOn(state->deviceChannel, pitch, velocity);
     } else {
@@ -472,7 +473,7 @@ void midi_sysex(const u8* data, u16 length)
         generalMidiReset();
     } else if (sysex_valid(data, length, REMAP_SEQUENCE,
                    LENGTH_OF(REMAP_SEQUENCE), 2)) {
-        remapChannel(data[4], data[5]);
+        midi_remapChannel(data[4], data[5]);
     } else if (sysex_valid(
                    data, length, PING_SEQUENCE, LENGTH_OF(PING_SEQUENCE), 0)) {
         sendPong();
@@ -493,7 +494,7 @@ static void sendPong(void)
     midi_sender_send_sysex(pongSequence, sizeof(pongSequence));
 }
 
-static void remapChannel(u8 midiChannel, u8 deviceChannel)
+void midi_remapChannel(u8 midiChannel, u8 deviceChannel)
 {
     ChannelMapping* mapping = channelMapping(midiChannel);
     if (deviceChannel < MIN_PSG_CHAN) {

@@ -96,3 +96,31 @@ static void test_midi_exposes_dynamic_mode_mappings(UNUSED void** state)
         assert_int_equal(mapping->deviceChannel, i);
     }
 }
+
+static void test_midi_dynamic_enables_percussive_mode_if_needed(
+    UNUSED void** state)
+{
+    const u8 MIDI_KEY = 30;
+
+    midi_remapChannel(9, 5);
+
+    expect_value(__wrap_synth_preset, channel, 5);
+    expect_any(__wrap_synth_preset, preset);
+
+    expect_synth_pitch_any();
+    expect_synth_volume_any();
+    expect_value(__wrap_synth_noteOn, channel, 5);
+
+    print_message("Playing first drum\n");
+    __real_midi_noteOn(9, MIDI_KEY, 127);
+
+    expect_value(__wrap_synth_preset, channel, 0);
+    expect_any(__wrap_synth_preset, preset);
+
+    expect_synth_pitch_any();
+    expect_synth_volume_any();
+    expect_value(__wrap_synth_noteOn, channel, 0);
+
+    print_message("Playing second drum\n");
+    __real_midi_noteOn(9, MIDI_KEY, 127);
+}

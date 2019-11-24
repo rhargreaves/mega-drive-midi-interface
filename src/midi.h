@@ -8,6 +8,7 @@
 #define MAX_MIDI_CHANS 9
 #define MIDI_CHANNELS 16
 #define DEV_CHAN_PSG_NOISE 3
+#define GENERAL_MIDI_PERCUSSION_CHANNEL 9
 
 #define DEV_CHANS 10
 #define DEV_CHAN_MIN_FM 0
@@ -127,3 +128,4 @@ void midi_sysex(const u8* data, u16 length);
 void midi_mappings(u8* mappingDest);
 bool midi_dynamicMode(void);
 ChannelState* midi_dynamicModeMappings(void);
+void midi_remapChannel(u8 midiChannel, u8 deviceChannel);
