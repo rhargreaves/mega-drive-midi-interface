@@ -157,7 +157,6 @@ static void printChannels(void)
     drawText(CHAN_HEADER, 0, 4);
     drawText(MIDI_HEADER, 0, 6);
     drawText("Act.", 0, 8);
-    drawText("Dyn.", 0, 10);
 }
 
 static void printCommBuffer(void)
@@ -187,6 +186,21 @@ static u8 midiChannelForUi(ChannelState* mappings, u8 index)
     return (mappings[index].midiChannel) + 1;
 }
 
+static void printTheMappingsIfNeeded(u8* midiChans)
+{
+    static u8 lastMidiChans[DEV_CHANS];
+    if (memcmp(lastMidiChans, &midiChans, sizeof(u8) * DEV_CHANS) == 0) {
+        return;
+    }
+    memcpy(lastMidiChans, &midiChans, sizeof(u8) * DEV_CHANS);
+
+    char text[38];
+    sprintf(text, "%2d %2d %2d %2d %2d %2d %2d %2d %2d %2d", midiChans[0],
+        midiChans[1], midiChans[2], midiChans[3], midiChans[4], midiChans[5],
+        midiChans[6], midiChans[7], midiChans[8], midiChans[9]);
+    drawText(text, 5, 6);
+}
+
 static void printDynamicMappings(void)
 {
     ChannelState* chans = midi_dynamicModeMappings();
@@ -194,12 +208,7 @@ static void printDynamicMappings(void)
     for (u8 i = 0; i < DEV_CHANS; i++) {
         midiChans[i] = midiChannelForUi(chans, i);
     }
-
-    char text[38];
-    sprintf(text, "%2d %2d %2d %2d %2d %2d %2d %2d %2d %2d", midiChans[0],
-        midiChans[1], midiChans[2], midiChans[3], midiChans[4], midiChans[5],
-        midiChans[6], midiChans[7], midiChans[8], midiChans[9]);
-    drawText(text, 5, 10);
+    printTheMappingsIfNeeded(midiChans);
 }
 
 static void printMappings(void)
