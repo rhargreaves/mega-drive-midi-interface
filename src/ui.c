@@ -55,6 +55,7 @@ static void printBaudRate(void);
 static void printCommMode(void);
 static void printCommBuffer(void);
 static void printMappings(void);
+static void printDynamicMappings(void);
 static void printLastDynamicMode(void);
 
 static u16 loadPercentSum = 0;
@@ -93,6 +94,7 @@ void ui_update(void)
         printBeat();
         printCommMode();
         printCommBuffer();
+        printDynamicMappings();
         activityFrame = 0;
     }
 
@@ -151,6 +153,7 @@ static void printChannels(void)
     drawText(CHAN_HEADER, 0, 4);
     drawText(MIDI_HEADER, 0, 6);
     drawText("Act.", 0, 8);
+    drawText("Dyn.", 0, 10);
 }
 
 static void printCommBuffer(void)
@@ -173,6 +176,24 @@ static void printActivity(void)
         VDP_setTextPalette(PAL0);
         lastBusy = busy;
     }
+}
+
+static u8 midiChannelForUi(ChannelState* mappings, u8 index)
+{
+    return (mappings[0].midiChannel) + 1;
+}
+
+static void printDynamicMappings(void)
+{
+    ChannelState* mappings = midi_dynamicModeMappings();
+    char text[38];
+    sprintf(text, "%-2d %-2d %-2d %-2d %-2d %-2d %-2d %-2d %-2d %-2d",
+        midiChannelForUi(mappings, 0), midiChannelForUi(mappings, 1),
+        midiChannelForUi(mappings, 2), midiChannelForUi(mappings, 3),
+        midiChannelForUi(mappings, 4), midiChannelForUi(mappings, 5),
+        midiChannelForUi(mappings, 6), midiChannelForUi(mappings, 7),
+        midiChannelForUi(mappings, 8), midiChannelForUi(mappings, 9));
+    drawText(text, 6, 10);
 }
 
 static void printMappings(void)
