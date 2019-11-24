@@ -116,12 +116,17 @@ static ChannelState* findChannelPlayingNote(u8 midiChannel, u8 pitch)
     return NULL;
 }
 
+static bool isPsgNoise(ChannelState* state)
+{
+    return (state->ops == &PSG_VTable
+        && state->deviceChannel == DEV_CHAN_PSG_NOISE);
+}
+
 static ChannelState* findFreeChannel(u8 incomingChan)
 {
     ChannelMapping* mapping = channelMapping(incomingChan);
     ChannelState* state = &channelState[mapping->channel];
-    if (state->ops == &PSG_VTable
-        && state->deviceChannel == DEV_CHAN_PSG_NOISE) {
+    if (isPsgNoise(state)) {
         return NULL;
     }
     if (!state->noteOn) {
@@ -130,8 +135,7 @@ static ChannelState* findFreeChannel(u8 incomingChan)
 
     for (u16 i = 0; i < DEV_CHANS; i++) {
         ChannelState* chan = &channelState[i];
-        if (chan->ops == &PSG_VTable
-            && chan->deviceChannel == DEV_CHAN_PSG_NOISE) {
+        if (isPsgNoise(chan)) {
             return NULL;
         }
         if (!chan->noteOn) {
