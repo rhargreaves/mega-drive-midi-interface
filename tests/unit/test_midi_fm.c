@@ -395,9 +395,6 @@ static void test_midi_sets_synth_pitch_bend(UNUSED void** state)
 
 static void remap_midi_channel(u8 midiChannel, u8 deviceChannel)
 {
-    const u8 SYSEX_EXTENDED_MANU_ID_SECTION = 0x00;
-    const u8 SYSEX_UNUSED_EUROPEAN_SECTION = 0x22;
-    const u8 SYSEX_UNUSED_MANU_ID = 0x77;
     const u8 SYSEX_REMAP_COMMAND_ID = 0x00;
 
     u8 sequence[] = { SYSEX_EXTENDED_MANU_ID_SECTION,

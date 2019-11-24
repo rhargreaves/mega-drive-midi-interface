@@ -15,6 +15,13 @@
 #define A_SHARP 94
 #define B 95
 
+#define SYSEX_EXTENDED_MANU_ID_SECTION 0x00
+#define SYSEX_UNUSED_EUROPEAN_SECTION 0x22
+#define SYSEX_UNUSED_MANU_ID 0x77
+#define SYSEX_DYNAMIC_COMMAND_ID 0x03
+#define SYSEX_DYNAMIC_ENABLED 0x01
+#define SYSEX_DYNAMIC_DISABLED 0x00
+
 extern void __real_midi_noteOn(u8 chan, u8 pitch, u8 velocity);
 extern void __real_midi_noteOff(u8 chan, u8 pitch);
 extern void __real_midi_pitchBend(u8 chan, u16 bend);

@@ -4,12 +4,6 @@ static int test_dynamic_midi_setup(UNUSED void** state)
 {
     test_midi_setup(state);
 
-    const u8 SYSEX_EXTENDED_MANU_ID_SECTION = 0x00;
-    const u8 SYSEX_UNUSED_EUROPEAN_SECTION = 0x22;
-    const u8 SYSEX_UNUSED_MANU_ID = 0x77;
-    const u8 SYSEX_DYNAMIC_COMMAND_ID = 0x03;
-    const u8 SYSEX_DYNAMIC_ENABLED = 0x01;
-
     const u8 sequence[] = {
         SYSEX_EXTENDED_MANU_ID_SECTION,
         SYSEX_UNUSED_EUROPEAN_SECTION,
@@ -69,10 +63,22 @@ static void test_midi_dynamic_tries_to_use_original_midi_channel_if_available(
     }
 }
 
-static void test_midi_exposes_dynamic_mode_status_when_enabled(
-    UNUSED void** state)
+static void test_midi_reports_dynamic_mode_enabled(UNUSED void** state)
 {
-    bool status = __real_midi_dynamicMode();
+    assert_true(__real_midi_dynamicMode);
+}
 
-    assert_true(status);
+static void test_midi_reports_dynamic_mode_disabled(UNUSED void** state)
+{
+    const u8 sequence[] = {
+        SYSEX_EXTENDED_MANU_ID_SECTION,
+        SYSEX_UNUSED_EUROPEAN_SECTION,
+        SYSEX_UNUSED_MANU_ID,
+        SYSEX_DYNAMIC_COMMAND_ID,
+        SYSEX_DYNAMIC_DISABLED,
+    };
+
+    __real_midi_sysex(sequence, sizeof(sequence));
+
+    assert_false(__real_midi_dynamicMode());
 }
