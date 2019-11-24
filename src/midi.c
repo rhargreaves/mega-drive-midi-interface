@@ -138,19 +138,15 @@ static ChannelState* findFreeChannel(u8 incomingChan)
 {
     ChannelMapping* mapping = channelMapping(incomingChan);
     ChannelState* state = &channelState[mapping->channel];
-    if (isPsgAndIncomingChanIsPercussive(state, incomingChan)) {
-        return NULL;
-    }
-    if (!state->noteOn && !isPsgNoise(state)) {
+    if (!state->noteOn && !isPsgNoise(state)
+        && !isPsgAndIncomingChanIsPercussive(state, incomingChan)) {
         return state;
     }
 
     for (u16 i = 0; i < DEV_CHANS; i++) {
         ChannelState* chan = &channelState[i];
-        if (isPsgAndIncomingChanIsPercussive(chan, incomingChan)) {
-            return NULL;
-        }
-        if (!chan->noteOn && !isPsgNoise(chan)) {
+        if (!chan->noteOn && !isPsgNoise(chan)
+            && !isPsgAndIncomingChanIsPercussive(chan, incomingChan)) {
             return chan;
         }
     }
