@@ -390,6 +390,11 @@ void midi_mappings(u8* mappingDest)
     }
 }
 
+bool midi_dynamicMode(void)
+{
+    return dynamicMode;
+}
+
 ControlChange* midi_lastUnknownCC(void)
 {
     return &lastUnknownControlChange;

@@ -59,7 +59,6 @@ static void test_midi_dynamic_tries_to_use_original_midi_channel_if_available(
 
     const u8 chans[3] = { 0, 2, 5 };
 
-    print_message("FM channels...\n");
     for (u16 i = 0; i < 3; i++) {
         u8 chan = chans[i];
         expect_synth_pitch(chan, octave, freq);
@@ -68,4 +67,12 @@ static void test_midi_dynamic_tries_to_use_original_midi_channel_if_available(
 
         __real_midi_noteOn(chan, pitch, 127);
     }
+}
+
+static void test_midi_exposes_dynamic_mode_status_when_enabled(
+    UNUSED void** state)
+{
+    bool status = __real_midi_dynamicMode();
+
+    assert_true(status);
 }
