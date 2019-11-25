@@ -171,17 +171,19 @@ static bool tooManyPercussiveNotes(u8 midiChan)
 {
     const u8 MAX_POLYPHONY = 2;
 
-    if (midiChan == GENERAL_MIDI_PERCUSSION_CHANNEL) {
-        u16 counter = 0;
-        for (u16 i = 0; i < DEV_CHANS; i++) {
-            ChannelState* chan = &channelState[i];
-            if (chan->midiChannel == GENERAL_MIDI_PERCUSSION_CHANNEL
-                && chan->noteOn) {
-                counter++;
-            }
-            if (counter >= MAX_POLYPHONY) {
-                return true;
-            }
+    if (midiChan != GENERAL_MIDI_PERCUSSION_CHANNEL) {
+        return false;
+    }
+
+    u16 counter = 0;
+    for (u16 i = 0; i < DEV_CHANS; i++) {
+        ChannelState* chan = &channelState[i];
+        if (chan->midiChannel == GENERAL_MIDI_PERCUSSION_CHANNEL
+            && chan->noteOn) {
+            counter++;
+        }
+        if (counter >= MAX_POLYPHONY) {
+            return true;
         }
     }
     return false;
