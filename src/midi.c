@@ -167,24 +167,34 @@ static ChannelState* findFreeChannel(u8 incomingMidiChan)
     return NULL;
 }
 
-static void dynamicNoteOn(u8 chan, u8 pitch, u8 velocity)
+static bool tooManyPercussiveNotes(u8 midiChan)
 {
-    ChannelState* state = findFreeChannel(chan);
-    if (state == NULL) {
-        return;
-    }
-    if (chan == GENERAL_MIDI_PERCUSSION_CHANNEL) {
-        u16 concurrent = 0;
+    const u8 MAX_POLYPHONY = 2;
+
+    if (midiChan == GENERAL_MIDI_PERCUSSION_CHANNEL) {
+        u16 counter = 0;
         for (u16 i = 0; i < DEV_CHANS; i++) {
             ChannelState* chan = &channelState[i];
             if (chan->midiChannel == GENERAL_MIDI_PERCUSSION_CHANNEL
                 && chan->noteOn) {
-                concurrent++;
+                counter++;
             }
-            if (concurrent > 1) {
-                return;
+            if (counter >= MAX_POLYPHONY) {
+                return true;
             }
         }
+    }
+    return false;
+}
+
+static void dynamicNoteOn(u8 chan, u8 pitch, u8 velocity)
+{
+    if (tooManyPercussiveNotes(chan)) {
+        return;
+    }
+    ChannelState* state = findFreeChannel(chan);
+    if (state == NULL) {
+        return;
     }
     state->midiChannel = chan;
     midi_fm_percussive(
