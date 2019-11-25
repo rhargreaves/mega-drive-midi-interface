@@ -194,17 +194,22 @@ void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
     }
 }
 
+static void dynamicNoteOff(u8 chan, u8 pitch)
+{
+    ChannelState* state = findChannelPlayingNote(chan, pitch);
+    if (state == NULL) {
+        return;
+    }
+    state->noteOn = false;
+    state->ops->noteOff(state->deviceChannel, pitch);
+}
+
 void midi_noteOff(u8 chan, u8 pitch)
 {
     if (polyphonic) {
         pooledNoteOff(chan, pitch);
     } else if (dynamicMode) {
-        ChannelState* state = findChannelPlayingNote(chan, pitch);
-        if (state == NULL) {
-            return;
-        }
-        state->noteOn = false;
-        state->ops->noteOff(state->deviceChannel, pitch);
+        dynamicNoteOff(chan, pitch);
     } else {
         ChannelMapping* mapping = channelMapping(chan);
         mapping->ops->noteOff(mapping->channel, pitch);
