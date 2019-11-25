@@ -73,6 +73,12 @@ When polyphonic mode is enabled (CC 80), all note on/off events are routed to a 
 FM channels, ignoring the specific MIDI channel the event is sent to. This allows for
 polyphony within a single MIDI channel. In addition, any FM parameter change made will be sent to all FM channels. If all FM channels are busy, the note on event is dropped.
 
+## Dynamic Mapping Mode
+
+When dynamic mapping mode is enabled (SysEx `00 22 77 03 01`), MIDI channel note-on/off events are dynamically routed to free FM and PSG channels. That is, MIDI channels no-longer map directly onto device channels but are virtualised and note-on/off events and MIDI program data is set on the next available channel. This mode is best suited for playback of General MIDI files and makes full use of available YM2612/PSG capacity.
+
+This mode is a work-in-progress. Currently only MIDI program data is applied between channels re-mapping.
+
 ## MIDI Message Reference
 
 ### Channel Mappings
@@ -177,12 +183,12 @@ _Note: Documentation on the YM2612 frequently muddles the second and third opera
 
 ### System Exclusive Messages
 
-| Name                     | Sequence            | Description                                                                                                                                                                             |
-| ------------------------ | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| General MIDI Reset       | `7E 7F 09 01`       | Force all notes off on all channels                                                                                                                                                     |
-| Remap MIDI Channel       | `00 22 77 00 xx yy` | Remap MIDI channel _xx_ to device channel _yy_<br/>_xx_ = MIDI channel (0-15)<br/>_yy_ = FM (0-5), PSG (6-9), unassigned (127)                                                          |
-| Ping                     | `00 22 77 01`       | Interface responds with a _pong_ SysEx reply (`00 22 77 02`). Intended for use in measuring MIDI round-trip latency.                                                                    |
-| Dynamic Channelling Mode | `00 22 77 03 xx`    | **Under development**. Dynamically assigns MIDI channels to idle FM/PSG channels to allow for maximum polyphony and variation in instrumentation.<br/>_xx_ = Enable (01) / Disable (00) |
+| Name                     | Sequence            | Description                                                                                                                                                      |
+| ------------------------ | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| General MIDI Reset       | `7E 7F 09 01`       | Force all notes off on all channels                                                                                                                              |
+| Remap MIDI Channel       | `00 22 77 00 xx yy` | Remap MIDI channel _xx_ to device channel _yy_<br/>_xx_ = MIDI channel (0-15)<br/>_yy_ = FM (0-5), PSG (6-9), unassigned (127)                                   |
+| Ping                     | `00 22 77 01`       | Interface responds with a _pong_ SysEx reply (`00 22 77 02`). Intended for use in measuring MIDI round-trip latency.                                             |
+| Dynamic Channelling Mode | `00 22 77 03 xx`    | Dynamically assigns MIDI channels to idle FM/PSG channels to allow for maximum polyphony and variation in instrumentation.<br/>_xx_ = Enable (01) / Disable (00) |
 
 All other messages are ignored.
 
