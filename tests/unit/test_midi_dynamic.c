@@ -185,3 +185,37 @@ static void test_midi_dynamic_does_not_send_percussion_to_psg_channels(
     __real_midi_noteOn(
         GENERAL_MIDI_PERCUSSION_CHANNEL, MIDI_KEY_IN_PSG_RANGE, 127);
 }
+
+static void test_midi_sysex_resets_dynamic_mode_state(UNUSED void** state)
+{
+    const u8 sysExGeneralMidiResetSequence[] = { 0x7E, 0x7F, 0x09, 0x01 };
+    const u8 octave = 4;
+    const u16 freq = 0x28d;
+    const u16 pitch = 60;
+
+    for (u16 i = DEV_CHAN_MIN_FM; i <= DEV_CHAN_MAX_FM; i++) {
+        expect_synth_pitch(i, octave, freq);
+        expect_synth_volume_any();
+        expect_value(__wrap_synth_noteOn, channel, i);
+
+        __real_midi_noteOn(0, pitch, 127);
+    }
+
+    expect_value(__wrap_synth_noteOff, channel, 0);
+    expect_value(__wrap_synth_noteOff, channel, 1);
+    expect_value(__wrap_synth_noteOff, channel, 2);
+    expect_value(__wrap_synth_noteOff, channel, 3);
+    expect_value(__wrap_synth_noteOff, channel, 4);
+    expect_value(__wrap_synth_noteOff, channel, 5);
+
+    __real_midi_sysex(
+        sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
+
+    ChannelState* mappings = __real_midi_dynamicModeMappings();
+    for (u8 i = 0; i < DEV_CHANS; i++) {
+        ChannelState* mapping = &mappings[i];
+        assert_int_equal(mapping->midiChannel, 0);
+        assert_int_equal(mapping->midiProgram, 0);
+        assert_false(mapping->noteOn);
+    }
+}

@@ -89,18 +89,23 @@ static void initChannelState(void)
     }
 }
 
+static void resetAllState(void)
+{
+    memset(&timing, 0, sizeof(Timing));
+    memset(&lastUnknownControlChange, 0, sizeof(ControlChange));
+    memset(&polyphonicPitches, 0, sizeof(polyphonicPitches));
+    memset(&programs, 0, sizeof(u8) * MIDI_CHANNELS);
+    initChannelState();
+}
+
 void midi_init(
     Channel** defaultPresets, PercussionPreset** defaultPercussionPresets)
 {
     memcpy(&ChannelMappings, DefaultChannelMappings, sizeof(ChannelMappings));
-    memset(&timing, 0, sizeof(Timing));
-    memset(&lastUnknownControlChange, 0, sizeof(ControlChange));
-    memset(&polyphonicPitches, 0, sizeof(polyphonicPitches));
     overflow = false;
     polyphonic = false;
     dynamicMode = false;
-    memset(&programs, 0, sizeof(u8) * MIDI_CHANNELS);
-    initChannelState();
+    resetAllState();
     midi_psg_init();
     midi_fm_init(defaultPresets, defaultPercussionPresets);
 }
@@ -544,6 +549,7 @@ static void generalMidiReset(void)
     for (u8 chan = 0; chan < MIDI_CHANNELS; chan++) {
         allNotesOff(chan);
     }
+    resetAllState();
 }
 
 static void setDynamicMode(bool enabled)

@@ -176,6 +176,7 @@ int main(void)
         dynamic_midi_test(test_midi_sets_presets_on_dynamic_channels),
         dynamic_midi_test(
             test_midi_dynamic_does_not_send_percussion_to_psg_channels),
+        dynamic_midi_test(test_midi_sysex_resets_dynamic_mode_state)
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
