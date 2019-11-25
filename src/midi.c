@@ -173,6 +173,19 @@ static void dynamicNoteOn(u8 chan, u8 pitch, u8 velocity)
     if (state == NULL) {
         return;
     }
+    if (chan == GENERAL_MIDI_PERCUSSION_CHANNEL) {
+        u16 concurrent = 0;
+        for (u16 i = 0; i < DEV_CHANS; i++) {
+            ChannelState* chan = &channelState[i];
+            if (chan->midiChannel == GENERAL_MIDI_PERCUSSION_CHANNEL
+                && chan->noteOn) {
+                concurrent++;
+            }
+            if (concurrent > 1) {
+                return;
+            }
+        }
+    }
     state->midiChannel = chan;
     midi_fm_percussive(
         state->deviceChannel, chan == GENERAL_MIDI_PERCUSSION_CHANNEL);
