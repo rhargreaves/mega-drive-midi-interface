@@ -164,25 +164,30 @@ static ChannelState* findFreeChannel(u8 incomingMidiChan)
     return NULL;
 }
 
+static void dynamicNoteOn(u8 chan, u8 pitch, u8 velocity)
+{
+    ChannelState* state = findFreeChannel(chan);
+    if (state == NULL) {
+        return;
+    }
+    state->midiChannel = chan;
+    midi_fm_percussive(
+        state->deviceChannel, chan == GENERAL_MIDI_PERCUSSION_CHANNEL);
+    u8 program = programs[state->midiChannel];
+    if (state->midiProgram != program) {
+        state->ops->program(state->deviceChannel, program);
+        state->midiProgram = program;
+    }
+    state->noteOn = true;
+    state->ops->noteOn(state->deviceChannel, pitch, velocity);
+}
+
 void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
 {
     if (polyphonic) {
         pooledNoteOn(chan, pitch, velocity);
     } else if (dynamicMode) {
-        ChannelState* state = findFreeChannel(chan);
-        if (state == NULL) {
-            return;
-        }
-        state->midiChannel = chan;
-        midi_fm_percussive(
-            state->deviceChannel, chan == GENERAL_MIDI_PERCUSSION_CHANNEL);
-        u8 program = programs[state->midiChannel];
-        if (state->midiProgram != program) {
-            state->ops->program(state->deviceChannel, program);
-            state->midiProgram = program;
-        }
-        state->noteOn = true;
-        state->ops->noteOn(state->deviceChannel, pitch, velocity);
+        dynamicNoteOn(chan, pitch, velocity);
     } else {
         ChannelMapping* mapping = channelMapping(chan);
         mapping->ops->noteOn(mapping->channel, pitch, velocity);
