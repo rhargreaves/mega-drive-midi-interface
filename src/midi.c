@@ -78,6 +78,7 @@ static void initChannelState(void)
         state->ops = &FM_VTable;
         state->midiProgram = 0;
         state->midiChannel = 0;
+        state->midiKey = 0;
     }
     for (u16 i = DEV_CHAN_MIN_PSG; i <= DEV_CHAN_MAX_PSG; i++) {
         ChannelState* state = &channelState[i];
@@ -86,6 +87,7 @@ static void initChannelState(void)
         state->ops = &PSG_VTable;
         state->midiProgram = 0;
         state->midiChannel = 0;
+        state->midiKey = 0;
     }
 }
 
@@ -119,7 +121,8 @@ static ChannelState* findChannelPlayingNote(u8 midiChannel, u8 pitch)
 {
     for (u16 i = 0; i < DEV_CHANS; i++) {
         ChannelState* chan = &channelState[i];
-        if (chan->noteOn && chan->midiChannel == midiChannel) {
+        if (chan->noteOn && chan->midiChannel == midiChannel
+            && chan->midiKey == pitch) {
             return chan;
         }
     }
@@ -178,6 +181,7 @@ static void dynamicNoteOn(u8 chan, u8 pitch, u8 velocity)
         state->ops->program(state->deviceChannel, program);
         state->midiProgram = program;
     }
+    state->midiKey = pitch;
     state->noteOn = true;
     state->ops->noteOn(state->deviceChannel, pitch, velocity);
 }
@@ -201,6 +205,7 @@ static void dynamicNoteOff(u8 chan, u8 pitch)
         return;
     }
     state->noteOn = false;
+    state->midiKey = 0;
     state->ops->noteOff(state->deviceChannel, pitch);
 }
 

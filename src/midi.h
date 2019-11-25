@@ -109,6 +109,7 @@ struct ChannelState {
     bool noteOn;
     u8 midiChannel;
     u8 midiProgram;
+    u8 midiKey;
 };
 
 void midi_init(

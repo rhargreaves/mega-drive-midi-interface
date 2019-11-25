@@ -219,3 +219,23 @@ static void test_midi_sysex_resets_dynamic_mode_state(UNUSED void** state)
         assert_false(mapping->noteOn);
     }
 }
+
+static void test_midi_dynamic_sends_note_off_to_channel_playing_same_pitch(
+    UNUSED void** state)
+{
+    expect_synth_pitch_any();
+    expect_synth_volume_any();
+    expect_value(__wrap_synth_noteOn, channel, 0);
+
+    __real_midi_noteOn(0, A_SHARP, 127);
+
+    expect_synth_pitch_any();
+    expect_synth_volume_any();
+    expect_value(__wrap_synth_noteOn, channel, 1);
+
+    __real_midi_noteOn(0, B, 127);
+
+    expect_value(__wrap_synth_noteOff, channel, 1);
+
+    __real_midi_noteOff(0, B);
+}
