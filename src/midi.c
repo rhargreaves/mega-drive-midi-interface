@@ -49,8 +49,14 @@ static const ChannelMapping DefaultChannelMappings[MIDI_CHANNELS]
 
 static ChannelMapping ChannelMappings[MIDI_CHANNELS];
 
-static u8 volumes[MIDI_CHANNELS];
-static u8 programs[MIDI_CHANNELS];
+typedef struct MidiChannel MidiChannel;
+
+struct MidiChannel {
+    u8 volume;
+    u8 program;
+};
+
+static MidiChannel midiChannels[MIDI_CHANNELS];
 
 static u8 polyphonicPitches[MAX_FM_CHANS];
 static ControlChange lastUnknownControlChange;
@@ -90,8 +96,10 @@ static void resetAllState(void)
     memset(&timing, 0, sizeof(Timing));
     memset(&lastUnknownControlChange, 0, sizeof(ControlChange));
     memset(&polyphonicPitches, 0, sizeof(polyphonicPitches));
-    memset(&programs, 0, sizeof(u8) * MIDI_CHANNELS);
-    memset(&volumes, 0x7F, sizeof(u8) * MIDI_CHANNELS);
+    for (u8 i = 0; i < MIDI_CHANNELS; i++) {
+        midiChannels[i].program = 0;
+        midiChannels[i].volume = MAX_MIDI_VOLUME;
+    }
     initChannelState();
 }
 
@@ -197,16 +205,14 @@ static void dynamicNoteOn(u8 chan, u8 pitch, u8 velocity)
     midi_fm_percussive(
         state->deviceChannel, chan == GENERAL_MIDI_PERCUSSION_CHANNEL);
 
-    u8 volume = volumes[state->midiChannel];
-    if (volume != state->midiVolume) {
-        state->ops->channelVolume(state->deviceChannel, volume);
-        state->midiVolume = volume;
+    MidiChannel* midiChannel = &midiChannels[state->midiChannel];
+    if (midiChannel->volume != state->midiVolume) {
+        state->ops->channelVolume(state->deviceChannel, midiChannel->volume);
+        state->midiVolume = midiChannel->volume;
     }
-
-    u8 program = programs[state->midiChannel];
-    if (state->midiProgram != program) {
-        state->ops->program(state->deviceChannel, program);
-        state->midiProgram = program;
+    if (state->midiProgram != midiChannel->program) {
+        state->ops->program(state->deviceChannel, midiChannel->program);
+        state->midiProgram = midiChannel->program;
     }
     state->midiKey = pitch;
     state->noteOn = true;
@@ -430,7 +436,8 @@ void midi_position(u16 midiBeat)
 
 void midi_program(u8 chan, u8 program)
 {
-    programs[chan] = program;
+    MidiChannel* midiChannel = &midiChannels[chan];
+    midiChannel->program = program;
     ChannelMapping* mapping = channelMapping(chan);
     mapping->ops->program(mapping->channel, program);
 }
@@ -468,7 +475,8 @@ ControlChange* midi_lastUnknownCC(void)
 static void channelVolume(u8 chan, u8 volume)
 {
     if (dynamicMode) {
-        volumes[chan] = volume;
+        MidiChannel *midiChannel = &midiChannels[chan];
+        midiChannel->volume = volume;
     } else {
         ChannelMapping* mapping = channelMapping(chan);
         mapping->ops->channelVolume(mapping->channel, volume);
