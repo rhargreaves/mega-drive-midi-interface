@@ -110,6 +110,7 @@ struct ChannelState {
     u8 midiChannel;
     u8 midiProgram;
     u8 midiKey;
+    u8 midiVolume;
 };
 
 void midi_init(

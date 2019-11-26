@@ -253,3 +253,28 @@ static void test_midi_dynamic_limits_percussion_notes(UNUSED void** state)
     print_message("Drum 3 (dropped)\n");
     __real_midi_noteOn(GENERAL_MIDI_PERCUSSION_CHANNEL, DRUM_KEY, 127);
 }
+
+static void test_midi_dynamic_maintains_volume_on_remapping(UNUSED void** state)
+{
+    const u8 midi_vol = 50;
+    const u8 expected_synth_vol = 0x32;
+
+    expect_synth_volume_any();
+    print_message("Setting volume\n");
+    __real_midi_cc(0, CC_VOLUME, midi_vol);
+
+    expect_synth_pitch_any();
+    expect_synth_volume(0, expected_synth_vol);
+    expect_value(__wrap_synth_noteOn, channel, 0);
+
+    print_message("Note 1\n");
+    __real_midi_noteOn(0, A_SHARP, 127);
+
+    expect_synth_pitch_any();
+    expect_synth_volume(1, expected_synth_vol);
+    expect_synth_volume(1, expected_synth_vol);
+    expect_value(__wrap_synth_noteOn, channel, 1);
+
+    print_message("Note 2\n");
+    __real_midi_noteOn(0, B, 127);
+}

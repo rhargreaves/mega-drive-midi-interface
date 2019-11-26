@@ -49,6 +49,7 @@ static const ChannelMapping DefaultChannelMappings[MIDI_CHANNELS]
 
 static ChannelMapping ChannelMappings[MIDI_CHANNELS];
 
+static u8 volumes[MIDI_CHANNELS];
 static u8 programs[MIDI_CHANNELS];
 
 static u8 polyphonicPitches[MAX_FM_CHANS];
@@ -80,6 +81,7 @@ static void initChannelState(void)
         state->midiProgram = 0;
         state->midiChannel = 0;
         state->midiKey = 0;
+        state->midiVolume = 127;
     }
 }
 
@@ -89,6 +91,7 @@ static void resetAllState(void)
     memset(&lastUnknownControlChange, 0, sizeof(ControlChange));
     memset(&polyphonicPitches, 0, sizeof(polyphonicPitches));
     memset(&programs, 0, sizeof(u8) * MIDI_CHANNELS);
+    memset(&volumes, 0x7F, sizeof(u8) * MIDI_CHANNELS);
     initChannelState();
 }
 
@@ -193,6 +196,13 @@ static void dynamicNoteOn(u8 chan, u8 pitch, u8 velocity)
     state->midiChannel = chan;
     midi_fm_percussive(
         state->deviceChannel, chan == GENERAL_MIDI_PERCUSSION_CHANNEL);
+
+    u8 volume = volumes[state->midiChannel];
+    if (volume != state->midiVolume) {
+        state->ops->channelVolume(state->deviceChannel, volume);
+        state->midiVolume = volume;
+    }
+
     u8 program = programs[state->midiChannel];
     if (state->midiProgram != program) {
         state->ops->program(state->deviceChannel, program);
@@ -457,8 +467,12 @@ ControlChange* midi_lastUnknownCC(void)
 
 static void channelVolume(u8 chan, u8 volume)
 {
-    ChannelMapping* mapping = channelMapping(chan);
-    mapping->ops->channelVolume(mapping->channel, volume);
+    if (dynamicMode) {
+        volumes[chan] = volume;
+    } else {
+        ChannelMapping* mapping = channelMapping(chan);
+        mapping->ops->channelVolume(mapping->channel, volume);
+    }
 }
 
 static void allNotesOff(u8 chan)
