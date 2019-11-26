@@ -71,20 +71,12 @@ static void setDynamicMode(bool enabled);
 
 static void initChannelState(void)
 {
-    for (u16 i = DEV_CHAN_MIN_FM; i <= DEV_CHAN_MAX_FM; i++) {
+    for (u16 i = 0; i < DEV_CHANS; i++) {
+        bool isFm = i < DEV_CHAN_MIN_PSG;
         ChannelState* state = &channelState[i];
-        state->deviceChannel = i;
+        state->deviceChannel = isFm ? i : i - DEV_CHAN_MIN_PSG;
+        state->ops = isFm ? &FM_VTable : &PSG_VTable;
         state->noteOn = false;
-        state->ops = &FM_VTable;
-        state->midiProgram = 0;
-        state->midiChannel = 0;
-        state->midiKey = 0;
-    }
-    for (u16 i = DEV_CHAN_MIN_PSG; i <= DEV_CHAN_MAX_PSG; i++) {
-        ChannelState* state = &channelState[i];
-        state->deviceChannel = i - DEV_CHAN_MIN_PSG;
-        state->noteOn = false;
-        state->ops = &PSG_VTable;
         state->midiProgram = 0;
         state->midiChannel = 0;
         state->midiKey = 0;
