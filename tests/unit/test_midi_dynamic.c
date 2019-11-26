@@ -259,7 +259,7 @@ static void test_midi_dynamic_maintains_volume_on_remapping(UNUSED void** state)
     const u8 midi_vol = 50;
     const u8 expected_synth_vol = 0x32;
 
-    expect_synth_volume_any();
+    expect_synth_volume(0, expected_synth_vol);
     print_message("Setting volume\n");
     __real_midi_cc(0, CC_VOLUME, midi_vol);
 
@@ -277,4 +277,36 @@ static void test_midi_dynamic_maintains_volume_on_remapping(UNUSED void** state)
 
     print_message("Note 2\n");
     __real_midi_noteOn(0, B, 127);
+}
+
+static void test_midi_dynamic_sets_volume_on_playing_notes(UNUSED void** state)
+{
+    const u8 midi_vol_initial = 50;
+    const u8 midi_vol_next = 75;
+    const u8 expected_synth_vol_initial = 0x32;
+    const u8 expected_synth_vol_next = 0x4b;
+
+    expect_synth_volume(0, expected_synth_vol_initial);
+    print_message("Setting volume\n");
+    __real_midi_cc(0, CC_VOLUME, midi_vol_initial);
+
+    expect_synth_pitch_any();
+    expect_synth_volume(0, expected_synth_vol_initial);
+    expect_value(__wrap_synth_noteOn, channel, 0);
+
+    print_message("Note 1\n");
+    __real_midi_noteOn(0, A_SHARP, 127);
+
+    expect_synth_pitch_any();
+    expect_synth_volume(1, expected_synth_vol_initial);
+    expect_synth_volume(1, expected_synth_vol_initial);
+    expect_value(__wrap_synth_noteOn, channel, 1);
+
+    print_message("Note 2\n");
+    __real_midi_noteOn(0, B, 127);
+
+    expect_synth_volume(0, expected_synth_vol_next);
+    expect_synth_volume(1, expected_synth_vol_next);
+    print_message("Setting volume again\n");
+    __real_midi_cc(0, CC_VOLUME, midi_vol_next);
 }

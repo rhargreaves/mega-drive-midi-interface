@@ -180,7 +180,8 @@ int main(void)
         dynamic_midi_test(
             test_midi_dynamic_sends_note_off_to_channel_playing_same_pitch),
         dynamic_midi_test(test_midi_dynamic_limits_percussion_notes),
-        dynamic_midi_test(test_midi_dynamic_maintains_volume_on_remapping)
+        dynamic_midi_test(test_midi_dynamic_maintains_volume_on_remapping),
+        dynamic_midi_test(test_midi_dynamic_sets_volume_on_playing_notes)
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);

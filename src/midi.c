@@ -79,15 +79,15 @@ static void setDynamicMode(bool enabled);
 static void initChannelState(void)
 {
     for (u16 i = 0; i < DEV_CHANS; i++) {
-        bool isFm = i < DEV_CHAN_MIN_PSG;
         ChannelState* state = &channelState[i];
+        bool isFm = i < DEV_CHAN_MIN_PSG;
         state->deviceChannel = isFm ? i : i - DEV_CHAN_MIN_PSG;
         state->ops = isFm ? &FM_VTable : &PSG_VTable;
         state->noteOn = false;
         state->midiProgram = 0;
         state->midiChannel = 0;
         state->midiKey = 0;
-        state->midiVolume = 127;
+        state->midiVolume = MAX_MIDI_VOLUME;
     }
 }
 
@@ -475,8 +475,14 @@ ControlChange* midi_lastUnknownCC(void)
 static void channelVolume(u8 chan, u8 volume)
 {
     if (dynamicMode) {
-        MidiChannel *midiChannel = &midiChannels[chan];
+        MidiChannel* midiChannel = &midiChannels[chan];
         midiChannel->volume = volume;
+        for (u8 i = 0; i < DEV_CHANS; i++) {
+            ChannelState* state = &channelState[i];
+            if (state->midiChannel == chan && state->noteOn) {
+                state->ops->channelVolume(state->deviceChannel, volume);
+            }
+        }
     } else {
         ChannelMapping* mapping = channelMapping(chan);
         mapping->ops->channelVolume(mapping->channel, volume);
