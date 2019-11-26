@@ -192,6 +192,22 @@ static bool tooManyPercussiveNotes(u8 midiChan)
     return false;
 }
 
+static void updateChannelVolume(MidiChannel* midiChannel, ChannelState* state)
+{
+    if (state->midiVolume != midiChannel->volume) {
+        state->ops->channelVolume(state->deviceChannel, midiChannel->volume);
+        state->midiVolume = midiChannel->volume;
+    }
+}
+
+static void updateProgram(MidiChannel* midiChannel, ChannelState* state)
+{
+    if (state->midiProgram != midiChannel->program) {
+        state->ops->program(state->deviceChannel, midiChannel->program);
+        state->midiProgram = midiChannel->program;
+    }
+}
+
 static void dynamicNoteOn(u8 chan, u8 pitch, u8 velocity)
 {
     if (tooManyPercussiveNotes(chan)) {
@@ -202,18 +218,11 @@ static void dynamicNoteOn(u8 chan, u8 pitch, u8 velocity)
         return;
     }
     state->midiChannel = chan;
+    MidiChannel* midiChannel = &midiChannels[chan];
     midi_fm_percussive(
         state->deviceChannel, chan == GENERAL_MIDI_PERCUSSION_CHANNEL);
-
-    MidiChannel* midiChannel = &midiChannels[state->midiChannel];
-    if (midiChannel->volume != state->midiVolume) {
-        state->ops->channelVolume(state->deviceChannel, midiChannel->volume);
-        state->midiVolume = midiChannel->volume;
-    }
-    if (state->midiProgram != midiChannel->program) {
-        state->ops->program(state->deviceChannel, midiChannel->program);
-        state->midiProgram = midiChannel->program;
-    }
+    updateChannelVolume(midiChannel, state);
+    updateProgram(midiChannel, state);
     state->midiKey = pitch;
     state->noteOn = true;
     state->ops->noteOn(state->deviceChannel, pitch, velocity);
@@ -480,7 +489,7 @@ static void channelVolume(u8 chan, u8 volume)
         for (u8 i = 0; i < DEV_CHANS; i++) {
             ChannelState* state = &channelState[i];
             if (state->midiChannel == chan && state->noteOn) {
-                state->ops->channelVolume(state->deviceChannel, volume);
+                updateChannelVolume(midiChannel, state);
             }
         }
     } else {
