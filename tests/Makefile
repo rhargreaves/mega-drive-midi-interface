@@ -3,6 +3,12 @@ vpath %.c ../src
 CC=gcc
 SGDK?=/opt/gendev/sgdk
 
+ifeq ($(DEBUG),1)
+	GDB=gdbserver host:2345
+else
+	GDB=
+endif
+
 INCLUDE_DIRS+=-I$(SGDK)/inc
 INCLUDE_DIRS+=-I$(SGDK)/res
 INCLUDE_DIRS+=-I.
@@ -11,6 +17,8 @@ INCLUDE_DIRS+=-I../src
 INCLUDE_DIRS+=-I$(CMOCKA_DIR)/include
 
 CFLAGS=$(INCLUDE_DIRS) \
+	-ggdb \
+	-O0 \
 	-Wall \
 	-std=c11 \
 	-Werror \
@@ -104,7 +112,7 @@ MD_MOCKS=SYS_setVIntCallback \
 	SYS_getCPULoad \
 	getFPS
 
-LDFLAGS=-ffreestanding -lcmocka -L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src
+LDFLAGS=-ggdb -ffreestanding -lcmocka -L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src
 LDFLAGS+=$(foreach MOCK,$(MD_MOCKS),-Wl,--wrap=$(MOCK))
 
 SYSTEM_TEST_LDFLAGS=$(LDFLAGS)
@@ -131,11 +139,11 @@ SYSTEM_TESTS_TARGET=$(BIN_DIR)/system_tests
 all: clean-target unit system
 
 unit: $(UNIT_TESTS_TARGET)
-	./$(UNIT_TESTS_TARGET)
+	$(GDB) ./$(UNIT_TESTS_TARGET)
 .PHONY: unit
 
 system: $(SYSTEM_TESTS_TARGET)
-	./$(SYSTEM_TESTS_TARGET)
+	$(GDB) ./$(SYSTEM_TESTS_TARGET)
 .PHONY: system
 
 $(SRC_OBJ): | $(OBJ_DIR) $(CMOCKA_DIR)

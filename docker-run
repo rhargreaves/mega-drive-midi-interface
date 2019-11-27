@@ -2,6 +2,9 @@
 IMAGE_NAME=mega-drive-midi-interface
 docker build -t $IMAGE_NAME .
 docker run \
+    --cap-add=SYS_PTRACE \
+    --privileged \
+    -p 2345:2345 \
     -e VERSION \
     -e CMOCKA_MESSAGE_OUTPUT \
     -e CMOCKA_XML_FILE \
