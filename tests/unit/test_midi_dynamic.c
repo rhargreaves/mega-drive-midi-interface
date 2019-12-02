@@ -337,3 +337,32 @@ static void test_midi_dynamic_maintains_pan_on_remapping(UNUSED void** state)
     print_message("Note 2\n");
     __real_midi_noteOn(0, B, 127);
 }
+
+static void test_midi_dynamic_maintains_pitch_bend_on_remapping(
+    UNUSED void** state)
+{
+    /* Buggy behaviour characterisation */
+
+    const u16 midi_bend = 0x3000;
+
+    expect_synth_pitch(0, 6, 0x48c);
+    expect_synth_volume(0, MAX_MIDI_VOLUME);
+    expect_value(__wrap_synth_noteOn, channel, 0);
+
+    print_message("Note 1\n");
+    __real_midi_noteOn(0, A_SHARP, 127);
+
+    print_message("Setting bend\n");
+    expect_synth_pitch(0, 6, 0x4dd);
+    __real_midi_pitchBend(0, midi_bend);
+
+    expect_synth_pitch(1, 7, 0x2ba);
+    expect_synth_pitch(1, 7,
+        0x269); // defaults back as pitch bend not taken into consideration on
+                // note on
+    expect_synth_volume(1, MAX_MIDI_VOLUME);
+    expect_value(__wrap_synth_noteOn, channel, 1);
+
+    print_message("Note 2\n");
+    __real_midi_noteOn(0, B, 127);
+}

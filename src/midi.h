@@ -6,6 +6,7 @@
 
 #define MAX_MIDI_VOLUME 127
 #define DEFAULT_MIDI_PAN 64
+#define DEFAULT_MIDI_PITCH_BEND 0x2000
 
 #define MAX_MIDI_CHANS 9
 #define MIDI_CHANNELS 16
@@ -114,6 +115,7 @@ struct ChannelState {
     u8 midiKey;
     u8 midiVolume;
     u8 midiPan;
+    u16 pitchBend;
 };
 
 void midi_init(

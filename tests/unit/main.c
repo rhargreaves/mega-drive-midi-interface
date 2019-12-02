@@ -182,7 +182,8 @@ int main(void)
         dynamic_midi_test(test_midi_dynamic_limits_percussion_notes),
         dynamic_midi_test(test_midi_dynamic_maintains_volume_on_remapping),
         dynamic_midi_test(test_midi_dynamic_sets_volume_on_playing_notes),
-        dynamic_midi_test(test_midi_dynamic_maintains_pan_on_remapping)
+        dynamic_midi_test(test_midi_dynamic_maintains_pan_on_remapping),
+        dynamic_midi_test(test_midi_dynamic_maintains_pitch_bend_on_remapping)
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);

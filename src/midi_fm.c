@@ -82,7 +82,7 @@ void midi_fm_pitchBend(u8 chan, u16 bend)
     FmChannelState* state = &FmChannelStates[chan];
     u16 freq = freqNumber(state->pitch);
     s16 bendRelative = bend - 0x2000;
-    freq = freq + (bendRelative / 100);
+    freq = freq + (bendRelative / 50);
     synth_pitch(chan, octave(state->pitch), freq);
 }
 

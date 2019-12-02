@@ -55,6 +55,7 @@ struct MidiChannel {
     u8 volume;
     u8 program;
     u8 pan;
+    u16 pitchBend;
 };
 
 static MidiChannel midiChannels[MIDI_CHANNELS];
@@ -89,6 +90,7 @@ static void initChannelState(void)
         state->midiKey = 0;
         state->midiPan = DEFAULT_MIDI_PAN;
         state->midiVolume = MAX_MIDI_VOLUME;
+        state->pitchBend = DEFAULT_MIDI_PITCH_BEND;
     }
 }
 
@@ -101,6 +103,7 @@ static void resetAllState(void)
         midiChannels[i].program = 0;
         midiChannels[i].pan = DEFAULT_MIDI_PAN;
         midiChannels[i].volume = MAX_MIDI_VOLUME;
+        midiChannels[i].pitchBend = DEFAULT_MIDI_PITCH_BEND;
     }
     initChannelState();
 }
@@ -210,6 +213,14 @@ static void updateChannelPan(MidiChannel* midiChannel, ChannelState* state)
     }
 }
 
+static void updatePitchBend(MidiChannel* midiChannel, ChannelState* state)
+{
+    if (state->pitchBend != midiChannel->pitchBend) {
+        state->ops->pitchBend(state->deviceChannel, midiChannel->pitchBend);
+        state->pitchBend = midiChannel->pitchBend;
+    }
+}
+
 static void updateProgram(MidiChannel* midiChannel, ChannelState* state)
 {
     if (state->midiProgram != midiChannel->program) {
@@ -234,6 +245,7 @@ static void dynamicNoteOn(u8 chan, u8 pitch, u8 velocity)
     updateChannelVolume(midiChannel, state);
     updateChannelPan(midiChannel, state);
     updateProgram(midiChannel, state);
+    updatePitchBend(midiChannel, state);
     state->midiKey = pitch;
     state->noteOn = true;
     state->ops->noteOn(state->deviceChannel, pitch, velocity);
@@ -447,8 +459,19 @@ static void cc(u8 chan, u8 controller, u8 value)
 
 void midi_pitchBend(u8 chan, u16 bend)
 {
-    ChannelMapping* mapping = channelMapping(chan);
-    mapping->ops->pitchBend(mapping->channel, bend);
+    if (dynamicMode) {
+        MidiChannel* midiChannel = &midiChannels[chan];
+        midiChannel->pitchBend = bend;
+        for (u8 i = 0; i < DEV_CHANS; i++) {
+            ChannelState* state = &channelState[i];
+            if (state->midiChannel == chan && state->noteOn) {
+                updatePitchBend(midiChannel, state);
+            }
+        }
+    } else {
+        ChannelMapping* mapping = channelMapping(chan);
+        mapping->ops->pitchBend(mapping->channel, bend);
+    }
 }
 
 bool midi_getPolyphonic(void)

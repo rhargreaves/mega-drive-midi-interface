@@ -67,7 +67,7 @@ static void test_midi_pitch_bend_sent_to_ym2612(void** state)
     stub_usb_receive_byte(bendUpper);
 
     expect_ym2612_write_channel(0, 0xA4, 0x1A);
-    expect_ym2612_write_channel(0, 0xA0, 0x77);
+    expect_ym2612_write_channel(0, 0xA0, 0x61);
 
     midi_receiver_read();
 }
