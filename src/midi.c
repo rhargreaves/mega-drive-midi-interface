@@ -54,6 +54,7 @@ typedef struct MidiChannel MidiChannel;
 struct MidiChannel {
     u8 volume;
     u8 program;
+    u8 pan;
 };
 
 static MidiChannel midiChannels[MIDI_CHANNELS];
@@ -68,7 +69,6 @@ static bool dynamicMode;
 static void allNotesOff(u8 chan);
 static void pooledNoteOn(u8 chan, u8 pitch, u8 velocity);
 static void pooledNoteOff(u8 chan, u8 pitch);
-static void channelVolume(u8 chan, u8 volume);
 static void setPolyphonic(bool state);
 static void cc(u8 chan, u8 controller, u8 value);
 static void generalMidiReset(void);
@@ -87,6 +87,7 @@ static void initChannelState(void)
         state->midiProgram = 0;
         state->midiChannel = 0;
         state->midiKey = 0;
+        state->midiPan = DEFAULT_MIDI_PAN;
         state->midiVolume = MAX_MIDI_VOLUME;
     }
 }
@@ -98,6 +99,7 @@ static void resetAllState(void)
     memset(&polyphonicPitches, 0, sizeof(polyphonicPitches));
     for (u8 i = 0; i < MIDI_CHANNELS; i++) {
         midiChannels[i].program = 0;
+        midiChannels[i].pan = DEFAULT_MIDI_PAN;
         midiChannels[i].volume = MAX_MIDI_VOLUME;
     }
     initChannelState();
@@ -200,6 +202,14 @@ static void updateChannelVolume(MidiChannel* midiChannel, ChannelState* state)
     }
 }
 
+static void updateChannelPan(MidiChannel* midiChannel, ChannelState* state)
+{
+    if (state->midiPan != midiChannel->pan) {
+        state->ops->pan(state->deviceChannel, midiChannel->pan);
+        state->midiPan = midiChannel->pan;
+    }
+}
+
 static void updateProgram(MidiChannel* midiChannel, ChannelState* state)
 {
     if (state->midiProgram != midiChannel->program) {
@@ -222,6 +232,7 @@ static void dynamicNoteOn(u8 chan, u8 pitch, u8 velocity)
     midi_fm_percussive(
         state->deviceChannel, chan == GENERAL_MIDI_PERCUSSION_CHANNEL);
     updateChannelVolume(midiChannel, state);
+    updateChannelPan(midiChannel, state);
     updateProgram(midiChannel, state);
     state->midiKey = pitch;
     state->noteOn = true;
@@ -279,6 +290,40 @@ bool midi_overflow(void)
     return overflow;
 }
 
+static void channelPan(u8 chan, u8 pan)
+{
+    if (dynamicMode) {
+        MidiChannel* midiChannel = &midiChannels[chan];
+        midiChannel->pan = pan;
+        for (u8 i = 0; i < DEV_CHANS; i++) {
+            ChannelState* state = &channelState[i];
+            if (state->midiChannel == chan && state->noteOn) {
+                updateChannelPan(midiChannel, state);
+            }
+        }
+    } else {
+        ChannelMapping* mapping = channelMapping(chan);
+        mapping->ops->pan(mapping->channel, pan);
+    }
+}
+
+static void channelVolume(u8 chan, u8 volume)
+{
+    if (dynamicMode) {
+        MidiChannel* midiChannel = &midiChannels[chan];
+        midiChannel->volume = volume;
+        for (u8 i = 0; i < DEV_CHANS; i++) {
+            ChannelState* state = &channelState[i];
+            if (state->midiChannel == chan && state->noteOn) {
+                updateChannelVolume(midiChannel, state);
+            }
+        }
+    } else {
+        ChannelMapping* mapping = channelMapping(chan);
+        mapping->ops->channelVolume(mapping->channel, volume);
+    }
+}
+
 static void cc(u8 chan, u8 controller, u8 value)
 {
     ChannelMapping* mapping = channelMapping(chan);
@@ -287,7 +332,7 @@ static void cc(u8 chan, u8 controller, u8 value)
         channelVolume(chan, value);
         break;
     case CC_PAN:
-        mapping->ops->pan(mapping->channel, value);
+        channelPan(chan, value);
         break;
     case CC_ALL_NOTES_OFF:
         allNotesOff(chan);
@@ -479,23 +524,6 @@ ChannelState* midi_dynamicModeMappings(void)
 ControlChange* midi_lastUnknownCC(void)
 {
     return &lastUnknownControlChange;
-}
-
-static void channelVolume(u8 chan, u8 volume)
-{
-    if (dynamicMode) {
-        MidiChannel* midiChannel = &midiChannels[chan];
-        midiChannel->volume = volume;
-        for (u8 i = 0; i < DEV_CHANS; i++) {
-            ChannelState* state = &channelState[i];
-            if (state->midiChannel == chan && state->noteOn) {
-                updateChannelVolume(midiChannel, state);
-            }
-        }
-    } else {
-        ChannelMapping* mapping = channelMapping(chan);
-        mapping->ops->channelVolume(mapping->channel, volume);
-    }
 }
 
 static void allNotesOff(u8 chan)

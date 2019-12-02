@@ -5,6 +5,8 @@
 #include <types.h>
 
 #define MAX_MIDI_VOLUME 127
+#define DEFAULT_MIDI_PAN 64
+
 #define MAX_MIDI_CHANS 9
 #define MIDI_CHANNELS 16
 #define DEV_CHAN_PSG_NOISE 3
@@ -111,6 +113,7 @@ struct ChannelState {
     u8 midiProgram;
     u8 midiKey;
     u8 midiVolume;
+    u8 midiPan;
 };
 
 void midi_init(

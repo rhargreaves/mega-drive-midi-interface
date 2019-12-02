@@ -310,3 +310,30 @@ static void test_midi_dynamic_sets_volume_on_playing_notes(UNUSED void** state)
     print_message("Setting volume again\n");
     __real_midi_cc(0, CC_VOLUME, midi_vol_next);
 }
+
+static void test_midi_dynamic_maintains_pan_on_remapping(UNUSED void** state)
+{
+    const u8 midi_pan = 127;
+    const u8 expected_synth_stereo = STEREO_MODE_RIGHT;
+
+    expect_value(__wrap_synth_stereo, channel, 0);
+    expect_value(__wrap_synth_stereo, mode, expected_synth_stereo);
+    print_message("Setting pan\n");
+    __real_midi_cc(0, CC_PAN, midi_pan);
+
+    expect_synth_pitch_any();
+    expect_synth_volume(0, 127);
+    expect_value(__wrap_synth_noteOn, channel, 0);
+
+    print_message("Note 1\n");
+    __real_midi_noteOn(0, A_SHARP, 127);
+
+    expect_synth_pitch_any();
+    expect_synth_volume(1, 127);
+    expect_value(__wrap_synth_stereo, channel, 1);
+    expect_value(__wrap_synth_stereo, mode, expected_synth_stereo);
+    expect_value(__wrap_synth_noteOn, channel, 1);
+
+    print_message("Note 2\n");
+    __real_midi_noteOn(0, B, 127);
+}
