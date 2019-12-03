@@ -366,3 +366,24 @@ static void test_midi_dynamic_maintains_pitch_bend_on_remapping(
     print_message("Note 2\n");
     __real_midi_noteOn(0, B, 127);
 }
+
+static void test_midi_dynamic_resets_mappings_on_cc_121(UNUSED void** state)
+{
+    const u8 midiChannel = 2;
+
+    for (u16 i = DEV_CHAN_MIN_FM; i <= DEV_CHAN_MAX_FM; i++) {
+        expect_synth_pitch_any();
+        expect_synth_volume_any();
+        expect_value(__wrap_synth_noteOn, channel, i);
+
+        __real_midi_noteOn(midiChannel, A_SHARP, 127);
+    }
+
+    __real_midi_cc(midiChannel, 121, 0);
+
+    ChannelState* channels = __real_midi_dynamicModeMappings();
+    for (u16 i = DEV_CHAN_MIN_FM; i <= DEV_CHAN_MAX_FM; i++) {
+        ChannelState* chan = &channels[i];
+        assert_int_equal(chan->midiChannel, 0);
+    }
+}

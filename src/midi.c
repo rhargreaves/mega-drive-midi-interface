@@ -77,21 +77,35 @@ static ChannelMapping* channelMapping(u8 midiChannel);
 static void sendPong(void);
 static void setDynamicMode(bool enabled);
 
+static void initDeviceChannel(u8 devChan)
+{
+    ChannelState* state = &channelState[devChan];
+    bool isFm = devChan < DEV_CHAN_MIN_PSG;
+    state->deviceChannel = isFm ? devChan : devChan - DEV_CHAN_MIN_PSG;
+    state->ops = isFm ? &FM_VTable : &PSG_VTable;
+    state->noteOn = false;
+    state->program = 0;
+    state->midiChannel = 0;
+    state->pitch = 0;
+    state->pan = DEFAULT_MIDI_PAN;
+    state->volume = MAX_MIDI_VOLUME;
+    state->pitchBend = DEFAULT_MIDI_PITCH_BEND;
+}
+
 static void initChannelState(void)
 {
     for (u16 i = 0; i < DEV_CHANS; i++) {
-        ChannelState* state = &channelState[i];
-        bool isFm = i < DEV_CHAN_MIN_PSG;
-        state->deviceChannel = isFm ? i : i - DEV_CHAN_MIN_PSG;
-        state->ops = isFm ? &FM_VTable : &PSG_VTable;
-        state->noteOn = false;
-        state->program = 0;
-        state->midiChannel = 0;
-        state->pitch = 0;
-        state->pan = DEFAULT_MIDI_PAN;
-        state->volume = MAX_MIDI_VOLUME;
-        state->pitchBend = DEFAULT_MIDI_PITCH_BEND;
+        initDeviceChannel(i);
     }
+}
+
+static void initMidiChannel(u8 midiChan)
+{
+    MidiChannel* chan = &midiChannels[midiChan];
+    chan->program = 0;
+    chan->pan = DEFAULT_MIDI_PAN;
+    chan->volume = MAX_MIDI_VOLUME;
+    chan->pitchBend = DEFAULT_MIDI_PITCH_BEND;
 }
 
 static void resetAllState(void)
@@ -100,10 +114,7 @@ static void resetAllState(void)
     memset(&lastUnknownControlChange, 0, sizeof(ControlChange));
     memset(&polyphonicPitches, 0, sizeof(polyphonicPitches));
     for (u8 i = 0; i < MIDI_CHANNELS; i++) {
-        midiChannels[i].program = 0;
-        midiChannels[i].pan = DEFAULT_MIDI_PAN;
-        midiChannels[i].volume = MAX_MIDI_VOLUME;
-        midiChannels[i].pitchBend = DEFAULT_MIDI_PITCH_BEND;
+        initMidiChannel(i);
     }
     initChannelState();
 }
@@ -336,6 +347,17 @@ static void channelVolume(u8 chan, u8 volume)
     }
 }
 
+void resetAllControllers(u8 chan)
+{
+    for (u8 i = 0; i < DEV_CHANS; i++) {
+        ChannelState* state = &channelState[i];
+        if (state->midiChannel == chan) {
+            initDeviceChannel(i);
+        }
+    }
+    initMidiChannel(chan);
+}
+
 static void cc(u8 chan, u8 controller, u8 value)
 {
     ChannelMapping* mapping = channelMapping(chan);
@@ -449,6 +471,9 @@ static void cc(u8 chan, u8 controller, u8 value)
         break;
     case CC_POLYPHONIC_MODE:
         setPolyphonic(RANGE(value, 2) != 0);
+        break;
+    case CC_RESET_ALL_CONTROLLERS:
+        resetAllControllers(chan);
         break;
     default:
         lastUnknownControlChange.controller = controller;

@@ -73,6 +73,7 @@
 #define CC_GENMDM_SSG_EG_OP3 92
 #define CC_GENMDM_SSG_EG_OP4 93
 #define CC_GENMDM_GLOBAL_LFO_FREQUENCY 1
+#define CC_RESET_ALL_CONTROLLERS 121
 #define CC_ALL_NOTES_OFF 123
 
 typedef struct ControlChange ControlChange;
