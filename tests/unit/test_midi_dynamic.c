@@ -387,3 +387,28 @@ static void test_midi_dynamic_resets_mappings_on_cc_121(UNUSED void** state)
         assert_int_equal(chan->midiChannel, 0);
     }
 }
+
+static void test_midi_dynamic_all_notes_off_on_cc_123(UNUSED void** state)
+{
+    const u8 midiChannel = 2;
+
+    for (u16 i = DEV_CHAN_MIN_FM; i <= DEV_CHAN_MAX_FM; i++) {
+        expect_synth_pitch_any();
+        expect_synth_volume_any();
+        expect_value(__wrap_synth_noteOn, channel, i);
+
+        __real_midi_noteOn(midiChannel, A_SHARP, 127);
+    }
+
+    for (u16 i = DEV_CHAN_MIN_FM; i <= DEV_CHAN_MAX_FM; i++) {
+        expect_value(__wrap_synth_noteOff, channel, i);
+    }
+
+    __real_midi_cc(midiChannel, 123, 0);
+
+    ChannelState* channels = __real_midi_dynamicModeMappings();
+    for (u16 i = DEV_CHAN_MIN_FM; i <= DEV_CHAN_MAX_FM; i++) {
+        ChannelState* chan = &channels[i];
+        assert_false(chan->noteOn);
+    }
+}

@@ -576,8 +576,19 @@ ControlChange* midi_lastUnknownCC(void)
 
 static void allNotesOff(u8 chan)
 {
-    ChannelMapping* mapping = channelMapping(chan);
-    mapping->ops->allNotesOff(mapping->channel);
+    if (dynamicMode) {
+        for (u8 i = 0; i < DEV_CHANS; i++) {
+            ChannelState* state = &channelState[i];
+            if (state->midiChannel == chan) {
+                state->noteOn = false;
+                state->pitch = 0;
+                state->ops->allNotesOff(state->deviceChannel);
+            }
+        }
+    } else {
+        ChannelMapping* mapping = channelMapping(chan);
+        mapping->ops->allNotesOff(mapping->channel);
+    }
 }
 
 static void setPolyphonic(bool state)
