@@ -210,7 +210,7 @@ static void test_midi_sysex_resets_dynamic_mode_state(UNUSED void** state)
     for (u8 i = 0; i < DEV_CHANS; i++) {
         ChannelState* mapping = &mappings[i];
         assert_int_equal(mapping->midiChannel, 0);
-        assert_int_equal(mapping->midiProgram, 0);
+        assert_int_equal(mapping->program, 0);
         assert_false(mapping->noteOn);
     }
 }

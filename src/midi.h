@@ -111,10 +111,10 @@ struct ChannelState {
     const VTable* ops;
     bool noteOn;
     u8 midiChannel;
-    u8 midiProgram;
-    u8 midiKey;
-    u8 midiVolume;
-    u8 midiPan;
+    u8 program;
+    u8 pitch;
+    u8 volume;
+    u8 pan;
     u16 pitchBend;
 };
 

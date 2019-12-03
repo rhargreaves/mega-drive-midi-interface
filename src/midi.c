@@ -85,11 +85,11 @@ static void initChannelState(void)
         state->deviceChannel = isFm ? i : i - DEV_CHAN_MIN_PSG;
         state->ops = isFm ? &FM_VTable : &PSG_VTable;
         state->noteOn = false;
-        state->midiProgram = 0;
+        state->program = 0;
         state->midiChannel = 0;
-        state->midiKey = 0;
-        state->midiPan = DEFAULT_MIDI_PAN;
-        state->midiVolume = MAX_MIDI_VOLUME;
+        state->pitch = 0;
+        state->pan = DEFAULT_MIDI_PAN;
+        state->volume = MAX_MIDI_VOLUME;
         state->pitchBend = DEFAULT_MIDI_PITCH_BEND;
     }
 }
@@ -130,7 +130,7 @@ static ChannelState* findChannelPlayingNote(u8 midiChannel, u8 pitch)
     for (u16 i = 0; i < DEV_CHANS; i++) {
         ChannelState* chan = &channelState[i];
         if (chan->noteOn && chan->midiChannel == midiChannel
-            && chan->midiKey == pitch) {
+            && chan->pitch == pitch) {
             return chan;
         }
     }
@@ -199,17 +199,17 @@ static bool tooManyPercussiveNotes(u8 midiChan)
 
 static void updateChannelVolume(MidiChannel* midiChannel, ChannelState* state)
 {
-    if (state->midiVolume != midiChannel->volume) {
+    if (state->volume != midiChannel->volume) {
         state->ops->channelVolume(state->deviceChannel, midiChannel->volume);
-        state->midiVolume = midiChannel->volume;
+        state->volume = midiChannel->volume;
     }
 }
 
 static void updateChannelPan(MidiChannel* midiChannel, ChannelState* state)
 {
-    if (state->midiPan != midiChannel->pan) {
+    if (state->pan != midiChannel->pan) {
         state->ops->pan(state->deviceChannel, midiChannel->pan);
-        state->midiPan = midiChannel->pan;
+        state->pan = midiChannel->pan;
     }
 }
 
@@ -223,9 +223,9 @@ static void updatePitchBend(MidiChannel* midiChannel, ChannelState* state)
 
 static void updateProgram(MidiChannel* midiChannel, ChannelState* state)
 {
-    if (state->midiProgram != midiChannel->program) {
+    if (state->program != midiChannel->program) {
         state->ops->program(state->deviceChannel, midiChannel->program);
-        state->midiProgram = midiChannel->program;
+        state->program = midiChannel->program;
     }
 }
 
@@ -246,7 +246,7 @@ static void dynamicNoteOn(u8 chan, u8 pitch, u8 velocity)
     updateChannelPan(midiChannel, state);
     updateProgram(midiChannel, state);
     updatePitchBend(midiChannel, state);
-    state->midiKey = pitch;
+    state->pitch = pitch;
     state->noteOn = true;
     state->ops->noteOn(state->deviceChannel, pitch, velocity);
 }
@@ -270,7 +270,7 @@ static void dynamicNoteOff(u8 chan, u8 pitch)
         return;
     }
     state->noteOn = false;
-    state->midiKey = 0;
+    state->pitch = 0;
     state->ops->noteOff(state->deviceChannel, pitch);
 }
 
