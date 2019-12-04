@@ -138,3 +138,19 @@ static void test_midi_sysex_enables_dynamic_channel_mode(UNUSED void** state)
     expect_value(__wrap_synth_noteOn, channel, 1);
     __real_midi_noteOn(0, 61, 127);
 }
+
+static void test_midi_sysex_disables_fm_parameter_CCs(UNUSED void** state)
+{
+    const u8 sequence[] = {
+        SYSEX_EXTENDED_MANU_ID_SECTION,
+        SYSEX_UNUSED_EUROPEAN_SECTION,
+        SYSEX_UNUSED_MANU_ID,
+        SYSEX_NON_GENERAL_MIDI_CC_COMMAND_ID,
+        SYSEX_NON_GENERAL_MIDI_CC_DISABLED,
+    };
+
+    __real_midi_sysex(sequence, sizeof(sequence));
+
+    //  expect_value(__wrap_synth_algorithm, channel, 0);
+    __real_midi_cc(0, CC_GENMDM_FM_ALGORITHM, 1);
+}
