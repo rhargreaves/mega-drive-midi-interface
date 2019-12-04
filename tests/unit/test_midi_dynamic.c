@@ -353,10 +353,10 @@ static void test_midi_dynamic_maintains_pitch_bend_on_remapping(
     __real_midi_noteOn(0, A_SHARP, 127);
 
     print_message("Setting bend\n");
-    expect_synth_pitch(0, 6, 0x4dd);
+    expect_synth_pitch(0, 6, 0x4c2);
     __real_midi_pitchBend(0, midi_bend);
 
-    expect_synth_pitch(1, 7, 0x2ba);
+    expect_synth_pitch(1, 7, 0x29f);
     expect_synth_pitch(1, 7,
         0x269); // defaults back as pitch bend not taken into consideration on
                 // note on

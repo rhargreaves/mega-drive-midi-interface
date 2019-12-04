@@ -388,7 +388,7 @@ static void test_midi_sets_synth_pitch_bend(UNUSED void** state)
         expect_value(__wrap_synth_noteOn, channel, chan);
         __real_midi_noteOn(chan, 60, 127);
 
-        expect_synth_pitch(chan, 4, 0x1fe);
+        expect_synth_pitch(chan, 4, 0x22e);
         __real_midi_pitchBend(chan, 1000);
     }
 }
