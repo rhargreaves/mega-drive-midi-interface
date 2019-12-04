@@ -362,7 +362,9 @@ void resetAllControllers(u8 chan)
 
 static void cc(u8 chan, u8 controller, u8 value)
 {
-    if (disableNonGeneralMidiCCs && controller == CC_GENMDM_FM_ALGORITHM) {
+    if (disableNonGeneralMidiCCs
+        && (controller >= CC_GENMDM_FM_ALGORITHM
+               && controller <= CC_GENMDM_FM_FEEDBACK)) {
         return;
     }
 

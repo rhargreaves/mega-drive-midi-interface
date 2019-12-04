@@ -151,7 +151,8 @@ static void test_midi_sysex_disables_fm_parameter_CCs(UNUSED void** state)
 
     __real_midi_sysex(sequence, sizeof(sequence));
 
-    const u8 nonGeneralMidiCCs[] = { CC_GENMDM_FM_ALGORITHM };
+    const u8 nonGeneralMidiCCs[]
+        = { CC_GENMDM_FM_ALGORITHM, CC_GENMDM_FM_FEEDBACK };
 
     for (u16 i = 0; i < sizeof(nonGeneralMidiCCs) / sizeof(u8); i++) {
         u8 cc = nonGeneralMidiCCs[i];
