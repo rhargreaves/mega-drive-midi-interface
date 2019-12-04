@@ -360,14 +360,13 @@ void resetAllControllers(u8 chan)
     initMidiChannel(chan);
 }
 
+static bool isIgnoringNonGeneralMidiCCs(void)
+{
+    return disableNonGeneralMidiCCs;
+}
+
 static void cc(u8 chan, u8 controller, u8 value)
 {
-    if (disableNonGeneralMidiCCs
-        && (controller >= CC_GENMDM_FM_ALGORITHM
-               && controller <= CC_GENMDM_FM_FEEDBACK)) {
-        return;
-    }
-
     ChannelMapping* mapping = channelMapping(chan);
     switch (controller) {
     case CC_VOLUME:
@@ -381,15 +380,21 @@ static void cc(u8 chan, u8 controller, u8 value)
         allNotesOff(chan);
         break;
     case CC_GENMDM_FM_ALGORITHM:
+        if (isIgnoringNonGeneralMidiCCs())
+            break;
         synth_algorithm(mapping->channel, RANGE(value, 8));
         break;
     case CC_GENMDM_FM_FEEDBACK:
+        if (isIgnoringNonGeneralMidiCCs())
+            break;
         synth_feedback(mapping->channel, RANGE(value, 8));
         break;
     case CC_GENMDM_TOTAL_LEVEL_OP1:
     case CC_GENMDM_TOTAL_LEVEL_OP2:
     case CC_GENMDM_TOTAL_LEVEL_OP3:
     case CC_GENMDM_TOTAL_LEVEL_OP4:
+        if (isIgnoringNonGeneralMidiCCs())
+            break;
         synth_operatorTotalLevel(
             mapping->channel, controller - CC_GENMDM_TOTAL_LEVEL_OP1, value);
         break;
@@ -397,6 +402,8 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_MULTIPLE_OP2:
     case CC_GENMDM_MULTIPLE_OP3:
     case CC_GENMDM_MULTIPLE_OP4:
+        if (isIgnoringNonGeneralMidiCCs())
+            break;
         synth_operatorMultiple(mapping->channel,
             controller - CC_GENMDM_MULTIPLE_OP1, RANGE(value, 16));
         break;
@@ -404,6 +411,8 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_DETUNE_OP2:
     case CC_GENMDM_DETUNE_OP3:
     case CC_GENMDM_DETUNE_OP4:
+        if (isIgnoringNonGeneralMidiCCs())
+            break;
         synth_operatorDetune(mapping->channel,
             controller - CC_GENMDM_DETUNE_OP1, RANGE(value, 8));
         break;
@@ -411,6 +420,8 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_RATE_SCALING_OP2:
     case CC_GENMDM_RATE_SCALING_OP3:
     case CC_GENMDM_RATE_SCALING_OP4:
+        if (isIgnoringNonGeneralMidiCCs())
+            break;
         synth_operatorRateScaling(mapping->channel,
             controller - CC_GENMDM_RATE_SCALING_OP1, RANGE(value, 4));
         break;
@@ -418,6 +429,8 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_ATTACK_RATE_OP2:
     case CC_GENMDM_ATTACK_RATE_OP3:
     case CC_GENMDM_ATTACK_RATE_OP4:
+        if (isIgnoringNonGeneralMidiCCs())
+            break;
         synth_operatorAttackRate(mapping->channel,
             controller - CC_GENMDM_ATTACK_RATE_OP1, RANGE(value, 32));
         break;
@@ -425,6 +438,8 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_FIRST_DECAY_RATE_OP2:
     case CC_GENMDM_FIRST_DECAY_RATE_OP3:
     case CC_GENMDM_FIRST_DECAY_RATE_OP4:
+        if (isIgnoringNonGeneralMidiCCs())
+            break;
         synth_operatorFirstDecayRate(mapping->channel,
             controller - CC_GENMDM_FIRST_DECAY_RATE_OP1, RANGE(value, 32));
         break;
@@ -432,6 +447,8 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_SECOND_DECAY_RATE_OP2:
     case CC_GENMDM_SECOND_DECAY_RATE_OP3:
     case CC_GENMDM_SECOND_DECAY_RATE_OP4:
+        if (isIgnoringNonGeneralMidiCCs())
+            break;
         synth_operatorSecondDecayRate(mapping->channel,
             controller - CC_GENMDM_SECOND_DECAY_RATE_OP1, RANGE(value, 16));
         break;
@@ -439,6 +456,8 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_SECOND_AMPLITUDE_OP2:
     case CC_GENMDM_SECOND_AMPLITUDE_OP3:
     case CC_GENMDM_SECOND_AMPLITUDE_OP4:
+        if (isIgnoringNonGeneralMidiCCs())
+            break;
         synth_operatorSecondaryAmplitude(mapping->channel,
             controller - CC_GENMDM_SECOND_AMPLITUDE_OP1, RANGE(value, 16));
         break;
@@ -446,6 +465,8 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_RELEASE_RATE_OP2:
     case CC_GENMDM_RELEASE_RATE_OP3:
     case CC_GENMDM_RELEASE_RATE_OP4:
+        if (isIgnoringNonGeneralMidiCCs())
+            break;
         synth_operatorReleaseRate(mapping->channel,
             controller - CC_GENMDM_RELEASE_RATE_OP1, RANGE(value, 16));
         break;
@@ -453,6 +474,8 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_AMPLITUDE_MODULATION_OP2:
     case CC_GENMDM_AMPLITUDE_MODULATION_OP3:
     case CC_GENMDM_AMPLITUDE_MODULATION_OP4:
+        if (isIgnoringNonGeneralMidiCCs())
+            break;
         synth_operatorAmplitudeModulation(mapping->channel,
             controller - CC_GENMDM_AMPLITUDE_MODULATION_OP1, RANGE(value, 2));
         break;
@@ -460,22 +483,36 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_SSG_EG_OP2:
     case CC_GENMDM_SSG_EG_OP3:
     case CC_GENMDM_SSG_EG_OP4:
+        if (isIgnoringNonGeneralMidiCCs())
+            break;
         synth_operatorSsgEg(mapping->channel, controller - CC_GENMDM_SSG_EG_OP1,
             RANGE(value, 16));
         break;
+        if (isIgnoringNonGeneralMidiCCs())
+            break;
     case CC_GENMDM_GLOBAL_LFO_ENABLE:
         synth_enableLfo(RANGE(value, 2));
         break;
+        if (isIgnoringNonGeneralMidiCCs())
+            break;
     case CC_GENMDM_GLOBAL_LFO_FREQUENCY:
+        if (isIgnoringNonGeneralMidiCCs())
+            break;
         synth_globalLfoFrequency(RANGE(value, 8));
         break;
     case CC_GENMDM_AMS:
+        if (isIgnoringNonGeneralMidiCCs())
+            break;
         synth_ams(mapping->channel, RANGE(value, 4));
         break;
     case CC_GENMDM_FMS:
+        if (isIgnoringNonGeneralMidiCCs())
+            break;
         synth_fms(mapping->channel, RANGE(value, 8));
         break;
     case CC_GENMDM_STEREO:
+        if (isIgnoringNonGeneralMidiCCs())
+            break;
         synth_stereo(mapping->channel, RANGE(value, 4));
         break;
     case CC_POLYPHONIC_MODE:
