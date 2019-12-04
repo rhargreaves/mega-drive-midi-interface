@@ -77,8 +77,6 @@ polyphony within a single MIDI channel. In addition, any FM parameter change mad
 
 When dynamic mapping mode is enabled (SysEx `00 22 77 03 01`), MIDI channel note-on/off events are dynamically routed to free FM and PSG channels. That is, MIDI channels no-longer map directly onto device channels but are virtualised and note-on/off events and MIDI program data is set on the next available channel. This mode is best suited for playback of General MIDI files and makes full use of available YM2612/PSG capacity.
 
-This mode is a work-in-progress.
-
 The following rules are used to determine which device channel receives the MIDI event:
 
 1. FM channels 1 - 6 and PSG channels 1 - 3 (device channels) are included in the pool of available channels.
@@ -88,7 +86,6 @@ The following rules are used to determine which device channel receives the MIDI
    - Program
    - Volume
    - Pan
-4.
 
 ## MIDI Message Reference
 
@@ -117,13 +114,13 @@ You can also [re-configure the MIDI mappings](#system-exclusive) via SysEx
 
 These are supported across FM and PSG channels:
 
-| CC  | Description    | Effect                     | Values                                             |
-| --- | -------------- | -------------------------- | -------------------------------------------------- |
-| 7   | Channel Volume | FM: Output Op. Total Level | 0 - 127: [Logarithmic](src/midi.c#L24)             |
-|     |                | PSG: Attenuation           | 0 - 127: [Logarithmic](src/midi.c#L45)             |
-| 10  | Panning        | Stereo                     | 0 - 31: Left<br>32 - 96: Centre<br>97 - 127: Right |
-| 123 | All Notes Off  | FM: Key Off                | 0                                                  |
-|     |                | PSG: Max. Attenuation      | 0                                                  |
+| CC  | Description           | Effect                                                                 | Values                                             |
+| --- | --------------------- | ---------------------------------------------------------------------- | -------------------------------------------------- |
+| 7   | Channel Volume        | Output Operator Total Level (FM),<br/>Attenuation (PSG)                | 0 - 127: [Logarithmic](src/midi.c#L24)             |
+| 10  | Panning               | Stereo                                                                 | 0 - 31: Left<br>32 - 96: Centre<br>97 - 127: Right |
+| 120 | All Sounds Off        | Same as CC 123                                                         | Any                                                |
+| 121 | Reset All Controllers | Reset MIDI parameters and dynamic channel mappings (dynamic mode only) | Any                                                |
+| 123 | All Notes Off         | Key Off (FM),<br/>Max. Attenuation (PSG)                               | Any                                                |
 
 ### FM Parameters
 
