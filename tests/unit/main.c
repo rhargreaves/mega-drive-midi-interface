@@ -77,6 +77,7 @@ int main(void)
         midi_test(
             test_midi_polyphonic_mode_note_off_silences_all_matching_pitch),
         midi_test(test_midi_sets_all_notes_off),
+        midi_test(test_midi_sets_all_sound_off),
         midi_test(test_midi_sets_all_notes_off_in_polyphonic_mode),
         midi_test(test_midi_sets_fm_algorithm),
         midi_test(test_midi_sets_fm_feedback),

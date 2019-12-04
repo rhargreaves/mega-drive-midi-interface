@@ -64,6 +64,13 @@ void test_midi_sets_all_notes_off(UNUSED void** state)
     __real_midi_cc(0, CC_ALL_NOTES_OFF, 0);
 }
 
+void test_midi_sets_all_sound_off(UNUSED void** state)
+{
+    expect_value(__wrap_synth_noteOff, channel, 0);
+
+    __real_midi_cc(0, CC_ALL_SOUND_OFF, 0);
+}
+
 void test_midi_sets_unknown_CC(UNUSED void** state)
 {
     u8 expectedController = 0x9;

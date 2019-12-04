@@ -369,6 +369,7 @@ static void cc(u8 chan, u8 controller, u8 value)
         channelPan(chan, value);
         break;
     case CC_ALL_NOTES_OFF:
+    case CC_ALL_SOUND_OFF:
         allNotesOff(chan);
         break;
     case CC_GENMDM_FM_ALGORITHM:
