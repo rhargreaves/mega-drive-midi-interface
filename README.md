@@ -77,7 +77,18 @@ polyphony within a single MIDI channel. In addition, any FM parameter change mad
 
 When dynamic mapping mode is enabled (SysEx `00 22 77 03 01`), MIDI channel note-on/off events are dynamically routed to free FM and PSG channels. That is, MIDI channels no-longer map directly onto device channels but are virtualised and note-on/off events and MIDI program data is set on the next available channel. This mode is best suited for playback of General MIDI files and makes full use of available YM2612/PSG capacity.
 
-This mode is a work-in-progress. Currently only MIDI program data is applied between channels re-mapping.
+This mode is a work-in-progress.
+
+The following rules are used to determine which device channel receives the MIDI event:
+
+1. FM channels 1 - 6 and PSG channels 1 - 3 (device channels) are included in the pool of available channels.
+   The first available channel is assigned the first MIDI note on event. Future events are sent to this channel.
+2. On subsequent events, if the note is already playing on that channel, the next available device channel is used.
+3. The following MIDI parameters are automatically set on any mapped device channels:
+   - Program
+   - Volume
+   - Pan
+4.
 
 ## MIDI Message Reference
 
