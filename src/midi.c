@@ -86,7 +86,7 @@ static void initDeviceChannel(u8 devChan)
     state->ops = isFm ? &FM_VTable : &PSG_VTable;
     state->noteOn = false;
     state->program = 0;
-    state->midiChannel = 0;
+    state->midiChannel = DEFAULT_MIDI_CHANNEL;
     state->pitch = 0;
     state->pan = DEFAULT_MIDI_PAN;
     state->volume = MAX_MIDI_VOLUME;
