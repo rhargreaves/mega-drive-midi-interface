@@ -741,7 +741,7 @@ static void sendPong(void)
     midi_sender_send_sysex(pongSequence, sizeof(pongSequence));
 }
 
-void midi_remapChannel(u8 midiChannel, u8 deviceChannel)
+static void staticRemapChannel(u8 midiChannel, u8 deviceChannel)
 {
     ChannelMapping* mapping = channelMapping(midiChannel);
     if (deviceChannel < MIN_PSG_CHAN) {
@@ -756,6 +756,24 @@ void midi_remapChannel(u8 midiChannel, u8 deviceChannel)
     } else {
         mapping->channel = 0;
         mapping->ops = &NOP_VTable;
+    }
+}
+
+static void dynamicRemapChannel(u8 midiChannel, u8 deviceChannel)
+{
+    const u8 SYSEX_NO_MIDI_CHANNEL_MAPPING = 0x7F;
+    ChannelState* chan = &channelState[deviceChannel];
+    chan->midiChannel = (midiChannel == SYSEX_NO_MIDI_CHANNEL_MAPPING)
+        ? DEFAULT_MIDI_CHANNEL
+        : midiChannel;
+}
+
+void midi_remapChannel(u8 midiChannel, u8 deviceChannel)
+{
+    if (dynamicMode) {
+        dynamicRemapChannel(midiChannel, deviceChannel);
+    } else {
+        staticRemapChannel(midiChannel, deviceChannel);
     }
 }
 

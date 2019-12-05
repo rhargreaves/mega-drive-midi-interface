@@ -412,3 +412,60 @@ static void test_midi_dynamic_all_notes_off_on_cc_123(UNUSED void** state)
         assert_false(chan->noteOn);
     }
 }
+
+static void test_midi_dynamic_sysex_remaps_midi_channel(UNUSED void** state)
+{
+    const u8 MIDI_CHANNEL = 0x01;
+    const u8 DESTINATION_FIRST_PSG_CHANNEL = 0x06;
+
+    const u8 sequence[] = { SYSEX_EXTENDED_MANU_ID_SECTION,
+        SYSEX_UNUSED_EUROPEAN_SECTION, SYSEX_UNUSED_MANU_ID,
+        SYSEX_REMAP_COMMAND_ID, MIDI_CHANNEL, DESTINATION_FIRST_PSG_CHANNEL };
+
+    __real_midi_sysex(sequence, sizeof(sequence));
+
+    expect_value(__wrap_psg_frequency, channel, 0);
+    expect_any(__wrap_psg_frequency, freq);
+    expect_value(__wrap_psg_attenuation, channel, 0);
+    expect_any(__wrap_psg_attenuation, attenuation);
+
+    __real_midi_noteOn(MIDI_CHANNEL, 60, 127);
+}
+
+static void test_midi_dynamic_sysex_removes_mapping_of_midi_channel(
+    UNUSED void** state)
+{
+    const u8 MIDI_CHANNEL = 0x00;
+    const u8 MIDI_CHANNEL_NO_MAPPING = 0x7F;
+    const u8 DESTINATION_FIRST_PSG_CHANNEL = 0x06;
+
+    const u8 sequence[] = { SYSEX_EXTENDED_MANU_ID_SECTION,
+        SYSEX_UNUSED_EUROPEAN_SECTION, SYSEX_UNUSED_MANU_ID,
+        SYSEX_REMAP_COMMAND_ID, MIDI_CHANNEL, DESTINATION_FIRST_PSG_CHANNEL };
+
+    print_message("Assigning PSG to MIDI Chan 0\n");
+    __real_midi_sysex(sequence, sizeof(sequence));
+
+    expect_value(__wrap_psg_frequency, channel, 0);
+    expect_any(__wrap_psg_frequency, freq);
+    expect_value(__wrap_psg_attenuation, channel, 0);
+    expect_any(__wrap_psg_attenuation, attenuation);
+
+    print_message("Playing note\n");
+    __real_midi_noteOn(MIDI_CHANNEL, 60, 127);
+
+    const u8 removeMappingSeq[]
+        = { SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
+              SYSEX_UNUSED_MANU_ID, SYSEX_REMAP_COMMAND_ID,
+              MIDI_CHANNEL_NO_MAPPING, DESTINATION_FIRST_PSG_CHANNEL };
+
+    print_message("Removing MIDI Chan 0 assignment\n");
+    __real_midi_sysex(removeMappingSeq, sizeof(removeMappingSeq));
+
+    expect_synth_pitch_any();
+    expect_synth_volume_any();
+    expect_value(__wrap_synth_noteOn, channel, 0);
+
+    print_message("Playing note\n");
+    __real_midi_noteOn(MIDI_CHANNEL, 60, 127);
+}
