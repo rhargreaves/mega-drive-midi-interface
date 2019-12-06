@@ -368,6 +368,8 @@ static bool isIgnoringNonGeneralMidiCCs(void)
 static void cc(u8 chan, u8 controller, u8 value)
 {
     ChannelMapping* mapping = channelMapping(chan);
+    u8 deviceChannel = mapping->channel;
+
     switch (controller) {
     case CC_VOLUME:
         channelVolume(chan, value);
@@ -382,12 +384,12 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_FM_ALGORITHM:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_algorithm(mapping->channel, RANGE(value, 8));
+        synth_algorithm(deviceChannel, RANGE(value, 8));
         break;
     case CC_GENMDM_FM_FEEDBACK:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_feedback(mapping->channel, RANGE(value, 8));
+        synth_feedback(deviceChannel, RANGE(value, 8));
         break;
     case CC_GENMDM_TOTAL_LEVEL_OP1:
     case CC_GENMDM_TOTAL_LEVEL_OP2:
@@ -396,7 +398,7 @@ static void cc(u8 chan, u8 controller, u8 value)
         if (isIgnoringNonGeneralMidiCCs())
             break;
         synth_operatorTotalLevel(
-            mapping->channel, controller - CC_GENMDM_TOTAL_LEVEL_OP1, value);
+            deviceChannel, controller - CC_GENMDM_TOTAL_LEVEL_OP1, value);
         break;
     case CC_GENMDM_MULTIPLE_OP1:
     case CC_GENMDM_MULTIPLE_OP2:
@@ -404,7 +406,7 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_MULTIPLE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorMultiple(mapping->channel,
+        synth_operatorMultiple(deviceChannel,
             controller - CC_GENMDM_MULTIPLE_OP1, RANGE(value, 16));
         break;
     case CC_GENMDM_DETUNE_OP1:
@@ -413,8 +415,8 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_DETUNE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorDetune(mapping->channel,
-            controller - CC_GENMDM_DETUNE_OP1, RANGE(value, 8));
+        synth_operatorDetune(
+            deviceChannel, controller - CC_GENMDM_DETUNE_OP1, RANGE(value, 8));
         break;
     case CC_GENMDM_RATE_SCALING_OP1:
     case CC_GENMDM_RATE_SCALING_OP2:
@@ -422,7 +424,7 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_RATE_SCALING_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorRateScaling(mapping->channel,
+        synth_operatorRateScaling(deviceChannel,
             controller - CC_GENMDM_RATE_SCALING_OP1, RANGE(value, 4));
         break;
     case CC_GENMDM_ATTACK_RATE_OP1:
@@ -431,7 +433,7 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_ATTACK_RATE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorAttackRate(mapping->channel,
+        synth_operatorAttackRate(deviceChannel,
             controller - CC_GENMDM_ATTACK_RATE_OP1, RANGE(value, 32));
         break;
     case CC_GENMDM_FIRST_DECAY_RATE_OP1:
@@ -440,7 +442,7 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_FIRST_DECAY_RATE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorFirstDecayRate(mapping->channel,
+        synth_operatorFirstDecayRate(deviceChannel,
             controller - CC_GENMDM_FIRST_DECAY_RATE_OP1, RANGE(value, 32));
         break;
     case CC_GENMDM_SECOND_DECAY_RATE_OP1:
@@ -449,7 +451,7 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_SECOND_DECAY_RATE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorSecondDecayRate(mapping->channel,
+        synth_operatorSecondDecayRate(deviceChannel,
             controller - CC_GENMDM_SECOND_DECAY_RATE_OP1, RANGE(value, 16));
         break;
     case CC_GENMDM_SECOND_AMPLITUDE_OP1:
@@ -458,7 +460,7 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_SECOND_AMPLITUDE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorSecondaryAmplitude(mapping->channel,
+        synth_operatorSecondaryAmplitude(deviceChannel,
             controller - CC_GENMDM_SECOND_AMPLITUDE_OP1, RANGE(value, 16));
         break;
     case CC_GENMDM_RELEASE_RATE_OP1:
@@ -467,7 +469,7 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_RELEASE_RATE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorReleaseRate(mapping->channel,
+        synth_operatorReleaseRate(deviceChannel,
             controller - CC_GENMDM_RELEASE_RATE_OP1, RANGE(value, 16));
         break;
     case CC_GENMDM_AMPLITUDE_MODULATION_OP1:
@@ -476,7 +478,7 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_AMPLITUDE_MODULATION_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorAmplitudeModulation(mapping->channel,
+        synth_operatorAmplitudeModulation(deviceChannel,
             controller - CC_GENMDM_AMPLITUDE_MODULATION_OP1, RANGE(value, 2));
         break;
     case CC_GENMDM_SSG_EG_OP1:
@@ -485,8 +487,8 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_SSG_EG_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorSsgEg(mapping->channel, controller - CC_GENMDM_SSG_EG_OP1,
-            RANGE(value, 16));
+        synth_operatorSsgEg(
+            deviceChannel, controller - CC_GENMDM_SSG_EG_OP1, RANGE(value, 16));
         break;
         if (isIgnoringNonGeneralMidiCCs())
             break;
@@ -503,17 +505,17 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_AMS:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_ams(mapping->channel, RANGE(value, 4));
+        synth_ams(deviceChannel, RANGE(value, 4));
         break;
     case CC_GENMDM_FMS:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_fms(mapping->channel, RANGE(value, 8));
+        synth_fms(deviceChannel, RANGE(value, 8));
         break;
     case CC_GENMDM_STEREO:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_stereo(mapping->channel, RANGE(value, 4));
+        synth_stereo(deviceChannel, RANGE(value, 4));
         break;
     case CC_POLYPHONIC_MODE:
         setPolyphonic(RANGE(value, 2) != 0);
