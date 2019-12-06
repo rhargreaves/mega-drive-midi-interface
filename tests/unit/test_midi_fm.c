@@ -104,8 +104,10 @@ static void test_midi_triggers_synth_note_on_2(UNUSED void** state)
 
 static void test_midi_channel_volume_sets_volume(UNUSED void** state)
 {
-    expect_synth_volume(0, 60);
-    __real_midi_cc(0, CC_VOLUME, 60);
+    for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
+        expect_synth_volume(chan, 60);
+        __real_midi_cc(chan, CC_VOLUME, 60);
+    }
 }
 
 static void test_midi_pan_sets_synth_stereo_mode_right(UNUSED void** state)
