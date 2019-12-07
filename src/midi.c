@@ -243,7 +243,7 @@ static void updateProgram(MidiChannel* midiChannel, ChannelState* state)
     }
 }
 
-static ChannelState* deviceChannel(u8 midiChannel)
+static ChannelState* deviceChannelByMidiChannel(u8 midiChannel)
 {
     for (u8 i = 0; i < DEV_CHANS; i++) {
         ChannelState* state = &channelState[i];
@@ -259,8 +259,8 @@ static void dynamicNoteOn(u8 chan, u8 pitch, u8 velocity)
     if (tooManyPercussiveNotes(chan)) {
         return;
     }
-    ChannelState* state
-        = dynamicMode ? findFreeChannel(chan) : deviceChannel(chan);
+    ChannelState* state = dynamicMode ? findFreeChannel(chan)
+                                      : deviceChannelByMidiChannel(chan);
     if (state == NULL) {
         return;
     }
@@ -328,7 +328,7 @@ static void channelPan(u8 chan, u8 pan)
     midiChannel->pan = pan;
     for (u8 i = 0; i < DEV_CHANS; i++) {
         ChannelState* state = &channelState[i];
-        if (state->midiChannel == chan && state->noteOn) {
+        if (state->midiChannel == chan) {
             updateChannelPan(midiChannel, state);
         }
     }
@@ -340,7 +340,7 @@ static void channelVolume(u8 chan, u8 volume)
     midiChannel->volume = volume;
     for (u8 i = 0; i < DEV_CHANS; i++) {
         ChannelState* state = &channelState[i];
-        if (state->midiChannel == chan && state->noteOn) {
+        if (state->midiChannel == chan) {
             updateChannelVolume(midiChannel, state);
         }
     }
@@ -365,7 +365,7 @@ static bool isIgnoringNonGeneralMidiCCs(void)
 
 static void cc(u8 chan, u8 controller, u8 value)
 {
-    ChannelState* state = deviceChannel(chan);
+    ChannelState* state = deviceChannelByMidiChannel(chan);
     u8 devChan = state == NULL ? chan : state->deviceChannel;
     switch (controller) {
     case CC_VOLUME:
@@ -731,9 +731,18 @@ static void sendPong(void)
 
 static void dynamicRemapChannel(u8 midiChannel, u8 deviceChannel)
 {
-    const u8 SYSEX_NO_MIDI_CHANNEL_MAPPING = 0x7F;
+    const u8 SYSEX_UNASSIGNED_DEVICE_CHANNEL = 0x7F;
+    const u8 SYSEX_UNASSIGNED_MIDI_CHANNEL = 0x7F;
+
+    ChannelState* assignedChan = deviceChannelByMidiChannel(midiChannel);
+    if (assignedChan != NULL) {
+        assignedChan->midiChannel = DEFAULT_MIDI_CHANNEL;
+    }
+    if (deviceChannel == SYSEX_UNASSIGNED_DEVICE_CHANNEL) {
+        return;
+    }
     ChannelState* chan = &channelState[deviceChannel];
-    chan->midiChannel = (midiChannel == SYSEX_NO_MIDI_CHANNEL_MAPPING)
+    chan->midiChannel = (midiChannel == SYSEX_UNASSIGNED_MIDI_CHANNEL)
         ? DEFAULT_MIDI_CHANNEL
         : midiChannel;
 }

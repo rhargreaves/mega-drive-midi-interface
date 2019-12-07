@@ -11,7 +11,6 @@ int main(void)
 {
     const struct CMUnitTest tests[] = {
         e2e_test(test_midi_note_on_event_sent_to_ym2612),
-        e2e_test(test_midi_pitch_bend_sent_to_ym2612),
         e2e_test(test_polyphonic_midi_sent_to_separate_ym2612_channels),
         e2e_test(
             test_psg_not_audible_if_midi_channel_volume_set_and_there_is_no_note_on_event),

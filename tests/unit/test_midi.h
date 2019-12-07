@@ -42,7 +42,6 @@ extern bool __real_midi_dynamicMode(void);
 extern ChannelState* __real_midi_dynamicModeMappings(void);
 
 int test_midi_setup(UNUSED void** state);
-void test_midi_directs_channels_above_10_to_psg(UNUSED void** state);
 void test_midi_polyphonic_mode_returns_state(UNUSED void** state);
 void test_midi_sets_all_sound_off(UNUSED void** state);
 void test_midi_sets_all_notes_off(UNUSED void** state);

@@ -57,7 +57,7 @@ static void test_midi_sysex_remaps_midi_channel_to_psg(UNUSED void** state)
     expect_value(__wrap_psg_attenuation, channel, 0);
     expect_any(__wrap_psg_attenuation, attenuation);
 
-    __real_midi_noteOn(0, 60, 127);
+    __real_midi_noteOn(0, A_SHARP, 127);
 }
 
 static void test_midi_sysex_remaps_midi_channel_to_fm(UNUSED void** state)

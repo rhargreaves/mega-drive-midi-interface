@@ -36,18 +36,6 @@ int test_midi_setup(UNUSED void** state)
     return 0;
 }
 
-void test_midi_directs_channels_above_10_to_psg(UNUSED void** state)
-{
-    for (int chan = 11; chan < 16; chan++) {
-        expect_any(__wrap_psg_frequency, channel);
-        expect_any(__wrap_psg_frequency, freq);
-        expect_any(__wrap_psg_attenuation, channel);
-        expect_any(__wrap_psg_attenuation, attenuation);
-
-        __real_midi_noteOn(chan, 60, 127);
-    }
-}
-
 void test_midi_polyphonic_mode_returns_state(UNUSED void** state)
 {
     __real_midi_cc(0, CC_POLYPHONIC_MODE, 127);
