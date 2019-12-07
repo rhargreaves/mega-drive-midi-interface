@@ -11,7 +11,7 @@
 #include <stdbool.h>
 
 #define RANGE(value, range) (value / (128 / range))
-#define CHANNEL_UNASSIGNED 0x7F
+#define CHANNEL_UNASSIGNED 0xFF
 #define LENGTH_OF(x) (sizeof(x) / sizeof(x[0]))
 
 static const u8 SYSEX_EXTENDED_MANU_ID_SECTION = 0x00;
@@ -86,7 +86,7 @@ static void initDeviceChannel(u8 devChan)
     state->ops = isFm ? &FM_VTable : &PSG_VTable;
     state->noteOn = false;
     state->program = 0;
-    state->midiChannel = DEFAULT_MIDI_CHANNEL;
+    state->midiChannel = devChan;
     state->pitch = 0;
     state->pan = DEFAULT_MIDI_PAN;
     state->volume = MAX_MIDI_VOLUME;
@@ -118,6 +118,7 @@ static void resetAllState(void)
         initMidiChannel(i);
     }
     initChannelState();
+    setDynamicMode(dynamicMode);
 }
 
 void midi_init(
@@ -242,12 +243,24 @@ static void updateProgram(MidiChannel* midiChannel, ChannelState* state)
     }
 }
 
+static ChannelState* deviceChannel(u8 midiChannel)
+{
+    for (u8 i = 0; i < DEV_CHANS; i++) {
+        ChannelState* state = &channelState[i];
+        if (state->midiChannel == midiChannel) {
+            return state;
+        }
+    }
+    return NULL;
+}
+
 static void dynamicNoteOn(u8 chan, u8 pitch, u8 velocity)
 {
     if (tooManyPercussiveNotes(chan)) {
         return;
     }
-    ChannelState* state = findFreeChannel(chan);
+    ChannelState* state
+        = dynamicMode ? findFreeChannel(chan) : deviceChannel(chan);
     if (state == NULL) {
         return;
     }
@@ -358,6 +371,7 @@ void resetAllControllers(u8 chan)
         }
     }
     initMidiChannel(chan);
+    setDynamicMode(dynamicMode);
 }
 
 static bool isIgnoringNonGeneralMidiCCs(void)
@@ -367,9 +381,8 @@ static bool isIgnoringNonGeneralMidiCCs(void)
 
 static void cc(u8 chan, u8 controller, u8 value)
 {
-    ChannelMapping* mapping = channelMapping(chan);
-    u8 deviceChannel = mapping->channel;
-
+    ChannelState* state = deviceChannel(chan);
+    u8 devChan = state == NULL ? chan : state->deviceChannel;
     switch (controller) {
     case CC_VOLUME:
         channelVolume(chan, value);
@@ -381,15 +394,21 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_ALL_SOUND_OFF:
         allNotesOff(chan);
         break;
+    case CC_POLYPHONIC_MODE:
+        setPolyphonic(RANGE(value, 2) != 0);
+        break;
+    case CC_RESET_ALL_CONTROLLERS:
+        resetAllControllers(chan);
+        break;
     case CC_GENMDM_FM_ALGORITHM:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_algorithm(deviceChannel, RANGE(value, 8));
+        synth_algorithm(devChan, RANGE(value, 8));
         break;
     case CC_GENMDM_FM_FEEDBACK:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_feedback(deviceChannel, RANGE(value, 8));
+        synth_feedback(devChan, RANGE(value, 8));
         break;
     case CC_GENMDM_TOTAL_LEVEL_OP1:
     case CC_GENMDM_TOTAL_LEVEL_OP2:
@@ -398,7 +417,7 @@ static void cc(u8 chan, u8 controller, u8 value)
         if (isIgnoringNonGeneralMidiCCs())
             break;
         synth_operatorTotalLevel(
-            deviceChannel, controller - CC_GENMDM_TOTAL_LEVEL_OP1, value);
+            devChan, controller - CC_GENMDM_TOTAL_LEVEL_OP1, value);
         break;
     case CC_GENMDM_MULTIPLE_OP1:
     case CC_GENMDM_MULTIPLE_OP2:
@@ -406,8 +425,8 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_MULTIPLE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorMultiple(deviceChannel,
-            controller - CC_GENMDM_MULTIPLE_OP1, RANGE(value, 16));
+        synth_operatorMultiple(
+            devChan, controller - CC_GENMDM_MULTIPLE_OP1, RANGE(value, 16));
         break;
     case CC_GENMDM_DETUNE_OP1:
     case CC_GENMDM_DETUNE_OP2:
@@ -416,7 +435,7 @@ static void cc(u8 chan, u8 controller, u8 value)
         if (isIgnoringNonGeneralMidiCCs())
             break;
         synth_operatorDetune(
-            deviceChannel, controller - CC_GENMDM_DETUNE_OP1, RANGE(value, 8));
+            devChan, controller - CC_GENMDM_DETUNE_OP1, RANGE(value, 8));
         break;
     case CC_GENMDM_RATE_SCALING_OP1:
     case CC_GENMDM_RATE_SCALING_OP2:
@@ -424,8 +443,8 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_RATE_SCALING_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorRateScaling(deviceChannel,
-            controller - CC_GENMDM_RATE_SCALING_OP1, RANGE(value, 4));
+        synth_operatorRateScaling(
+            devChan, controller - CC_GENMDM_RATE_SCALING_OP1, RANGE(value, 4));
         break;
     case CC_GENMDM_ATTACK_RATE_OP1:
     case CC_GENMDM_ATTACK_RATE_OP2:
@@ -433,8 +452,8 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_ATTACK_RATE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorAttackRate(deviceChannel,
-            controller - CC_GENMDM_ATTACK_RATE_OP1, RANGE(value, 32));
+        synth_operatorAttackRate(
+            devChan, controller - CC_GENMDM_ATTACK_RATE_OP1, RANGE(value, 32));
         break;
     case CC_GENMDM_FIRST_DECAY_RATE_OP1:
     case CC_GENMDM_FIRST_DECAY_RATE_OP2:
@@ -442,7 +461,7 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_FIRST_DECAY_RATE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorFirstDecayRate(deviceChannel,
+        synth_operatorFirstDecayRate(devChan,
             controller - CC_GENMDM_FIRST_DECAY_RATE_OP1, RANGE(value, 32));
         break;
     case CC_GENMDM_SECOND_DECAY_RATE_OP1:
@@ -451,7 +470,7 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_SECOND_DECAY_RATE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorSecondDecayRate(deviceChannel,
+        synth_operatorSecondDecayRate(devChan,
             controller - CC_GENMDM_SECOND_DECAY_RATE_OP1, RANGE(value, 16));
         break;
     case CC_GENMDM_SECOND_AMPLITUDE_OP1:
@@ -460,7 +479,7 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_SECOND_AMPLITUDE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorSecondaryAmplitude(deviceChannel,
+        synth_operatorSecondaryAmplitude(devChan,
             controller - CC_GENMDM_SECOND_AMPLITUDE_OP1, RANGE(value, 16));
         break;
     case CC_GENMDM_RELEASE_RATE_OP1:
@@ -469,8 +488,8 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_RELEASE_RATE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorReleaseRate(deviceChannel,
-            controller - CC_GENMDM_RELEASE_RATE_OP1, RANGE(value, 16));
+        synth_operatorReleaseRate(
+            devChan, controller - CC_GENMDM_RELEASE_RATE_OP1, RANGE(value, 16));
         break;
     case CC_GENMDM_AMPLITUDE_MODULATION_OP1:
     case CC_GENMDM_AMPLITUDE_MODULATION_OP2:
@@ -478,7 +497,7 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_AMPLITUDE_MODULATION_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorAmplitudeModulation(deviceChannel,
+        synth_operatorAmplitudeModulation(devChan,
             controller - CC_GENMDM_AMPLITUDE_MODULATION_OP1, RANGE(value, 2));
         break;
     case CC_GENMDM_SSG_EG_OP1:
@@ -488,7 +507,7 @@ static void cc(u8 chan, u8 controller, u8 value)
         if (isIgnoringNonGeneralMidiCCs())
             break;
         synth_operatorSsgEg(
-            deviceChannel, controller - CC_GENMDM_SSG_EG_OP1, RANGE(value, 16));
+            devChan, controller - CC_GENMDM_SSG_EG_OP1, RANGE(value, 16));
         break;
         if (isIgnoringNonGeneralMidiCCs())
             break;
@@ -505,23 +524,17 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_GENMDM_AMS:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_ams(deviceChannel, RANGE(value, 4));
+        synth_ams(devChan, RANGE(value, 4));
         break;
     case CC_GENMDM_FMS:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_fms(deviceChannel, RANGE(value, 8));
+        synth_fms(devChan, RANGE(value, 8));
         break;
     case CC_GENMDM_STEREO:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_stereo(deviceChannel, RANGE(value, 4));
-        break;
-    case CC_POLYPHONIC_MODE:
-        setPolyphonic(RANGE(value, 2) != 0);
-        break;
-    case CC_RESET_ALL_CONTROLLERS:
-        resetAllControllers(chan);
+        synth_stereo(devChan, RANGE(value, 4));
         break;
     default:
         lastUnknownControlChange.controller = controller;
@@ -790,4 +803,16 @@ static void generalMidiReset(void)
 static void setDynamicMode(bool enabled)
 {
     dynamicMode = enabled;
+
+    if (enabled) {
+        for (u8 i = 0; i < DEV_CHANS; i++) {
+            ChannelState* chan = &channelState[i];
+            chan->midiChannel = DEFAULT_MIDI_CHANNEL;
+        }
+    } else {
+        for (u8 i = 0; i < DEV_CHANS; i++) {
+            ChannelState* chan = &channelState[i];
+            chan->midiChannel = i;
+        }
+    }
 }
