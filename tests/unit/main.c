@@ -69,7 +69,6 @@ int main(void)
         midi_test(test_midi_pan_sets_synth_stereo_mode_centre),
         midi_test(test_midi_channel_volume_sets_psg_attenuation),
         midi_test(test_midi_channel_volume_sets_psg_attenuation_2),
-        midi_test(test_midi_directs_channels_above_10_to_psg),
         midi_test(test_midi_sets_synth_pitch_bend),
         midi_test(test_midi_sets_psg_pitch_bend),
         midi_test(test_midi_polyphonic_mode_returns_state),

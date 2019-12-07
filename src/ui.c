@@ -55,7 +55,6 @@ static void printBaudRate(void);
 static void printCommMode(void);
 static void printCommBuffer(void);
 static void populateDynamicMappings(u8* midiChans);
-static void populateStaticMappings(u8* midiChans);
 static void printLastDynamicMode(void);
 static void printTheMappingsIfNeeded(u8* midiChans);
 static void printMappings(void);
@@ -86,11 +85,11 @@ void ui_vsync(void)
 static void printMappings(void)
 {
     u8 midiChans[DEV_CHANS] = { 0 };
-    if (midi_dynamicMode()) {
-        populateDynamicMappings(midiChans);
-    } else {
-        populateStaticMappings(midiChans);
-    }
+    // if (midi_dynamicMode()) {
+    populateDynamicMappings(midiChans);
+    //} else {
+    //     populateStaticMappings(midiChans);
+    // }
     printTheMappingsIfNeeded(midiChans);
 }
 
@@ -214,21 +213,6 @@ static void populateDynamicMappings(u8* midiChans)
     ChannelState* chans = midi_dynamicModeMappings();
     for (u8 i = 0; i < DEV_CHANS; i++) {
         midiChans[i] = midiChannelForUi(chans, i);
-    }
-}
-
-static void populateStaticMappings(u8* midiChans)
-{
-    u8 mappings[MIDI_CHANNELS];
-    midi_mappings(mappings);
-    for (u8 midiChan = 0; midiChan < MIDI_CHANNELS; midiChan++) {
-        u8 devChan = mappings[midiChan];
-        if (devChan == 0x7F) {
-            continue;
-        }
-        if (midiChans[devChan] == 0) {
-            midiChans[devChan] = midiChan + 1;
-        }
     }
 }
 

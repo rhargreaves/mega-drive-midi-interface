@@ -28,24 +28,12 @@ int test_midi_setup(UNUSED void** state)
 
     expect_any(__wrap_synth_init, defaultPreset);
     midi_init((Channel**)M_BANK_0, (PercussionPreset**)P_BANK_0);
-    for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
-        expect_synth_pitch_any();
+    // for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
+    //     expect_synth_pitch_any();
 
-        __real_midi_pitchBend(chan, 0);
-    }
+    //     __real_midi_pitchBend(chan, 0);
+    // }
     return 0;
-}
-
-void test_midi_directs_channels_above_10_to_psg(UNUSED void** state)
-{
-    for (int chan = 11; chan < 16; chan++) {
-        expect_any(__wrap_psg_frequency, channel);
-        expect_any(__wrap_psg_frequency, freq);
-        expect_any(__wrap_psg_attenuation, channel);
-        expect_any(__wrap_psg_attenuation, attenuation);
-
-        __real_midi_noteOn(chan, 60, 127);
-    }
 }
 
 void test_midi_polyphonic_mode_returns_state(UNUSED void** state)
