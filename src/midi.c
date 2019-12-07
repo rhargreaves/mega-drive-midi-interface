@@ -35,9 +35,9 @@ static const VTable FM_VTable = { midi_fm_noteOn, midi_fm_noteOff,
     midi_fm_channelVolume, midi_fm_pitchBend, midi_fm_program,
     midi_fm_allNotesOff, midi_fm_pan };
 
-static const VTable NOP_VTable = { midi_nop_noteOn, midi_nop_noteOff,
-    midi_nop_channelVolume, midi_nop_pitchBend, midi_nop_program,
-    midi_nop_allNotesOff, midi_nop_pan };
+// static const VTable NOP_VTable = { midi_nop_noteOn, midi_nop_noteOff,
+//     midi_nop_channelVolume, midi_nop_pitchBend, midi_nop_program,
+//     midi_nop_allNotesOff, midi_nop_pan };
 
 static const ChannelMapping DefaultChannelMappings[MIDI_CHANNELS]
     = { { &FM_VTable, 0 }, { &FM_VTable, 1 }, { &FM_VTable, 2 },
@@ -281,11 +281,8 @@ void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
 {
     if (polyphonic) {
         pooledNoteOn(chan, pitch, velocity);
-    } else if (dynamicMode) {
-        dynamicNoteOn(chan, pitch, velocity);
     } else {
-        ChannelMapping* mapping = channelMapping(chan);
-        mapping->ops->noteOn(mapping->channel, pitch, velocity);
+        dynamicNoteOn(chan, pitch, velocity);
     }
 }
 
@@ -304,11 +301,8 @@ void midi_noteOff(u8 chan, u8 pitch)
 {
     if (polyphonic) {
         pooledNoteOff(chan, pitch);
-    } else if (dynamicMode) {
-        dynamicNoteOff(chan, pitch);
     } else {
-        ChannelMapping* mapping = channelMapping(chan);
-        mapping->ops->noteOff(mapping->channel, pitch);
+        dynamicNoteOff(chan, pitch);
     }
 }
 
@@ -330,35 +324,25 @@ bool midi_overflow(void)
 
 static void channelPan(u8 chan, u8 pan)
 {
-    if (dynamicMode) {
-        MidiChannel* midiChannel = &midiChannels[chan];
-        midiChannel->pan = pan;
-        for (u8 i = 0; i < DEV_CHANS; i++) {
-            ChannelState* state = &channelState[i];
-            if (state->midiChannel == chan && state->noteOn) {
-                updateChannelPan(midiChannel, state);
-            }
+    MidiChannel* midiChannel = &midiChannels[chan];
+    midiChannel->pan = pan;
+    for (u8 i = 0; i < DEV_CHANS; i++) {
+        ChannelState* state = &channelState[i];
+        if (state->midiChannel == chan && state->noteOn) {
+            updateChannelPan(midiChannel, state);
         }
-    } else {
-        ChannelMapping* mapping = channelMapping(chan);
-        mapping->ops->pan(mapping->channel, pan);
     }
 }
 
 static void channelVolume(u8 chan, u8 volume)
 {
-    if (dynamicMode) {
-        MidiChannel* midiChannel = &midiChannels[chan];
-        midiChannel->volume = volume;
-        for (u8 i = 0; i < DEV_CHANS; i++) {
-            ChannelState* state = &channelState[i];
-            if (state->midiChannel == chan && state->noteOn) {
-                updateChannelVolume(midiChannel, state);
-            }
+    MidiChannel* midiChannel = &midiChannels[chan];
+    midiChannel->volume = volume;
+    for (u8 i = 0; i < DEV_CHANS; i++) {
+        ChannelState* state = &channelState[i];
+        if (state->midiChannel == chan && state->noteOn) {
+            updateChannelVolume(midiChannel, state);
         }
-    } else {
-        ChannelMapping* mapping = channelMapping(chan);
-        mapping->ops->channelVolume(mapping->channel, volume);
     }
 }
 
@@ -545,18 +529,13 @@ static void cc(u8 chan, u8 controller, u8 value)
 
 void midi_pitchBend(u8 chan, u16 bend)
 {
-    if (dynamicMode) {
-        MidiChannel* midiChannel = &midiChannels[chan];
-        midiChannel->pitchBend = bend;
-        for (u8 i = 0; i < DEV_CHANS; i++) {
-            ChannelState* state = &channelState[i];
-            if (state->midiChannel == chan && state->noteOn) {
-                updatePitchBend(midiChannel, state);
-            }
+    MidiChannel* midiChannel = &midiChannels[chan];
+    midiChannel->pitchBend = bend;
+    for (u8 i = 0; i < DEV_CHANS; i++) {
+        ChannelState* state = &channelState[i];
+        if (state->midiChannel == chan && state->noteOn) {
+            updatePitchBend(midiChannel, state);
         }
-    } else {
-        ChannelMapping* mapping = channelMapping(chan);
-        mapping->ops->pitchBend(mapping->channel, bend);
     }
 }
 
@@ -589,7 +568,6 @@ void midi_start(void)
 void midi_position(u16 midiBeat)
 {
     const u16 BEATS_IN_BAR = 4;
-
     timing.clocks = midiBeat * 6;
     timing.clock = timing.clocks % 6;
     timing.bar = midiBeat / 16;
@@ -637,18 +615,13 @@ ControlChange* midi_lastUnknownCC(void)
 
 static void allNotesOff(u8 chan)
 {
-    if (dynamicMode) {
-        for (u8 i = 0; i < DEV_CHANS; i++) {
-            ChannelState* state = &channelState[i];
-            if (state->midiChannel == chan) {
-                state->noteOn = false;
-                state->pitch = 0;
-                state->ops->allNotesOff(state->deviceChannel);
-            }
+    for (u8 i = 0; i < DEV_CHANS; i++) {
+        ChannelState* state = &channelState[i];
+        if (state->midiChannel == chan) {
+            state->noteOn = false;
+            state->pitch = 0;
+            state->ops->allNotesOff(state->deviceChannel);
         }
-    } else {
-        ChannelMapping* mapping = channelMapping(chan);
-        mapping->ops->allNotesOff(mapping->channel);
     }
 }
 
@@ -756,24 +729,6 @@ static void sendPong(void)
     midi_sender_send_sysex(pongSequence, sizeof(pongSequence));
 }
 
-static void staticRemapChannel(u8 midiChannel, u8 deviceChannel)
-{
-    ChannelMapping* mapping = channelMapping(midiChannel);
-    if (deviceChannel < MIN_PSG_CHAN) {
-        mapping->channel = deviceChannel;
-        mapping->ops = &FM_VTable;
-        if (midiChannel == 9) {
-            midi_fm_percussive(deviceChannel, true);
-        }
-    } else if (deviceChannel <= MAX_PSG_CHAN) {
-        mapping->channel = deviceChannel - MIN_PSG_CHAN;
-        mapping->ops = &PSG_VTable;
-    } else {
-        mapping->channel = 0;
-        mapping->ops = &NOP_VTable;
-    }
-}
-
 static void dynamicRemapChannel(u8 midiChannel, u8 deviceChannel)
 {
     const u8 SYSEX_NO_MIDI_CHANNEL_MAPPING = 0x7F;
@@ -785,11 +740,7 @@ static void dynamicRemapChannel(u8 midiChannel, u8 deviceChannel)
 
 void midi_remapChannel(u8 midiChannel, u8 deviceChannel)
 {
-    if (dynamicMode) {
-        dynamicRemapChannel(midiChannel, deviceChannel);
-    } else {
-        staticRemapChannel(midiChannel, deviceChannel);
-    }
+    dynamicRemapChannel(midiChannel, deviceChannel);
 }
 
 static void generalMidiReset(void)
