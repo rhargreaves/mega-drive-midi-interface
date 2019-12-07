@@ -85,11 +85,7 @@ void ui_vsync(void)
 static void printMappings(void)
 {
     u8 midiChans[DEV_CHANS] = { 0 };
-    // if (midi_dynamicMode()) {
     populateDynamicMappings(midiChans);
-    //} else {
-    //     populateStaticMappings(midiChans);
-    // }
     printTheMappingsIfNeeded(midiChans);
 }
 
