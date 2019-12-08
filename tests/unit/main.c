@@ -109,6 +109,7 @@ int main(void)
         midi_test(test_midi_timing_sets_bar_number),
         midi_test(test_midi_increments_clocks),
         midi_test(test_midi_sets_fm_preset),
+        midi_test(test_midi_sysex_general_midi_reset_resets_synth_volume),
         midi_test(test_midi_sysex_sends_all_notes_off),
         midi_test(test_midi_sysex_ignores_unknown_sysex),
         midi_test(test_midi_sysex_remaps_midi_channel_to_psg),

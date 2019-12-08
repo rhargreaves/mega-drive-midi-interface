@@ -41,6 +41,31 @@ static void test_midi_sysex_sends_all_notes_off(UNUSED void** state)
         sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
 }
 
+static void test_midi_sysex_general_midi_reset_resets_synth_volume(
+    UNUSED void** state)
+{
+    const u8 sysExGeneralMidiResetSequence[] = { 0x7E, 0x7F, 0x09, 0x01 };
+
+    expect_value(__wrap_synth_volume, channel, 0);
+    expect_value(__wrap_synth_volume, volume, 64);
+
+    print_message("Setting volume to half-way\n");
+    __real_midi_cc(0, CC_VOLUME, 64);
+
+    expect_value(__wrap_synth_volume, channel, 0);
+    expect_value(__wrap_synth_volume, volume, MAX_MIDI_VOLUME);
+    expect_value(__wrap_synth_noteOff, channel, 0);
+    expect_value(__wrap_synth_noteOff, channel, 1);
+    expect_value(__wrap_synth_noteOff, channel, 2);
+    expect_value(__wrap_synth_noteOff, channel, 3);
+    expect_value(__wrap_synth_noteOff, channel, 4);
+    expect_value(__wrap_synth_noteOff, channel, 5);
+
+    print_message("Sending General MIDI reset\n");
+    __real_midi_sysex(
+        sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
+}
+
 static void test_midi_sysex_ignores_unknown_sysex(UNUSED void** state)
 {
     const u8 sysExGeneralMidiResetSequence[] = { 0x12 };

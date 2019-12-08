@@ -1,10 +1,13 @@
+#pragma once
 #include <midi.h>
 #include <sprite_eng.h>
 #include <types.h>
 
 #include "synth.h"
 
-void __wrap_synth_init(const FmChannel* defaultPreset);
+void wraps_disable_checks(void);
+void wraps_enable_checks(void);
+
 void __wrap_synth_enableLfo(u8 enable);
 void __wrap_synth_globalLfoFrequency(u8 freq);
 void __wrap_synth_noteOn(u8 channel);

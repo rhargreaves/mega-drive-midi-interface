@@ -48,6 +48,8 @@ static void allNotesOff(u8 chan);
 static void generalMidiReset(void);
 static void sendPong(void);
 static void setDynamicMode(bool enabled);
+static void updateDeviceChannelFromAssociatedMidiChannel(
+    DeviceChannel* devChan);
 
 static void initDeviceChannel(u8 devChan)
 {
@@ -56,15 +58,12 @@ static void initDeviceChannel(u8 devChan)
     chan->number = isFm ? devChan : devChan - DEV_CHAN_MIN_PSG;
     chan->ops = isFm ? &FM_VTable : &PSG_VTable;
     chan->noteOn = false;
-    chan->program = 0;
     chan->midiChannel = devChan;
     chan->pitch = 0;
-    chan->pan = DEFAULT_MIDI_PAN;
-    chan->volume = MAX_MIDI_VOLUME;
-    chan->pitchBend = DEFAULT_MIDI_PITCH_BEND;
+    updateDeviceChannelFromAssociatedMidiChannel(chan);
 }
 
-static void initChannelState(void)
+static void initAllDeviceChannels(void)
 {
     for (u16 i = 0; i < DEV_CHANS; i++) {
         initDeviceChannel(i);
@@ -87,7 +86,7 @@ static void resetAllState(void)
     for (u8 i = 0; i < MIDI_CHANNELS; i++) {
         initMidiChannel(i);
     }
-    initChannelState();
+    initAllDeviceChannels();
     setDynamicMode(dynamicMode);
 }
 
@@ -216,7 +215,7 @@ static DeviceChannel* deviceChannelByMidiChannel(u8 midiChannel)
     return NULL;
 }
 
-static void updateDeviceChannel(DeviceChannel* devChan)
+static void updateDeviceChannelFromAssociatedMidiChannel(DeviceChannel* devChan)
 {
     MidiChannel* midiChannel = &midiChannels[devChan->midiChannel];
     midi_fm_percussive(devChan->number,
@@ -245,7 +244,7 @@ static void noteOn(u8 midiChan, u8 pitch, u8 velocity)
     }
     overflow = false;
     devChan->midiChannel = midiChan;
-    updateDeviceChannel(devChan);
+    updateDeviceChannelFromAssociatedMidiChannel(devChan);
     devChan->pitch = pitch;
     devChan->noteOn = true;
     devChan->ops->noteOn(devChan->number, pitch, velocity);
@@ -301,13 +300,13 @@ static void channelVolume(u8 chan, u8 volume)
 
 void resetAllControllers(u8 chan)
 {
+    initMidiChannel(chan);
     for (u8 i = 0; i < DEV_CHANS; i++) {
         DeviceChannel* state = &deviceChannels[i];
         if (state->midiChannel == chan) {
             initDeviceChannel(i);
         }
     }
-    initMidiChannel(chan);
     setDynamicMode(dynamicMode);
 }
 

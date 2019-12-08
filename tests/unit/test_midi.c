@@ -1,4 +1,5 @@
 #include "test_midi.h"
+#include "wraps.h"
 
 int test_midi_setup(UNUSED void** state)
 {
@@ -29,7 +30,10 @@ int test_midi_setup(UNUSED void** state)
     P_BANK_0[30] = &P_BANK_0_INST_30_CASTANETS;
 
     expect_any(__wrap_synth_init, defaultPreset);
+
+    wraps_disable_checks();
     midi_init(M_BANK_0, P_BANK_0);
+    wraps_enable_checks();
     return 0;
 }
 

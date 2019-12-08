@@ -6,6 +6,20 @@
 #include "wraps.h"
 #include <cmocka.h>
 
+#include <stdbool.h>
+
+static bool disableChecks = false;
+
+void wraps_disable_checks(void)
+{
+    disableChecks = true;
+}
+
+void wraps_enable_checks(void)
+{
+    disableChecks = false;
+}
+
 void __wrap_synth_init(const FmChannel* defaultPreset)
 {
     check_expected(defaultPreset);
@@ -23,16 +37,22 @@ void __wrap_synth_globalLfoFrequency(u8 freq)
 
 void __wrap_synth_noteOn(u8 channel)
 {
+    if (disableChecks)
+        return;
     check_expected(channel);
 }
 
 void __wrap_synth_noteOff(u8 channel)
 {
+    if (disableChecks)
+        return;
     check_expected(channel);
 }
 
 void __wrap_synth_pitch(u8 channel, u8 octave, u16 freqNumber)
 {
+    if (disableChecks)
+        return;
     check_expected(channel);
     check_expected(octave);
     check_expected(freqNumber);
@@ -46,6 +66,8 @@ void __wrap_synth_totalLevel(u8 channel, u8 totalLevel)
 
 void __wrap_synth_stereo(u8 channel, u8 mode)
 {
+    if (disableChecks)
+        return;
     check_expected(channel);
     check_expected(mode);
 }
@@ -155,12 +177,16 @@ void __wrap_synth_operatorSsgEg(u8 channel, u8 op, u8 ssgEg)
 
 void __wrap_synth_preset(u8 channel, const FmChannel* preset)
 {
+    if (disableChecks)
+        return;
     check_expected(channel);
     check_expected(preset);
 }
 
 void __wrap_synth_volume(u8 channel, u8 volume)
 {
+    if (disableChecks)
+        return;
     check_expected(channel);
     check_expected(volume);
 }
@@ -298,29 +324,39 @@ void __wrap_fm_writeReg(u16 part, u8 reg, u8 data)
 
 void __wrap_psg_noteOn(u8 channel, u16 freq)
 {
+    if (disableChecks)
+        return;
     check_expected(channel);
     check_expected(freq);
 }
 
 void __wrap_psg_noteOff(u8 channel)
 {
+    if (disableChecks)
+        return;
     check_expected(channel);
 }
 
 void __wrap_psg_attenuation(u8 channel, u8 attenuation)
 {
+    if (disableChecks)
+        return;
     check_expected(channel);
     check_expected(attenuation);
 }
 
 void __wrap_psg_frequency(u8 channel, u16 freq)
 {
+    if (disableChecks)
+        return;
     check_expected(channel);
     check_expected(freq);
 }
 
 void __wrap_YM2612_writeReg(const u16 part, const u8 reg, const u8 data)
 {
+    if (disableChecks)
+        return;
     check_expected(part);
     check_expected(reg);
     check_expected(data);
@@ -351,12 +387,16 @@ void __wrap_VDP_setBackgroundColor(u8 index)
 
 void __wrap_PSG_setEnvelope(u8 channel, u8 value)
 {
+    if (disableChecks)
+        return;
     check_expected(channel);
     check_expected(value);
 }
 
 void __wrap_PSG_setFrequency(u8 channel, u16 value)
 {
+    if (disableChecks)
+        return;
     check_expected(channel);
     check_expected(value);
 }

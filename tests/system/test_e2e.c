@@ -20,11 +20,9 @@ static int test_e2e_setup(void** state)
 {
     comm_resetCounts();
     comm_init();
-    const u16 times = 187;
-    expect_any_count(__wrap_YM2612_writeReg, part, times);
-    expect_any_count(__wrap_YM2612_writeReg, reg, times);
-    expect_any_count(__wrap_YM2612_writeReg, data, times);
+    wraps_disable_checks();
     midi_init(M_BANK_0, P_BANK_0);
+    wraps_enable_checks();
     return 0;
 }
 
