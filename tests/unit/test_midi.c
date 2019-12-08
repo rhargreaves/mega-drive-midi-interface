@@ -30,11 +30,6 @@ int test_midi_setup(UNUSED void** state)
 
     expect_any(__wrap_synth_init, defaultPreset);
     midi_init(M_BANK_0, P_BANK_0);
-    // for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
-    //     expect_synth_pitch_any();
-
-    //     __real_midi_pitchBend(chan, 0);
-    // }
     return 0;
 }
 
