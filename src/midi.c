@@ -389,11 +389,11 @@ ControlChange* midi_lastUnknownCC(void)
 static void allNotesOff(u8 chan)
 {
     for (u8 i = 0; i < DEV_CHANS; i++) {
-        DeviceChannel* state = &deviceChannels[i];
-        if (state->midiChannel == chan) {
-            state->noteOn = false;
-            state->pitch = 0;
-            state->ops->allNotesOff(state->number);
+        DeviceChannel* devChan = &deviceChannels[i];
+        if (devChan->midiChannel == chan) {
+            devChan->noteOn = false;
+            devChan->pitch = 0;
+            devChan->ops->allNotesOff(devChan->number);
         }
     }
 }
