@@ -65,8 +65,6 @@ static bool dynamicMode;
 static bool disableNonGeneralMidiCCs;
 
 static void allNotesOff(u8 chan);
-static void pooledNoteOn(u8 chan, u8 pitch, u8 velocity);
-static void pooledNoteOff(u8 chan, u8 pitch);
 static void setPolyphonic(bool state);
 static void cc(u8 chan, u8 controller, u8 value);
 static void generalMidiReset(void);
@@ -258,8 +256,10 @@ static void dynamicNoteOn(u8 chan, u8 pitch, u8 velocity)
     ChannelState* state = dynamicMode ? findFreeChannel(chan)
                                       : deviceChannelByMidiChannel(chan);
     if (state == NULL) {
+        overflow = true;
         return;
     }
+    overflow = false;
     state->midiChannel = chan;
     MidiChannel* midiChannel = &midiChannels[chan];
     midi_fm_percussive(
@@ -279,42 +279,27 @@ void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
         midi_noteOff(chan, pitch);
         return;
     }
-    if (polyphonic) {
-        pooledNoteOn(chan, pitch, velocity);
-    } else {
-        dynamicNoteOn(chan, pitch, velocity);
-    }
+    dynamicNoteOn(chan, pitch, velocity);
 }
 
 static void dynamicNoteOff(u8 chan, u8 pitch)
 {
-    ChannelState* state = findChannelPlayingNote(chan, pitch);
-    if (state == NULL) {
-        return;
+    ChannelState* state;
+    while ((state = findChannelPlayingNote(chan, pitch)) != NULL) {
+        state->noteOn = false;
+        state->pitch = 0;
+        state->ops->noteOff(state->deviceChannel, pitch);
     }
-    state->noteOn = false;
-    state->pitch = 0;
-    state->ops->noteOff(state->deviceChannel, pitch);
 }
 
 void midi_noteOff(u8 chan, u8 pitch)
 {
-    if (polyphonic) {
-        pooledNoteOff(chan, pitch);
-    } else {
-        dynamicNoteOff(chan, pitch);
-    }
+    dynamicNoteOff(chan, pitch);
 }
 
 void midi_cc(u8 chan, u8 controller, u8 value)
 {
-    if (polyphonic) {
-        for (u8 c = 0; c <= MAX_FM_CHAN; c++) {
-            cc(c, controller, value);
-        }
-    } else {
-        cc(chan, controller, value);
-    }
+    cc(chan, controller, value);
 }
 
 bool midi_overflow(void)
@@ -365,8 +350,7 @@ static bool isIgnoringNonGeneralMidiCCs(void)
 
 static void cc(u8 chan, u8 controller, u8 value)
 {
-    ChannelState* state = deviceChannelByMidiChannel(chan);
-    u8 devChan = state == NULL ? chan : state->deviceChannel;
+
     switch (controller) {
     case CC_VOLUME:
         channelVolume(chan, value);
@@ -384,146 +368,163 @@ static void cc(u8 chan, u8 controller, u8 value)
     case CC_RESET_ALL_CONTROLLERS:
         resetAllControllers(chan);
         break;
-    case CC_GENMDM_FM_ALGORITHM:
-        if (isIgnoringNonGeneralMidiCCs())
-            break;
-        synth_algorithm(devChan, RANGE(value, 8));
-        break;
-    case CC_GENMDM_FM_FEEDBACK:
-        if (isIgnoringNonGeneralMidiCCs())
-            break;
-        synth_feedback(devChan, RANGE(value, 8));
-        break;
-    case CC_GENMDM_TOTAL_LEVEL_OP1:
-    case CC_GENMDM_TOTAL_LEVEL_OP2:
-    case CC_GENMDM_TOTAL_LEVEL_OP3:
-    case CC_GENMDM_TOTAL_LEVEL_OP4:
-        if (isIgnoringNonGeneralMidiCCs())
-            break;
-        synth_operatorTotalLevel(
-            devChan, controller - CC_GENMDM_TOTAL_LEVEL_OP1, value);
-        break;
-    case CC_GENMDM_MULTIPLE_OP1:
-    case CC_GENMDM_MULTIPLE_OP2:
-    case CC_GENMDM_MULTIPLE_OP3:
-    case CC_GENMDM_MULTIPLE_OP4:
-        if (isIgnoringNonGeneralMidiCCs())
-            break;
-        synth_operatorMultiple(
-            devChan, controller - CC_GENMDM_MULTIPLE_OP1, RANGE(value, 16));
-        break;
-    case CC_GENMDM_DETUNE_OP1:
-    case CC_GENMDM_DETUNE_OP2:
-    case CC_GENMDM_DETUNE_OP3:
-    case CC_GENMDM_DETUNE_OP4:
-        if (isIgnoringNonGeneralMidiCCs())
-            break;
-        synth_operatorDetune(
-            devChan, controller - CC_GENMDM_DETUNE_OP1, RANGE(value, 8));
-        break;
-    case CC_GENMDM_RATE_SCALING_OP1:
-    case CC_GENMDM_RATE_SCALING_OP2:
-    case CC_GENMDM_RATE_SCALING_OP3:
-    case CC_GENMDM_RATE_SCALING_OP4:
-        if (isIgnoringNonGeneralMidiCCs())
-            break;
-        synth_operatorRateScaling(
-            devChan, controller - CC_GENMDM_RATE_SCALING_OP1, RANGE(value, 4));
-        break;
-    case CC_GENMDM_ATTACK_RATE_OP1:
-    case CC_GENMDM_ATTACK_RATE_OP2:
-    case CC_GENMDM_ATTACK_RATE_OP3:
-    case CC_GENMDM_ATTACK_RATE_OP4:
-        if (isIgnoringNonGeneralMidiCCs())
-            break;
-        synth_operatorAttackRate(
-            devChan, controller - CC_GENMDM_ATTACK_RATE_OP1, RANGE(value, 32));
-        break;
-    case CC_GENMDM_FIRST_DECAY_RATE_OP1:
-    case CC_GENMDM_FIRST_DECAY_RATE_OP2:
-    case CC_GENMDM_FIRST_DECAY_RATE_OP3:
-    case CC_GENMDM_FIRST_DECAY_RATE_OP4:
-        if (isIgnoringNonGeneralMidiCCs())
-            break;
-        synth_operatorFirstDecayRate(devChan,
-            controller - CC_GENMDM_FIRST_DECAY_RATE_OP1, RANGE(value, 32));
-        break;
-    case CC_GENMDM_SECOND_DECAY_RATE_OP1:
-    case CC_GENMDM_SECOND_DECAY_RATE_OP2:
-    case CC_GENMDM_SECOND_DECAY_RATE_OP3:
-    case CC_GENMDM_SECOND_DECAY_RATE_OP4:
-        if (isIgnoringNonGeneralMidiCCs())
-            break;
-        synth_operatorSecondDecayRate(devChan,
-            controller - CC_GENMDM_SECOND_DECAY_RATE_OP1, RANGE(value, 16));
-        break;
-    case CC_GENMDM_SECOND_AMPLITUDE_OP1:
-    case CC_GENMDM_SECOND_AMPLITUDE_OP2:
-    case CC_GENMDM_SECOND_AMPLITUDE_OP3:
-    case CC_GENMDM_SECOND_AMPLITUDE_OP4:
-        if (isIgnoringNonGeneralMidiCCs())
-            break;
-        synth_operatorSecondaryAmplitude(devChan,
-            controller - CC_GENMDM_SECOND_AMPLITUDE_OP1, RANGE(value, 16));
-        break;
-    case CC_GENMDM_RELEASE_RATE_OP1:
-    case CC_GENMDM_RELEASE_RATE_OP2:
-    case CC_GENMDM_RELEASE_RATE_OP3:
-    case CC_GENMDM_RELEASE_RATE_OP4:
-        if (isIgnoringNonGeneralMidiCCs())
-            break;
-        synth_operatorReleaseRate(
-            devChan, controller - CC_GENMDM_RELEASE_RATE_OP1, RANGE(value, 16));
-        break;
-    case CC_GENMDM_AMPLITUDE_MODULATION_OP1:
-    case CC_GENMDM_AMPLITUDE_MODULATION_OP2:
-    case CC_GENMDM_AMPLITUDE_MODULATION_OP3:
-    case CC_GENMDM_AMPLITUDE_MODULATION_OP4:
-        if (isIgnoringNonGeneralMidiCCs())
-            break;
-        synth_operatorAmplitudeModulation(devChan,
-            controller - CC_GENMDM_AMPLITUDE_MODULATION_OP1, RANGE(value, 2));
-        break;
-    case CC_GENMDM_SSG_EG_OP1:
-    case CC_GENMDM_SSG_EG_OP2:
-    case CC_GENMDM_SSG_EG_OP3:
-    case CC_GENMDM_SSG_EG_OP4:
-        if (isIgnoringNonGeneralMidiCCs())
-            break;
-        synth_operatorSsgEg(
-            devChan, controller - CC_GENMDM_SSG_EG_OP1, RANGE(value, 16));
-        break;
-        if (isIgnoringNonGeneralMidiCCs())
-            break;
-    case CC_GENMDM_GLOBAL_LFO_ENABLE:
-        synth_enableLfo(RANGE(value, 2));
-        break;
-        if (isIgnoringNonGeneralMidiCCs())
-            break;
-    case CC_GENMDM_GLOBAL_LFO_FREQUENCY:
-        if (isIgnoringNonGeneralMidiCCs())
-            break;
-        synth_globalLfoFrequency(RANGE(value, 8));
-        break;
-    case CC_GENMDM_AMS:
-        if (isIgnoringNonGeneralMidiCCs())
-            break;
-        synth_ams(devChan, RANGE(value, 4));
-        break;
-    case CC_GENMDM_FMS:
-        if (isIgnoringNonGeneralMidiCCs())
-            break;
-        synth_fms(devChan, RANGE(value, 8));
-        break;
-    case CC_GENMDM_STEREO:
-        if (isIgnoringNonGeneralMidiCCs())
-            break;
-        synth_stereo(devChan, RANGE(value, 4));
-        break;
-    default:
-        lastUnknownControlChange.controller = controller;
-        lastUnknownControlChange.value = value;
-        break;
+    default: {
+        for (u8 i = 0; i < DEV_CHANS; i++) {
+            ChannelState* state = &channelState[i];
+            if (state->midiChannel == chan) {
+                u8 devChan = state->deviceChannel;
+                switch (controller) {
+                case CC_GENMDM_FM_ALGORITHM:
+                    if (isIgnoringNonGeneralMidiCCs())
+                        break;
+                    synth_algorithm(devChan, RANGE(value, 8));
+                    break;
+                case CC_GENMDM_FM_FEEDBACK:
+                    if (isIgnoringNonGeneralMidiCCs())
+                        break;
+                    synth_feedback(devChan, RANGE(value, 8));
+                    break;
+                case CC_GENMDM_TOTAL_LEVEL_OP1:
+                case CC_GENMDM_TOTAL_LEVEL_OP2:
+                case CC_GENMDM_TOTAL_LEVEL_OP3:
+                case CC_GENMDM_TOTAL_LEVEL_OP4:
+                    if (isIgnoringNonGeneralMidiCCs())
+                        break;
+                    synth_operatorTotalLevel(
+                        devChan, controller - CC_GENMDM_TOTAL_LEVEL_OP1, value);
+                    break;
+                case CC_GENMDM_MULTIPLE_OP1:
+                case CC_GENMDM_MULTIPLE_OP2:
+                case CC_GENMDM_MULTIPLE_OP3:
+                case CC_GENMDM_MULTIPLE_OP4:
+                    if (isIgnoringNonGeneralMidiCCs())
+                        break;
+                    synth_operatorMultiple(devChan,
+                        controller - CC_GENMDM_MULTIPLE_OP1, RANGE(value, 16));
+                    break;
+                case CC_GENMDM_DETUNE_OP1:
+                case CC_GENMDM_DETUNE_OP2:
+                case CC_GENMDM_DETUNE_OP3:
+                case CC_GENMDM_DETUNE_OP4:
+                    if (isIgnoringNonGeneralMidiCCs())
+                        break;
+                    synth_operatorDetune(devChan,
+                        controller - CC_GENMDM_DETUNE_OP1, RANGE(value, 8));
+                    break;
+                case CC_GENMDM_RATE_SCALING_OP1:
+                case CC_GENMDM_RATE_SCALING_OP2:
+                case CC_GENMDM_RATE_SCALING_OP3:
+                case CC_GENMDM_RATE_SCALING_OP4:
+                    if (isIgnoringNonGeneralMidiCCs())
+                        break;
+                    synth_operatorRateScaling(devChan,
+                        controller - CC_GENMDM_RATE_SCALING_OP1,
+                        RANGE(value, 4));
+                    break;
+                case CC_GENMDM_ATTACK_RATE_OP1:
+                case CC_GENMDM_ATTACK_RATE_OP2:
+                case CC_GENMDM_ATTACK_RATE_OP3:
+                case CC_GENMDM_ATTACK_RATE_OP4:
+                    if (isIgnoringNonGeneralMidiCCs())
+                        break;
+                    synth_operatorAttackRate(devChan,
+                        controller - CC_GENMDM_ATTACK_RATE_OP1,
+                        RANGE(value, 32));
+                    break;
+                case CC_GENMDM_FIRST_DECAY_RATE_OP1:
+                case CC_GENMDM_FIRST_DECAY_RATE_OP2:
+                case CC_GENMDM_FIRST_DECAY_RATE_OP3:
+                case CC_GENMDM_FIRST_DECAY_RATE_OP4:
+                    if (isIgnoringNonGeneralMidiCCs())
+                        break;
+                    synth_operatorFirstDecayRate(devChan,
+                        controller - CC_GENMDM_FIRST_DECAY_RATE_OP1,
+                        RANGE(value, 32));
+                    break;
+                case CC_GENMDM_SECOND_DECAY_RATE_OP1:
+                case CC_GENMDM_SECOND_DECAY_RATE_OP2:
+                case CC_GENMDM_SECOND_DECAY_RATE_OP3:
+                case CC_GENMDM_SECOND_DECAY_RATE_OP4:
+                    if (isIgnoringNonGeneralMidiCCs())
+                        break;
+                    synth_operatorSecondDecayRate(devChan,
+                        controller - CC_GENMDM_SECOND_DECAY_RATE_OP1,
+                        RANGE(value, 16));
+                    break;
+                case CC_GENMDM_SECOND_AMPLITUDE_OP1:
+                case CC_GENMDM_SECOND_AMPLITUDE_OP2:
+                case CC_GENMDM_SECOND_AMPLITUDE_OP3:
+                case CC_GENMDM_SECOND_AMPLITUDE_OP4:
+                    if (isIgnoringNonGeneralMidiCCs())
+                        break;
+                    synth_operatorSecondaryAmplitude(devChan,
+                        controller - CC_GENMDM_SECOND_AMPLITUDE_OP1,
+                        RANGE(value, 16));
+                    break;
+                case CC_GENMDM_RELEASE_RATE_OP1:
+                case CC_GENMDM_RELEASE_RATE_OP2:
+                case CC_GENMDM_RELEASE_RATE_OP3:
+                case CC_GENMDM_RELEASE_RATE_OP4:
+                    if (isIgnoringNonGeneralMidiCCs())
+                        break;
+                    synth_operatorReleaseRate(devChan,
+                        controller - CC_GENMDM_RELEASE_RATE_OP1,
+                        RANGE(value, 16));
+                    break;
+                case CC_GENMDM_AMPLITUDE_MODULATION_OP1:
+                case CC_GENMDM_AMPLITUDE_MODULATION_OP2:
+                case CC_GENMDM_AMPLITUDE_MODULATION_OP3:
+                case CC_GENMDM_AMPLITUDE_MODULATION_OP4:
+                    if (isIgnoringNonGeneralMidiCCs())
+                        break;
+                    synth_operatorAmplitudeModulation(devChan,
+                        controller - CC_GENMDM_AMPLITUDE_MODULATION_OP1,
+                        RANGE(value, 2));
+                    break;
+                case CC_GENMDM_SSG_EG_OP1:
+                case CC_GENMDM_SSG_EG_OP2:
+                case CC_GENMDM_SSG_EG_OP3:
+                case CC_GENMDM_SSG_EG_OP4:
+                    if (isIgnoringNonGeneralMidiCCs())
+                        break;
+                    synth_operatorSsgEg(devChan,
+                        controller - CC_GENMDM_SSG_EG_OP1, RANGE(value, 16));
+                    break;
+                    if (isIgnoringNonGeneralMidiCCs())
+                        break;
+                case CC_GENMDM_GLOBAL_LFO_ENABLE:
+                    synth_enableLfo(RANGE(value, 2));
+                    break;
+                    if (isIgnoringNonGeneralMidiCCs())
+                        break;
+                case CC_GENMDM_GLOBAL_LFO_FREQUENCY:
+                    if (isIgnoringNonGeneralMidiCCs())
+                        break;
+                    synth_globalLfoFrequency(RANGE(value, 8));
+                    break;
+                case CC_GENMDM_AMS:
+                    if (isIgnoringNonGeneralMidiCCs())
+                        break;
+                    synth_ams(devChan, RANGE(value, 4));
+                    break;
+                case CC_GENMDM_FMS:
+                    if (isIgnoringNonGeneralMidiCCs())
+                        break;
+                    synth_fms(devChan, RANGE(value, 8));
+                    break;
+                case CC_GENMDM_STEREO:
+                    if (isIgnoringNonGeneralMidiCCs())
+                        break;
+                    synth_stereo(devChan, RANGE(value, 4));
+                    break;
+                default:
+                    lastUnknownControlChange.controller = controller;
+                    lastUnknownControlChange.value = value;
+                    break;
+                }
+            }
+        }
+    }
     }
 }
 
@@ -628,31 +629,7 @@ static void allNotesOff(u8 chan)
 static void setPolyphonic(bool state)
 {
     polyphonic = state;
-}
-
-static void pooledNoteOn(u8 chan, u8 pitch, u8 velocity)
-{
-    for (u8 c = 0; c < MAX_FM_CHANS; c++) {
-        ChannelMapping* mapping = channelMapping(c);
-        if (polyphonicPitches[c] == 0) {
-            polyphonicPitches[c] = pitch;
-            mapping->ops->noteOn(mapping->channel, pitch, velocity);
-            overflow = false;
-            return;
-        }
-    }
-    overflow = true;
-}
-
-static void pooledNoteOff(u8 chan, u8 pitch)
-{
-    for (u8 c = 0; c < MAX_FM_CHANS; c++) {
-        ChannelMapping* mapping = channelMapping(c);
-        if (polyphonicPitches[c] == pitch) {
-            polyphonicPitches[c] = 0;
-            mapping->ops->noteOff(mapping->channel, pitch);
-        }
-    }
+    setDynamicMode(state);
 }
 
 Timing* midi_timing(void)
