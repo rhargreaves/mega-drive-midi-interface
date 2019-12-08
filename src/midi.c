@@ -216,6 +216,17 @@ static DeviceChannel* deviceChannelByMidiChannel(u8 midiChannel)
     return NULL;
 }
 
+static void updateDeviceChannel(DeviceChannel* devChan)
+{
+    MidiChannel* midiChannel = &midiChannels[devChan->midiChannel];
+    midi_fm_percussive(devChan->number,
+        devChan->midiChannel == GENERAL_MIDI_PERCUSSION_CHANNEL);
+    updateVolume(midiChannel, devChan);
+    updatePan(midiChannel, devChan);
+    updateProgram(midiChannel, devChan);
+    updatePitchBend(midiChannel, devChan);
+}
+
 static void noteOn(u8 midiChan, u8 pitch, u8 velocity)
 {
     if (tooManyPercussiveNotes(midiChan)) {
@@ -229,13 +240,7 @@ static void noteOn(u8 midiChan, u8 pitch, u8 velocity)
     }
     overflow = false;
     devChan->midiChannel = midiChan;
-    MidiChannel* midiChannel = &midiChannels[midiChan];
-    midi_fm_percussive(
-        devChan->number, midiChan == GENERAL_MIDI_PERCUSSION_CHANNEL);
-    updateVolume(midiChannel, devChan);
-    updatePan(midiChannel, devChan);
-    updateProgram(midiChannel, devChan);
-    updatePitchBend(midiChannel, devChan);
+    updateDeviceChannel(devChan);
     devChan->pitch = pitch;
     devChan->noteOn = true;
     devChan->ops->noteOn(devChan->number, pitch, velocity);
