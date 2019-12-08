@@ -51,6 +51,8 @@ int main(void)
         midi_test(test_midi_does_not_trigger_synth_note_on_out_of_bound_values),
         midi_test(test_midi_triggers_synth_note_on_2),
         midi_test(test_midi_triggers_synth_note_off),
+        midi_test(
+            test_midi_triggers_synth_note_off_when_note_on_has_zero_velocity),
         midi_test(test_midi_triggers_psg_note_on),
         midi_test(test_midi_triggers_psg_note_on_with_velocity),
         midi_test(

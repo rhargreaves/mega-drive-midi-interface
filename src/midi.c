@@ -279,6 +279,10 @@ static void dynamicNoteOn(u8 chan, u8 pitch, u8 velocity)
 
 void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
 {
+    if (velocity == 0) {
+        midi_noteOff(chan, pitch);
+        return;
+    }
     if (polyphonic) {
         pooledNoteOn(chan, pitch, velocity);
     } else {

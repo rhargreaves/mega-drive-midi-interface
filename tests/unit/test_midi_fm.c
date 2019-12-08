@@ -102,6 +102,24 @@ static void test_midi_triggers_synth_note_off(UNUSED void** state)
     }
 }
 
+static void test_midi_triggers_synth_note_off_when_note_on_has_zero_velocity(
+    UNUSED void** state)
+{
+    for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
+        print_message("Chan %d Note On\n", chan);
+        expect_synth_pitch(chan, 4, 653);
+        expect_synth_volume_any();
+        expect_value(__wrap_synth_noteOn, channel, chan);
+
+        __real_midi_noteOn(chan, 60, 127);
+
+        print_message("Chan %d Note Off\n", chan);
+        expect_value(__wrap_synth_noteOff, channel, chan);
+
+        __real_midi_noteOn(chan, 60, 0);
+    }
+}
+
 static void test_midi_triggers_synth_note_on_2(UNUSED void** state)
 {
     expect_synth_pitch(0, 6, 1164);
