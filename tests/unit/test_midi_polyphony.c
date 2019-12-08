@@ -171,9 +171,12 @@ static void test_midi_sets_all_notes_off_in_polyphonic_mode(UNUSED void** state)
 
     __real_midi_noteOn(0, B, 127);
 
-    for (u8 c = 0; c <= 1; c++) {
-        expect_value(__wrap_synth_noteOff, channel, c);
-    }
+    expect_value(__wrap_synth_noteOff, channel, 0);
+    expect_value(__wrap_synth_noteOff, channel, 1);
+    expect_value(__wrap_synth_noteOff, channel, 2);
+    expect_value(__wrap_synth_noteOff, channel, 3);
+    expect_value(__wrap_synth_noteOff, channel, 4);
+    expect_value(__wrap_synth_noteOff, channel, 5);
 
     __real_midi_cc(0, CC_ALL_NOTES_OFF, 0);
 
@@ -192,4 +195,16 @@ static void test_midi_unsets_polyphonic_mode(UNUSED void** state)
     __real_midi_cc(0, CC_POLYPHONIC_MODE, 0);
 
     assert_false(__real_midi_dynamicMode());
+}
+
+static void test_midi_sets_all_channel_mappings_when_setting_polyphonic_mode(
+    UNUSED void** state)
+{
+    __real_midi_cc(0, CC_POLYPHONIC_MODE, 64);
+
+    ChannelState* mappings = __real_midi_dynamicModeMappings();
+    for (u8 i = 0; i <= DEV_CHAN_MAX_FM; i++) {
+        ChannelState mapping = mappings[i];
+        assert_int_equal(mapping.midiChannel, 0);
+    }
 }

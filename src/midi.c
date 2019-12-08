@@ -48,6 +48,7 @@ static void cc(u8 chan, u8 controller, u8 value);
 static void generalMidiReset(void);
 static void sendPong(void);
 static void setDynamicMode(bool enabled);
+static void dynamicRemapChannel(u8 midiChannel, u8 deviceChannel);
 
 static void initDeviceChannel(u8 devChan)
 {
@@ -317,6 +318,16 @@ static bool isIgnoringNonGeneralMidiCCs(void)
     return disableNonGeneralMidiCCs;
 }
 
+static void setPolyphonicMode(bool enable)
+{
+    setDynamicMode(enable);
+    if (enable) {
+        for (u8 chan = 0; chan <= DEV_CHAN_MAX_FM; chan++) {
+            dynamicRemapChannel(0, chan);
+        }
+    }
+}
+
 static void cc(u8 chan, u8 controller, u8 value)
 {
 
@@ -332,7 +343,7 @@ static void cc(u8 chan, u8 controller, u8 value)
         allNotesOff(chan);
         break;
     case CC_POLYPHONIC_MODE:
-        setDynamicMode(RANGE(value, 2) != 0);
+        setPolyphonicMode(RANGE(value, 2) != 0);
         break;
     case CC_RESET_ALL_CONTROLLERS:
         resetAllControllers(chan);
@@ -658,11 +669,11 @@ static void dynamicRemapChannel(u8 midiChannel, u8 deviceChannel)
     const u8 SYSEX_UNASSIGNED_DEVICE_CHANNEL = 0x7F;
     const u8 SYSEX_UNASSIGNED_MIDI_CHANNEL = 0x7F;
 
-    ChannelState* assignedChan = deviceChannelByMidiChannel(midiChannel);
-    if (assignedChan != NULL) {
-        assignedChan->midiChannel = DEFAULT_MIDI_CHANNEL;
-    }
     if (deviceChannel == SYSEX_UNASSIGNED_DEVICE_CHANNEL) {
+        ChannelState* assignedChan = deviceChannelByMidiChannel(midiChannel);
+        if (assignedChan != NULL) {
+            assignedChan->midiChannel = DEFAULT_MIDI_CHANNEL;
+        }
         return;
     }
     ChannelState* chan = &channelState[deviceChannel];

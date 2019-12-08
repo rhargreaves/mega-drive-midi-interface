@@ -176,20 +176,27 @@ static void test_general_midi_reset_sysex_stops_all_notes(void** state)
     midi_receiver_read();
 }
 
-static void test_remap_midi_channel_1_to_psg_channel_1()
+static void remapChannel(u8 midiChannel, u8 deviceChannel)
 {
     const u8 SYSEX_REMAP_COMMAND_ID = 0x00;
-    const u8 SYSEX_REMAP_MIDI_CHANNEL = 0x00;
-    const u8 SYSEX_REMAP_DESTINATION_FIRST_PSG_CHANNEL = 0x06;
-
-    const u8 sysExRemapSequence[] = { SYSEX_START,
-        SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
-        SYSEX_UNUSED_MANU_ID, SYSEX_REMAP_COMMAND_ID, SYSEX_REMAP_MIDI_CHANNEL,
-        SYSEX_REMAP_DESTINATION_FIRST_PSG_CHANNEL, SYSEX_END };
+    u8 sysExRemapSequence[] = { SYSEX_START, SYSEX_EXTENDED_MANU_ID_SECTION,
+        SYSEX_UNUSED_EUROPEAN_SECTION, SYSEX_UNUSED_MANU_ID,
+        SYSEX_REMAP_COMMAND_ID, midiChannel, deviceChannel, SYSEX_END };
     for (int i = 0; i < sizeof(sysExRemapSequence); i++) {
         stub_usb_receive_byte(sysExRemapSequence[i]);
     }
+}
 
+static void test_remap_midi_channel_1_to_psg_channel_1()
+{
+    const u8 MIDI_CHANNEL_1 = 0;
+    const u8 MIDI_CHANNEL_UNASSIGNED = 0x7F;
+    const u8 PSG_TONE_1 = 0x06;
+    const u8 FM_CHAN_1 = 0;
+
+    remapChannel(MIDI_CHANNEL_UNASSIGNED, FM_CHAN_1);
+    midi_receiver_read();
+    remapChannel(MIDI_CHANNEL_1, PSG_TONE_1);
     midi_receiver_read();
 
     const u8 noteOnStatus = 0x90;

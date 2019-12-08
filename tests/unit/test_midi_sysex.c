@@ -1,5 +1,14 @@
 #include "test_midi.h"
 
+static void remapChannel(u8 midiChannel, u8 deviceChannel)
+{
+    const u8 sequence[] = { SYSEX_EXTENDED_MANU_ID_SECTION,
+        SYSEX_UNUSED_EUROPEAN_SECTION, SYSEX_UNUSED_MANU_ID,
+        SYSEX_REMAP_COMMAND_ID, midiChannel, deviceChannel };
+
+    __real_midi_sysex(sequence, sizeof(sequence));
+}
+
 static void test_midi_sysex_sends_all_notes_off(UNUSED void** state)
 {
     const u8 sysExGeneralMidiResetSequence[] = { 0x7E, 0x7F, 0x09, 0x01 };
@@ -42,15 +51,13 @@ static void test_midi_sysex_ignores_unknown_sysex(UNUSED void** state)
 
 static void test_midi_sysex_remaps_midi_channel_to_psg(UNUSED void** state)
 {
-    const u8 SYSEX_REMAP_MIDI_CHANNEL = 0x00;
-    const u8 SYSEX_REMAP_DESTINATION_FIRST_PSG_CHANNEL = 0x06;
+    const u8 FM_CHAN_1 = 0;
+    const u8 MIDI_CHAN_1 = 0;
+    const u8 UNASSIGNED_MIDI = 0x7F;
+    const u8 PSG_TONE_1 = 6;
 
-    const u8 sequence[] = { SYSEX_EXTENDED_MANU_ID_SECTION,
-        SYSEX_UNUSED_EUROPEAN_SECTION, SYSEX_UNUSED_MANU_ID,
-        SYSEX_REMAP_COMMAND_ID, SYSEX_REMAP_MIDI_CHANNEL,
-        SYSEX_REMAP_DESTINATION_FIRST_PSG_CHANNEL };
-
-    __real_midi_sysex(sequence, sizeof(sequence));
+    remapChannel(UNASSIGNED_MIDI, FM_CHAN_1);
+    remapChannel(MIDI_CHAN_1, PSG_TONE_1);
 
     expect_value(__wrap_psg_frequency, channel, 0);
     expect_any(__wrap_psg_frequency, freq);
@@ -62,15 +69,13 @@ static void test_midi_sysex_remaps_midi_channel_to_psg(UNUSED void** state)
 
 static void test_midi_sysex_remaps_midi_channel_to_fm(UNUSED void** state)
 {
-    const u8 SYSEX_REMAP_MIDI_CHANNEL = 0x00;
-    const u8 SYSEX_REMAP_DESTINATION_SECOND_FM_CHANNEL = 0x01;
+    const u8 FM_CHAN_2 = 1;
+    const u8 MIDI_CHAN_1 = 0;
+    const u8 UNASSIGNED_MIDI = 0x7F;
+    const u8 FM_CHAN_1 = 0;
 
-    const u8 sequence[] = { SYSEX_EXTENDED_MANU_ID_SECTION,
-        SYSEX_UNUSED_EUROPEAN_SECTION, SYSEX_UNUSED_MANU_ID,
-        SYSEX_REMAP_COMMAND_ID, SYSEX_REMAP_MIDI_CHANNEL,
-        SYSEX_REMAP_DESTINATION_SECOND_FM_CHANNEL };
-
-    __real_midi_sysex(sequence, sizeof(sequence));
+    remapChannel(UNASSIGNED_MIDI, FM_CHAN_1);
+    remapChannel(MIDI_CHAN_1, FM_CHAN_2);
 
     expect_value(__wrap_synth_pitch, channel, 1);
     expect_any(__wrap_synth_pitch, octave);
@@ -83,15 +88,7 @@ static void test_midi_sysex_remaps_midi_channel_to_fm(UNUSED void** state)
 
 static void test_midi_sysex_unassigns_midi_channel(UNUSED void** state)
 {
-    const u8 SYSEX_REMAP_MIDI_CHANNEL = 0x00;
-    const u8 SYSEX_REMAP_UNASSIGN_CHANNEL = 0x7F;
-
-    const u8 sequence[]
-        = { SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
-              SYSEX_UNUSED_MANU_ID, SYSEX_REMAP_COMMAND_ID,
-              SYSEX_REMAP_MIDI_CHANNEL, SYSEX_REMAP_UNASSIGN_CHANNEL };
-
-    __real_midi_sysex(sequence, sizeof(sequence));
+    remapChannel(0, 0x7F);
 
     __real_midi_noteOn(0, 60, 127);
 }
