@@ -48,7 +48,6 @@ static void allNotesOff(u8 chan);
 static void generalMidiReset(void);
 static void sendPong(void);
 static void setDynamicMode(bool enabled);
-static void dynamicRemapChannel(u8 midiChannel, u8 deviceChannel);
 
 static void initDeviceChannel(u8 devChan)
 {
@@ -312,7 +311,7 @@ static void setPolyphonicMode(bool enable)
     setDynamicMode(enable);
     if (enable) {
         for (u8 chan = 0; chan <= DEV_CHAN_MAX_FM; chan++) {
-            dynamicRemapChannel(0, chan);
+            midi_remapChannel(0, chan);
         }
     }
 }
@@ -473,7 +472,7 @@ static void sendPong(void)
     midi_sender_send_sysex(pongSequence, sizeof(pongSequence));
 }
 
-static void dynamicRemapChannel(u8 midiChannel, u8 deviceChannel)
+void midi_remapChannel(u8 midiChannel, u8 deviceChannel)
 {
     const u8 SYSEX_UNASSIGNED_DEVICE_CHANNEL = 0x7F;
     const u8 SYSEX_UNASSIGNED_MIDI_CHANNEL = 0x7F;
@@ -489,11 +488,6 @@ static void dynamicRemapChannel(u8 midiChannel, u8 deviceChannel)
     chan->midiChannel = (midiChannel == SYSEX_UNASSIGNED_MIDI_CHANNEL)
         ? DEFAULT_MIDI_CHANNEL
         : midiChannel;
-}
-
-void midi_remapChannel(u8 midiChannel, u8 deviceChannel)
-{
-    dynamicRemapChannel(midiChannel, deviceChannel);
 }
 
 static void generalMidiReset(void)
