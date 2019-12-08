@@ -120,7 +120,6 @@ int main(void)
             test_midi_fm_note_on_percussion_channel_sets_percussion_preset),
         midi_test(test_midi_switching_program_retains_pan_setting),
         midi_test(test_midi_sets_genmdm_stereo_mode),
-        midi_test(test_midi_exposes_channel_mappings),
         midi_test(test_midi_sysex_enables_dynamic_channel_mode),
         midi_test(test_midi_sysex_disables_fm_parameter_CCs),
 

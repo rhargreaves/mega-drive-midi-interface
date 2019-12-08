@@ -18,13 +18,6 @@ static const u8 SYSEX_EXTENDED_MANU_ID_SECTION = 0x00;
 static const u8 SYSEX_UNUSED_EUROPEAN_SECTION = 0x22;
 static const u8 SYSEX_UNUSED_MANU_ID = 0x77;
 
-typedef struct ChannelMapping ChannelMapping;
-
-struct ChannelMapping {
-    const VTable* ops;
-    u8 channel;
-};
-
 static ChannelState channelState[DEV_CHANS];
 
 static const VTable PSG_VTable = { midi_psg_noteOn, midi_psg_noteOff,
@@ -34,16 +27,6 @@ static const VTable PSG_VTable = { midi_psg_noteOn, midi_psg_noteOff,
 static const VTable FM_VTable = { midi_fm_noteOn, midi_fm_noteOff,
     midi_fm_channelVolume, midi_fm_pitchBend, midi_fm_program,
     midi_fm_allNotesOff, midi_fm_pan };
-
-static const ChannelMapping DefaultChannelMappings[MIDI_CHANNELS]
-    = { { &FM_VTable, 0 }, { &FM_VTable, 1 }, { &FM_VTable, 2 },
-          { &FM_VTable, 3 }, { &FM_VTable, 4 }, { &FM_VTable, 5 },
-          { &PSG_VTable, 0 }, { &PSG_VTable, 1 }, { &PSG_VTable, 2 },
-          { &PSG_VTable, 3 }, { &PSG_VTable, 0 }, { &PSG_VTable, 1 },
-          { &PSG_VTable, 2 }, { &PSG_VTable, 0 }, { &PSG_VTable, 1 },
-          { &PSG_VTable, 2 } };
-
-static ChannelMapping ChannelMappings[MIDI_CHANNELS];
 
 typedef struct MidiChannel MidiChannel;
 
@@ -68,7 +51,6 @@ static void allNotesOff(u8 chan);
 static void setPolyphonic(bool state);
 static void cc(u8 chan, u8 controller, u8 value);
 static void generalMidiReset(void);
-static ChannelMapping* channelMapping(u8 midiChannel);
 static void sendPong(void);
 static void setDynamicMode(bool enabled);
 
@@ -118,7 +100,6 @@ static void resetAllState(void)
 void midi_init(const Channel** defaultPresets,
     const PercussionPreset** defaultPercussionPresets)
 {
-    memcpy(&ChannelMappings, DefaultChannelMappings, sizeof(ChannelMappings));
     overflow = false;
     polyphonic = false;
     dynamicMode = false;
@@ -126,11 +107,6 @@ void midi_init(const Channel** defaultPresets,
     resetAllState();
     midi_psg_init();
     midi_fm_init(defaultPresets, defaultPercussionPresets);
-}
-
-static ChannelMapping* channelMapping(u8 midiChannel)
-{
-    return &ChannelMappings[midiChannel];
 }
 
 static ChannelState* findChannelPlayingNote(u8 midiChannel, u8 pitch)
@@ -580,21 +556,10 @@ void midi_program(u8 chan, u8 program)
 {
     MidiChannel* midiChannel = &midiChannels[chan];
     midiChannel->program = program;
-    ChannelMapping* mapping = channelMapping(chan);
-    mapping->ops->program(mapping->channel, program);
-}
-
-void midi_mappings(u8* mappingDest)
-{
-    const u8 UNMAPPED = 0x7E;
-    for (u8 i = 0; i < MIDI_CHANNELS; i++) {
-        ChannelMapping* mapping = &ChannelMappings[i];
-        if (mapping->ops == &FM_VTable)
-            mappingDest[i] = mapping->channel;
-        else if (mapping->ops == &PSG_VTable)
-            mappingDest[i] = mapping->channel + MIN_PSG_CHAN;
-        else {
-            mappingDest[i] = UNMAPPED;
+    for (u8 i = 0; i < DEV_CHANS; i++) {
+        ChannelState* state = &channelState[i];
+        if (state->midiChannel == chan) {
+            updateProgram(midiChannel, state);
         }
     }
 }
