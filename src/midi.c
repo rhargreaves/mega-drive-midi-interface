@@ -227,13 +227,18 @@ static void updateDeviceChannel(DeviceChannel* devChan)
     updatePitchBend(midiChannel, devChan);
 }
 
+static DeviceChannel* findSuitableDeviceChannel(u8 midiChan)
+{
+    return dynamicMode ? findFreeChannel(midiChan)
+                       : deviceChannelByMidiChannel(midiChan);
+}
+
 static void noteOn(u8 midiChan, u8 pitch, u8 velocity)
 {
     if (tooManyPercussiveNotes(midiChan)) {
         return;
     }
-    DeviceChannel* devChan = dynamicMode ? findFreeChannel(midiChan)
-                                         : deviceChannelByMidiChannel(midiChan);
+    DeviceChannel* devChan = findSuitableDeviceChannel(midiChan);
     if (devChan == NULL) {
         overflow = true;
         return;
