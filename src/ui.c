@@ -52,7 +52,8 @@ static void printBaudRate(void);
 static void printCommMode(void);
 static void printCommBuffer(void);
 static void populateMappings(u8* midiChans);
-static void printDynamicMode(void);
+static void printDynamicModeIfNeeded(void);
+static void printDynamicModeStatus(bool enabled);
 static void printMappingsIfDirty(u8* midiChans);
 static void printMappings(void);
 
@@ -72,6 +73,7 @@ void ui_init(void)
     printBeat();
     printCommMode();
     printMappings();
+    printDynamicModeStatus(midi_dynamicMode());
 }
 
 void ui_vsync(void)
@@ -111,7 +113,7 @@ void ui_update(void)
     static u8 loadFrame = 0;
     if (++loadFrame == FRAMES_BEFORE_UPDATE_LOAD) {
         printLoad();
-        printDynamicMode();
+        printDynamicModeIfNeeded();
         loadFrame = 0;
     }
 
@@ -285,20 +287,20 @@ static void printLoad(void)
     VDP_setTextPalette(PAL0);
 }
 
-static void printDynamicMode(void)
+static void printDynamicModeStatus(bool enabled)
+{
+    VDP_setTextPalette(PAL2);
+    drawText(enabled ? "Dynamic" : "Static ", DYN_X, DYN_Y);
+    VDP_setTextPalette(PAL0);
+}
+
+static void printDynamicModeIfNeeded(void)
 {
     static bool lastDynamicModeStatus = false;
-    bool status = midi_dynamicMode();
-    if (lastDynamicModeStatus != status) {
-        VDP_setTextPalette(PAL2);
-        if (status) {
-            const char text[] = "Dyn";
-            drawText(text, DYN_X, DYN_Y);
-        } else {
-            clearText(DYN_X, DYN_Y, 3);
-        }
-        VDP_setTextPalette(PAL0);
-        lastDynamicModeStatus = status;
+    bool enabled = midi_dynamicMode();
+    if (lastDynamicModeStatus != enabled) {
+        printDynamicModeStatus(enabled);
+        lastDynamicModeStatus = enabled;
     }
 }
 
