@@ -37,17 +37,13 @@ struct MidiChannel {
 };
 
 static MidiChannel midiChannels[MIDI_CHANNELS];
-
-static u8 polyphonicPitches[MAX_FM_CHANS];
 static ControlChange lastUnknownControlChange;
 static Timing timing;
-static bool polyphonic;
 static bool overflow;
 static bool dynamicMode;
 static bool disableNonGeneralMidiCCs;
 
 static void allNotesOff(u8 chan);
-static void setPolyphonic(bool state);
 static void cc(u8 chan, u8 controller, u8 value);
 static void generalMidiReset(void);
 static void sendPong(void);
@@ -88,7 +84,6 @@ static void resetAllState(void)
 {
     memset(&timing, 0, sizeof(Timing));
     memset(&lastUnknownControlChange, 0, sizeof(ControlChange));
-    memset(&polyphonicPitches, 0, sizeof(polyphonicPitches));
     for (u8 i = 0; i < MIDI_CHANNELS; i++) {
         initMidiChannel(i);
     }
@@ -100,7 +95,6 @@ void midi_init(const Channel** defaultPresets,
     const PercussionPreset** defaultPercussionPresets)
 {
     overflow = false;
-    polyphonic = false;
     dynamicMode = false;
     disableNonGeneralMidiCCs = false;
     resetAllState();
@@ -338,7 +332,7 @@ static void cc(u8 chan, u8 controller, u8 value)
         allNotesOff(chan);
         break;
     case CC_POLYPHONIC_MODE:
-        setPolyphonic(RANGE(value, 2) != 0);
+        setDynamicMode(RANGE(value, 2) != 0);
         break;
     case CC_RESET_ALL_CONTROLLERS:
         resetAllControllers(chan);
@@ -515,11 +509,6 @@ void midi_pitchBend(u8 chan, u16 bend)
     }
 }
 
-bool midi_getPolyphonic(void)
-{
-    return polyphonic;
-}
-
 void midi_clock(void)
 {
     timing.clocks++;
@@ -588,12 +577,6 @@ static void allNotesOff(u8 chan)
             state->ops->allNotesOff(state->deviceChannel);
         }
     }
-}
-
-static void setPolyphonic(bool state)
-{
-    polyphonic = state;
-    setDynamicMode(state);
 }
 
 Timing* midi_timing(void)

@@ -184,12 +184,12 @@ static void test_midi_sets_polyphonic_mode(UNUSED void** state)
 {
     __real_midi_cc(0, CC_POLYPHONIC_MODE, 64);
 
-    assert_true(__real_midi_getPolyphonic());
+    assert_true(__real_midi_dynamicMode());
 }
 
 static void test_midi_unsets_polyphonic_mode(UNUSED void** state)
 {
     __real_midi_cc(0, CC_POLYPHONIC_MODE, 0);
 
-    assert_false(__real_midi_getPolyphonic());
+    assert_false(__real_midi_dynamicMode());
 }
