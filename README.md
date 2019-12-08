@@ -98,8 +98,6 @@ By default, MIDI channels are assigned in a one-to-one arrangement to FM or PSG 
 | 1 - 6    | YM2612 FM Channels 1 - 6    |
 | 7 - 9    | PSG Square Wave Tones 1 - 3 |
 | 10       | PSG Noise Channel           |
-| 11 - 13  | As 7 - 9                    |
-| 14 - 16  | As 7 - 9                    |
 
 You can also [re-configure the MIDI mappings](#system-exclusive) via SysEx
 
@@ -194,7 +192,7 @@ _Note: Documentation on the YM2612 frequently muddles the second and third opera
 | Name                     | Sequence            | Description                                                                                                                                                      |
 | ------------------------ | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | General MIDI Reset       | `7E 7F 09 01`       | Force all notes off on all channels                                                                                                                              |
-| Remap MIDI Channel       | `00 22 77 00 xx yy` | Remap MIDI channel _xx_ to device channel _yy_<br/>_xx_ = MIDI channel (0-15)<br/>_yy_ = FM (0-5), PSG (6-9), unassigned (127)                                   |
+| Remap MIDI Channel       | `00 22 77 00 xx yy` | Remap MIDI channel _xx_ to device channel _yy_<br/>_xx_ = MIDI channel (0-15), unassigned (127)<br/>_yy_ = FM (0-5), PSG (6-9), unassigned (127)                 |
 | Ping                     | `00 22 77 01`       | Interface responds with a _pong_ SysEx reply (`00 22 77 02`). Intended for use in measuring MIDI round-trip latency.                                             |
 | Dynamic Channelling Mode | `00 22 77 03 xx`    | Dynamically assigns MIDI channels to idle FM/PSG channels to allow for maximum polyphony and variation in instrumentation.<br/>_xx_ = Enable (01) / Disable (00) |
 | Non-General MIDI CCs     | `00 22 77 04 xx`    | Respond to non-General MIDI CCs.<br/>_xx_ = Enable (01) / Disable (00)                                                                                           |
