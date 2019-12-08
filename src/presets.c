@@ -257,7 +257,7 @@ static const Channel M_BANK_0_INST_126_APPLAUSE = { 5, 7, 3, 0, 0, 0, 0, { { 3, 
 
 static const Channel M_BANK_0_INST_127_GUNSHOT = { 5, 7, 3, 0, 1, 0, 0, { { 3, 3, 31, 0, 3, 0, 15, 17, 5, 4, 0 }, { 1, 0, 31, 0, 20, 0, 15, 20, 8, 0, 0 }, { 1, 0, 31, 0, 15, 0, 15, 31, 8, 0, 0 }, { 1, 0, 31, 0, 15, 0, 15, 16, 11, 0, 0 } } };
 
-const Channel* const M_BANK_0[128] = {
+const Channel* M_BANK_0[128] = {
     &M_BANK_0_INST_0_GRANDPIANO,
     &M_BANK_0_INST_1_BRIGHTPIANO,
     &M_BANK_0_INST_2_ELECTRICPIANO_ANIMATICS,
@@ -644,7 +644,7 @@ static const PercussionPreset P_BANK_0_INST_126 = { { 0, 0, 3, 0, 0, 0, 0, { { 0
 
 static const PercussionPreset P_BANK_0_INST_127 = { { 0, 0, 3, 0, 0, 0, 0, { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } } }, 0 };
 
-const PercussionPreset* const P_BANK_0[] = {
+const PercussionPreset* P_BANK_0[] = {
     &P_BANK_0_INST_0,
     &P_BANK_0_INST_1,
     &P_BANK_0_INST_2,

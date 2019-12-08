@@ -14,20 +14,22 @@ int test_midi_setup(UNUSED void** state)
             { 1, 2, 27, 1, 5, 1, 10, 5, 6, 8, 0 },
             { 6, 5, 27, 1, 9, 0, 3, 8, 7, 9, 0 } } };
 
-    const Channel P_BANK_0_INST_30_CASTANETS = { 4, 3, 3, 0, 0, 0, 0,
-        { { 9, 0, 31, 0, 11, 0, 15, 0, 15, 23, 0 },
-            { 1, 0, 31, 0, 19, 0, 15, 0, 15, 15, 0 },
-            { 4, 0, 31, 2, 20, 0, 15, 0, 15, 13, 0 },
-            { 2, 0, 31, 2, 20, 0, 15, 0, 15, 13, 0 } } };
+    const PercussionPreset P_BANK_0_INST_30_CASTANETS
+        = { { 4, 3, 3, 0, 0, 0, 0,
+                { { 9, 0, 31, 0, 11, 0, 15, 0, 15, 23, 0 },
+                    { 1, 0, 31, 0, 19, 0, 15, 0, 15, 15, 0 },
+                    { 4, 0, 31, 2, 20, 0, 15, 0, 15, 13, 0 },
+                    { 2, 0, 31, 2, 20, 0, 15, 0, 15, 13, 0 } } },
+              0 };
 
-    const Channel* const M_BANK_0[128]
+    const Channel* M_BANK_0[128]
         = { &M_BANK_0_INST_0_GRANDPIANO, &M_BANK_0_INST_1_BRIGHTPIANO };
 
-    Channel const* P_BANK_0[128];
+    PercussionPreset const* P_BANK_0[128];
     P_BANK_0[30] = &P_BANK_0_INST_30_CASTANETS;
 
     expect_any(__wrap_synth_init, defaultPreset);
-    midi_init((Channel**)M_BANK_0, (PercussionPreset**)P_BANK_0);
+    midi_init(M_BANK_0, P_BANK_0);
     // for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
     //     expect_synth_pitch_any();
 

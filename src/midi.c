@@ -121,8 +121,8 @@ static void resetAllState(void)
     setDynamicMode(dynamicMode);
 }
 
-void midi_init(
-    Channel** defaultPresets, PercussionPreset** defaultPercussionPresets)
+void midi_init(const Channel** defaultPresets,
+    const PercussionPreset** defaultPercussionPresets)
 {
     memcpy(&ChannelMappings, DefaultChannelMappings, sizeof(ChannelMappings));
     overflow = false;
