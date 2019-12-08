@@ -202,9 +202,9 @@ static void test_midi_sets_all_channel_mappings_when_setting_polyphonic_mode(
 {
     __real_midi_cc(0, CC_POLYPHONIC_MODE, 64);
 
-    ChannelState* mappings = __real_midi_dynamicModeMappings();
+    DeviceChannel* mappings = __real_midi_dynamicModeMappings();
     for (u8 i = 0; i <= DEV_CHAN_MAX_FM; i++) {
-        ChannelState mapping = mappings[i];
+        DeviceChannel mapping = mappings[i];
         assert_int_equal(mapping.midiChannel, 0);
     }
 }

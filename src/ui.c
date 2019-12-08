@@ -180,7 +180,7 @@ static void printActivity(void)
     }
 }
 
-static u8 midiChannelForUi(ChannelState* mappings, u8 index)
+static u8 midiChannelForUi(DeviceChannel* mappings, u8 index)
 {
     return (mappings[index].midiChannel) + 1;
 }
@@ -202,7 +202,7 @@ static void printTheMappingsIfNeeded(u8* midiChans)
 
 static void populateDynamicMappings(u8* midiChans)
 {
-    ChannelState* chans = midi_dynamicModeMappings();
+    DeviceChannel* chans = midi_dynamicModeMappings();
     for (u8 i = 0; i < DEV_CHANS; i++) {
         midiChans[i] = midiChannelForUi(chans, i);
     }

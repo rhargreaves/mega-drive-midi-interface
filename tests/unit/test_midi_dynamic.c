@@ -95,13 +95,13 @@ static void test_midi_reports_dynamic_mode_disabled(UNUSED void** state)
 
 static void test_midi_exposes_dynamic_mode_mappings(UNUSED void** state)
 {
-    ChannelState* mappings = __real_midi_dynamicModeMappings();
+    DeviceChannel* mappings = __real_midi_dynamicModeMappings();
     for (u8 i = DEV_CHAN_MIN_FM; i < DEV_CHAN_MAX_FM; i++) {
-        ChannelState* mapping = &mappings[i];
+        DeviceChannel* mapping = &mappings[i];
 
         print_message("Chan %d\n", i);
         assert_false(mapping->noteOn);
-        assert_int_equal(mapping->deviceChannel, i);
+        assert_int_equal(mapping->number, i);
     }
 }
 
@@ -202,9 +202,9 @@ static void test_midi_sysex_resets_dynamic_mode_state(UNUSED void** state)
     __real_midi_sysex(
         sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
 
-    ChannelState* mappings = __real_midi_dynamicModeMappings();
+    DeviceChannel* mappings = __real_midi_dynamicModeMappings();
     for (u8 i = 0; i < DEV_CHANS; i++) {
-        ChannelState* mapping = &mappings[i];
+        DeviceChannel* mapping = &mappings[i];
         assert_int_equal(mapping->midiChannel, DEFAULT_MIDI_CHANNEL);
         assert_int_equal(mapping->program, 0);
         assert_false(mapping->noteOn);
@@ -377,9 +377,9 @@ static void test_midi_dynamic_resets_mappings_on_cc_121(UNUSED void** state)
 
     __real_midi_cc(midiChannel, 121, 0);
 
-    ChannelState* channels = __real_midi_dynamicModeMappings();
+    DeviceChannel* channels = __real_midi_dynamicModeMappings();
     for (u16 i = DEV_CHAN_MIN_FM; i <= DEV_CHAN_MAX_FM; i++) {
-        ChannelState* chan = &channels[i];
+        DeviceChannel* chan = &channels[i];
         assert_int_equal(chan->midiChannel, DEFAULT_MIDI_CHANNEL);
     }
 }
@@ -402,9 +402,9 @@ static void test_midi_dynamic_all_notes_off_on_cc_123(UNUSED void** state)
 
     __real_midi_cc(midiChannel, 123, 0);
 
-    ChannelState* channels = __real_midi_dynamicModeMappings();
+    DeviceChannel* channels = __real_midi_dynamicModeMappings();
     for (u16 i = DEV_CHAN_MIN_FM; i <= DEV_CHAN_MAX_FM; i++) {
-        ChannelState* chan = &channels[i];
+        DeviceChannel* chan = &channels[i];
         assert_false(chan->noteOn);
     }
 }

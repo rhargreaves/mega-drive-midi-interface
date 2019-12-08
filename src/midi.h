@@ -107,10 +107,10 @@ struct VTable {
     void (*pan)(u8 chan, u8 pan);
 };
 
-typedef struct ChannelState ChannelState;
+typedef struct DeviceChannel DeviceChannel;
 
-struct ChannelState {
-    u8 deviceChannel;
+struct DeviceChannel {
+    u8 number;
     const VTable* ops;
     bool noteOn;
     u8 midiChannel;
@@ -136,5 +136,5 @@ void midi_program(u8 chan, u8 program);
 Timing* midi_timing(void);
 void midi_sysex(const u8* data, u16 length);
 bool midi_dynamicMode(void);
-ChannelState* midi_dynamicModeMappings(void);
+DeviceChannel* midi_dynamicModeMappings(void);
 void midi_remapChannel(u8 midiChannel, u8 deviceChannel);
