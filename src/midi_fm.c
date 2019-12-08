@@ -114,7 +114,7 @@ void midi_fm_pan(u8 chan, u8 pan)
 static void updatePan(u8 chan)
 {
     FmChannelState* state = &FmChannelStates[chan];
-    if (state->pan > 96) {
+    if (state->pan > 95) {
         synth_stereo(chan, STEREO_MODE_RIGHT);
     } else if (state->pan > 31) {
         synth_stereo(chan, STEREO_MODE_CENTRE);

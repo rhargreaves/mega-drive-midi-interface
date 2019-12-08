@@ -115,7 +115,7 @@ These are supported across FM and PSG channels:
 | CC  | Description           | Effect                                                                 | Values                                             |
 | --- | --------------------- | ---------------------------------------------------------------------- | -------------------------------------------------- |
 | 7   | Channel Volume        | Output Operator Total Level (FM),<br/>Attenuation (PSG)                | 0 - 127: [Logarithmic](src/midi.c#L24)             |
-| 10  | Panning               | Stereo                                                                 | 0 - 31: Left<br>32 - 96: Centre<br>97 - 127: Right |
+| 10  | Panning               | Stereo                                                                 | 0 - 31: Left<br>32 - 95: Centre<br>96 - 127: Right |
 | 120 | All Sounds Off        | Same as CC 123                                                         | Any                                                |
 | 121 | Reset All Controllers | Reset MIDI parameters and dynamic channel mappings (dynamic mode only) | Any                                                |
 | 123 | All Notes Off         | Key Off (FM),<br/>Max. Attenuation (PSG)                               | Any                                                |

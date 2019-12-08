@@ -143,7 +143,7 @@ static void test_midi_pan_sets_synth_stereo_mode_right(UNUSED void** state)
         expect_value(__wrap_synth_stereo, channel, chan);
         expect_value(__wrap_synth_stereo, mode, 1);
 
-        __real_midi_cc(chan, CC_PAN, 127);
+        __real_midi_cc(chan, CC_PAN, 96);
     }
 }
 
@@ -153,7 +153,7 @@ static void test_midi_pan_sets_synth_stereo_mode_left(UNUSED void** state)
         expect_value(__wrap_synth_stereo, channel, chan);
         expect_value(__wrap_synth_stereo, mode, 2);
 
-        __real_midi_cc(chan, CC_PAN, 0);
+        __real_midi_cc(chan, CC_PAN, 31);
     }
 }
 
