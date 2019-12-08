@@ -136,5 +136,5 @@ void midi_program(u8 chan, u8 program);
 Timing* midi_timing(void);
 void midi_sysex(const u8* data, u16 length);
 bool midi_dynamicMode(void);
-DeviceChannel* midi_dynamicModeMappings(void);
+DeviceChannel* midi_channelMappings(void);
 void midi_remapChannel(u8 midiChannel, u8 deviceChannel);

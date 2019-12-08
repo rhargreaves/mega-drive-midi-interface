@@ -47,13 +47,13 @@ static void printOverflowStatus(void);
 static void printErrorText(const char* text);
 static void drawText(const char* text, u16 x, u16 y);
 static void clearText(u16 x, u16 y, u16 w);
-static void printActivityForBusy(u16 busy, u16 maxChannels, u16 x);
+static void printChanActivity(u16 busy, u16 maxChannels, u16 x);
 static void printBaudRate(void);
 static void printCommMode(void);
 static void printCommBuffer(void);
-static void populateDynamicMappings(u8* midiChans);
-static void printLastDynamicMode(void);
-static void printTheMappingsIfNeeded(u8* midiChans);
+static void populateMappings(u8* midiChans);
+static void printDynamicMode(void);
+static void printMappingsIfDirty(u8* midiChans);
 static void printMappings(void);
 
 static u16 loadPercentSum = 0;
@@ -82,8 +82,8 @@ void ui_vsync(void)
 static void printMappings(void)
 {
     u8 midiChans[DEV_CHANS] = { 0 };
-    populateDynamicMappings(midiChans);
-    printTheMappingsIfNeeded(midiChans);
+    populateMappings(midiChans);
+    printMappingsIfDirty(midiChans);
 }
 
 void ui_update(void)
@@ -111,7 +111,7 @@ void ui_update(void)
     static u8 loadFrame = 0;
     if (++loadFrame == FRAMES_BEFORE_UPDATE_LOAD) {
         printLoad();
-        printLastDynamicMode();
+        printDynamicMode();
         loadFrame = 0;
     }
 
@@ -174,7 +174,7 @@ static void printActivity(void)
     u16 busy = synth_busy() | (psg_busy() << 6);
     if (busy != lastBusy) {
         VDP_setTextPalette(PAL2);
-        printActivityForBusy(busy, MAX_FM_CHANS + MAX_PSG_CHANS, ACTIVITY_FM_X);
+        printChanActivity(busy, MAX_FM_CHANS + MAX_PSG_CHANS, ACTIVITY_FM_X);
         VDP_setTextPalette(PAL0);
         lastBusy = busy;
     }
@@ -185,7 +185,7 @@ static u8 midiChannelForUi(DeviceChannel* mappings, u8 index)
     return (mappings[index].midiChannel) + 1;
 }
 
-static void printTheMappingsIfNeeded(u8* midiChans)
+static void printMappingsIfDirty(u8* midiChans)
 {
     static u8 lastMidiChans[DEV_CHANS];
     if (memcmp(lastMidiChans, midiChans, sizeof(u8) * DEV_CHANS) == 0) {
@@ -200,15 +200,15 @@ static void printTheMappingsIfNeeded(u8* midiChans)
     drawText(text, 5, 6);
 }
 
-static void populateDynamicMappings(u8* midiChans)
+static void populateMappings(u8* midiChans)
 {
-    DeviceChannel* chans = midi_dynamicModeMappings();
+    DeviceChannel* chans = midi_channelMappings();
     for (u8 i = 0; i < DEV_CHANS; i++) {
         midiChans[i] = midiChannelForUi(chans, i);
     }
 }
 
-static void printActivityForBusy(u16 busy, u16 maxChannels, u16 x)
+static void printChanActivity(u16 busy, u16 maxChannels, u16 x)
 {
     u8 lineLength = (CHAN_X_GAP * maxChannels) + 1;
     char line[lineLength];
@@ -285,7 +285,7 @@ static void printLoad(void)
     VDP_setTextPalette(PAL0);
 }
 
-static void printLastDynamicMode(void)
+static void printDynamicMode(void)
 {
     static bool lastDynamicModeStatus = false;
     bool status = midi_dynamicMode();

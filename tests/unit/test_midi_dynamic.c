@@ -95,7 +95,7 @@ static void test_midi_reports_dynamic_mode_disabled(UNUSED void** state)
 
 static void test_midi_exposes_dynamic_mode_mappings(UNUSED void** state)
 {
-    DeviceChannel* mappings = __real_midi_dynamicModeMappings();
+    DeviceChannel* mappings = __real_midi_channelMappings();
     for (u8 i = DEV_CHAN_MIN_FM; i < DEV_CHAN_MAX_FM; i++) {
         DeviceChannel* mapping = &mappings[i];
 
@@ -202,7 +202,7 @@ static void test_midi_sysex_resets_dynamic_mode_state(UNUSED void** state)
     __real_midi_sysex(
         sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
 
-    DeviceChannel* mappings = __real_midi_dynamicModeMappings();
+    DeviceChannel* mappings = __real_midi_channelMappings();
     for (u8 i = 0; i < DEV_CHANS; i++) {
         DeviceChannel* mapping = &mappings[i];
         assert_int_equal(mapping->midiChannel, DEFAULT_MIDI_CHANNEL);
@@ -377,7 +377,7 @@ static void test_midi_dynamic_resets_mappings_on_cc_121(UNUSED void** state)
 
     __real_midi_cc(midiChannel, 121, 0);
 
-    DeviceChannel* channels = __real_midi_dynamicModeMappings();
+    DeviceChannel* channels = __real_midi_channelMappings();
     for (u16 i = DEV_CHAN_MIN_FM; i <= DEV_CHAN_MAX_FM; i++) {
         DeviceChannel* chan = &channels[i];
         assert_int_equal(chan->midiChannel, DEFAULT_MIDI_CHANNEL);
@@ -402,7 +402,7 @@ static void test_midi_dynamic_all_notes_off_on_cc_123(UNUSED void** state)
 
     __real_midi_cc(midiChannel, 123, 0);
 
-    DeviceChannel* channels = __real_midi_dynamicModeMappings();
+    DeviceChannel* channels = __real_midi_channelMappings();
     for (u16 i = DEV_CHAN_MIN_FM; i <= DEV_CHAN_MAX_FM; i++) {
         DeviceChannel* chan = &channels[i];
         assert_false(chan->noteOn);

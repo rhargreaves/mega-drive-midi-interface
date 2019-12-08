@@ -284,7 +284,7 @@ bool __wrap_midi_dynamicMode(void)
     return mock_type(bool);
 }
 
-DeviceChannel* __wrap_midi_dynamicModeMappings(void)
+DeviceChannel* __wrap_midi_channelMappings(void)
 {
     return mock_type(DeviceChannel*);
 }

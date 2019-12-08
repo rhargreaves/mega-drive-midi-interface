@@ -376,7 +376,7 @@ bool midi_dynamicMode(void)
     return dynamicMode;
 }
 
-DeviceChannel* midi_dynamicModeMappings(void)
+DeviceChannel* midi_channelMappings(void)
 {
     return deviceChannels;
 }
