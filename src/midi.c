@@ -9,6 +9,7 @@
 #include "synth.h"
 #include <stdbool.h>
 
+#define MIN_MIDI_VELOCITY 0
 #define RANGE(value, range) (value / (128 / range))
 #define CHANNEL_UNASSIGNED 0xFF
 #define LENGTH_OF(x) (sizeof(x) / sizeof(x[0]))
@@ -51,17 +52,17 @@ static void dynamicRemapChannel(u8 midiChannel, u8 deviceChannel);
 
 static void initDeviceChannel(u8 devChan)
 {
-    DeviceChannel* state = &deviceChannels[devChan];
+    DeviceChannel* chan = &deviceChannels[devChan];
     bool isFm = devChan < DEV_CHAN_MIN_PSG;
-    state->number = isFm ? devChan : devChan - DEV_CHAN_MIN_PSG;
-    state->ops = isFm ? &FM_VTable : &PSG_VTable;
-    state->noteOn = false;
-    state->program = 0;
-    state->midiChannel = devChan;
-    state->pitch = 0;
-    state->pan = DEFAULT_MIDI_PAN;
-    state->volume = MAX_MIDI_VOLUME;
-    state->pitchBend = DEFAULT_MIDI_PITCH_BEND;
+    chan->number = isFm ? devChan : devChan - DEV_CHAN_MIN_PSG;
+    chan->ops = isFm ? &FM_VTable : &PSG_VTable;
+    chan->noteOn = false;
+    chan->program = 0;
+    chan->midiChannel = devChan;
+    chan->pitch = 0;
+    chan->pan = DEFAULT_MIDI_PAN;
+    chan->volume = MAX_MIDI_VOLUME;
+    chan->pitchBend = DEFAULT_MIDI_PITCH_BEND;
 }
 
 static void initChannelState(void)
@@ -114,22 +115,22 @@ static DeviceChannel* findChannelPlayingNote(u8 midiChannel, u8 pitch)
     return NULL;
 }
 
-static bool isPsgNoise(DeviceChannel* state)
+static bool isPsgNoise(DeviceChannel* chan)
 {
-    return state->ops == &PSG_VTable && state->number == DEV_CHAN_PSG_NOISE;
+    return chan->ops == &PSG_VTable && chan->number == DEV_CHAN_PSG_NOISE;
 }
 
 static bool isPsgAndIncomingChanIsPercussive(
-    DeviceChannel* state, u8 incomingChan)
+    DeviceChannel* chan, u8 incomingChan)
 {
-    return state->ops == &PSG_VTable
+    return chan->ops == &PSG_VTable
         && incomingChan == GENERAL_MIDI_PERCUSSION_CHANNEL;
 }
 
-static bool isChannelSuitable(DeviceChannel* state, u8 incomingMidiChan)
+static bool isChannelSuitable(DeviceChannel* chan, u8 incomingMidiChan)
 {
-    return !state->noteOn && !isPsgNoise(state)
-        && !isPsgAndIncomingChanIsPercussive(state, incomingMidiChan);
+    return !chan->noteOn && !isPsgNoise(chan)
+        && !isPsgAndIncomingChanIsPercussive(chan, incomingMidiChan);
 }
 
 static DeviceChannel* findFreeChannel(u8 incomingMidiChan)
@@ -173,76 +174,77 @@ static bool tooManyPercussiveNotes(u8 midiChan)
     return false;
 }
 
-static void updateVolume(MidiChannel* midiChannel, DeviceChannel* state)
+static void updateVolume(MidiChannel* midiChannel, DeviceChannel* devChan)
 {
-    if (state->volume != midiChannel->volume) {
-        state->ops->channelVolume(state->number, midiChannel->volume);
-        state->volume = midiChannel->volume;
+    if (devChan->volume != midiChannel->volume) {
+        devChan->ops->channelVolume(devChan->number, midiChannel->volume);
+        devChan->volume = midiChannel->volume;
     }
 }
 
-static void updatePan(MidiChannel* midiChannel, DeviceChannel* state)
+static void updatePan(MidiChannel* midiChannel, DeviceChannel* devChan)
 {
-    if (state->pan != midiChannel->pan) {
-        state->ops->pan(state->number, midiChannel->pan);
-        state->pan = midiChannel->pan;
+    if (devChan->pan != midiChannel->pan) {
+        devChan->ops->pan(devChan->number, midiChannel->pan);
+        devChan->pan = midiChannel->pan;
     }
 }
 
-static void updatePitchBend(MidiChannel* midiChannel, DeviceChannel* state)
+static void updatePitchBend(MidiChannel* midiChannel, DeviceChannel* devChan)
 {
-    if (state->pitchBend != midiChannel->pitchBend) {
-        state->ops->pitchBend(state->number, midiChannel->pitchBend);
-        state->pitchBend = midiChannel->pitchBend;
+    if (devChan->pitchBend != midiChannel->pitchBend) {
+        devChan->ops->pitchBend(devChan->number, midiChannel->pitchBend);
+        devChan->pitchBend = midiChannel->pitchBend;
     }
 }
 
-static void updateProgram(MidiChannel* midiChannel, DeviceChannel* state)
+static void updateProgram(MidiChannel* midiChannel, DeviceChannel* devChan)
 {
-    if (state->program != midiChannel->program) {
-        state->ops->program(state->number, midiChannel->program);
-        state->program = midiChannel->program;
+    if (devChan->program != midiChannel->program) {
+        devChan->ops->program(devChan->number, midiChannel->program);
+        devChan->program = midiChannel->program;
     }
 }
 
 static DeviceChannel* deviceChannelByMidiChannel(u8 midiChannel)
 {
     for (u8 i = 0; i < DEV_CHANS; i++) {
-        DeviceChannel* state = &deviceChannels[i];
-        if (state->midiChannel == midiChannel) {
-            return state;
+        DeviceChannel* chan = &deviceChannels[i];
+        if (chan->midiChannel == midiChannel) {
+            return chan;
         }
     }
     return NULL;
 }
 
-static void noteOn(u8 chan, u8 pitch, u8 velocity)
+static void noteOn(u8 midiChan, u8 pitch, u8 velocity)
 {
-    if (tooManyPercussiveNotes(chan)) {
+    if (tooManyPercussiveNotes(midiChan)) {
         return;
     }
-    DeviceChannel* state = dynamicMode ? findFreeChannel(chan)
-                                       : deviceChannelByMidiChannel(chan);
-    if (state == NULL) {
+    DeviceChannel* devChan = dynamicMode ? findFreeChannel(midiChan)
+                                         : deviceChannelByMidiChannel(midiChan);
+    if (devChan == NULL) {
         overflow = true;
         return;
     }
     overflow = false;
-    state->midiChannel = chan;
-    MidiChannel* midiChannel = &midiChannels[chan];
-    midi_fm_percussive(state->number, chan == GENERAL_MIDI_PERCUSSION_CHANNEL);
-    updateVolume(midiChannel, state);
-    updatePan(midiChannel, state);
-    updateProgram(midiChannel, state);
-    updatePitchBend(midiChannel, state);
-    state->pitch = pitch;
-    state->noteOn = true;
-    state->ops->noteOn(state->number, pitch, velocity);
+    devChan->midiChannel = midiChan;
+    MidiChannel* midiChannel = &midiChannels[midiChan];
+    midi_fm_percussive(
+        devChan->number, midiChan == GENERAL_MIDI_PERCUSSION_CHANNEL);
+    updateVolume(midiChannel, devChan);
+    updatePan(midiChannel, devChan);
+    updateProgram(midiChannel, devChan);
+    updatePitchBend(midiChannel, devChan);
+    devChan->pitch = pitch;
+    devChan->noteOn = true;
+    devChan->ops->noteOn(devChan->number, pitch, velocity);
 }
 
 void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
 {
-    if (velocity == 0) {
+    if (velocity == MIN_MIDI_VELOCITY) {
         midi_noteOff(chan, pitch);
         return;
     }
