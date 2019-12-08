@@ -67,12 +67,6 @@ The full list of presets available are defined in
 
 If MIDI channel 10 is mapped to an FM channel, the interface will make use of a separate bank of percussion instruments. An an example, to map MIDI channel 10 to FM channel 6, use the SysEx sequence `00 22 77 00 09 05`. Note that by default MIDI channel 10 is set to the PSG noise channel.
 
-## Polyphonic Mode
-
-When polyphonic mode is enabled (CC 80), all note on/off events are routed to a pool of
-FM channels, ignoring the specific MIDI channel the event is sent to. This allows for
-polyphony within a single MIDI channel. In addition, any FM parameter change made will be sent to all FM channels. If all FM channels are busy, the note on event is dropped.
-
 ## Dynamic Mapping Mode
 
 When dynamic mapping mode is enabled (SysEx `00 22 77 03 01`), MIDI channel note-on/off events are dynamically routed to free FM and PSG channels. That is, MIDI channels no-longer map directly onto device channels but are virtualised and note-on/off events and MIDI program data is set on the next available channel. This mode is best suited for playback of General MIDI files and makes full use of available YM2612/PSG capacity.
@@ -86,6 +80,10 @@ The following rules are used to determine which device channel receives the MIDI
    - Program
    - Volume
    - Pan
+
+### Polyphonic Mode
+
+When polyphonic mode is enabled (CC 80), dynamic mapping mode is enabled and MIDI channel 1 is mapped to FM channels 1-6. This allows for polyphony within a single MIDI channel. In addition, any FM parameter change made will be sent to all FM channels. If all channels are busy, the note on event is dropped.
 
 ## MIDI Message Reference
 
