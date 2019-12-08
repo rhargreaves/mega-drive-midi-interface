@@ -192,10 +192,10 @@ static u8 midiChannelForUi(ChannelState* mappings, u8 index)
 static void printTheMappingsIfNeeded(u8* midiChans)
 {
     static u8 lastMidiChans[DEV_CHANS];
-    if (memcmp(lastMidiChans, &midiChans, sizeof(u8) * DEV_CHANS) == 0) {
+    if (memcmp(lastMidiChans, midiChans, sizeof(u8) * DEV_CHANS) == 0) {
         return;
     }
-    memcpy(lastMidiChans, &midiChans, sizeof(u8) * DEV_CHANS);
+    memcpy(lastMidiChans, midiChans, sizeof(u8) * DEV_CHANS);
 
     char text[38];
     sprintf(text, "%2d %2d %2d %2d %2d %2d %2d %2d %2d %2d", midiChans[0],
