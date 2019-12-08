@@ -501,17 +501,9 @@ static void generalMidiReset(void)
 static void setDynamicMode(bool enabled)
 {
     dynamicMode = enabled;
-
-    if (enabled) {
-        for (u8 i = 0; i < DEV_CHANS; i++) {
-            DeviceChannel* chan = &deviceChannels[i];
-            chan->midiChannel = DEFAULT_MIDI_CHANNEL;
-        }
-    } else {
-        for (u8 i = 0; i < DEV_CHANS; i++) {
-            DeviceChannel* chan = &deviceChannels[i];
-            chan->midiChannel = i;
-        }
+    for (u8 chan = 0; chan < DEV_CHANS; chan++) {
+        DeviceChannel* devChan = &deviceChannels[chan];
+        devChan->midiChannel = enabled ? DEFAULT_MIDI_CHANNEL : chan;
     }
 }
 
