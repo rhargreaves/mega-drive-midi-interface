@@ -118,7 +118,7 @@ static void test_synth_sets_stereo_ams_and_freq(UNUSED void** state)
         expect_ym2612_write_channel_any_data(chan, baseReg);
         __real_synth_ams(chan, ams);
         expect_ym2612_write_channel(
-            chan, baseReg, (stereo << 6) + (ams << 4) + fms);
+            chan, baseReg, (stereo << 6) + (ams << 3) + fms);
         __real_synth_fms(chan, fms);
     }
 }
