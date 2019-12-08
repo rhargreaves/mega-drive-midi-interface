@@ -121,7 +121,7 @@ struct DeviceChannel {
     u16 pitchBend;
 };
 
-void midi_init(const Channel** defaultPresets,
+void midi_init(const FmChannel** defaultPresets,
     const PercussionPreset** defaultPercussionPresets);
 void midi_noteOn(u8 chan, u8 pitch, u8 velocity);
 void midi_noteOff(u8 chan, u8 pitch);

@@ -8,11 +8,11 @@
 typedef struct PercussionPreset PercussionPreset;
 
 struct PercussionPreset {
-    Channel channel;
+    FmChannel channel;
     u8 key;
 };
 
-void midi_fm_init(const Channel** defaultPresets,
+void midi_fm_init(const FmChannel** defaultPresets,
     const PercussionPreset** defaultPercussionPresets);
 void midi_fm_noteOn(u8 chan, u8 pitch, u8 velocity);
 void midi_fm_noteOff(u8 chan, u8 pitch);

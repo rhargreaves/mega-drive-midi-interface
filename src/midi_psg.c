@@ -32,17 +32,17 @@ struct PsgChannel {
     u8 velocity;
 };
 
-static PsgChannel channelState[MAX_PSG_CHANS];
+static PsgChannel psgChannels[MAX_PSG_CHANS];
 static u16 freqForMidiKey(u8 midiKey);
-static PsgChannel* getChannelState(u8 psgChan);
+static PsgChannel* psgChannel(u8 psgChan);
 
 void midi_psg_init(void)
 {
     for (u8 chan = 0; chan < MAX_PSG_CHANS; chan++) {
-        PsgChannel* state = getChannelState(chan);
-        state->noteOn = false;
-        state->volume = MAX_MIDI_VOLUME;
-        state->velocity = MAX_MIDI_VOLUME;
+        PsgChannel* psgChan = psgChannel(chan);
+        psgChan->noteOn = false;
+        psgChan->volume = MAX_MIDI_VOLUME;
+        psgChan->velocity = MAX_MIDI_VOLUME;
     }
 }
 
@@ -51,43 +51,42 @@ void midi_psg_noteOn(u8 chan, u8 key, u8 velocity)
     if (key < MIN_MIDI_KEY) {
         return;
     }
-    PsgChannel* state = getChannelState(chan);
+    PsgChannel* psgChan = psgChannel(chan);
     psg_frequency(chan, freqForMidiKey(key));
-    psg_attenuation(chan, ATTENUATIONS[(state->volume * velocity) / 0x7F]);
-    state->key = key;
-    state->velocity = velocity;
-    state->noteOn = true;
+    psg_attenuation(chan, ATTENUATIONS[(psgChan->volume * velocity) / 0x7F]);
+    psgChan->key = key;
+    psgChan->velocity = velocity;
+    psgChan->noteOn = true;
 }
 
 void midi_psg_noteOff(u8 chan, u8 pitch)
 {
-    PsgChannel* state = getChannelState(chan);
-    if (state->noteOn && state->key == pitch) {
+    PsgChannel* psgChan = psgChannel(chan);
+    if (psgChan->noteOn && psgChan->key == pitch) {
         psg_attenuation(chan, PSG_ATTENUATION_SILENCE);
-        state->noteOn = false;
+        psgChan->noteOn = false;
     }
 }
 
 void midi_psg_allNotesOff(u8 chan)
 {
-    PsgChannel* state = getChannelState(chan);
-    midi_psg_noteOff(chan, state->key);
+    midi_psg_noteOff(chan, psgChannel(chan)->key);
 }
 
 void midi_psg_channelVolume(u8 chan, u8 volume)
 {
-    PsgChannel* state = getChannelState(chan);
-    state->volume = volume;
-    if (state->noteOn) {
+    PsgChannel* psgChan = psgChannel(chan);
+    psgChan->volume = volume;
+    if (psgChan->noteOn) {
         psg_attenuation(
-            chan, ATTENUATIONS[(state->volume * state->velocity) / 0x7F]);
+            chan, ATTENUATIONS[(psgChan->volume * psgChan->velocity) / 0x7F]);
     }
 }
 
 void midi_psg_pitchBend(u8 chan, u16 bend)
 {
-    PsgChannel* state = getChannelState(chan);
-    u16 freq = freqForMidiKey(state->key);
+    PsgChannel* psgChan = psgChannel(chan);
+    u16 freq = freqForMidiKey(psgChan->key);
     s16 bendRelative = bend - 0x2000;
     freq = freq + (bendRelative / 100);
     psg_frequency(chan, freq);
@@ -106,7 +105,7 @@ static u16 freqForMidiKey(u8 midiKey)
     return FREQUENCIES[midiKey - MIN_MIDI_KEY];
 }
 
-static PsgChannel* getChannelState(u8 chan)
+static PsgChannel* psgChannel(u8 chan)
 {
-    return &channelState[chan];
+    return &psgChannels[chan];
 }

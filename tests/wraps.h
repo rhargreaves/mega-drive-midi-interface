@@ -4,7 +4,7 @@
 
 #include "synth.h"
 
-void __wrap_synth_init(const Channel* defaultPreset);
+void __wrap_synth_init(const FmChannel* defaultPreset);
 void __wrap_synth_enableLfo(u8 enable);
 void __wrap_synth_globalLfoFrequency(u8 freq);
 void __wrap_synth_noteOn(u8 channel);
@@ -30,7 +30,7 @@ void __wrap_synth_operatorAmplitudeModulation(
     u8 channel, u8 op, u8 amplitudeModulation);
 void __wrap_synth_operatorReleaseRate(u8 channel, u8 op, u8 releaseRate);
 void __wrap_synth_operatorSsgEg(u8 channel, u8 op, u8 ssgEg);
-void __wrap_synth_preset(u8 channel, const Channel* preset);
+void __wrap_synth_preset(u8 channel, const FmChannel* preset);
 void __wrap_synth_volume(u8 channel, u8 volume);
 bool __wrap_comm_readReady(void);
 u8 __wrap_comm_read(void);

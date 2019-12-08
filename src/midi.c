@@ -91,7 +91,7 @@ static void resetAllState(void)
     setDynamicMode(dynamicMode);
 }
 
-void midi_init(const Channel** defaultPresets,
+void midi_init(const FmChannel** defaultPresets,
     const PercussionPreset** defaultPercussionPresets)
 {
     overflow = false;

@@ -6,7 +6,7 @@
 #include "wraps.h"
 #include <cmocka.h>
 
-void __wrap_synth_init(const Channel* defaultPreset)
+void __wrap_synth_init(const FmChannel* defaultPreset)
 {
     check_expected(defaultPreset);
 }
@@ -153,7 +153,7 @@ void __wrap_synth_operatorSsgEg(u8 channel, u8 op, u8 ssgEg)
     check_expected(ssgEg);
 }
 
-void __wrap_synth_preset(u8 channel, const Channel* preset)
+void __wrap_synth_preset(u8 channel, const FmChannel* preset)
 {
     check_expected(channel);
     check_expected(preset);

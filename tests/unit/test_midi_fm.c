@@ -435,7 +435,7 @@ static void test_midi_sets_fm_preset(UNUSED void** state)
     const u8 program = 1;
     const u8 chan = 0;
 
-    const Channel M_BANK_0_INST_1_BRIGHTPIANO = { 5, 7, 3, 0, 0, 0, 0,
+    const FmChannel M_BANK_0_INST_1_BRIGHTPIANO = { 5, 7, 3, 0, 0, 0, 0,
         { { 4, 2, 27, 1, 9, 0, 11, 5, 6, 33, 0 },
             { 4, 5, 27, 1, 9, 0, 7, 9, 7, 18, 0 },
             { 1, 2, 27, 1, 5, 1, 10, 5, 6, 8, 0 },
@@ -481,7 +481,7 @@ static void test_midi_fm_note_on_percussion_channel_sets_percussion_preset(
 
     remap_midi_channel(MIDI_PERCUSSION_CHANNEL, FM_CHANNEL);
 
-    const Channel P_BANK_0_INST_30_CASTANETS = { 4, 3, 3, 0, 0, 0, 0,
+    const FmChannel P_BANK_0_INST_30_CASTANETS = { 4, 3, 3, 0, 0, 0, 0,
         { { 9, 0, 31, 0, 11, 0, 15, 0, 15, 23, 0 },
             { 1, 0, 31, 0, 19, 0, 15, 0, 15, 15, 0 },
             { 4, 0, 31, 2, 20, 0, 15, 0, 15, 13, 0 },
@@ -508,7 +508,7 @@ static void test_midi_switching_program_retains_pan_setting(UNUSED void** state)
 
     __real_midi_cc(0, CC_PAN, 127);
 
-    const Channel M_BANK_0_INST_1_BRIGHTPIANO = { 5, 7, 3, 0, 0, 0, 0,
+    const FmChannel M_BANK_0_INST_1_BRIGHTPIANO = { 5, 7, 3, 0, 0, 0, 0,
         { { 4, 2, 27, 1, 9, 0, 11, 5, 6, 33, 0 },
             { 4, 5, 27, 1, 9, 0, 7, 9, 7, 18, 0 },
             { 1, 2, 27, 1, 5, 1, 10, 5, 6, 8, 0 },

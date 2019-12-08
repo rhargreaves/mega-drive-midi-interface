@@ -12,7 +12,7 @@ struct Global {
 };
 
 static Global global = { .lfoEnable = 0, .lfoFrequency = 0 };
-static Channel channels[MAX_FM_CHANS];
+static FmChannel fmChannels[MAX_FM_CHANS];
 static u8 noteOn;
 static u8 volumes[MAX_FM_CHANS];
 
@@ -43,19 +43,19 @@ static void writeChannelReg(u8 channel, u8 baseReg, u8 data);
 static void writeOperatorReg(u8 channel, u8 op, u8 baseReg, u8 data);
 static void updateOctaveAndFrequency(u8 channel);
 static u8 keyOnOffRegOffset(u8 channel);
-static Channel* getChannel(u8 channel);
+static FmChannel* fmChannel(u8 channel);
 static Operator* getOperator(u8 channel, u8 operator);
 static u8 effectiveTotalLevel(u8 channel, u8 operator, u8 totalLevel);
 static bool isOutputOperator(u8 algorithm, u8 operator);
 static u8 volumeAdjustedTotalLevel(u8 channel, u8 totalLevel);
 
-void synth_init(const Channel* initialPreset)
+void synth_init(const FmChannel* initialPreset)
 {
     YM2612_writeReg(0, 0x27, 0); // Ch 3 Normal
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         volumes[chan] = MAX_VOLUME;
         synth_noteOff(chan);
-        memcpy(&channels[chan], initialPreset, sizeof(Channel));
+        memcpy(&fmChannels[chan], initialPreset, sizeof(FmChannel));
         updateChannel(chan);
     }
 }
@@ -89,7 +89,7 @@ void synth_noteOff(u8 channel)
 
 void synth_pitch(u8 channel, u8 octave, u16 freqNumber)
 {
-    Channel* chan = getChannel(channel);
+    FmChannel* chan = fmChannel(channel);
     chan->octave = octave;
     chan->freqNumber = freqNumber;
     updateOctaveAndFrequency(channel);
@@ -105,19 +105,19 @@ void synth_volume(u8 channel, u8 volume)
 
 void synth_stereo(u8 channel, u8 stereo)
 {
-    getChannel(channel)->stereo = stereo;
+    fmChannel(channel)->stereo = stereo;
     updateStereoAmsFms(channel);
 }
 
 void synth_algorithm(u8 channel, u8 algorithm)
 {
-    getChannel(channel)->algorithm = algorithm;
+    fmChannel(channel)->algorithm = algorithm;
     updateAlgorithmAndFeedback(channel);
 }
 
 void synth_feedback(u8 channel, u8 feedback)
 {
-    getChannel(channel)->feedback = feedback;
+    fmChannel(channel)->feedback = feedback;
     updateAlgorithmAndFeedback(channel);
 }
 
@@ -202,13 +202,13 @@ void synth_globalLfoFrequency(u8 freq)
 
 void synth_ams(u8 channel, u8 ams)
 {
-    getChannel(channel)->ams = ams;
+    fmChannel(channel)->ams = ams;
     updateStereoAmsFms(channel);
 }
 
 void synth_fms(u8 channel, u8 fms)
 {
-    getChannel(channel)->fms = fms;
+    fmChannel(channel)->fms = fms;
     updateStereoAmsFms(channel);
 }
 
@@ -217,9 +217,9 @@ u8 synth_busy(void)
     return noteOn;
 }
 
-void synth_preset(u8 channel, const Channel* preset)
+void synth_preset(u8 channel, const FmChannel* preset)
 {
-    memcpy(&channels[channel], preset, sizeof(Channel));
+    memcpy(&fmChannels[channel], preset, sizeof(FmChannel));
     updateChannel(channel);
 }
 
@@ -238,14 +238,14 @@ static u8 keyOnOffRegOffset(u8 channel)
     return (channel < 3) ? channel : (channel + 1);
 }
 
-static Channel* getChannel(u8 channel)
+static FmChannel* fmChannel(u8 channel)
 {
-    return &channels[channel];
+    return &fmChannels[channel];
 }
 
 static Operator* getOperator(u8 channel, u8 operator)
 {
-    return &getChannel(channel)->operators[operator];
+    return &fmChannel(channel)->operators[operator];
 }
 
 static void updateGlobalLfo(void)
@@ -255,7 +255,7 @@ static void updateGlobalLfo(void)
 
 static void updateOctaveAndFrequency(u8 channel)
 {
-    Channel* chan = getChannel(channel);
+    FmChannel* chan = fmChannel(channel);
     writeChannelReg(
         channel, 0xA4, (chan->freqNumber >> 8) | (chan->octave << 3));
     writeChannelReg(channel, 0xA0, chan->freqNumber);
@@ -263,13 +263,13 @@ static void updateOctaveAndFrequency(u8 channel)
 
 static void updateAlgorithmAndFeedback(u8 channel)
 {
-    Channel* chan = getChannel(channel);
+    FmChannel* chan = fmChannel(channel);
     writeChannelReg(channel, 0xB0, (chan->feedback << 3) + chan->algorithm);
 }
 
 static void updateStereoAmsFms(u8 channel)
 {
-    Channel* chan = getChannel(channel);
+    FmChannel* chan = fmChannel(channel);
     writeChannelReg(
         channel, 0xB4, (chan->stereo << 6) + (chan->ams << 4) + chan->fms);
 }
@@ -324,7 +324,7 @@ static void updateOperatorTotalLevel(u8 channel, u8 operator)
 
 static u8 effectiveTotalLevel(u8 channel, u8 operator, u8 totalLevel)
 {
-    return isOutputOperator(getChannel(channel)->algorithm, operator)
+    return isOutputOperator(fmChannel(channel)->algorithm, operator)
         ? volumeAdjustedTotalLevel(channel, totalLevel)
         : totalLevel;
 }

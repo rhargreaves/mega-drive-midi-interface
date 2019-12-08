@@ -8,7 +8,7 @@
 #include <cmocka.h>
 #include <types.h>
 
-extern void __real_synth_init(const Channel* defaultPreset);
+extern void __real_synth_init(const FmChannel* defaultPreset);
 extern void __real_synth_noteOn(u8 channel);
 extern void __real_synth_noteOff(u8 channel);
 extern void __real_synth_enableLfo(u8 enable);
@@ -35,7 +35,7 @@ extern void __real_synth_operatorAmplitudeModulation(
 extern void __real_synth_operatorReleaseRate(u8 channel, u8 op, u8 releaseRate);
 extern void __real_synth_operatorSsgEg(u8 channel, u8 op, u8 ssgEg);
 extern void __real_synth_pitchBend(u8 channel, u16 bend);
-extern void __real_synth_preset(u8 channel, const Channel* preset);
+extern void __real_synth_preset(u8 channel, const FmChannel* preset);
 extern void __real_synth_volume(u8 channel, u8 volume);
 
 static void set_initial_registers()
@@ -45,7 +45,7 @@ static void set_initial_registers()
     expect_any_count(__wrap_YM2612_writeReg, reg, count);
     expect_any_count(__wrap_YM2612_writeReg, data, count);
 
-    const Channel M_BANK_0_INST_0_GRANDPIANO = { 2, 0, 3, 0, 0, 0, 0,
+    const FmChannel M_BANK_0_INST_0_GRANDPIANO = { 2, 0, 3, 0, 0, 0, 0,
         { { 1, 0, 26, 1, 7, 0, 7, 4, 1, 39, 0 },
             { 4, 6, 24, 1, 9, 0, 6, 9, 7, 36, 0 },
             { 2, 7, 31, 3, 23, 0, 9, 15, 1, 4, 0 },
@@ -296,7 +296,7 @@ static void test_synth_sets_preset(UNUSED void** state)
 {
     const u8 chan = 0;
 
-    const Channel M_BANK_0_INST_7_CLAVINET = { 1, 7, 3, 0, 0, 0, 0,
+    const FmChannel M_BANK_0_INST_7_CLAVINET = { 1, 7, 3, 0, 0, 0, 0,
         { { 1, 1, 31, 2, 0, 1, 0, 1, 6, 28, 0 },
             { 1, 5, 31, 3, 0, 1, 0, 0, 2, 30, 0 },
             { 1, 3, 31, 2, 0, 0, 0, 1, 7, 33, 0 },
