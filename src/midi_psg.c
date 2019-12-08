@@ -97,6 +97,10 @@ void midi_psg_program(u8 chan, u8 program)
 {
 }
 
+void midi_psg_pan(u8 chan, u8 pan)
+{
+}
+
 static u16 freqForMidiKey(u8 midiKey)
 {
     return FREQUENCIES[midiKey - MIN_MIDI_KEY];

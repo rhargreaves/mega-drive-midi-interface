@@ -3,7 +3,6 @@
 #include "memcmp.h"
 #include "memory.h"
 #include "midi_fm.h"
-#include "midi_nop.h"
 #include "midi_psg.h"
 #include "midi_sender.h"
 #include "psg_chip.h"
@@ -22,7 +21,7 @@ static ChannelState channelState[DEV_CHANS];
 
 static const VTable PSG_VTable = { midi_psg_noteOn, midi_psg_noteOff,
     midi_psg_channelVolume, midi_psg_pitchBend, midi_psg_program,
-    midi_psg_allNotesOff, midi_nop_pan };
+    midi_psg_allNotesOff, midi_psg_pan };
 
 static const VTable FM_VTable = { midi_fm_noteOn, midi_fm_noteOff,
     midi_fm_channelVolume, midi_fm_pitchBend, midi_fm_program,
