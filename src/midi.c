@@ -252,11 +252,11 @@ void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
 
 void midi_noteOff(u8 chan, u8 pitch)
 {
-    DeviceChannel* state;
-    while ((state = findChannelPlayingNote(chan, pitch)) != NULL) {
-        state->noteOn = false;
-        state->pitch = 0;
-        state->ops->noteOff(state->number, pitch);
+    DeviceChannel* devChan;
+    while ((devChan = findChannelPlayingNote(chan, pitch)) != NULL) {
+        devChan->noteOn = false;
+        devChan->pitch = 0;
+        devChan->ops->noteOff(devChan->number, pitch);
     }
 }
 
@@ -270,9 +270,9 @@ static void channelPan(u8 chan, u8 pan)
     MidiChannel* midiChannel = &midiChannels[chan];
     midiChannel->pan = pan;
     for (u8 i = 0; i < DEV_CHANS; i++) {
-        DeviceChannel* state = &deviceChannels[i];
-        if (state->midiChannel == chan) {
-            updatePan(midiChannel, state);
+        DeviceChannel* devChan = &deviceChannels[i];
+        if (devChan->midiChannel == chan) {
+            updatePan(midiChannel, devChan);
         }
     }
 }
