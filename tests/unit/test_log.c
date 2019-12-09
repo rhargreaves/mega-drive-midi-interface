@@ -5,6 +5,7 @@
 #include "log.h"
 #include "unused.h"
 #include <cmocka.h>
+#include <stdio.h>
 
 extern void __real_log_init(void);
 extern void __real_log_info(const char* fmt, ...);
@@ -40,4 +41,22 @@ static void test_log_stores_two_logs(UNUSED void** state)
 
     assert_memory_equal("Test Message 1", log1->msg, 15);
     assert_memory_equal("Test Message 2", log2->msg, 15);
+}
+
+static void test_log_stores_multiple_logs_and_overwrites_older(
+    UNUSED void** state)
+{
+    for (u8 i = 1; i <= 15; i++) {
+        __real_log_info("Test Message %d", i);
+    }
+
+    for (u8 i = 1; i <= 15; i++) {
+        u8 logNumber = i <= 5 ? i + 10 : i;
+        print_message("Dequeuing log %d\n", logNumber);
+        Log* log = __real_log_dequeue();
+
+        char expectedMsg[15];
+        sprintf(expectedMsg, "Test Message %d", logNumber);
+        assert_memory_equal(expectedMsg, log->msg, 15);
+    }
 }

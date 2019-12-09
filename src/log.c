@@ -3,7 +3,7 @@
 #include <memory.h>
 #include <string.h>
 
-#define MAX_LOG_ENTRIES 2
+#define MAX_LOG_ENTRIES 10
 
 static Log logs[MAX_LOG_ENTRIES];
 static u8 readHead;
@@ -24,6 +24,9 @@ void log_init(void)
 void log_info(const char* fmt, u8 val1, u8 val2, u8 val3)
 {
     Log* log = &logs[writeHead++];
+    if (writeHead == MAX_LOG_ENTRIES) {
+        writeHead = 0;
+    }
     sprintf(log->msg, fmt, val1, val2, val3);
     log->level = Info;
     log->msgLen = MSG_MAX_LEN;
@@ -31,5 +34,9 @@ void log_info(const char* fmt, u8 val1, u8 val2, u8 val3)
 
 Log* log_dequeue(void)
 {
-    return &logs[readHead++];
+    Log* log = &logs[readHead++];
+    if (readHead == MAX_LOG_ENTRIES) {
+        readHead = 0;
+    }
+    return log;
 }
