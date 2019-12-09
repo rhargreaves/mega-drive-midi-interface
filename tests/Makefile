@@ -76,7 +76,10 @@ MOCKS=midi_process \
 	midi_sysex \
 	midi_mappings \
 	midi_dynamicMode \
-	midi_channelMappings
+	midi_channelMappings \
+	log_init \
+	log_info \
+	log_dequeue
 
 MD_MOCKS=SYS_setVIntCallback \
 	VDP_setTextPalette \

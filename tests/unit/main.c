@@ -3,6 +3,7 @@
 #include <stddef.h>
 
 #include "test_comm.c"
+#include "test_log.c"
 #include "test_midi.h"
 #include "test_midi_dynamic.c"
 #include "test_midi_fm.c"
@@ -20,6 +21,7 @@
     cmocka_unit_test_setup(test, test_dynamic_midi_setup)
 #define synth_test(test) cmocka_unit_test_setup(test, test_synth_setup)
 #define comm_test(test) cmocka_unit_test_setup(test, test_comm_setup)
+#define log_test(test) cmocka_unit_test_setup(test, test_log_setup)
 
 int main(void)
 {
@@ -193,7 +195,9 @@ int main(void)
         dynamic_midi_test(test_midi_dynamic_all_notes_off_on_cc_123),
         dynamic_midi_test(test_midi_dynamic_sysex_remaps_midi_channel),
         dynamic_midi_test(
-            test_midi_dynamic_sysex_removes_mapping_of_midi_channel)
+            test_midi_dynamic_sysex_removes_mapping_of_midi_channel),
+
+        log_test(test_log_info_writes_to_log_buffer)
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);

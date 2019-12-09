@@ -4,6 +4,7 @@
 #include <types.h>
 
 #include "synth.h"
+#include "log.h"
 
 void wraps_disable_checks(void);
 void wraps_enable_checks(void);
@@ -93,3 +94,6 @@ u8 __wrap_comm_everdrive_writeReady(void);
 void __wrap_comm_everdrive_write(u8 data);
 u16 __wrap_SYS_getCPULoad();
 u32 __wrap_getFPS();
+void __wrap_log_init(void);
+void __wrap_log_info(const char* fmt, ...);
+Log* __wrap_log_dequeue(void);
