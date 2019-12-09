@@ -9,7 +9,7 @@ static u16 reads = 0;
 static const u16 MAX_COMM_IDLE = 0x28F;
 static const u16 MAX_COMM_BUSY = 0x28F;
 
-static const u16 COMM_TYPES = 2;
+#define COMM_TYPES 2
 
 static bool countsInBounds(void);
 
@@ -31,7 +31,8 @@ static const CommVTable Serial_VTable
     = { comm_serial_init, comm_serial_readReady, comm_serial_read,
           comm_serial_writeReady, comm_serial_write };
 
-static const CommVTable* commTypes[] = { &Everdrive_VTable, &Serial_VTable };
+static const CommVTable* commTypes[COMM_TYPES]
+    = { &Everdrive_VTable, &Serial_VTable };
 
 static const CommVTable* activeCommType = NULL;
 
