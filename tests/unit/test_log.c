@@ -24,5 +24,5 @@ static void test_log_info_writes_to_log_buffer(UNUSED void** state)
     Log* log = __real_log_dequeue();
 
     assert_int_not_equal(log->msgLen, 0);
-    assert_memory_equal("Test Message 1", log->msg, log->msgLen);
+    assert_memory_equal("Test Message 1", log->msg, 15);
 }

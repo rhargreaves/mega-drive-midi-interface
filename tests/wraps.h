@@ -3,8 +3,8 @@
 #include <sprite_eng.h>
 #include <types.h>
 
-#include "synth.h"
 #include "log.h"
+#include "synth.h"
 
 void wraps_disable_checks(void);
 void wraps_enable_checks(void);
@@ -95,5 +95,5 @@ void __wrap_comm_everdrive_write(u8 data);
 u16 __wrap_SYS_getCPULoad();
 u32 __wrap_getFPS();
 void __wrap_log_init(void);
-void __wrap_log_info(const char* fmt, ...);
+void __wrap_log_info(const char* fmt, u8 val1, u8 val2, u8 val3);
 Log* __wrap_log_dequeue(void);

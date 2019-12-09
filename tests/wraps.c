@@ -516,14 +516,15 @@ u32 __wrap_getFPS()
     return 0;
 }
 
-void __wrap_log_init(void){
-
+void __wrap_log_init(void)
+{
 }
 
-void __wrap_log_info(const char* fmt, ...){
-
+void __wrap_log_info(const char* fmt, u8 val1, u8 val2, u8 val3)
+{
 }
 
-Log* __wrap_log_dequeue(void){
+Log* __wrap_log_dequeue(void)
+{
     return mock_type(Log*);
 }
