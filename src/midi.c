@@ -51,6 +51,15 @@ static void setDynamicMode(bool enabled);
 static void updateDeviceChannelFromAssociatedMidiChannel(
     DeviceChannel* devChan);
 
+static void initMidiChannel(u8 midiChan)
+{
+    MidiChannel* chan = &midiChannels[midiChan];
+    chan->program = 0;
+    chan->pan = DEFAULT_MIDI_PAN;
+    chan->volume = MAX_MIDI_VOLUME;
+    chan->pitchBend = DEFAULT_MIDI_PITCH_BEND;
+}
+
 static void initDeviceChannel(u8 devChan)
 {
     DeviceChannel* chan = &deviceChannels[devChan];
@@ -68,15 +77,6 @@ static void initAllDeviceChannels(void)
     for (u16 i = 0; i < DEV_CHANS; i++) {
         initDeviceChannel(i);
     }
-}
-
-static void initMidiChannel(u8 midiChan)
-{
-    MidiChannel* chan = &midiChannels[midiChan];
-    chan->program = 0;
-    chan->pan = DEFAULT_MIDI_PAN;
-    chan->volume = MAX_MIDI_VOLUME;
-    chan->pitchBend = DEFAULT_MIDI_PITCH_BEND;
 }
 
 static void resetAllState(void)
@@ -232,31 +232,26 @@ static DeviceChannel* findSuitableDeviceChannel(u8 midiChan)
                        : deviceChannelByMidiChannel(midiChan);
 }
 
-static void noteOn(u8 midiChan, u8 pitch, u8 velocity)
-{
-    if (tooManyPercussiveNotes(midiChan)) {
-        return;
-    }
-    DeviceChannel* devChan = findSuitableDeviceChannel(midiChan);
-    if (devChan == NULL) {
-        overflow = true;
-        return;
-    }
-    overflow = false;
-    devChan->midiChannel = midiChan;
-    updateDeviceChannelFromAssociatedMidiChannel(devChan);
-    devChan->pitch = pitch;
-    devChan->noteOn = true;
-    devChan->ops->noteOn(devChan->number, pitch, velocity);
-}
-
 void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
 {
     if (velocity == MIN_MIDI_VELOCITY) {
         midi_noteOff(chan, pitch);
         return;
     }
-    noteOn(chan, pitch, velocity);
+    if (tooManyPercussiveNotes(chan)) {
+        return;
+    }
+    DeviceChannel* devChan = findSuitableDeviceChannel(chan);
+    if (devChan == NULL) {
+        overflow = true;
+        return;
+    }
+    overflow = false;
+    devChan->midiChannel = chan;
+    updateDeviceChannelFromAssociatedMidiChannel(devChan);
+    devChan->pitch = pitch;
+    devChan->noteOn = true;
+    devChan->ops->noteOn(devChan->number, pitch, velocity);
 }
 
 void midi_noteOff(u8 chan, u8 pitch)
