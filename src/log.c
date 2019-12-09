@@ -3,18 +3,27 @@
 #include <memory.h>
 #include <string.h>
 
-static Log theOneAndOnlyLog;
+#define MAX_LOG_ENTRIES 2
+
+static Log logs[MAX_LOG_ENTRIES];
+static u8 readHead;
+static u8 writeHead;
 
 void log_init(void)
 {
-    theOneAndOnlyLog.level = Info;
-    memset(&theOneAndOnlyLog.msg, 0, MSG_MAX_LEN);
-    theOneAndOnlyLog.msgLen = 0;
+    for (u8 i = 0; i < MAX_LOG_ENTRIES; i++) {
+        Log* log = &logs[i];
+        log->level = Info;
+        memset(&log->msg, 0, MSG_MAX_LEN);
+        log->msgLen = 0;
+    }
+    readHead = 0;
+    writeHead = 0;
 }
 
 void log_info(const char* fmt, u8 val1, u8 val2, u8 val3)
 {
-    Log* log = &theOneAndOnlyLog;
+    Log* log = &logs[writeHead++];
     sprintf(log->msg, fmt, val1, val2, val3);
     log->level = Info;
     log->msgLen = MSG_MAX_LEN;
@@ -22,5 +31,5 @@ void log_info(const char* fmt, u8 val1, u8 val2, u8 val3)
 
 Log* log_dequeue(void)
 {
-    return &theOneAndOnlyLog;
+    return &logs[readHead++];
 }

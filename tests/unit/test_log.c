@@ -26,3 +26,18 @@ static void test_log_info_writes_to_log_buffer(UNUSED void** state)
     assert_int_not_equal(log->msgLen, 0);
     assert_memory_equal("Test Message 1", log->msg, 15);
 }
+
+static void test_log_stores_two_logs(UNUSED void** state)
+{
+    __real_log_info("Test Message %d", 1);
+    __real_log_info("Test Message %d", 2);
+
+    Log* log1 = __real_log_dequeue();
+    assert_non_null(log1);
+
+    Log* log2 = __real_log_dequeue();
+    assert_non_null(log2);
+
+    assert_memory_equal("Test Message 1", log1->msg, 15);
+    assert_memory_equal("Test Message 2", log2->msg, 15);
+}
