@@ -2,6 +2,7 @@
 #include "buffer.h"
 #include "comm.h"
 #include "comm_serial.h"
+#include "log.h"
 #include "memcmp.h"
 #include "midi.h"
 #include "midi_receiver.h"
@@ -92,6 +93,11 @@ void ui_update(void)
 {
     if (lastUpdateFrame == frame) {
         return;
+    }
+
+    Log* log = log_dequeue();
+    if (log != NULL) {
+        drawText(log->msg, 0, 12);
     }
 
     static u8 activityFrame = 0;
