@@ -93,21 +93,25 @@ static void printLog(void)
     const u8 maxLines = 3;
 
     Log* log = log_dequeue();
-    if (log != NULL) {
-        if (logLine >= maxLines) {
-            VDP_clearTextArea(
-                MARGIN_X, LOG_Y + MARGIN_Y, MAX_EFFECTIVE_X, maxLines);
-            logLine = 0;
-        }
-        if (log->level == Info) {
-            VDP_setTextPalette(PAL2);
-        } else if (log->level == Warn) {
-            VDP_setTextPalette(PAL1);
-        }
-        drawText(log->msg, 0, LOG_Y + logLine);
-        VDP_setTextPalette(PAL0);
-        logLine++;
+    if (log == NULL) {
+        return;
     }
+    if (logLine >= maxLines) {
+        VDP_clearTextArea(
+            MARGIN_X, LOG_Y + MARGIN_Y, MAX_EFFECTIVE_X, maxLines);
+        logLine = 0;
+    }
+    switch (log->level) {
+    case Warn:
+        VDP_setTextPalette(PAL1);
+        break;
+    default:
+        VDP_setTextPalette(PAL2);
+        break;
+    }
+    drawText(log->msg, 0, LOG_Y + logLine);
+    VDP_setTextPalette(PAL0);
+    logLine++;
 }
 
 void ui_update(void)

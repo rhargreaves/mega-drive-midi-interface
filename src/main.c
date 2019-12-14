@@ -14,6 +14,5 @@ int main()
     midi_receiver_init();
     ui_init();
     SYS_setVIntCallback(ui_vsync);
-    log_info("Logging Test 1 2 3", 0, 0, 0);
     midi_receiver_perpectual_read();
 }

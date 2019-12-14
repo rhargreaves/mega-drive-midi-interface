@@ -5,7 +5,7 @@
 
 typedef enum LogLevel LogLevel;
 
-enum LogLevel { Info, Warn, Error };
+enum LogLevel { Info, Warn };
 
 typedef struct Log Log;
 
