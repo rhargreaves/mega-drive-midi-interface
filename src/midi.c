@@ -244,7 +244,7 @@ void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
     }
     DeviceChannel* devChan = findSuitableDeviceChannel(chan);
     if (devChan == NULL) {
-        log_info("Ch %d: Dropped note %d", chan + 1, pitch, 0);
+        log_warn("Ch %d: Dropped note %d", chan + 1, pitch, 0);
         overflow = true;
         return;
     }

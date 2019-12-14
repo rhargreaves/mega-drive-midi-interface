@@ -22,7 +22,7 @@
 #define BEATS_Y 2
 #define DYN_X 22
 #define DYN_Y 2
-#define LOG_Y 16
+#define LOG_Y 22
 #define RIGHTED_TEXT_X(text) (MAX_EFFECTIVE_X - (sizeof(text) - 1) + 1)
 #define CENTRED_TEXT_X(text) ((MAX_EFFECTIVE_X - (sizeof(text) - 1)) / 2)
 #define CHAN_X_GAP 3
@@ -38,17 +38,14 @@ static const char HEADER[] = "Mega Drive MIDI Interface";
 static const char CHAN_HEADER[] = "Ch.  F1 F2 F3 F4 F5 F6 P1 P2 P3 P4";
 static const char MIDI_HEADER[] = "MIDI";
 
+static void checkLastError(void);
 static void printChannels(void);
 static void printHeader(void);
 static void printLoad(void);
 static void printBeat(void);
 static u16 loadPercent(void);
-static void printLastError(void);
 static void printActivity(void);
-static void printOverflowStatus(void);
-static void printErrorText(const char* text);
 static void drawText(const char* text, u16 x, u16 y);
-static void clearText(u16 x, u16 y, u16 w);
 static void printChanActivity(u16 busy, u16 maxChannels, u16 x);
 static void printBaudRate(void);
 static void printCommMode(void);
@@ -97,9 +94,9 @@ static void printLog(void)
 
     Log* log = log_dequeue();
     if (log != NULL) {
-        if (logLine > maxLines) {
+        if (logLine >= maxLines) {
             VDP_clearTextArea(
-                MARGIN_X, LOG_Y + MARGIN_Y, MAX_EFFECTIVE_X, maxLines + 1);
+                MARGIN_X, LOG_Y + MARGIN_Y, MAX_EFFECTIVE_X, maxLines);
             logLine = 0;
         }
         if (log->level == Info) {
@@ -145,8 +142,7 @@ void ui_update(void)
 
     static u8 errorFrame = 0;
     if (++errorFrame == FRAMES_BEFORE_UPDATE_ERROR) {
-        printLastError();
-        printOverflowStatus();
+        checkLastError();
         errorFrame = 0;
     }
 
@@ -161,11 +157,6 @@ static u16 loadPercent(void)
         return 0;
     }
     return (busy * 100) / (idle + busy);
-}
-
-static void clearText(u16 x, u16 y, u16 w)
-{
-    VDP_clearText(MARGIN_X + x, MARGIN_Y + y, w);
 }
 
 static void drawText(const char* text, u16 x, u16 y)
@@ -330,15 +321,12 @@ static void printDynamicModeIfNeeded(void)
     }
 }
 
-static void printLastError(void)
+static void checkLastError(void)
 {
     static u8 lastStatus = 0;
-    static char text[MAX_ERROR_X];
-
     u8 unknownStatus = midi_receiver_lastUnknownStatus();
     if (unknownStatus != lastStatus && unknownStatus != 0) {
-        sprintf(text, "Unknown Status %02X", unknownStatus);
-        printErrorText(text);
+        log_warn("Unknown Status %02X", unknownStatus, 0, 0);
         lastStatus = unknownStatus;
     }
 
@@ -346,31 +334,8 @@ static void printLastError(void)
     ControlChange* cc = midi_lastUnknownCC();
     if ((cc->controller != lastCc.controller || cc->value != lastCc.value)
         && (cc->controller != 0 || cc->value != 0)) {
-        sprintf(text, "Unknown CC %02X Value %02X", cc->controller, cc->value);
-        printErrorText(text);
+        log_warn("Unknown CC %02X Value %02X", cc->controller, cc->value, 0);
         lastCc.controller = cc->controller;
         lastCc.value = cc->value;
     }
-}
-
-static void printOverflowStatus(void)
-{
-    static bool lastOverflow = false;
-    bool overflow = midi_overflow();
-    if (lastOverflow != overflow) {
-        if (overflow) {
-            printErrorText("Polyphony Overflow");
-        } else {
-            clearText(0, ERROR_Y, MAX_ERROR_X);
-        }
-        lastOverflow = overflow;
-    }
-}
-
-static void printErrorText(const char* text)
-{
-    VDP_setTextPalette(PAL1);
-    clearText(0, ERROR_Y, MAX_ERROR_X);
-    drawText(text, 0, ERROR_Y);
-    VDP_setTextPalette(PAL0);
 }
