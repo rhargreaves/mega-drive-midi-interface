@@ -50,13 +50,22 @@ static void test_log_stores_multiple_logs_and_overwrites_older(
         __real_log_info("Test Message %d", i);
     }
 
-    for (u8 i = 1; i <= 15; i++) {
-        u8 logNumber = i <= 5 ? i + 10 : i;
-        print_message("Dequeuing log %d\n", logNumber);
+    for (u8 i = 7; i <= 15; i++) {
+        print_message("Dequeuing log %d\n", i);
         Log* log = __real_log_dequeue();
 
         char expectedMsg[15];
-        sprintf(expectedMsg, "Test Message %d", logNumber);
+        sprintf(expectedMsg, "Test Message %d", i);
         assert_memory_equal(expectedMsg, log->msg, 15);
     }
+}
+
+static void
+test_log_returns_null_when_no_more_logs_are_available_to_be_dequeued(
+    UNUSED void** state)
+{
+    __real_log_info("Test Message %d", 1);
+
+    assert_non_null(__real_log_dequeue());
+    assert_null(__real_log_dequeue());
 }

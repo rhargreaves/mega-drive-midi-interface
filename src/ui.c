@@ -22,6 +22,7 @@
 #define BEATS_Y 2
 #define DYN_X 22
 #define DYN_Y 2
+#define LOG_Y 12
 #define RIGHTED_TEXT_X(text) (MAX_EFFECTIVE_X - (sizeof(text) - 1) + 1)
 #define CENTRED_TEXT_X(text) ((MAX_EFFECTIVE_X - (sizeof(text) - 1)) / 2)
 #define CHAN_X_GAP 3
@@ -89,15 +90,26 @@ static void printMappings(void)
     printMappingsIfDirty(midiChans);
 }
 
+static void printLog(void)
+{
+    static u8 logLine = 0;
+    const u8 maxLines = 10;
+
+    Log* log = log_dequeue();
+    if (log != NULL) {
+        drawText(log->msg, 0, LOG_Y + logLine);
+        logLine++;
+        if (logLine > maxLines) {
+            VDP_clearTextArea(
+                MARGIN_X, LOG_Y + MARGIN_Y, MAX_EFFECTIVE_X, maxLines);
+        }
+    }
+}
+
 void ui_update(void)
 {
     if (lastUpdateFrame == frame) {
         return;
-    }
-
-    Log* log = log_dequeue();
-    if (log != NULL) {
-        drawText(log->msg, 0, 12);
     }
 
     static u8 activityFrame = 0;
@@ -107,6 +119,7 @@ void ui_update(void)
         printBeat();
         printCommMode();
         printCommBuffer();
+        printLog();
         activityFrame = 0;
     }
 

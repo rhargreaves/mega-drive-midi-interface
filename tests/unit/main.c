@@ -199,7 +199,9 @@ int main(void)
 
         log_test(test_log_info_writes_to_log_buffer),
         log_test(test_log_stores_two_logs),
-        log_test(test_log_stores_multiple_logs_and_overwrites_older)
+        log_test(test_log_stores_multiple_logs_and_overwrites_older),
+        log_test(
+            test_log_returns_null_when_no_more_logs_are_available_to_be_dequeued)
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);

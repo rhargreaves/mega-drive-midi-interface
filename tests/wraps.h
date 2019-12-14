@@ -97,3 +97,4 @@ u32 __wrap_getFPS();
 void __wrap_log_init(void);
 void __wrap_log_info(const char* fmt, u8 val1, u8 val2, u8 val3);
 Log* __wrap_log_dequeue(void);
+void __wrap_VDP_clearTextArea(u16 x, u16 y, u16 w, u16 h);
