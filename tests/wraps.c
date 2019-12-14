@@ -9,10 +9,21 @@
 #include <stdbool.h>
 
 static bool disableChecks = false;
+static bool loggingChecks = false;
 
 void wraps_disable_checks(void)
 {
     disableChecks = true;
+}
+
+void wraps_disable_logging_checks(void)
+{
+    loggingChecks = false;
+}
+
+void wraps_enable_logging_checks(void)
+{
+    loggingChecks = true;
 }
 
 void wraps_enable_checks(void)
@@ -522,6 +533,24 @@ void __wrap_log_init(void)
 
 void __wrap_log_info(const char* fmt, u8 val1, u8 val2, u8 val3)
 {
+    if (!loggingChecks) {
+        return;
+    }
+    check_expected(fmt);
+    check_expected(val1);
+    check_expected(val2);
+    check_expected(val3);
+}
+
+void __wrap_log_warn(const char* fmt, u8 val1, u8 val2, u8 val3)
+{
+    if (!loggingChecks) {
+        return;
+    }
+    check_expected(fmt);
+    check_expected(val1);
+    check_expected(val2);
+    check_expected(val3);
 }
 
 Log* __wrap_log_dequeue(void)

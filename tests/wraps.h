@@ -8,7 +8,8 @@
 
 void wraps_disable_checks(void);
 void wraps_enable_checks(void);
-
+void wraps_disable_logging_checks(void);
+void wraps_enable_logging_checks(void);
 void __wrap_synth_enableLfo(u8 enable);
 void __wrap_synth_globalLfoFrequency(u8 freq);
 void __wrap_synth_noteOn(u8 channel);
@@ -96,5 +97,6 @@ u16 __wrap_SYS_getCPULoad();
 u32 __wrap_getFPS();
 void __wrap_log_init(void);
 void __wrap_log_info(const char* fmt, u8 val1, u8 val2, u8 val3);
+void __wrap_log_warn(const char* fmt, u8 val1, u8 val2, u8 val3);
 Log* __wrap_log_dequeue(void);
 void __wrap_VDP_clearTextArea(u16 x, u16 y, u16 w, u16 h);

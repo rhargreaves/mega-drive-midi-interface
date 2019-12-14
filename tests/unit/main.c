@@ -198,6 +198,7 @@ int main(void)
             test_midi_dynamic_sysex_removes_mapping_of_midi_channel),
 
         log_test(test_log_info_writes_to_log_buffer),
+        log_test(test_log_warn_writes_to_log_buffer),
         log_test(test_log_stores_two_logs),
         log_test(test_log_stores_multiple_logs_and_overwrites_older),
         log_test(

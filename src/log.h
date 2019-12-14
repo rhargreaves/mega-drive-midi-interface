@@ -17,4 +17,5 @@ struct Log {
 
 void log_init(void);
 void log_info(const char* fmt, u8 val1, u8 val2, u8 val3);
+void log_warn(const char* fmt, u8 val1, u8 val2, u8 val3);
 Log* log_dequeue(void);

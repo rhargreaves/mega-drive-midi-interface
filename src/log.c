@@ -1,8 +1,6 @@
 #include "log.h"
-
-#include <stdbool.h>
-
 #include <memory.h>
+#include <stdbool.h>
 #include <string.h>
 
 #define MAX_LOG_ENTRIES 10
@@ -46,13 +44,23 @@ static void incrementWriteHead(void)
     count++;
 }
 
-void log_info(const char* fmt, u8 val1, u8 val2, u8 val3)
+static void log(LogLevel level, const char* fmt, u8 val1, u8 val2, u8 val3)
 {
     Log* log = &logs[writeHead];
     incrementWriteHead();
     sprintf(log->msg, fmt, val1, val2, val3);
-    log->level = Info;
+    log->level = level;
     log->msgLen = MSG_MAX_LEN;
+}
+
+void log_info(const char* fmt, u8 val1, u8 val2, u8 val3)
+{
+    log(Info, fmt, val1, val2, val3);
+}
+
+void log_warn(const char* fmt, u8 val1, u8 val2, u8 val3)
+{
+    log(Warn, fmt, val1, val2, val3);
 }
 
 Log* log_dequeue(void)

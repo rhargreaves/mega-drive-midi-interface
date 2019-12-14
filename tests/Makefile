@@ -79,6 +79,7 @@ MOCKS=midi_process \
 	midi_channelMappings \
 	log_init \
 	log_info \
+	log_warn \
 	log_dequeue
 
 MD_MOCKS=SYS_setVIntCallback \

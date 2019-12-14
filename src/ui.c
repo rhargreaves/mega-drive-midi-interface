@@ -22,7 +22,7 @@
 #define BEATS_Y 2
 #define DYN_X 22
 #define DYN_Y 2
-#define LOG_Y 12
+#define LOG_Y 16
 #define RIGHTED_TEXT_X(text) (MAX_EFFECTIVE_X - (sizeof(text) - 1) + 1)
 #define CENTRED_TEXT_X(text) ((MAX_EFFECTIVE_X - (sizeof(text) - 1)) / 2)
 #define CHAN_X_GAP 3
@@ -93,16 +93,23 @@ static void printMappings(void)
 static void printLog(void)
 {
     static u8 logLine = 0;
-    const u8 maxLines = 10;
+    const u8 maxLines = 3;
 
     Log* log = log_dequeue();
     if (log != NULL) {
-        drawText(log->msg, 0, LOG_Y + logLine);
-        logLine++;
         if (logLine > maxLines) {
             VDP_clearTextArea(
-                MARGIN_X, LOG_Y + MARGIN_Y, MAX_EFFECTIVE_X, maxLines);
+                MARGIN_X, LOG_Y + MARGIN_Y, MAX_EFFECTIVE_X, maxLines + 1);
+            logLine = 0;
         }
+        if (log->level == Info) {
+            VDP_setTextPalette(PAL2);
+        } else if (log->level == Warn) {
+            VDP_setTextPalette(PAL1);
+        }
+        drawText(log->msg, 0, LOG_Y + logLine);
+        VDP_setTextPalette(PAL0);
+        logLine++;
     }
 }
 

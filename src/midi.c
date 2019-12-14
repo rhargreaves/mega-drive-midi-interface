@@ -1,5 +1,6 @@
 #include "midi.h"
 #include "comm.h"
+#include "log.h"
 #include "memcmp.h"
 #include "memory.h"
 #include "midi_fm.h"
@@ -243,6 +244,7 @@ void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
     }
     DeviceChannel* devChan = findSuitableDeviceChannel(chan);
     if (devChan == NULL) {
+        log_info("Ch %d: Dropped note %d", chan + 1, pitch, 0);
         overflow = true;
         return;
     }
