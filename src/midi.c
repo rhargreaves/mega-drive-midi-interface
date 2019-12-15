@@ -266,11 +266,6 @@ void midi_noteOff(u8 chan, u8 pitch)
     }
 }
 
-bool midi_overflow(void)
-{
-    return overflow;
-}
-
 static void channelPan(u8 chan, u8 pan)
 {
     MidiChannel* midiChannel = &midiChannels[chan];

@@ -22,6 +22,7 @@ static void test_midi_polyphonic_mode_sends_CCs_to_all_FM_channels(
 
 static void test_midi_set_overflow_flag_on_polyphony_breach(UNUSED void** state)
 {
+    wraps_enable_logging_checks();
     __real_midi_cc(0, CC_POLYPHONIC_MODE, 127);
 
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
@@ -40,58 +41,11 @@ static void test_midi_set_overflow_flag_on_polyphony_breach(UNUSED void** state)
         __real_midi_noteOn(0, A_SHARP, 127);
     }
 
+    expect_any(__wrap_log_warn, fmt);
+    expect_any(__wrap_log_warn, val1);
+    expect_any(__wrap_log_warn, val2);
+    expect_any(__wrap_log_warn, val3);
     __real_midi_noteOn(0, A_SHARP, 127);
-
-    assert_true(midi_overflow());
-}
-
-static void test_midi_clears_overflow_flag(UNUSED void** state)
-{
-    __real_midi_cc(0, CC_POLYPHONIC_MODE, 127);
-
-    for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
-        expect_value(__wrap_synth_pitch, channel, chan);
-        expect_any(__wrap_synth_pitch, octave);
-        expect_any(__wrap_synth_pitch, freqNumber);
-        expect_synth_volume_any();
-        expect_value(__wrap_synth_noteOn, channel, chan);
-
-        __real_midi_noteOn(0, A_SHARP + chan, 127);
-    }
-    for (int chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN - 1; chan++) {
-        expect_value(__wrap_psg_frequency, channel, chan - MIN_PSG_CHAN);
-        expect_any(__wrap_psg_frequency, freq);
-        expect_value(__wrap_psg_attenuation, channel, chan - MIN_PSG_CHAN);
-        expect_value(__wrap_psg_attenuation, attenuation, 0);
-
-        __real_midi_noteOn(0, A_SHARP + chan, 127);
-    }
-
-    __real_midi_noteOn(0, A_SHARP + MAX_PSG_CHAN, 127);
-
-    assert_true(midi_overflow());
-
-    for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
-        expect_value(__wrap_synth_noteOff, channel, chan);
-
-        __real_midi_noteOff(0, A_SHARP + chan);
-    }
-    for (int chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN - 1; chan++) {
-        expect_any(__wrap_psg_attenuation, channel);
-        expect_any(__wrap_psg_attenuation, attenuation);
-
-        __real_midi_noteOff(0, A_SHARP + chan);
-    }
-
-    expect_value(__wrap_synth_pitch, channel, 0);
-    expect_any(__wrap_synth_pitch, octave);
-    expect_any(__wrap_synth_pitch, freqNumber);
-    expect_synth_volume_any();
-    expect_value(__wrap_synth_noteOn, channel, 0);
-
-    __real_midi_noteOn(0, A_SHARP, 127);
-
-    assert_false(midi_overflow());
 }
 
 static void test_midi_polyphonic_mode_uses_multiple_fm_channels(

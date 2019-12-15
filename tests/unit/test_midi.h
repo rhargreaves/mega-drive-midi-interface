@@ -10,6 +10,7 @@
 #include "psg_chip.h"
 #include "synth.h"
 #include "unused.h"
+#include "wraps.h"
 #include <cmocka.h>
 
 #define A_SHARP 94

@@ -104,7 +104,6 @@ int main(void)
         midi_test(test_midi_sets_unknown_CC),
         midi_test(test_midi_polyphonic_mode_sends_CCs_to_all_FM_channels),
         midi_test(test_midi_set_overflow_flag_on_polyphony_breach),
-        midi_test(test_midi_clears_overflow_flag),
         midi_test(test_midi_increments_beat_every_24th_clock),
         midi_test(test_midi_start_resets_clock),
         midi_test(test_midi_position_sets_correct_timing),
