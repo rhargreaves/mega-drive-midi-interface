@@ -28,6 +28,8 @@
 #define CHAN_X_GAP 3
 #define ACTIVITY_FM_X 6
 #define ACTIVITY_Y 8
+#define CHAN_Y 4
+#define MIDI_Y 6
 
 #define FRAMES_BEFORE_UPDATE_ACTIVITY 5
 #define FRAMES_BEFORE_UPDATE_ERROR 11
@@ -176,9 +178,9 @@ static void printHeader(void)
 
 static void printChannels(void)
 {
-    drawText(CHAN_HEADER, 0, 4);
-    drawText(MIDI_HEADER, 0, 6);
-    drawText("Act.", 0, 8);
+    drawText(CHAN_HEADER, 0, CHAN_Y);
+    drawText(MIDI_HEADER, 0, MIDI_Y);
+    drawText("Act.", 0, ACTIVITY_Y);
 }
 
 static void printCommBuffer(void)
@@ -220,7 +222,7 @@ static void printMappingsIfDirty(u8* midiChans)
     sprintf(text, "%2d %2d %2d %2d %2d %2d %2d %2d %2d %2d", midiChans[0],
         midiChans[1], midiChans[2], midiChans[3], midiChans[4], midiChans[5],
         midiChans[6], midiChans[7], midiChans[8], midiChans[9]);
-    drawText(text, 5, 6);
+    drawText(text, 5, MIDI_Y);
 }
 
 static void populateMappings(u8* midiChans)
