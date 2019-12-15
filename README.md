@@ -3,7 +3,7 @@
 Control the Yamaha YM2612 and PSG chips of the SEGA Mega Drive via MIDI.
 
 <p align="center">
-    <img src="https://github.com/rhargreaves/mega-drive-midi-interface/raw/master/docs/screenshot.png" width="600" />
+    <img src="https://github.com/rhargreaves/mega-drive-midi-interface/raw/master/docs/screenshot.jpg" width="600" />
 </p>
 
 ## Features
