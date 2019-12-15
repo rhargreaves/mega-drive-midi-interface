@@ -31,6 +31,10 @@
 #define CHAN_Y 4
 #define MIDI_Y 6
 
+#define PALETTE_INDEX(pal, index) ((pal * 16) + index)
+#define FONT_COLOUR_INDEX 15
+#define BG_COLOUR_INDEX 0
+
 #define FRAMES_BEFORE_UPDATE_ACTIVITY 5
 #define FRAMES_BEFORE_UPDATE_ERROR 11
 #define FRAMES_BEFORE_UPDATE_LOAD 47
@@ -66,8 +70,12 @@ static volatile u16 frame = 0;
 
 void ui_init(void)
 {
-    VDP_setBackgroundColor(0);
-    VDP_setPaletteColor(0, RGB24_TO_VDPCOLOR(0x202020));
+    VDP_setBackgroundColor(BG_COLOUR_INDEX);
+    VDP_setPaletteColor(BG_COLOUR_INDEX, RGB24_TO_VDPCOLOR(0x202020));
+    VDP_setPaletteColor(
+        PALETTE_INDEX(PAL1, FONT_COLOUR_INDEX), RGB24_TO_VDPCOLOR(0xFFFF00));
+    VDP_setPaletteColor(
+        PALETTE_INDEX(PAL3, FONT_COLOUR_INDEX), RGB24_TO_VDPCOLOR(0x808080));
     printHeader();
     printChannels();
     printLoad();
@@ -178,7 +186,9 @@ static void printHeader(void)
 
 static void printChannels(void)
 {
+    VDP_setTextPalette(PAL3);
     drawText(CHAN_HEADER, 0, CHAN_Y);
+    VDP_setTextPalette(PAL0);
     drawText(MIDI_HEADER, 0, MIDI_Y);
     drawText("Act.", 0, ACTIVITY_Y);
 }
