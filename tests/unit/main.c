@@ -195,6 +195,8 @@ int main(void)
         dynamic_midi_test(test_midi_dynamic_sysex_remaps_midi_channel),
         dynamic_midi_test(
             test_midi_dynamic_sysex_removes_mapping_of_midi_channel),
+        dynamic_midi_test(
+            test_midi_dynamic_prefers_psg_for_square_wave_instruments),
 
         log_test(test_log_info_writes_to_log_buffer),
         log_test(test_log_warn_writes_to_log_buffer),

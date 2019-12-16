@@ -465,3 +465,20 @@ static void test_midi_dynamic_sysex_removes_mapping_of_midi_channel(
     print_message("Playing note\n");
     __real_midi_noteOn(MIDI_CHANNEL, 60, 127);
 }
+
+static void test_midi_dynamic_prefers_psg_for_square_wave_instruments(
+    UNUSED void** state)
+{
+    const u8 PSG_CHANNEL = 0;
+    const u8 MIDI_CHANNEL = 0;
+    const u8 SQUARE_WAVE_MIDI_PROGRAM = 81;
+
+    __real_midi_program(MIDI_CHANNEL, SQUARE_WAVE_MIDI_PROGRAM);
+
+    expect_value(__wrap_psg_frequency, channel, PSG_CHANNEL);
+    expect_any(__wrap_psg_frequency, freq);
+    expect_value(__wrap_psg_attenuation, channel, PSG_CHANNEL);
+    expect_any(__wrap_psg_attenuation, attenuation);
+
+    __real_midi_noteOn(MIDI_CHANNEL, A_SHARP, MAX_MIDI_VOLUME);
+}

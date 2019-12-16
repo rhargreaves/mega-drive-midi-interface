@@ -132,7 +132,7 @@ static bool isChannelSuitable(DeviceChannel* chan, u8 incomingMidiChan)
         && !isPsgAndIncomingChanIsPercussive(chan, incomingMidiChan);
 }
 
-static DeviceChannel* findFreeChannel(u8 incomingMidiChan)
+static DeviceChannel* findFreeChannel(u8 incomingMidiChan, u8 pitch)
 {
     for (u16 i = 0; i < DEV_CHANS; i++) {
         DeviceChannel* chan = &deviceChannels[i];
@@ -142,6 +142,17 @@ static DeviceChannel* findFreeChannel(u8 incomingMidiChan)
             }
         }
     }
+
+    MidiChannel* midiChan = &midiChannels[incomingMidiChan];
+    if (midiChan->program == 81) {
+        for (u16 i = DEV_CHAN_MIN_PSG; i < DEV_CHANS; i++) {
+            DeviceChannel* chan = &deviceChannels[i];
+            if (isChannelSuitable(chan, incomingMidiChan)) {
+                return chan;
+            }
+        }
+    }
+
     for (u16 i = 0; i < DEV_CHANS; i++) {
         DeviceChannel* chan = &deviceChannels[i];
         if (isChannelSuitable(chan, incomingMidiChan)) {
@@ -227,9 +238,9 @@ static void updateDeviceChannelFromAssociatedMidiChannel(DeviceChannel* devChan)
     updatePitchBend(midiChannel, devChan);
 }
 
-static DeviceChannel* findSuitableDeviceChannel(u8 midiChan)
+static DeviceChannel* findSuitableDeviceChannel(u8 midiChan, u8 pitch)
 {
-    return dynamicMode ? findFreeChannel(midiChan)
+    return dynamicMode ? findFreeChannel(midiChan, pitch)
                        : deviceChannelByMidiChannel(midiChan);
 }
 
@@ -242,7 +253,7 @@ void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
     if (tooManyPercussiveNotes(chan)) {
         return;
     }
-    DeviceChannel* devChan = findSuitableDeviceChannel(chan);
+    DeviceChannel* devChan = findSuitableDeviceChannel(chan, pitch);
     if (devChan == NULL) {
         log_warn("Ch %d: Dropped note %d", chan + 1, pitch, 0);
         overflow = true;
