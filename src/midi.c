@@ -41,7 +41,6 @@ struct MidiChannel {
 static MidiChannel midiChannels[MIDI_CHANNELS];
 static ControlChange lastUnknownControlChange;
 static Timing timing;
-static bool overflow;
 static bool dynamicMode;
 static bool disableNonGeneralMidiCCs;
 
@@ -94,7 +93,6 @@ static void resetAllState(void)
 void midi_init(const FmChannel** defaultPresets,
     const PercussionPreset** defaultPercussionPresets)
 {
-    overflow = false;
     dynamicMode = false;
     disableNonGeneralMidiCCs = false;
     resetAllState();
@@ -256,10 +254,8 @@ void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
     DeviceChannel* devChan = findSuitableDeviceChannel(chan);
     if (devChan == NULL) {
         log_warn("Ch %d: Dropped note %d", chan + 1, pitch, 0);
-        overflow = true;
         return;
     }
-    overflow = false;
     devChan->midiChannel = chan;
     updateDeviceChannelFromAssociatedMidiChannel(devChan);
     devChan->pitch = pitch;
