@@ -1,5 +1,7 @@
 #include "test_midi.h"
 
+#define LENGTH_OF(x) (sizeof(x) / sizeof((x)[0]))
+
 static int test_dynamic_midi_setup(UNUSED void** state)
 {
     test_midi_setup(state);
@@ -471,14 +473,22 @@ static void test_midi_dynamic_prefers_psg_for_square_wave_instruments(
 {
     const u8 PSG_CHANNEL = 0;
     const u8 MIDI_CHANNEL = 0;
-    const u8 SQUARE_WAVE_MIDI_PROGRAM = 81;
+    const u8 SQUARE_WAVE_MIDI_PROGRAMS[3] = { 80, 89, 99 };
 
-    __real_midi_program(MIDI_CHANNEL, SQUARE_WAVE_MIDI_PROGRAM);
+    for (u8 i = 0; i < LENGTH_OF(SQUARE_WAVE_MIDI_PROGRAMS); i++) {
+        u8 program = SQUARE_WAVE_MIDI_PROGRAMS[i];
+        __real_midi_program(MIDI_CHANNEL, program);
 
-    expect_value(__wrap_psg_frequency, channel, PSG_CHANNEL);
-    expect_any(__wrap_psg_frequency, freq);
-    expect_value(__wrap_psg_attenuation, channel, PSG_CHANNEL);
-    expect_any(__wrap_psg_attenuation, attenuation);
+        expect_value(__wrap_psg_frequency, channel, PSG_CHANNEL);
+        expect_any(__wrap_psg_frequency, freq);
+        expect_value(__wrap_psg_attenuation, channel, PSG_CHANNEL);
+        expect_any(__wrap_psg_attenuation, attenuation);
 
-    __real_midi_noteOn(MIDI_CHANNEL, A_SHARP, MAX_MIDI_VOLUME);
+        __real_midi_noteOn(MIDI_CHANNEL, A_SHARP, MAX_MIDI_VOLUME);
+
+        expect_value(__wrap_psg_attenuation, channel, PSG_CHANNEL);
+        expect_any(__wrap_psg_attenuation, attenuation);
+
+        __real_midi_noteOff(MIDI_CHANNEL, A_SHARP);
+    }
 }

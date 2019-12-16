@@ -132,7 +132,7 @@ static bool isChannelSuitable(DeviceChannel* chan, u8 incomingMidiChan)
 
 static DeviceChannel* findFreeChannel(u8 incomingMidiChan)
 {
-    const u8 PSG_PREFERRED_MIDI_PROGRAM = 81;
+    const u8 SQUARE_WAVE_MIDI_PROGRAMS[3] = { 80, 89, 99 };
 
     for (u16 i = 0; i < DEV_CHANS; i++) {
         DeviceChannel* chan = &deviceChannels[i];
@@ -144,11 +144,14 @@ static DeviceChannel* findFreeChannel(u8 incomingMidiChan)
     }
 
     MidiChannel* midiChan = &midiChannels[incomingMidiChan];
-    if (midiChan->program == PSG_PREFERRED_MIDI_PROGRAM) {
-        for (u16 i = DEV_CHAN_MIN_PSG; i < DEV_CHANS; i++) {
-            DeviceChannel* chan = &deviceChannels[i];
-            if (isChannelSuitable(chan, incomingMidiChan)) {
-                return chan;
+    for (u16 p = 0; p < LENGTH_OF(SQUARE_WAVE_MIDI_PROGRAMS); p++) {
+        u8 program = SQUARE_WAVE_MIDI_PROGRAMS[p];
+        if (midiChan->program == program) {
+            for (u16 i = DEV_CHAN_MIN_PSG; i < DEV_CHANS; i++) {
+                DeviceChannel* chan = &deviceChannels[i];
+                if (isChannelSuitable(chan, incomingMidiChan)) {
+                    return chan;
+                }
             }
         }
     }
