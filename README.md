@@ -185,9 +185,11 @@ _Note: Documentation on the YM2612 frequently muddles the second and third opera
 | 0xFB   | Continue              | None                   |
 | 0xFC   | Stop                  | None                   |
 
-### System Exclusive Messages
+## Configuration & Advanced Operations
 
-| Name                            | Sequence            | Description                                                                                                                                                                                        |
+The interface is configurable by sending specific System Exclusive messages to the Mega Drive. There are also a number of advanced operations which have a specific effect when received. A list of all possible SysEx messages are given below:
+
+| Name                            | SysEx Sequence      | Description                                                                                                                                                                                        |
 | ------------------------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | General MIDI Reset              | `7E 7F 09 01`       | Force all notes off on all channels                                                                                                                                                                |
 | Remap MIDI Channel              | `00 22 77 00 xx yy` | Remap MIDI channel _xx_ to device channel _yy_<br/>_xx_ = MIDI channel (0-15), unassigned (127)<br/>_yy_ = FM (0-5), PSG (6-9), unassigned (127)                                                   |
@@ -195,8 +197,6 @@ _Note: Documentation on the YM2612 frequently muddles the second and third opera
 | Dynamic Channelling Mode        | `00 22 77 03 xx`    | Dynamically assigns MIDI channels to idle FM/PSG channels to allow for maximum polyphony and variation in instrumentation.<br/>_xx_ = Enable (01) / Disable (00)                                   |
 | Non-General MIDI CCs            | `00 22 77 04 xx`    | Respond to non-General MIDI CCs.<br/>_xx_ = Enable (01) / Disable (00)                                                                                                                             |
 | Polyphony Sticks to Device Type | `00 22 77 05 xx`    | MIDI channel polyphony will stick to originally assigned device type (FM or PSG). Enable for consistent voicing, but disable to allow for maximum polyphony.<br/>_xx_ = Enable (01) / Disable (00) |
-
-All other messages are ignored.
 
 ## Performance
 
