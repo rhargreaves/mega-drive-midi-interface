@@ -199,6 +199,21 @@ static DeviceChannel* findDeviceSpecificChannel(u8 incomingMidiChan)
                     return chan;
                 }
             }
+        } else {
+            for (u16 i = DEV_CHAN_MIN_PSG; i <= DEV_CHAN_MAX_TONE_PSG; i++) {
+                DeviceChannel* chan = &deviceChannels[i];
+                if (isChannelSuitable(chan, incomingMidiChan)) {
+                    return chan;
+                }
+            }
+            for (u16 i = DEV_CHAN_MIN_PSG; i <= DEV_CHAN_MAX_TONE_PSG; i++) {
+                DeviceChannel* chan = &deviceChannels[i];
+                if (chan->midiChannel == incomingMidiChan
+                    && !isPsgAndIncomingChanIsPercussive(
+                           chan, incomingMidiChan)) {
+                    return chan;
+                }
+            }
         }
     }
     return NULL;

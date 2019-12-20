@@ -19,28 +19,16 @@ static int test_dynamic_midi_setup(UNUSED void** state)
     return 0;
 }
 
-static void test_midi_dynamic_uses_all_channels(UNUSED void** state)
+static void test_midi_dynamic_uses_all_fm_channels(UNUSED void** state)
 {
     const u8 octave = 4;
     const u16 freq = 0x28d;
     const u16 pitch = 60;
 
-    print_message("FM channels...\n");
     for (u16 i = DEV_CHAN_MIN_FM; i <= DEV_CHAN_MAX_FM; i++) {
         expect_synth_pitch(i, octave, freq);
         expect_synth_volume_any();
         expect_value(__wrap_synth_noteOn, channel, i);
-
-        __real_midi_noteOn(0, pitch, 127);
-    }
-
-    print_message("PSG channels (except noise)..\n");
-    for (u16 i = DEV_CHAN_MIN_PSG; i <= DEV_CHAN_MAX_PSG - 1; i++) {
-        u8 psgChan = i - DEV_CHAN_MIN_PSG;
-        expect_value(__wrap_psg_frequency, channel, psgChan);
-        expect_any(__wrap_psg_frequency, freq);
-        expect_value(__wrap_psg_attenuation, channel, psgChan);
-        expect_value(__wrap_psg_attenuation, attenuation, 0);
 
         __real_midi_noteOn(0, pitch, 127);
     }
@@ -85,15 +73,6 @@ static void test_midi_dynamic_reuses_mapped_midi_channel_even_if_busy(
         expect_value(__wrap_synth_noteOn, channel, chan);
 
         print_message("FM channel %d\n", chan);
-        __real_midi_noteOn(REUSE_MIDI_CHANNEL, pitch, 127);
-    }
-    for (u8 chan = DEV_CHAN_MIN_PSG; chan <= DEV_CHAN_MAX_TONE_PSG; chan++) {
-        expect_value(__wrap_psg_frequency, channel, chan - DEV_CHAN_MIN_PSG);
-        expect_any(__wrap_psg_frequency, freq);
-        expect_value(__wrap_psg_attenuation, channel, chan - DEV_CHAN_MIN_PSG);
-        expect_any(__wrap_psg_attenuation, attenuation);
-
-        print_message("PSG channel %d\n", chan - DEV_CHAN_MIN_PSG);
         __real_midi_noteOn(REUSE_MIDI_CHANNEL, pitch, 127);
     }
 
@@ -540,4 +519,31 @@ static void test_midi_dynamic_sticks_to_assigned_device_type_for_midi_channels(
     expect_synth_volume_any();
     expect_value(__wrap_synth_noteOn, channel, 0);
     __real_midi_noteOn(REUSE_MIDI_CHANNEL, A_SHARP, 127);
+}
+
+static void
+test_midi_dynamic_sticks_to_assigned_psg_device_type_for_midi_channels(
+    UNUSED void** state)
+{
+    const u8 MIDI_CHANNEL = 0;
+    const u8 SQUARE_WAVE_MIDI_PROGRAM = 80;
+
+    __real_midi_program(MIDI_CHANNEL, SQUARE_WAVE_MIDI_PROGRAM);
+
+    for (u8 chan = DEV_CHAN_MIN_PSG; chan <= DEV_CHAN_MAX_TONE_PSG; chan++) {
+        u8 psgChannel = chan - DEV_CHAN_MIN_PSG;
+        expect_value(__wrap_psg_frequency, channel, psgChannel);
+        expect_any(__wrap_psg_frequency, freq);
+        expect_value(__wrap_psg_attenuation, channel, psgChannel);
+        expect_any(__wrap_psg_attenuation, attenuation);
+
+        __real_midi_noteOn(MIDI_CHANNEL, A_SHARP, MAX_MIDI_VOLUME);
+    }
+
+    expect_value(__wrap_psg_frequency, channel, 0);
+    expect_any(__wrap_psg_frequency, freq);
+    expect_value(__wrap_psg_attenuation, channel, 0);
+    expect_any(__wrap_psg_attenuation, attenuation);
+
+    __real_midi_noteOn(MIDI_CHANNEL, B, 127);
 }
