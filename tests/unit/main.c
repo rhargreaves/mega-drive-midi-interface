@@ -172,7 +172,7 @@ int main(void)
         comm_test(test_comm_clamps_idle_count),
         comm_test(test_comm_clamps_busy_count),
 
-        dynamic_midi_test(test_midi_dynamic_uses_all_fm_channels),
+        dynamic_midi_test(test_midi_dynamic_uses_all_channels),
         dynamic_midi_test(
             test_midi_dynamic_tries_to_reuse_original_midi_channel_if_available),
         dynamic_midi_test(test_midi_reports_dynamic_mode_enabled),

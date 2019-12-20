@@ -28,16 +28,28 @@ static int test_dynamic_midi_setup(UNUSED void** state)
     return 0;
 }
 
-static void test_midi_dynamic_uses_all_fm_channels(UNUSED void** state)
+static void test_midi_dynamic_uses_all_channels(UNUSED void** state)
 {
     const u8 octave = 4;
     const u16 freq = 0x28d;
     const u16 pitch = 60;
 
+    print_message("FM channels...\n");
     for (u16 i = DEV_CHAN_MIN_FM; i <= DEV_CHAN_MAX_FM; i++) {
         expect_synth_pitch(i, octave, freq);
         expect_synth_volume_any();
         expect_value(__wrap_synth_noteOn, channel, i);
+
+        __real_midi_noteOn(0, pitch, 127);
+    }
+
+    print_message("PSG channels (except noise)..\n");
+    for (u16 i = DEV_CHAN_MIN_PSG; i <= DEV_CHAN_MAX_PSG - 1; i++) {
+        u8 psgChan = i - DEV_CHAN_MIN_PSG;
+        expect_value(__wrap_psg_frequency, channel, psgChan);
+        expect_any(__wrap_psg_frequency, freq);
+        expect_value(__wrap_psg_attenuation, channel, psgChan);
+        expect_value(__wrap_psg_attenuation, attenuation, 0);
 
         __real_midi_noteOn(0, pitch, 127);
     }
