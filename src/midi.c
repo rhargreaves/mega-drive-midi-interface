@@ -50,6 +50,7 @@ static void sendPong(void);
 static void setDynamicMode(bool enabled);
 static void updateDeviceChannelFromAssociatedMidiChannel(
     DeviceChannel* devChan);
+static DeviceChannel* deviceChannelByMidiChannel(u8 midiChannel);
 
 static void initMidiChannel(u8 midiChan)
 {
@@ -175,27 +176,13 @@ static DeviceChannel* findAnyFreeChannel(u8 incomingMidiChan)
 
 static DeviceChannel* findDeviceSpecificChannel(u8 incomingMidiChan)
 {
-    DeviceChannel* assignedChan = NULL;
-    for (u16 i = 0; i < DEV_CHANS; i++) {
-        DeviceChannel* chan = &deviceChannels[i];
-        if (chan->midiChannel == incomingMidiChan) {
-            assignedChan = chan;
-            break;
-        }
-    }
+    DeviceChannel* assignedChan = deviceChannelByMidiChannel(incomingMidiChan);
     if (assignedChan == NULL) {
         return NULL;
     }
-
-    u8 minChan;
-    u8 maxChan;
-    if (assignedChan->ops == &FM_VTable) {
-        minChan = DEV_CHAN_MIN_FM;
-        maxChan = DEV_CHAN_MAX_FM;
-    } else {
-        minChan = DEV_CHAN_MIN_PSG;
-        maxChan = DEV_CHAN_MAX_TONE_PSG;
-    }
+    bool isFm = (assignedChan->ops == &FM_VTable);
+    u8 minChan = isFm ? DEV_CHAN_MIN_FM : DEV_CHAN_MIN_PSG;
+    u8 maxChan = isFm ? DEV_CHAN_MAX_FM : DEV_CHAN_MAX_TONE_PSG;
     for (u16 i = minChan; i <= maxChan; i++) {
         DeviceChannel* chan = &deviceChannels[i];
         if (isChannelSuitable(chan, incomingMidiChan)) {
