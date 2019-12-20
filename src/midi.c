@@ -173,6 +173,37 @@ static DeviceChannel* findAnyFreeChannel(u8 incomingMidiChan)
     return NULL;
 }
 
+static DeviceChannel* findDeviceSpecificChannel(u8 incomingMidiChan)
+{
+    DeviceChannel* assignedChan = NULL;
+    for (u16 i = 0; i < DEV_CHANS; i++) {
+        DeviceChannel* chan = &deviceChannels[i];
+        if (chan->midiChannel == incomingMidiChan) {
+            assignedChan = chan;
+            break;
+        }
+    }
+    if (assignedChan != NULL) {
+        if (assignedChan->ops == &FM_VTable) {
+            for (u16 i = DEV_CHAN_MIN_FM; i <= DEV_CHAN_MAX_FM; i++) {
+                DeviceChannel* chan = &deviceChannels[i];
+                if (isChannelSuitable(chan, incomingMidiChan)) {
+                    return chan;
+                }
+            }
+            for (u16 i = DEV_CHAN_MIN_FM; i <= DEV_CHAN_MAX_FM; i++) {
+                DeviceChannel* chan = &deviceChannels[i];
+                if (chan->midiChannel == incomingMidiChan && !isPsgNoise(chan)
+                    && !isPsgAndIncomingChanIsPercussive(
+                           chan, incomingMidiChan)) {
+                    return chan;
+                }
+            }
+        }
+    }
+    return NULL;
+}
+
 static DeviceChannel* findMidiAssignedChannel(u8 incomingMidiChan)
 {
     for (u16 i = 0; i < DEV_CHANS; i++) {
@@ -192,6 +223,10 @@ static DeviceChannel* findFreeChannel(u8 incomingMidiChan)
         return chan;
     }
     chan = findFreePsgChannelForSquareWaveVoices(incomingMidiChan);
+    if (chan != NULL) {
+        return chan;
+    }
+    chan = findDeviceSpecificChannel(incomingMidiChan);
     if (chan != NULL) {
         return chan;
     }

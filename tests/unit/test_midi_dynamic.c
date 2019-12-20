@@ -520,3 +520,24 @@ static void test_midi_dynamic_prefers_psg_for_square_wave_instruments(
         __real_midi_noteOff(MIDI_CHANNEL, A_SHARP);
     }
 }
+
+static void test_midi_dynamic_sticks_to_assigned_device_type_for_midi_channels(
+    UNUSED void** state)
+{
+    const u16 pitch = B;
+    const u8 REUSE_MIDI_CHANNEL = 2;
+
+    for (u8 chan = DEV_CHAN_MIN_FM; chan <= DEV_CHAN_MAX_FM; chan++) {
+        expect_synth_pitch_any();
+        expect_synth_volume_any();
+        expect_value(__wrap_synth_noteOn, channel, chan);
+
+        print_message("FM channel %d\n", chan);
+        __real_midi_noteOn(REUSE_MIDI_CHANNEL, pitch, 127);
+    }
+
+    expect_synth_pitch(0, 6, 0x48c);
+    expect_synth_volume_any();
+    expect_value(__wrap_synth_noteOn, channel, 0);
+    __real_midi_noteOn(REUSE_MIDI_CHANNEL, A_SHARP, 127);
+}
