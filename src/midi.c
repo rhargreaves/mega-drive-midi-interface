@@ -219,18 +219,6 @@ static DeviceChannel* findDeviceSpecificChannel(u8 incomingMidiChan)
     return NULL;
 }
 
-static DeviceChannel* findMidiAssignedChannel(u8 incomingMidiChan)
-{
-    for (u16 i = 0; i < DEV_CHANS; i++) {
-        DeviceChannel* chan = &deviceChannels[i];
-        if (chan->midiChannel == incomingMidiChan && !isPsgNoise(chan)
-            && !isPsgAndIncomingChanIsPercussive(chan, incomingMidiChan)) {
-            return chan;
-        }
-    }
-    return NULL;
-}
-
 static DeviceChannel* findFreeChannel(u8 incomingMidiChan)
 {
     DeviceChannel* chan = findFreeMidiAssignedChannel(incomingMidiChan);
@@ -246,10 +234,6 @@ static DeviceChannel* findFreeChannel(u8 incomingMidiChan)
         return chan;
     }
     chan = findAnyFreeChannel(incomingMidiChan);
-    if (chan != NULL) {
-        return chan;
-    }
-    chan = findMidiAssignedChannel(incomingMidiChan);
     if (chan != NULL) {
         return chan;
     }
