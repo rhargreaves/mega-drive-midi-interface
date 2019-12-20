@@ -130,10 +130,8 @@ static bool isChannelSuitable(DeviceChannel* chan, u8 incomingMidiChan)
         && !isPsgAndIncomingChanIsPercussive(chan, incomingMidiChan);
 }
 
-static DeviceChannel* findFreeChannel(u8 incomingMidiChan)
+static DeviceChannel* findFreeMidiAssignedChannel(u8 incomingMidiChan)
 {
-    const u8 SQUARE_WAVE_MIDI_PROGRAMS[3] = { 80, 89, 99 };
-
     for (u16 i = 0; i < DEV_CHANS; i++) {
         DeviceChannel* chan = &deviceChannels[i];
         if (chan->midiChannel == incomingMidiChan) {
@@ -142,6 +140,12 @@ static DeviceChannel* findFreeChannel(u8 incomingMidiChan)
             }
         }
     }
+    return NULL;
+}
+
+static DeviceChannel* findFreePsgChannelForSquareWaveVoices(u8 incomingMidiChan)
+{
+    const u8 SQUARE_WAVE_MIDI_PROGRAMS[3] = { 80, 89, 99 };
 
     MidiChannel* midiChan = &midiChannels[incomingMidiChan];
     for (u16 p = 0; p < LENGTH_OF(SQUARE_WAVE_MIDI_PROGRAMS); p++) {
@@ -155,13 +159,36 @@ static DeviceChannel* findFreeChannel(u8 incomingMidiChan)
             }
         }
     }
+    return NULL;
+}
 
+static DeviceChannel* findAnyFreeChannel(u8 incomingMidiChan)
+{
     for (u16 i = 0; i < DEV_CHANS; i++) {
         DeviceChannel* chan = &deviceChannels[i];
         if (isChannelSuitable(chan, incomingMidiChan)) {
             return chan;
         }
     }
+    return NULL;
+}
+
+static DeviceChannel* findFreeChannel(u8 incomingMidiChan)
+{
+
+    DeviceChannel* chan = findFreeMidiAssignedChannel(incomingMidiChan);
+    if (chan != NULL) {
+        return chan;
+    }
+    chan = findFreePsgChannelForSquareWaveVoices(incomingMidiChan);
+    if (chan != NULL) {
+        return chan;
+    }
+    chan = findAnyFreeChannel(incomingMidiChan);
+    if (chan != NULL) {
+        return chan;
+    }
+
     return NULL;
 }
 
