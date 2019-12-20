@@ -44,8 +44,6 @@ static void test_midi_dynamic_uses_all_channels(UNUSED void** state)
 
         __real_midi_noteOn(0, pitch, 127);
     }
-
-    __real_midi_noteOn(0, pitch, 127);
 }
 
 static void test_midi_dynamic_tries_to_reuse_original_midi_channel_if_available(
@@ -73,6 +71,36 @@ static void test_midi_dynamic_tries_to_reuse_original_midi_channel_if_available(
     expect_value(__wrap_synth_noteOn, channel, REUSE_MIDI_CHANNEL);
 
     __real_midi_noteOn(REUSE_MIDI_CHANNEL, pitch, 127);
+}
+
+static void test_midi_dynamic_reuses_mapped_midi_channel_even_if_busy(
+    UNUSED void** state)
+{
+    const u16 pitch = B;
+    const u8 REUSE_MIDI_CHANNEL = 2;
+
+    for (u8 chan = DEV_CHAN_MIN_FM; chan <= DEV_CHAN_MAX_FM; chan++) {
+        expect_synth_pitch_any();
+        expect_synth_volume_any();
+        expect_value(__wrap_synth_noteOn, channel, chan);
+
+        print_message("FM channel %d\n", chan);
+        __real_midi_noteOn(REUSE_MIDI_CHANNEL, pitch, 127);
+    }
+    for (u8 chan = DEV_CHAN_MIN_PSG; chan <= DEV_CHAN_MAX_TONE_PSG; chan++) {
+        expect_value(__wrap_psg_frequency, channel, chan - DEV_CHAN_MIN_PSG);
+        expect_any(__wrap_psg_frequency, freq);
+        expect_value(__wrap_psg_attenuation, channel, chan - DEV_CHAN_MIN_PSG);
+        expect_any(__wrap_psg_attenuation, attenuation);
+
+        print_message("PSG channel %d\n", chan - DEV_CHAN_MIN_PSG);
+        __real_midi_noteOn(REUSE_MIDI_CHANNEL, pitch, 127);
+    }
+
+    expect_synth_pitch(0, 6, 0x48c);
+    expect_synth_volume_any();
+    expect_value(__wrap_synth_noteOn, channel, 0);
+    __real_midi_noteOn(REUSE_MIDI_CHANNEL, A_SHARP, 127);
 }
 
 static void test_midi_reports_dynamic_mode_enabled(UNUSED void** state)

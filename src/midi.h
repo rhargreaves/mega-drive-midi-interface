@@ -18,6 +18,7 @@
 #define DEV_CHAN_MIN_FM 0
 #define DEV_CHAN_MAX_FM 5
 #define DEV_CHAN_MIN_PSG 6
+#define DEV_CHAN_MAX_TONE_PSG 8
 #define DEV_CHAN_MAX_PSG 9
 
 #define CC_VOLUME 7

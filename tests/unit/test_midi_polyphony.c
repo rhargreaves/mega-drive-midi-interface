@@ -30,7 +30,7 @@ static void test_midi_set_overflow_flag_on_polyphony_breach(UNUSED void** state)
         expect_synth_volume_any();
         expect_value(__wrap_synth_noteOn, channel, chan);
 
-        __real_midi_noteOn(0, A_SHARP, 127);
+        __real_midi_noteOn(chan, A_SHARP, 127);
     }
     for (int chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN - 1; chan++) {
         expect_value(__wrap_psg_frequency, channel, chan - MIN_PSG_CHAN);
@@ -38,14 +38,14 @@ static void test_midi_set_overflow_flag_on_polyphony_breach(UNUSED void** state)
         expect_value(__wrap_psg_attenuation, channel, chan - MIN_PSG_CHAN);
         expect_value(__wrap_psg_attenuation, attenuation, 0);
 
-        __real_midi_noteOn(0, A_SHARP, 127);
+        __real_midi_noteOn(chan, A_SHARP, 127);
     }
 
     expect_any(__wrap_log_warn, fmt);
     expect_any(__wrap_log_warn, val1);
     expect_any(__wrap_log_warn, val2);
     expect_any(__wrap_log_warn, val3);
-    __real_midi_noteOn(0, A_SHARP, 127);
+    __real_midi_noteOn(DEV_CHAN_MAX_PSG + 1, A_SHARP, 127);
 }
 
 static void test_midi_polyphonic_mode_uses_multiple_fm_channels(
