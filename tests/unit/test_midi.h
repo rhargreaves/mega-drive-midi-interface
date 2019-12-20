@@ -26,6 +26,7 @@
 #define SYSEX_NON_GENERAL_MIDI_CC_COMMAND_ID 0x04
 #define SYSEX_NON_GENERAL_MIDI_CC_ENABLED 0x01
 #define SYSEX_NON_GENERAL_MIDI_CC_DISABLED 0x00
+#define SYSEX_STICK_TO_DEVICE_TYPE_COMMAND_ID 0x05
 
 extern void __real_midi_noteOn(u8 chan, u8 pitch, u8 velocity);
 extern void __real_midi_noteOff(u8 chan, u8 pitch);

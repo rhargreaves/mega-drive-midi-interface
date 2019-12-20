@@ -2,6 +2,15 @@
 
 #define LENGTH_OF(x) (sizeof(x) / sizeof((x)[0]))
 
+static void setStickToDeviceType(bool enable)
+{
+    const u8 sequence[] = { SYSEX_EXTENDED_MANU_ID_SECTION,
+        SYSEX_UNUSED_EUROPEAN_SECTION, SYSEX_UNUSED_MANU_ID,
+        SYSEX_STICK_TO_DEVICE_TYPE_COMMAND_ID, enable ? 1 : 0 };
+
+    __real_midi_sysex(sequence, sizeof(sequence));
+}
+
 static int test_dynamic_midi_setup(UNUSED void** state)
 {
     test_midi_setup(state);
@@ -61,9 +70,12 @@ static void test_midi_dynamic_tries_to_reuse_original_midi_channel_if_available(
     __real_midi_noteOn(REUSE_MIDI_CHANNEL, pitch, 127);
 }
 
-static void test_midi_dynamic_reuses_mapped_midi_channel_even_if_busy(
+static void
+test_midi_dynamic_reuses_mapped_midi_channel_even_if_busy_if_sticking_to_device_type(
     UNUSED void** state)
 {
+    setStickToDeviceType(true);
+
     const u16 pitch = B;
     const u8 REUSE_MIDI_CHANNEL = 2;
 
@@ -503,6 +515,8 @@ static void test_midi_dynamic_prefers_psg_for_square_wave_instruments(
 static void test_midi_dynamic_sticks_to_assigned_device_type_for_midi_channels(
     UNUSED void** state)
 {
+    setStickToDeviceType(true);
+
     const u16 pitch = B;
     const u8 REUSE_MIDI_CHANNEL = 2;
 
@@ -525,6 +539,8 @@ static void
 test_midi_dynamic_sticks_to_assigned_psg_device_type_for_midi_channels(
     UNUSED void** state)
 {
+    setStickToDeviceType(true);
+
     const u8 MIDI_CHANNEL = 0;
     const u8 SQUARE_WAVE_MIDI_PROGRAM = 80;
 

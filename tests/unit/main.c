@@ -198,7 +198,7 @@ int main(void)
         dynamic_midi_test(
             test_midi_dynamic_prefers_psg_for_square_wave_instruments),
         dynamic_midi_test(
-            test_midi_dynamic_reuses_mapped_midi_channel_even_if_busy),
+            test_midi_dynamic_reuses_mapped_midi_channel_even_if_busy_if_sticking_to_device_type),
         dynamic_midi_test(
             test_midi_dynamic_sticks_to_assigned_device_type_for_midi_channels),
         dynamic_midi_test(

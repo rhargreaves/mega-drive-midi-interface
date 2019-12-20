@@ -43,6 +43,7 @@ static ControlChange lastUnknownControlChange;
 static Timing timing;
 static bool dynamicMode;
 static bool disableNonGeneralMidiCCs;
+static bool stickToDeviceType;
 
 static void allNotesOff(u8 chan);
 static void generalMidiReset(void);
@@ -96,6 +97,7 @@ void midi_init(const FmChannel** defaultPresets,
 {
     dynamicMode = false;
     disableNonGeneralMidiCCs = false;
+    stickToDeviceType = false;
     resetAllState();
     midi_psg_init();
     midi_fm_init(defaultPresets, defaultPercussionPresets);
@@ -176,13 +178,19 @@ static DeviceChannel* findAnyFreeChannel(u8 incomingMidiChan)
 
 static DeviceChannel* findDeviceSpecificChannel(u8 incomingMidiChan)
 {
-    DeviceChannel* assignedChan = deviceChannelByMidiChannel(incomingMidiChan);
-    if (assignedChan == NULL) {
-        return NULL;
+    u8 minChan = 0;
+    u8 maxChan = DEV_CHAN_MAX_TONE_PSG;
+    if (stickToDeviceType) {
+        DeviceChannel* assignedChan
+            = deviceChannelByMidiChannel(incomingMidiChan);
+        if (assignedChan == NULL) {
+            return NULL;
+        }
+        bool isFm = (assignedChan->ops == &FM_VTable);
+        minChan = isFm ? DEV_CHAN_MIN_FM : DEV_CHAN_MIN_PSG;
+        maxChan = isFm ? DEV_CHAN_MAX_FM : DEV_CHAN_MAX_TONE_PSG;
     }
-    bool isFm = (assignedChan->ops == &FM_VTable);
-    u8 minChan = isFm ? DEV_CHAN_MIN_FM : DEV_CHAN_MIN_PSG;
-    u8 maxChan = isFm ? DEV_CHAN_MAX_FM : DEV_CHAN_MAX_TONE_PSG;
+
     for (u16 i = minChan; i <= maxChan; i++) {
         DeviceChannel* chan = &deviceChannels[i];
         if (isChannelSuitable(chan, incomingMidiChan)) {
@@ -486,12 +494,18 @@ static void setNonGeneralMidiCCs(bool enable)
     disableNonGeneralMidiCCs = !enable;
 }
 
+static void setStickToDeviceType(bool enable)
+{
+    stickToDeviceType = enable;
+}
+
 void midi_sysex(const u8* data, u16 length)
 {
     const u8 SYSEX_REMAP_COMMAND_ID = 0x00;
     const u8 SYSEX_PING_COMMAND_ID = 0x01;
     const u8 SYSEX_DYNAMIC_COMMAND_ID = 0x03;
     const u8 SYSEX_NON_GENERAL_MIDI_CCS_COMMAND_ID = 0x04;
+    const u8 SYSEX_STICK_TO_DEVICE_TYPE_COMMAND_ID = 0x05;
 
     const u8 GENERAL_MIDI_RESET_SEQUENCE[] = { 0x7E, 0x7F, 0x09, 0x01 };
 
@@ -511,6 +525,10 @@ void midi_sysex(const u8* data, u16 length)
         = { SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
               SYSEX_UNUSED_MANU_ID, SYSEX_NON_GENERAL_MIDI_CCS_COMMAND_ID };
 
+    const u8 STICK_TO_DEVICE_TYPE_SEQUENCE[]
+        = { SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
+              SYSEX_UNUSED_MANU_ID, SYSEX_STICK_TO_DEVICE_TYPE_COMMAND_ID };
+
     if (sysex_valid(data, length, GENERAL_MIDI_RESET_SEQUENCE,
             LENGTH_OF(GENERAL_MIDI_RESET_SEQUENCE), 0)) {
         generalMidiReset();
@@ -526,6 +544,9 @@ void midi_sysex(const u8* data, u16 length)
     } else if (sysex_valid(data, length, NON_GENERAL_MIDI_CCS_SEQUENCE,
                    LENGTH_OF(NON_GENERAL_MIDI_CCS_SEQUENCE), 1)) {
         setNonGeneralMidiCCs((bool)data[4]);
+    } else if (sysex_valid(data, length, STICK_TO_DEVICE_TYPE_SEQUENCE,
+                   LENGTH_OF(STICK_TO_DEVICE_TYPE_SEQUENCE), 1)) {
+        setStickToDeviceType((bool)data[4]);
     }
 }
 
