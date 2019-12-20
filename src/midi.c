@@ -183,37 +183,30 @@ static DeviceChannel* findDeviceSpecificChannel(u8 incomingMidiChan)
             break;
         }
     }
-    if (assignedChan != NULL) {
-        if (assignedChan->ops == &FM_VTable) {
-            for (u16 i = DEV_CHAN_MIN_FM; i <= DEV_CHAN_MAX_FM; i++) {
-                DeviceChannel* chan = &deviceChannels[i];
-                if (isChannelSuitable(chan, incomingMidiChan)) {
-                    return chan;
-                }
-            }
-            for (u16 i = DEV_CHAN_MIN_FM; i <= DEV_CHAN_MAX_FM; i++) {
-                DeviceChannel* chan = &deviceChannels[i];
-                if (chan->midiChannel == incomingMidiChan && !isPsgNoise(chan)
-                    && !isPsgAndIncomingChanIsPercussive(
-                           chan, incomingMidiChan)) {
-                    return chan;
-                }
-            }
-        } else {
-            for (u16 i = DEV_CHAN_MIN_PSG; i <= DEV_CHAN_MAX_TONE_PSG; i++) {
-                DeviceChannel* chan = &deviceChannels[i];
-                if (isChannelSuitable(chan, incomingMidiChan)) {
-                    return chan;
-                }
-            }
-            for (u16 i = DEV_CHAN_MIN_PSG; i <= DEV_CHAN_MAX_TONE_PSG; i++) {
-                DeviceChannel* chan = &deviceChannels[i];
-                if (chan->midiChannel == incomingMidiChan
-                    && !isPsgAndIncomingChanIsPercussive(
-                           chan, incomingMidiChan)) {
-                    return chan;
-                }
-            }
+    if (assignedChan == NULL) {
+        return NULL;
+    }
+
+    u8 minChan;
+    u8 maxChan;
+    if (assignedChan->ops == &FM_VTable) {
+        minChan = DEV_CHAN_MIN_FM;
+        maxChan = DEV_CHAN_MAX_FM;
+    } else {
+        minChan = DEV_CHAN_MIN_PSG;
+        maxChan = DEV_CHAN_MAX_TONE_PSG;
+    }
+    for (u16 i = minChan; i <= maxChan; i++) {
+        DeviceChannel* chan = &deviceChannels[i];
+        if (isChannelSuitable(chan, incomingMidiChan)) {
+            return chan;
+        }
+    }
+    for (u16 i = minChan; i <= maxChan; i++) {
+        DeviceChannel* chan = &deviceChannels[i];
+        if (chan->midiChannel == incomingMidiChan && !isPsgNoise(chan)
+            && !isPsgAndIncomingChanIsPercussive(chan, incomingMidiChan)) {
+            return chan;
         }
     }
     return NULL;
