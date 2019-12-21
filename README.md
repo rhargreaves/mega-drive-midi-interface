@@ -89,7 +89,7 @@ When polyphonic mode is enabled (CC 80), dynamic mapping mode is enabled and MID
 
 ### Channel Mappings
 
-By default, MIDI channels are assigned in a one-to-one arrangement to FM or PSG channels as follows:
+By default, MIDI channels are assigned in a static, one-to-one arrangement to FM or PSG channels as follows:
 
 | Channels | Assignment                  |
 | -------- | --------------------------- |
@@ -124,17 +124,17 @@ These only apply to channels mapped to FM channels:
 
 #### Global
 
-| CC  | Description       | Range\* |
-| --- | ----------------- | ------- |
-| 74  | LFO Enable        | 2       |
-| 1   | LFO Frequency     | 8       |
-| 80  | Polyphonic Mode\* | 2       |
+| Description       | CC  | Range\* |
+| ----------------- | --- | ------- |
+| LFO Enable        | 74  | 2       |
+| LFO Frequency     | 1   | 8       |
+| Polyphonic Mode\* | 80  | 2       |
 
 _Range determines how the possible 128 MIDI values are divided to give the respective YM2612 register value, using the formula `_midiValue / (128 / range) = registerValue` (e.g. MIDI value of 32, with a range of 8 translates into to a YM2612 register value of 2)_
 
 #### Per Channel
 
-| Paramter                         | CC  | Range |
+| Parameter                        | CC  | Range |
 | -------------------------------- | --- | ----- |
 | Algorithm                        | 14  | 8     |
 | Feedback                         | 15  | 8     |
