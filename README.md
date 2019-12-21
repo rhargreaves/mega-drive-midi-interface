@@ -134,29 +134,29 @@ _Range determines how the possible 128 MIDI values are divided to give the respe
 
 #### Per Channel
 
-| CC  | Description                      | Range |
-| --- | -------------------------------- | ----- |
-| 14  | Algorithm                        | 8     |
-| 15  | Feedback                         | 8     |
-| 75  | Frequency Modulation Level (FMS) | 8     |
-| 76  | Amplitude Modulation Level (AMS) | 4     |
-| 77  | Stereo                           | 4     |
+| Paramter                         | CC  | Range |
+| -------------------------------- | --- | ----- |
+| Algorithm                        | 14  | 8     |
+| Feedback                         | 15  | 8     |
+| Frequency Modulation Level (FMS) | 75  | 8     |
+| Amplitude Modulation Level (AMS) | 76  | 4     |
+| Stereo                           | 77  | 4     |
 
 #### Per Channel & Operator
 
-| CCs   | Description               | Range |
-| ----- | ------------------------- | ----- |
-| 16-19 | Total Level (TL)          | 128   |
-| 20-23 | Multiple (MUL)            | 16    |
-| 24-27 | Detune (DT1)              | 8     |
-| 39-42 | Rate Scaling (RS)         | 4     |
-| 43-46 | Attack Rate (AR)          | 32    |
-| 47-50 | First Decay Rate (D1R)    | 32    |
-| 51-54 | Second Decay Rate (D2R)   | 16    |
-| 55-58 | Secondary Amplitude (D1L) | 16    |
-| 59-62 | Release Rate (RR)         | 16    |
-| 70-73 | Amplitude Modulation (AM) | 2     |
-| 90-93 | SSG-EG                    | 16    |
+| Parameter                 | Op 1<br/>CC | Op 2<br/>CC | Op 3<br/>CC | Op 4<br/>CC | Range |
+| ------------------------- | ----------- | ----------- | ----------- | ----------- | ----- |
+| Total Level (TL)          | 16          | 17          | 18          | 19          | 128   |
+| Multiple (MUL)            | 20          | 21          | 22          | 23          | 16    |
+| Detune (DT1)              | 24          | 25          | 26          | 27          | 8     |
+| Rate Scaling (RS)         | 39          | 40          | 41          | 42          | 4     |
+| Attack Rate (AR)          | 43          | 44          | 45          | 46          | 32    |
+| First Decay Rate (D1R)    | 47          | 48          | 49          | 50          | 32    |
+| Second Decay Rate (D2R)   | 51          | 52          | 53          | 54          | 16    |
+| Secondary Amplitude (D1L) | 55          | 56          | 57          | 58          | 16    |
+| Release Rate (RR)         | 59          | 60          | 61          | 62          | 16    |
+| Amplitude Modulation (AM) | 70          | 71          | 72          | 73          | 2     |
+| SSG-EG                    | 90          | 91          | 92          | 93          | 16    |
 
 ### FM Algorithm Operator Routing
 
