@@ -153,7 +153,7 @@ _Range determines how the possible 128 MIDI values are divided to give the respe
 | Attack Rate (AR)          | 43          | 44          | 45          | 46          | 32    |
 | First Decay Rate (D1R)    | 47          | 48          | 49          | 50          | 32    |
 | Second Decay Rate (D2R)   | 51          | 52          | 53          | 54          | 16    |
-| Secondary Amplitude (D1L) | 55          | 56          | 57          | 58          | 16    |
+| Secondary Amplitude (D1L/SL) | 55          | 56          | 57          | 58          | 16    |
 | Release Rate (RR)         | 59          | 60          | 61          | 62          | 16    |
 | Amplitude Modulation (AM) | 70          | 71          | 72          | 73          | 2     |
 | SSG-EG                    | 90          | 91          | 92          | 93          | 16    |
