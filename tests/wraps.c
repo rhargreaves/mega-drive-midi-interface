@@ -202,6 +202,11 @@ void __wrap_synth_volume(u8 channel, u8 volume)
     check_expected(volume);
 }
 
+const FmChannel* __wrap_synth_channelParameters(u8 channel)
+{
+    return NULL;
+}
+
 void __wrap_comm_write(u8 data)
 {
     check_expected(data);

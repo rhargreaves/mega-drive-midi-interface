@@ -63,3 +63,4 @@ void synth_ams(u8 channel, u8 ams);
 void synth_fms(u8 channel, u8 fms);
 u8 synth_busy(void);
 void synth_preset(u8 channel, const FmChannel* preset);
+const FmChannel* synth_channelParameters(u8 channel);

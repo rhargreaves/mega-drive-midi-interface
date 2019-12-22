@@ -37,6 +37,7 @@ extern void __real_synth_operatorSsgEg(u8 channel, u8 op, u8 ssgEg);
 extern void __real_synth_pitchBend(u8 channel, u16 bend);
 extern void __real_synth_preset(u8 channel, const FmChannel* preset);
 extern void __real_synth_volume(u8 channel, u8 volume);
+extern const FmChannel* __real_synth_channelParameters(u8 channel);
 
 static void set_initial_registers()
 {
@@ -466,4 +467,11 @@ test_synth_applies_volume_modifier_to_output_operators_algorithms_5_and_6(
             __real_synth_volume(chan, loudestVolume / 4);
         }
     }
+}
+
+static void test_synth_exposes_fm_channel_parameters(UNUSED void** state)
+{
+    const FmChannel* chan = __real_synth_channelParameters(0);
+
+    assert_int_equal(chan->stereo, STEREO_MODE_CENTRE);
 }

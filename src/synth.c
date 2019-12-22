@@ -346,3 +346,8 @@ static u8 volumeAdjustedTotalLevel(u8 channel, u8 totalLevel)
         = (u16)inverseTotalLevel * (u16)logarithmicVolume / (u16)0x7F;
     return 0x7F - inverseNewTotalLevel;
 }
+
+const FmChannel* synth_channelParameters(u8 channel)
+{
+    return fmChannel(channel);
+}

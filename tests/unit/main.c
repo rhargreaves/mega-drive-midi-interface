@@ -159,6 +159,7 @@ int main(void)
             test_synth_applies_volume_modifier_to_output_operators_algorithm_4),
         synth_test(
             test_synth_applies_volume_modifier_to_output_operators_algorithms_5_and_6),
+        synth_test(test_synth_exposes_fm_channel_parameters),
 
         cmocka_unit_test(test_psg_chip_sets_attenuation),
         cmocka_unit_test(test_psg_chip_sets_frequency),
