@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+sendmidi dev "IAC Bus 1" cc 80 1
