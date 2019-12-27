@@ -61,6 +61,7 @@ static void printDynamicModeIfNeeded(void);
 static void printDynamicModeStatus(bool enabled);
 static void printMappingsIfDirty(u8* midiChans);
 static void printMappings(void);
+static void printChannelParameters(void);
 
 static u16 loadPercentSum = 0;
 static bool commInited = false;
@@ -83,11 +84,93 @@ void ui_init(void)
     printCommMode();
     printMappings();
     printDynamicModeStatus(midi_dynamicMode());
+    printChannelParameters();
 }
 
 void ui_vsync(void)
 {
     frame++;
+}
+
+static const u8 base_y = 7;
+
+static void printChannelParameterHeadings(void)
+{
+    VDP_setTextPalette(PAL3);
+    drawText("Ch    O1  O2  O3  O4", 0, base_y + 3);
+    drawText("TL", 0, base_y + 4);
+    drawText("DT", 0, base_y + 5);
+    drawText("MUL", 0, base_y + 6);
+    drawText("RS", 0, base_y + 7);
+    drawText("AM", 0, base_y + 8);
+    drawText("D1R", 0, base_y + 9);
+    drawText("D2R", 0, base_y + 10);
+    drawText("SL", 0, base_y + 11);
+    drawText("RR", 0, base_y + 12);
+    drawText("SSG", 0, base_y + 13);
+    drawText("Alg", 23, base_y + 3);
+    drawText("FB", 23, base_y + 6);
+    drawText("LFO", 23, base_y + 9);
+    drawText("Freq", 29, base_y + 9);
+    drawText("AMS", 23, base_y + 12);
+    drawText("FMS", 29, base_y + 12);
+    VDP_setTextPalette(PAL0);
+}
+
+static void printChannelParameters(void)
+{
+    printChannelParameterHeadings();
+    drawText("LR", 29, base_y + 7);
+    u8 chan = 0;
+    const FmChannel* channel = synth_channelParameters(chan);
+    char buffer[4];
+    sprintf(buffer, "%d", chan);
+    drawText(buffer, 3, base_y + 3);
+    sprintf(buffer, "%d", channel->algorithm);
+    drawText(buffer, 23, base_y + 4);
+    sprintf(buffer, "%d", channel->feedback);
+    drawText(buffer, 23, base_y + 7);
+    sprintf(buffer, "%d", channel->ams);
+    drawText(buffer, 23, base_y + 13);
+    sprintf(buffer, "%d", channel->fms);
+    drawText(buffer, 29, base_y + 13);
+    /*
+    Alg:
+    0:
+    1>3>2>4>
+
+    1:
+    1>2>4>
+    3>2>4>
+
+    2:
+      1>4>
+    3>2>4>
+
+    3:
+    1>3>4>
+      2>4>
+
+    4:
+    1>3>
+    2>4>
+
+    5:
+    111
+    |||
+    234
+    |||
+
+    6:
+     1
+     |
+    234
+    |||
+
+    7:
+    1234
+    ||||
+    */
 }
 
 static void printMappings(void)
