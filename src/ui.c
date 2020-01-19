@@ -93,7 +93,7 @@ void ui_vsync(void)
 }
 
 static const u8 base_y = 8;
-const u8 op_heading_x = 14;
+const u8 op_heading_x = 15;
 const u8 para_heading_x = 0;
 
 static void printChannelParameterHeadings(void)
