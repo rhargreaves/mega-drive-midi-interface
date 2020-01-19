@@ -396,8 +396,8 @@ void midi_pitchBend(u8 chan, u16 bend)
 {
     MidiChannel* midiChannel = &midiChannels[chan];
     midiChannel->pitchBend = bend;
-    for (u8 i = 0; i < DEV_CHANS; i++) {
-        DeviceChannel* state = &deviceChannels[i];
+    for (DeviceChannel* state = &deviceChannels[0];
+         state < &deviceChannels[DEV_CHANS]; state++) {
         if (state->midiChannel == chan && state->noteOn) {
             updatePitchBend(midiChannel, state);
         }
