@@ -93,14 +93,13 @@ void ui_vsync(void)
 }
 
 static const u8 base_y = 8;
-const u8 para_heading_x = 23;
+const u8 op_heading_x = 14;
+const u8 para_heading_x = 0;
 
 static void printChannelParameterHeadings(void)
 {
-    const u8 op_heading_x = 1;
-
     VDP_setTextPalette(PAL3);
-    drawText(" Op.   1   2   3   4", 0, base_y + 3);
+    drawText("Op.   1   2   3   4", op_heading_x, base_y + 3);
     drawText(" TL", op_heading_x, base_y + 4);
     drawText(" DT", op_heading_x, base_y + 5);
     drawText("MUL", op_heading_x, base_y + 6);
@@ -123,7 +122,7 @@ static void printChannelParameterHeadings(void)
 
 static void printOperatorValue(u16 value, u8 op, u8 line)
 {
-    const u8 op_value_x = 5;
+    const u8 op_value_x = op_heading_x + 4;
     const u8 op_value_gap = 4;
 
     char buffer[4];
@@ -134,7 +133,7 @@ static void printOperatorValue(u16 value, u8 op, u8 line)
 static void printChannelParameters(void)
 {
     printChannelParameterHeadings();
-    drawText("LR", 29, base_y + 7);
+    drawText("LR", para_heading_x + 6, base_y + 7);
     u8 chan = 0;
     const FmChannel* channel = synth_channelParameters(chan);
     char buffer[4];
