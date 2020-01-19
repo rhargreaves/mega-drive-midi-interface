@@ -111,12 +111,15 @@ static void printChannelParameterHeadings(void)
     drawText(" RR", op_heading_x, base_y + 12);
     drawText("SSG", op_heading_x, base_y + 13);
 
-    drawText("Alg", para_heading_x, base_y + 3);
-    drawText("FB", para_heading_x, base_y + 6);
-    drawText("LFO", para_heading_x, base_y + 9);
-    drawText("Freq", para_heading_x + 6, base_y + 9);
-    drawText("AMS", para_heading_x, base_y + 12);
-    drawText("FMS", para_heading_x + 6, base_y + 12);
+    drawText("MIDI", para_heading_x, base_y + 3);
+    drawText("FM", para_heading_x + 8, base_y + 3);
+    drawText("Alg", para_heading_x, base_y + 6);
+    drawText("FB", para_heading_x, base_y + 7);
+    drawText("LFO", para_heading_x, base_y + 8);
+    drawText("LFOHz", para_heading_x, base_y + 9);
+    drawText("AMS", para_heading_x, base_y + 10);
+    drawText("FMS", para_heading_x, base_y + 11);
+    drawText("LR", para_heading_x, base_y + 12);
     VDP_setTextPalette(PAL0);
 }
 
@@ -133,20 +136,23 @@ static void printOperatorValue(u16 value, u8 op, u8 line)
 static void printChannelParameters(void)
 {
     printChannelParameterHeadings();
-    drawText("LR", para_heading_x + 6, base_y + 7);
+
     u8 chan = 0;
     const FmChannel* channel = synth_channelParameters(chan);
     char buffer[4];
     sprintf(buffer, "%d", chan);
-    drawText(buffer, 3, base_y + 2);
+    drawText(buffer, para_heading_x + 5, base_y + 3);
+    sprintf(buffer, "%d", chan);
+    drawText(buffer, para_heading_x + 11, base_y + 3);
     sprintf(buffer, "%d", channel->algorithm);
-    drawText(buffer, para_heading_x, base_y + 4);
+    drawText(buffer, para_heading_x + 5, base_y + 6);
     sprintf(buffer, "%d", channel->feedback);
-    drawText(buffer, para_heading_x, base_y + 7);
+    drawText(buffer, para_heading_x + 5, base_y + 7);
     sprintf(buffer, "%d", channel->ams);
-    drawText(buffer, para_heading_x, base_y + 13);
+    drawText(buffer, para_heading_x + 5, base_y + 10);
     sprintf(buffer, "%d", channel->fms);
-    drawText(buffer, para_heading_x + 6, base_y + 13);
+    drawText(buffer, para_heading_x + 5, base_y + 11);
+    drawText("LR", para_heading_x + 5, base_y + 12);
 
     for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
         u8 line = 4;
