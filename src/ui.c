@@ -134,6 +134,12 @@ static void printChannelParameters(void)
     drawText(buffer, 23, base_y + 13);
     sprintf(buffer, "%d", channel->fms);
     drawText(buffer, 29, base_y + 13);
+
+    for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
+        sprintf(buffer, "%d", channel->operators[op].totalLevel);
+        drawText(buffer, 6 + (op * 4), base_y + 4);
+    }
+
     /*
     Alg:
     0:
