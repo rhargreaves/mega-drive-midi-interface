@@ -92,28 +92,32 @@ void ui_vsync(void)
     frame++;
 }
 
-static const u8 base_y = 7;
+static const u8 base_y = 8;
+const u8 para_heading_x = 23;
 
 static void printChannelParameterHeadings(void)
 {
+    const u8 op_heading_x = 1;
+
     VDP_setTextPalette(PAL3);
-    drawText("Ch    O1  O2  O3  O4", 0, base_y + 3);
-    drawText("TL", 0, base_y + 4);
-    drawText("DT", 0, base_y + 5);
-    drawText("MUL", 0, base_y + 6);
-    drawText("RS", 0, base_y + 7);
-    drawText("AM", 0, base_y + 8);
-    drawText("D1R", 0, base_y + 9);
-    drawText("D2R", 0, base_y + 10);
-    drawText("SL", 0, base_y + 11);
-    drawText("RR", 0, base_y + 12);
-    drawText("SSG", 0, base_y + 13);
-    drawText("Alg", 23, base_y + 3);
-    drawText("FB", 23, base_y + 6);
-    drawText("LFO", 23, base_y + 9);
-    drawText("Freq", 29, base_y + 9);
-    drawText("AMS", 23, base_y + 12);
-    drawText("FMS", 29, base_y + 12);
+    drawText(" Op.   1   2   3   4", 0, base_y + 3);
+    drawText(" TL", op_heading_x, base_y + 4);
+    drawText(" DT", op_heading_x, base_y + 5);
+    drawText("MUL", op_heading_x, base_y + 6);
+    drawText(" RS", op_heading_x, base_y + 7);
+    drawText(" AM", op_heading_x, base_y + 8);
+    drawText("D1R", op_heading_x, base_y + 9);
+    drawText("D2R", op_heading_x, base_y + 10);
+    drawText(" SL", op_heading_x, base_y + 11);
+    drawText(" RR", op_heading_x, base_y + 12);
+    drawText("SSG", op_heading_x, base_y + 13);
+
+    drawText("Alg", para_heading_x, base_y + 3);
+    drawText("FB", para_heading_x, base_y + 6);
+    drawText("LFO", para_heading_x, base_y + 9);
+    drawText("Freq", para_heading_x + 6, base_y + 9);
+    drawText("AMS", para_heading_x, base_y + 12);
+    drawText("FMS", para_heading_x + 6, base_y + 12);
     VDP_setTextPalette(PAL0);
 }
 
@@ -135,15 +139,15 @@ static void printChannelParameters(void)
     const FmChannel* channel = synth_channelParameters(chan);
     char buffer[4];
     sprintf(buffer, "%d", chan);
-    drawText(buffer, 3, base_y + 3);
+    drawText(buffer, 3, base_y + 2);
     sprintf(buffer, "%d", channel->algorithm);
-    drawText(buffer, 23, base_y + 4);
+    drawText(buffer, para_heading_x, base_y + 4);
     sprintf(buffer, "%d", channel->feedback);
-    drawText(buffer, 23, base_y + 7);
+    drawText(buffer, para_heading_x, base_y + 7);
     sprintf(buffer, "%d", channel->ams);
-    drawText(buffer, 23, base_y + 13);
+    drawText(buffer, para_heading_x, base_y + 13);
     sprintf(buffer, "%d", channel->fms);
-    drawText(buffer, 29, base_y + 13);
+    drawText(buffer, para_heading_x + 6, base_y + 13);
 
     for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
         u8 line = 4;
