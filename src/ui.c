@@ -135,9 +135,30 @@ static void printChannelParameters(void)
     sprintf(buffer, "%d", channel->fms);
     drawText(buffer, 29, base_y + 13);
 
+    const u8 op_value_x = 6;
+    const u8 op_value_gap = 4;
+
     for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
         sprintf(buffer, "%d", channel->operators[op].totalLevel);
-        drawText(buffer, 6 + (op * 4), base_y + 4);
+        drawText(buffer, op_value_x + (op * op_value_gap), base_y + 4);
+        sprintf(buffer, "%d", channel->operators[op].detune);
+        drawText(buffer, op_value_x + (op * op_value_gap), base_y + 5);
+        sprintf(buffer, "%d", channel->operators[op].multiple);
+        drawText(buffer, op_value_x + (op * op_value_gap), base_y + 6);
+        sprintf(buffer, "%d", channel->operators[op].rateScaling);
+        drawText(buffer, op_value_x + (op * op_value_gap), base_y + 7);
+        sprintf(buffer, "%d", channel->operators[op].amplitudeModulation);
+        drawText(buffer, op_value_x + (op * op_value_gap), base_y + 8);
+        sprintf(buffer, "%d", channel->operators[op].firstDecayRate);
+        drawText(buffer, op_value_x + (op * op_value_gap), base_y + 9);
+        sprintf(buffer, "%d", channel->operators[op].secondaryDecayRate);
+        drawText(buffer, op_value_x + (op * op_value_gap), base_y + 10);
+        sprintf(buffer, "%d", channel->operators[op].secondaryAmplitude);
+        drawText(buffer, op_value_x + (op * op_value_gap), base_y + 11);
+        sprintf(buffer, "%d", channel->operators[op].releaseRate);
+        drawText(buffer, op_value_x + (op * op_value_gap), base_y + 12);
+        sprintf(buffer, "%d", channel->operators[op].ssgEg);
+        drawText(buffer, op_value_x + (op * op_value_gap), base_y + 13);
     }
 
     /*
