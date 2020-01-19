@@ -117,6 +117,16 @@ static void printChannelParameterHeadings(void)
     VDP_setTextPalette(PAL0);
 }
 
+static void printOperatorValue(u16 value, u8 op, u8 line)
+{
+    const u8 op_value_x = 5;
+    const u8 op_value_gap = 4;
+
+    char buffer[4];
+    sprintf(buffer, "%3d", value);
+    drawText(buffer, op_value_x + (op * op_value_gap), base_y + line);
+}
+
 static void printChannelParameters(void)
 {
     printChannelParameterHeadings();
@@ -135,30 +145,21 @@ static void printChannelParameters(void)
     sprintf(buffer, "%d", channel->fms);
     drawText(buffer, 29, base_y + 13);
 
-    const u8 op_value_x = 5;
-    const u8 op_value_gap = 4;
-
     for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
-        sprintf(buffer, "%3d", channel->operators[op].totalLevel);
-        drawText(buffer, op_value_x + (op * op_value_gap), base_y + 4);
-        sprintf(buffer, "%3d", channel->operators[op].detune);
-        drawText(buffer, op_value_x + (op * op_value_gap), base_y + 5);
-        sprintf(buffer, "%3d", channel->operators[op].multiple);
-        drawText(buffer, op_value_x + (op * op_value_gap), base_y + 6);
-        sprintf(buffer, "%3d", channel->operators[op].rateScaling);
-        drawText(buffer, op_value_x + (op * op_value_gap), base_y + 7);
-        sprintf(buffer, "%3d", channel->operators[op].amplitudeModulation);
-        drawText(buffer, op_value_x + (op * op_value_gap), base_y + 8);
-        sprintf(buffer, "%3d", channel->operators[op].firstDecayRate);
-        drawText(buffer, op_value_x + (op * op_value_gap), base_y + 9);
-        sprintf(buffer, "%3d", channel->operators[op].secondaryDecayRate);
-        drawText(buffer, op_value_x + (op * op_value_gap), base_y + 10);
-        sprintf(buffer, "%3d", channel->operators[op].secondaryAmplitude);
-        drawText(buffer, op_value_x + (op * op_value_gap), base_y + 11);
-        sprintf(buffer, "%3d", channel->operators[op].releaseRate);
-        drawText(buffer, op_value_x + (op * op_value_gap), base_y + 12);
-        sprintf(buffer, "%3d", channel->operators[op].ssgEg);
-        drawText(buffer, op_value_x + (op * op_value_gap), base_y + 13);
+        u8 line = 4;
+        printOperatorValue(channel->operators[op].totalLevel, op, line++);
+        printOperatorValue(channel->operators[op].detune, op, line++);
+        printOperatorValue(channel->operators[op].multiple, op, line++);
+        printOperatorValue(channel->operators[op].rateScaling, op, line++);
+        printOperatorValue(
+            channel->operators[op].amplitudeModulation, op, line++);
+        printOperatorValue(channel->operators[op].firstDecayRate, op, line++);
+        printOperatorValue(
+            channel->operators[op].secondaryDecayRate, op, line++);
+        printOperatorValue(
+            channel->operators[op].secondaryAmplitude, op, line++);
+        printOperatorValue(channel->operators[op].releaseRate, op, line++);
+        printOperatorValue(channel->operators[op].ssgEg, op, line++);
     }
 
     /*
