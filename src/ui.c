@@ -84,7 +84,9 @@ void ui_init(void)
     printCommMode();
     printMappings();
     printDynamicModeStatus(midi_dynamicMode());
-    printChannelParameters();
+    if (false) {
+        printChannelParameters();
+    }
 }
 
 void ui_vsync(void)
