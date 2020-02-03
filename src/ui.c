@@ -121,7 +121,7 @@ static void printChannelParameterHeadings(void)
     drawText("LFOHz", para_heading_x, base_y + 9);
     drawText("AMS", para_heading_x, base_y + 10);
     drawText("FMS", para_heading_x, base_y + 11);
-    drawText("LR", para_heading_x, base_y + 12);
+    drawText("Ster", para_heading_x, base_y + 12);
     VDP_setTextPalette(PAL0);
 }
 
