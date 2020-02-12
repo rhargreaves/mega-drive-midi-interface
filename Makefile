@@ -139,6 +139,6 @@ test:
 
 clean:
 	$(MAKE) -C tests clean-target
-	$(RM) $(RESOURCES)
+	$(RM) $(RESOURCES) res/*.s
 	$(RM) *.o *.bin *.elf *.map *.iso
 	$(RM) boot/*.o boot/*.bin

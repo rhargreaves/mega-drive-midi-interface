@@ -10,6 +10,8 @@
 #include "synth.h"
 #include <genesis.h>
 
+#include "sprite.h"
+
 #define MAX_Y 27
 #define MAX_X 39
 #define MARGIN_X 1
@@ -172,6 +174,16 @@ static void printChannelParameters(void)
         printOperatorValue(channel->operators[op].releaseRate, op, line++);
         printOperatorValue(channel->operators[op].ssgEg, op, line++);
     }
+
+    SYS_disableInts();
+    SPR_init();
+    SPR_addSprite(&algor_0, fix32ToInt(FIX32(9 * 8)),
+        fix32ToInt(FIX32((base_y + 7) * 8)),
+        TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+    SPR_update();
+    VDP_setPaletteColors(
+        (PAL0 * 16), algor_0.palette->data, algor_0.palette->length);
+    SYS_enableInts();
 
     /*
     Alg:
