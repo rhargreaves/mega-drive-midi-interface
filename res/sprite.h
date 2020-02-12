@@ -2,5 +2,6 @@
 #define _RES_SPRITE_H_
 
 extern const SpriteDefinition algor_0;
+extern const SpriteDefinition algor_1;
 
 #endif // _RES_SPRITE_H_
