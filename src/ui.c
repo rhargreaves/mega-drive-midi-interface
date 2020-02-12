@@ -12,6 +12,8 @@
 
 #include "sprite.h"
 
+#define SHOW_CHAN_PARAMETERS false
+
 #define MAX_Y 27
 #define MAX_X 39
 #define MARGIN_X 1
@@ -86,7 +88,7 @@ void ui_init(void)
     printCommMode();
     printMappings();
     printDynamicModeStatus(midi_dynamicMode());
-    if (true) {
+    if (SHOW_CHAN_PARAMETERS) {
         printChannelParameters();
     }
 }
