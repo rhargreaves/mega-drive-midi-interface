@@ -184,44 +184,6 @@ static void printChannelParameters(void)
     VDP_setPaletteColors(
         (PAL0 * 16), algor_0.palette->data, algor_0.palette->length);
     SYS_enableInts();
-
-    /*
-    Alg:
-    0:
-    1>3>2>4>
-
-    1:
-    1>2>4>
-    3>2>4>
-
-    2:
-      1>4>
-    3>2>4>
-
-    3:
-    1>3>4>
-      2>4>
-
-    4:
-    1>3>
-    2>4>
-
-    5:
-    111
-    |||
-    234
-    |||
-
-    6:
-     1
-     |
-    234
-    |||
-
-    7:
-    1234
-    ||||
-    */
 }
 
 static void printMappings(void)
