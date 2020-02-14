@@ -80,6 +80,7 @@ void __wrap_VDP_setBackgroundColor(u8 index);
 void __wrap_SPR_setAnim(Sprite* sprite, s16 anim);
 void __wrap_SPR_setFrame(Sprite* sprite, s16 frame);
 void __wrap_SPR_setAnimAndFrame(Sprite* sprite, s16 anim, s16 frame);
+void __wrap_SPR_setVisibility(Sprite* sprite, SpriteVisibility value);
 void __wrap_VDP_setReg(u16 reg, u8 value);
 void __wrap_SYS_setExtIntCallback(_voidCallback* CB);
 void __wrap_SYS_setInterruptMaskLevel(u16 value);

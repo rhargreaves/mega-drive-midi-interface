@@ -103,6 +103,7 @@ MD_MOCKS=SYS_setVIntCallback \
 	SPR_setAnim \
 	SPR_setFrame \
 	SPR_setAnimAndFrame \
+	SPR_setVisibility \
 	VDP_setPaletteColors \
 	comm_serial_init \
 	comm_serial_readReady \

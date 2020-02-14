@@ -3,6 +3,7 @@
 
 #define MAX_FM_OPERATORS 4
 #define MAX_FM_CHANS 6
+#define MAX_FM_ALGORITHMS 7
 
 #define STEREO_MODE_CENTRE 3
 #define STEREO_MODE_RIGHT 1

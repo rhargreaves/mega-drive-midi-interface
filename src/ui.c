@@ -73,6 +73,33 @@ static bool commSerial = false;
 static u16 lastUpdateFrame = 0;
 static volatile u16 frame = 0;
 
+static Sprite* algorSprites[MAX_FM_ALGORITHMS] = {};
+
+static const u8 base_y = 8;
+const u8 op_heading_x = 15;
+const u8 para_heading_x = 0;
+
+static void initAlgorithmSprites(void)
+{
+    SYS_disableInts();
+    SPR_init();
+    const SpriteDefinition* algors[] = { &algor_0, &algor_1, &algor_2, &algor_3,
+        &algor_4, &algor_5, &algor_6, &algor_7 };
+
+    for (int i = 0; i < MAX_FM_ALGORITHMS; i++) {
+        const SpriteDefinition* algor = algors[i];
+        Sprite* sprite = SPR_addSprite(algor, fix32ToInt(FIX32(9 * 8)),
+            fix32ToInt(FIX32((base_y + 7) * 8)),
+            TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+        SPR_setVisibility(sprite, HIDDEN);
+        algorSprites[i] = sprite;
+        VDP_setPaletteColors(
+            (PAL0 * 16), algor->palette->data, algor->palette->length);
+    }
+    SPR_update();
+    SYS_enableInts();
+}
+
 void ui_init(void)
 {
     VDP_setBackgroundColor(BG_COLOUR_INDEX);
@@ -88,16 +115,13 @@ void ui_init(void)
     printCommMode();
     printMappings();
     printDynamicModeStatus(midi_dynamicMode());
+    initAlgorithmSprites();
 }
 
 void ui_vsync(void)
 {
     frame++;
 }
-
-static const u8 base_y = 8;
-const u8 op_heading_x = 15;
-const u8 para_heading_x = 0;
 
 static void printChannelParameterHeadings(void)
 {
@@ -174,17 +198,15 @@ static void printChannelParameters(void)
         printOperatorValue(channel->operators[op].ssgEg, op, line++);
     }
 
-    const SpriteDefinition* algors[] = { &algor_0, &algor_1, &algor_2, &algor_3,
-        &algor_4, &algor_5, &algor_6, &algor_7 };
-    const SpriteDefinition* algor = algors[channel->algorithm];
     SYS_disableInts();
-    SPR_init();
-    SPR_addSprite(algor, fix32ToInt(FIX32(9 * 8)),
-        fix32ToInt(FIX32((base_y + 7) * 8)),
-        TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+    Sprite* sprite;
+    for (int i = 0; i < MAX_FM_ALGORITHMS; i++) {
+        sprite = algorSprites[i];
+        SPR_setVisibility(sprite, HIDDEN);
+    }
+    sprite = algorSprites[channel->algorithm];
+    SPR_setVisibility(sprite, VISIBLE);
     SPR_update();
-    VDP_setPaletteColors(
-        (PAL0 * 16), algor->palette->data, algor->palette->length);
     SYS_enableInts();
 }
 
