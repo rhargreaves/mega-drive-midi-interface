@@ -12,7 +12,7 @@
 
 #include "sprite.h"
 
-#define SHOW_CHAN_PARAMETERS false
+#define SHOW_CHAN_PARAMETERS true
 
 #define MAX_Y 27
 #define MAX_X 39
@@ -88,9 +88,6 @@ void ui_init(void)
     printCommMode();
     printMappings();
     printDynamicModeStatus(midi_dynamicMode());
-    if (SHOW_CHAN_PARAMETERS) {
-        printChannelParameters();
-    }
 }
 
 void ui_vsync(void)
@@ -237,6 +234,9 @@ void ui_update(void)
         printCommMode();
         printCommBuffer();
         printLog();
+        if (SHOW_CHAN_PARAMETERS) {
+            printChannelParameters();
+        }
         activityFrame = 0;
     }
 
