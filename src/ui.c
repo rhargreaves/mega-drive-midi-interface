@@ -174,7 +174,9 @@ static void printChannelParameters(void)
         printOperatorValue(channel->operators[op].ssgEg, op, line++);
     }
 
-    const SpriteDefinition* algor = &algor_1;
+    const SpriteDefinition* algors[] = { &algor_0, &algor_1, &algor_2, &algor_3,
+        &algor_4, &algor_5, &algor_6, &algor_7 };
+    const SpriteDefinition* algor = algors[channel->algorithm];
     SYS_disableInts();
     SPR_init();
     SPR_addSprite(algor, fix32ToInt(FIX32(9 * 8)),
