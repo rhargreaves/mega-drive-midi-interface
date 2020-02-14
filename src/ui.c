@@ -73,7 +73,7 @@ static bool commSerial = false;
 static u16 lastUpdateFrame = 0;
 static volatile u16 frame = 0;
 
-static Sprite* algorSprites[MAX_FM_ALGORITHMS] = {};
+static Sprite* algorSprites[FM_ALGORITHMS] = {};
 
 static const u8 base_y = 8;
 const u8 op_heading_x = 15;
@@ -86,7 +86,7 @@ static void initAlgorithmSprites(void)
     const SpriteDefinition* algors[] = { &algor_0, &algor_1, &algor_2, &algor_3,
         &algor_4, &algor_5, &algor_6, &algor_7 };
 
-    for (int i = 0; i < MAX_FM_ALGORITHMS; i++) {
+    for (int i = 0; i < FM_ALGORITHMS; i++) {
         const SpriteDefinition* algor = algors[i];
         Sprite* sprite = SPR_addSprite(algor, fix32ToInt(FIX32(9 * 8)),
             fix32ToInt(FIX32((base_y + 7) * 8)),
@@ -200,7 +200,7 @@ static void printChannelParameters(void)
 
     SYS_disableInts();
     Sprite* sprite;
-    for (int i = 0; i < MAX_FM_ALGORITHMS; i++) {
+    for (int i = 0; i < FM_ALGORITHMS; i++) {
         sprite = algorSprites[i];
         SPR_setVisibility(sprite, HIDDEN);
     }
