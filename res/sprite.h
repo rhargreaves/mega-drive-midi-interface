@@ -6,5 +6,8 @@ extern const SpriteDefinition algor_1;
 extern const SpriteDefinition algor_2;
 extern const SpriteDefinition algor_3;
 extern const SpriteDefinition algor_4;
+extern const SpriteDefinition algor_5;
+extern const SpriteDefinition algor_6;
+extern const SpriteDefinition algor_7;
 
 #endif // _RES_SPRITE_H_
