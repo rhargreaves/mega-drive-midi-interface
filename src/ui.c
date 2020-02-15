@@ -160,6 +160,15 @@ static void printOperatorValue(u16 value, u8 op, u8 line)
     drawText(buffer, op_value_x + (op * op_value_gap), base_y + line);
 }
 
+static void updateAlgorithmDiagram(u8 algorithm)
+{
+    for (u8 i = 0; i < FM_ALGORITHMS; i++) {
+        SPR_setVisibility(algorSprites[i], HIDDEN);
+    }
+    SPR_setVisibility(algorSprites[algorithm], VISIBLE);
+    SPR_update();
+}
+
 static void printChannelParameters(void)
 {
     printChannelParameterHeadings();
@@ -198,14 +207,7 @@ static void printChannelParameters(void)
         printOperatorValue(channel->operators[op].ssgEg, op, line++);
     }
 
-    Sprite* sprite;
-    for (int i = 0; i < FM_ALGORITHMS; i++) {
-        sprite = algorSprites[i];
-        SPR_setVisibility(sprite, HIDDEN);
-    }
-    sprite = algorSprites[channel->algorithm];
-    SPR_setVisibility(sprite, VISIBLE);
-    SPR_update();
+    updateAlgorithmDiagram(channel->algorithm);
 }
 
 static void printMappings(void)
