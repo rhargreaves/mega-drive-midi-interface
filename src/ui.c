@@ -198,7 +198,6 @@ static void printChannelParameters(void)
         printOperatorValue(channel->operators[op].ssgEg, op, line++);
     }
 
-    SYS_disableInts();
     Sprite* sprite;
     for (int i = 0; i < FM_ALGORITHMS; i++) {
         sprite = algorSprites[i];
@@ -207,7 +206,6 @@ static void printChannelParameters(void)
     sprite = algorSprites[channel->algorithm];
     SPR_setVisibility(sprite, VISIBLE);
     SPR_update();
-    SYS_enableInts();
 }
 
 static void printMappings(void)
