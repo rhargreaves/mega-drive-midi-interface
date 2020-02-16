@@ -89,7 +89,7 @@ You can use CC 83 to show the current FM parameters for the specific channel:
     <img src="https://github.com/rhargreaves/mega-drive-midi-interface/raw/master/docs/chan_paras.jpg" width="600" />
 </p>
 
-\*\*Warning: This is not currently optimised, so induces a significant slow down!
+**Warning: This is not currently optimised, so induces a significant slow down!**
 
 ### Polyphonic Mode
 
