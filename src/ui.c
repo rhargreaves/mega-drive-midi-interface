@@ -74,7 +74,8 @@ static u16 lastUpdateFrame = 0;
 static volatile u16 frame = 0;
 static u8 chanParasMidiChan = 0;
 
-static Sprite* algorSprites[FM_ALGORITHMS] = {};
+static Sprite* algorSprites[FM_ALGORITHMS];
+static Sprite* activitySprites[DEV_CHANS];
 
 static const u8 base_y = 8;
 const u8 op_heading_x = 15;
@@ -82,8 +83,6 @@ const u8 para_heading_x = 0;
 
 static void initAlgorithmSprites(void)
 {
-    SYS_disableInts();
-    SPR_init();
     const SpriteDefinition* algors[] = { &algor_0, &algor_1, &algor_2, &algor_3,
         &algor_4, &algor_5, &algor_6, &algor_7 };
 
@@ -98,9 +97,6 @@ static void initAlgorithmSprites(void)
 
     VDP_setPaletteColors(
         (PAL0 * 16), activity.palette->data, activity.palette->length);
-
-    SPR_update();
-    SYS_enableInts();
 }
 
 void ui_init(void)
@@ -118,7 +114,22 @@ void ui_init(void)
     printCommMode();
     printMappings();
     printDynamicModeStatus(midi_dynamicMode());
+
+    SYS_disableInts();
+    SPR_init();
     initAlgorithmSprites();
+
+    for (int i = 0; i < DEV_CHANS; i++) {
+        Sprite* sprite = SPR_addSprite(&activity,
+            fix32ToInt(FIX32(((i * CHAN_X_GAP) + 7) * 8)),
+            fix32ToInt(FIX32((ACTIVITY_Y + 1) * 8)),
+            TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+        SPR_setVisibility(sprite, VISIBLE);
+        activitySprites[i] = sprite;
+    }
+
+    SPR_update();
+    SYS_enableInts();
 }
 
 void ui_vsync(void)
@@ -173,7 +184,7 @@ static void hideAllAlgorithms(void)
 static void updateAlgorithmDiagram(u8 algorithm)
 {
     hideAllAlgorithms();
-    SPR_setVisibility(algorSprites[algorithm], VISIBLE);
+    SPR_setVisibility(algorSprites[algorithm], HIDDEN);
     SPR_update();
 }
 
@@ -388,9 +399,7 @@ static void printActivity(void)
     static u16 lastBusy = 0;
     u16 busy = synth_busy() | (psg_busy() << 6);
     if (busy != lastBusy) {
-        VDP_setTextPalette(PAL2);
         printChanActivity(busy, MAX_FM_CHANS + MAX_PSG_CHANS, ACTIVITY_FM_X);
-        VDP_setTextPalette(PAL0);
         lastBusy = busy;
     }
 }
@@ -425,16 +434,11 @@ static void populateMappings(u8* midiChans)
 
 static void printChanActivity(u16 busy, u16 maxChannels, u16 x)
 {
-    u8 lineLength = (CHAN_X_GAP * maxChannels) + 1;
-    char line[lineLength];
-    memset(line, ' ', lineLength - 1);
-    line[lineLength] = '\0';
     for (u8 chan = 0; chan < maxChannels; chan++) {
-        if ((busy >> chan) & 1) {
-            line[chan * CHAN_X_GAP] = '*';
-        }
+        SPR_setVisibility(
+            activitySprites[chan], ((busy >> chan) & 1) ? VISIBLE : HIDDEN);
     }
-    drawText(line, x, ACTIVITY_Y);
+    SPR_update();
 }
 
 static void printBeat(void)
