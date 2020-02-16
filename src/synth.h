@@ -73,3 +73,4 @@ u8 synth_busy(void);
 void synth_preset(u8 channel, const FmChannel* preset);
 const FmChannel* synth_channelParameters(u8 channel);
 const Global* synth_globalParameters();
+void synth_setParameterUpdateCallback(void* cb);

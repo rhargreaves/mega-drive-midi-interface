@@ -46,3 +46,4 @@ void test_midi_polyphonic_mode_returns_state(UNUSED void** state);
 void test_midi_sets_all_sound_off(UNUSED void** state);
 void test_midi_sets_all_notes_off(UNUSED void** state);
 void test_midi_sets_unknown_CC(UNUSED void** state);
+void test_midi_shows_fm_parameter_ui(UNUSED void** state);

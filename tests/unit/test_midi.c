@@ -73,3 +73,15 @@ void test_midi_sets_unknown_CC(UNUSED void** state)
     assert_int_equal(cc->controller, expectedController);
     assert_int_equal(cc->value, expectedValue);
 }
+
+void test_midi_shows_fm_parameter_ui(UNUSED void** state)
+{
+    u8 midiChan = 0;
+    u8 cc = 83;
+    u8 show = 127;
+
+    expect_value(__wrap_ui_setMidiChannelParametersVisibility, chan, midiChan);
+    expect_value(__wrap_ui_setMidiChannelParametersVisibility, show, true);
+
+    __real_midi_cc(midiChan, cc, show);
+}

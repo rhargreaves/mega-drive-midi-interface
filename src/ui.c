@@ -12,7 +12,7 @@
 
 #include "sprite.h"
 
-#define SHOW_CHAN_PARAMETERS true
+static bool showChanParameters = false;
 
 #define MAX_Y 27
 #define MAX_X 39
@@ -297,7 +297,7 @@ void ui_update(void)
         printCommMode();
         printCommBuffer();
         printLog();
-        if (SHOW_CHAN_PARAMETERS) {
+        if (showChanParameters) {
             printChannelParameters();
         }
         activityFrame = 0;
@@ -323,6 +323,11 @@ void ui_update(void)
     }
 
     lastUpdateFrame = frame;
+}
+
+void ui_setMidiChannelParametersVisibility(u8 chan, bool show)
+{
+    showChanParameters = show;
 }
 
 static u16 loadPercent(void)

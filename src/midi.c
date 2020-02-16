@@ -9,6 +9,7 @@
 #include "psg_chip.h"
 #include "synth.h"
 #include <stdbool.h>
+#include "ui.h"
 
 #define MIN_MIDI_VELOCITY 0
 #define RANGE(value, range) (value / (128 / range))
@@ -770,6 +771,11 @@ void midi_cc(u8 chan, u8 controller, u8 value)
         break;
     case CC_RESET_ALL_CONTROLLERS:
         resetAllControllers(chan);
+        break;
+    case CC_SHOW_PARAMETERS_ON_UI:
+        if (isIgnoringNonGeneralMidiCCs())
+            break;
+        ui_setMidiChannelParametersVisibility(chan, RANGE(value, 2));
         break;
     default:
         fmParameterCC(chan, controller, value);
