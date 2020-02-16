@@ -160,11 +160,17 @@ static void printOperatorValue(u16 value, u8 op, u8 line)
     drawText(buffer, op_value_x + (op * op_value_gap), base_y + line);
 }
 
-static void updateAlgorithmDiagram(u8 algorithm)
+static void hideAllAlgorithms(void)
 {
     for (u8 i = 0; i < FM_ALGORITHMS; i++) {
         SPR_setVisibility(algorSprites[i], HIDDEN);
     }
+    SPR_update();
+}
+
+static void updateAlgorithmDiagram(u8 algorithm)
+{
+    hideAllAlgorithms();
     SPR_setVisibility(algorSprites[algorithm], VISIBLE);
     SPR_update();
 }
@@ -328,6 +334,10 @@ void ui_update(void)
 void ui_setMidiChannelParametersVisibility(u8 chan, bool show)
 {
     showChanParameters = show;
+    if (!show) {
+        VDP_clearTextArea(0, MARGIN_Y + base_y + 3, MAX_X, 11);
+        hideAllAlgorithms();
+    }
 }
 
 static u16 loadPercent(void)
