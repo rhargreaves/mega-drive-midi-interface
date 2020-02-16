@@ -186,7 +186,7 @@ static void hideAllAlgorithms(void)
 static void updateAlgorithmDiagram(u8 algorithm)
 {
     hideAllAlgorithms();
-    SPR_setVisibility(algorSprites[algorithm], HIDDEN);
+    SPR_setVisibility(algorSprites[algorithm], VISIBLE);
     SPR_update();
 }
 
