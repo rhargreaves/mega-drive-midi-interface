@@ -435,8 +435,7 @@ static void populateMappings(u8* midiChans)
 static void printChanActivity(u16 busy, u16 maxChannels, u16 x)
 {
     for (u8 chan = 0; chan < maxChannels; chan++) {
-        SPR_setVisibility(
-            activitySprites[chan], ((busy >> chan) & 1) ? VISIBLE : HIDDEN);
+        SPR_setFrame(activitySprites[chan], ((busy >> chan) & 1) ? 1 : 0);
     }
     SPR_update();
 }
