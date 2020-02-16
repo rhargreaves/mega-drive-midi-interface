@@ -76,6 +76,8 @@ static u16 lastUpdateFrame = 0;
 static volatile u16 frame = 0;
 static u8 chanParasMidiChan = 0;
 
+static bool synthParameterValuesDirty = false;
+
 static Sprite* algorSprites[FM_ALGORITHMS];
 static Sprite* activitySprites[DEV_CHANS];
 
@@ -101,6 +103,11 @@ static void initAlgorithmSprites(void)
         (PAL0 * 16), activity.palette->data, activity.palette->length);
 }
 
+static void synthParameterUpdated(void)
+{
+    synthParameterValuesDirty = true;
+}
+
 void ui_init(void)
 {
     VDP_setBackgroundColor(BG_COLOUR_INDEX);
@@ -116,6 +123,8 @@ void ui_init(void)
     printCommMode();
     printMappings();
     printDynamicModeStatus(midi_dynamicMode());
+
+    synth_setParameterUpdateCallback(synthParameterUpdated);
 
     SYS_disableInts();
     SPR_init();
@@ -322,9 +331,12 @@ void ui_update(void)
         printCommMode();
         printCommBuffer();
         printLog();
-        if (showChanParameters) {
+
+        if (showChanParameters && synthParameterValuesDirty) {
             printChannelParameters();
+            synthParameterValuesDirty = false;
         }
+
         activityFrame = 0;
     }
 

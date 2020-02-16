@@ -6,6 +6,7 @@
 #include "synth.h"
 #include "unused.h"
 #include <cmocka.h>
+#include <stdbool.h>
 #include <types.h>
 
 extern void __real_synth_init(const FmChannel* defaultPreset);
@@ -40,6 +41,8 @@ extern void __real_synth_volume(u8 channel, u8 volume);
 extern const FmChannel* __real_synth_channelParameters(u8 channel);
 extern const Global* __real_synth_globalParameters();
 
+static bool updated = false;
+
 static void set_initial_registers()
 {
     const u16 count = 187;
@@ -58,6 +61,7 @@ static void set_initial_registers()
 
 static int test_synth_setup(UNUSED void** state)
 {
+    updated = false;
     set_initial_registers();
     return 0;
 }
@@ -482,4 +486,23 @@ static void test_synth_exposes_global_parameters(UNUSED void** state)
     const Global* global = __real_synth_globalParameters();
 
     assert_int_equal(global->lfoFrequency, 1);
+}
+
+static void updateCallback(void)
+{
+    updated = true;
+}
+
+static void test_synth_calls_callback_when_parameter_changes(
+    UNUSED void** state)
+{
+    synth_setParameterUpdateCallback(&updateCallback);
+
+    const u8 defaultFeedback = 0;
+    const u8 algorithm = 1;
+    u8 chan = 1;
+    expect_ym2612_write_channel(chan, 0xB0, (defaultFeedback << 3) + algorithm);
+    __real_synth_algorithm(chan, algorithm);
+
+    assert_true(updated);
 }

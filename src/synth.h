@@ -45,6 +45,8 @@ struct Global {
     u8 lfoFrequency;
 };
 
+typedef void ParameterUpdatedCallback();
+
 void synth_init(const FmChannel* initialPreset);
 void synth_noteOn(u8 channel);
 void synth_noteOff(u8 channel);
@@ -73,4 +75,4 @@ u8 synth_busy(void);
 void synth_preset(u8 channel, const FmChannel* preset);
 const FmChannel* synth_channelParameters(u8 channel);
 const Global* synth_globalParameters();
-void synth_setParameterUpdateCallback(void* cb);
+void synth_setParameterUpdateCallback(ParameterUpdatedCallback* cb);

@@ -9,6 +9,8 @@ static FmChannel fmChannels[MAX_FM_CHANS];
 static u8 noteOn;
 static u8 volumes[MAX_FM_CHANS];
 
+static ParameterUpdatedCallback* parameterUpdatedCallback = NULL;
+
 static const u8 MAX_VOLUME = 0x7F;
 
 static const u8 VOLUME_TO_TOTAL_LEVELS[] = { 127, 122, 117, 113, 108, 104, 100,
@@ -219,6 +221,9 @@ void synth_preset(u8 channel, const FmChannel* preset)
 static void writeChannelReg(u8 channel, u8 baseReg, u8 data)
 {
     YM2612_writeReg(channel > 2 ? 1 : 0, baseReg + (channel % 3), data);
+    if (parameterUpdatedCallback) {
+        parameterUpdatedCallback();
+    }
 }
 
 static void writeOperatorReg(u8 channel, u8 op, u8 baseReg, u8 data)
@@ -348,4 +353,9 @@ const FmChannel* synth_channelParameters(u8 channel)
 const Global* synth_globalParameters()
 {
     return &global;
+}
+
+void synth_setParameterUpdateCallback(ParameterUpdatedCallback* cb)
+{
+    parameterUpdatedCallback = cb;
 }
