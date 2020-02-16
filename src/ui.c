@@ -199,9 +199,9 @@ static void printChannelParameters(void)
     const FmChannel* channel = synth_channelParameters(chan);
     const Global* global = synth_globalParameters();
     char buffer[4];
-    sprintf(buffer, "%-2d", midiChan);
+    sprintf(buffer, "%-2d", midiChan + 1);
     drawText(buffer, para_heading_x + 5, base_y + 3);
-    sprintf(buffer, "%-3d", chan);
+    sprintf(buffer, "%-3d", chan + 1);
     drawText(buffer, para_heading_x + 11, base_y + 3);
     sprintf(buffer, "%d", channel->algorithm);
     drawText(buffer, para_heading_x + 5, base_y + 5);

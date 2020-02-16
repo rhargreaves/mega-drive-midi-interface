@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+sendmidi dev "IAC Driver IAC Bus 2" cc 83 0

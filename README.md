@@ -81,6 +81,16 @@ The following rules are used to determine which device channel receives the MIDI
    - Volume
    - Pan
 
+## Show FM Channel Parameters on UI
+
+You can use CC 83 to show the current FM parameters for the specific channel:
+
+<p align="center">
+    <img src="https://github.com/rhargreaves/mega-drive-midi-interface/raw/master/docs/chan_paras.jpg" width="600" />
+</p>
+
+\*\*Warning: This is not currently optimised, so induces a significant slow down!
+
 ### Polyphonic Mode
 
 When polyphonic mode is enabled (CC 80), dynamic mapping mode is enabled and MIDI channel 1 is mapped to FM channels 1-6. This allows for polyphony within a single MIDI channel. In addition, any FM parameter change made will be sent to all FM channels. If all channels are busy, the note on event is dropped.
@@ -141,22 +151,23 @@ _Range determines how the possible 128 MIDI values are divided to give the respe
 | Frequency Modulation Level (FMS) | 75  | 8     |
 | Amplitude Modulation Level (AMS) | 76  | 4     |
 | Stereo                           | 77  | 4     |
+| Show Parameters on UI            | 83  | 2     |
 
 #### Per Channel & Operator
 
-| Parameter                 | Op 1<br/>CC | Op 2<br/>CC | Op 3<br/>CC | Op 4<br/>CC | Range |
-| ------------------------- | ----------- | ----------- | ----------- | ----------- | ----- |
-| Total Level (TL)          | 16          | 17          | 18          | 19          | 128   |
-| Multiple (MUL)            | 20          | 21          | 22          | 23          | 16    |
-| Detune (DT1)              | 24          | 25          | 26          | 27          | 8     |
-| Rate Scaling (RS)         | 39          | 40          | 41          | 42          | 4     |
-| Attack Rate (AR)          | 43          | 44          | 45          | 46          | 32    |
-| First Decay Rate (D1R)    | 47          | 48          | 49          | 50          | 32    |
-| Second Decay Rate (D2R)   | 51          | 52          | 53          | 54          | 16    |
+| Parameter                    | Op 1<br/>CC | Op 2<br/>CC | Op 3<br/>CC | Op 4<br/>CC | Range |
+| ---------------------------- | ----------- | ----------- | ----------- | ----------- | ----- |
+| Total Level (TL)             | 16          | 17          | 18          | 19          | 128   |
+| Multiple (MUL)               | 20          | 21          | 22          | 23          | 16    |
+| Detune (DT1)                 | 24          | 25          | 26          | 27          | 8     |
+| Rate Scaling (RS)            | 39          | 40          | 41          | 42          | 4     |
+| Attack Rate (AR)             | 43          | 44          | 45          | 46          | 32    |
+| First Decay Rate (D1R)       | 47          | 48          | 49          | 50          | 32    |
+| Second Decay Rate (D2R)      | 51          | 52          | 53          | 54          | 16    |
 | Secondary Amplitude (D1L/SL) | 55          | 56          | 57          | 58          | 16    |
-| Release Rate (RR)         | 59          | 60          | 61          | 62          | 16    |
-| Amplitude Modulation (AM) | 70          | 71          | 72          | 73          | 2     |
-| SSG-EG                    | 90          | 91          | 92          | 93          | 16    |
+| Release Rate (RR)            | 59          | 60          | 61          | 62          | 16    |
+| Amplitude Modulation (AM)    | 70          | 71          | 72          | 73          | 2     |
+| SSG-EG                       | 90          | 91          | 92          | 93          | 16    |
 
 ### FM Algorithm Operator Routing
 
