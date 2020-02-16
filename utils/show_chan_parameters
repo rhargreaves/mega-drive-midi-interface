@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-sendmidi dev "IAC Driver IAC Bus 2" cc 83 127
+sendmidi dev "IAC Driver IAC Bus 2" ch $1 cc 83 127
