@@ -17,6 +17,7 @@ INCLUDE_DIRS+=-I../src
 INCLUDE_DIRS+=-I$(CMOCKA_DIR)/include
 
 CFLAGS=$(INCLUDE_DIRS) \
+	-DUNIT_TESTS \
 	-ggdb \
 	-O0 \
 	-Wall \
