@@ -23,7 +23,7 @@ ASMZ80 = $(GENBIN)/zasm
 RM = rm -f
 NM = nm
 
-BUILD := v0.4.3
+BUILD := v0.4.4
 INCS = -I. \
 	-I$(GENDEV)/sgdk/inc \
 	-I$(GENDEV)/m86k-elf/include \
