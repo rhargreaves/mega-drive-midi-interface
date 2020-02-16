@@ -56,7 +56,7 @@ void serial_init(u8 sctrlFlags)
     setCtrl(CTRL_PCS_OUT);
     if (sctrlFlags & SCTRL_RINT) {
         SYS_setInterruptMaskLevel(INT_MASK_LEVEL_ENABLE_ALL);
-        VDP_setReg(VDP_MODE_REG_3, VDP_IE2);
+        VDP_setReg(VDP_MODE_REG_3, VDP_getReg(VDP_MODE_REG_3) | VDP_IE2);
         SYS_setExtIntCallback(&extIntCallback);
     }
 }

@@ -501,6 +501,11 @@ void __wrap_VDP_setReg(u16 reg, u8 value)
 {
 }
 
+u8 __wrap_VDP_getReg(u16 reg)
+{
+    return 0;
+}
+
 void __wrap_SYS_setExtIntCallback(_voidCallback* CB)
 {
 }

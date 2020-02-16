@@ -100,6 +100,7 @@ MD_MOCKS=SYS_setVIntCallback \
 	SYS_disableInts \
 	SYS_enableInts \
 	VDP_setReg \
+	VDP_getReg \
 	SYS_setExtIntCallback \
 	SYS_setInterruptMaskLevel \
 	SPR_init \
