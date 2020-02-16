@@ -165,7 +165,6 @@ static void hideAllAlgorithms(void)
     for (u8 i = 0; i < FM_ALGORITHMS; i++) {
         SPR_setVisibility(algorSprites[i], HIDDEN);
     }
-    SPR_update();
 }
 
 static void updateAlgorithmDiagram(u8 algorithm)
@@ -337,6 +336,7 @@ void ui_setMidiChannelParametersVisibility(u8 chan, bool show)
     if (!show) {
         VDP_clearTextArea(0, MARGIN_Y + base_y + 3, MAX_X, 11);
         hideAllAlgorithms();
+        SPR_update();
     }
 }
 
