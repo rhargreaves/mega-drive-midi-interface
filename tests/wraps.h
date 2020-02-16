@@ -38,6 +38,7 @@ void __wrap_synth_operatorSsgEg(u8 channel, u8 op, u8 ssgEg);
 void __wrap_synth_preset(u8 channel, const FmChannel* preset);
 void __wrap_synth_volume(u8 channel, u8 volume);
 const FmChannel* __wrap_synth_channelParameters(u8 channel);
+const Global* __wrap_synth_globalParameters();
 bool __wrap_comm_readReady(void);
 u8 __wrap_comm_read(void);
 void __wrap_comm_write(u8 data);

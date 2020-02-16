@@ -89,7 +89,7 @@ static void initAlgorithmSprites(void)
     for (int i = 0; i < FM_ALGORITHMS; i++) {
         const SpriteDefinition* algor = algors[i];
         Sprite* sprite = SPR_addSprite(algor, fix32ToInt(FIX32(9 * 8)),
-            fix32ToInt(FIX32((base_y + 7) * 8)),
+            fix32ToInt(FIX32((base_y + 6) * 8)),
             TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
         SPR_setVisibility(sprite, HIDDEN);
         algorSprites[i] = sprite;
@@ -140,9 +140,10 @@ static void printChannelParameterHeadings(void)
 
     drawText("MIDI", para_heading_x, base_y + 3);
     drawText("FM", para_heading_x + 8, base_y + 3);
-    drawText("Alg", para_heading_x, base_y + 6);
-    drawText("FB", para_heading_x, base_y + 7);
+    drawText("Alg", para_heading_x, base_y + 5);
+    drawText("FB", para_heading_x, base_y + 6);
     drawText("LFO", para_heading_x, base_y + 9);
+    drawText("Hz", para_heading_x + 8, base_y + 9);
     drawText("AMS", para_heading_x, base_y + 10);
     drawText("FMS", para_heading_x, base_y + 11);
     drawText("Ster", para_heading_x, base_y + 12);
@@ -174,15 +175,22 @@ static void printChannelParameters(void)
 
     u8 chan = 0;
     const FmChannel* channel = synth_channelParameters(chan);
+    const Global* global = synth_globalParameters();
     char buffer[4];
     sprintf(buffer, "%d", chan);
     drawText(buffer, para_heading_x + 5, base_y + 3);
     sprintf(buffer, "%d", chan);
     drawText(buffer, para_heading_x + 11, base_y + 3);
     sprintf(buffer, "%d", channel->algorithm);
-    drawText(buffer, para_heading_x + 5, base_y + 6);
+    drawText(buffer, para_heading_x + 5, base_y + 5);
     sprintf(buffer, "%d", channel->feedback);
-    drawText(buffer, para_heading_x + 5, base_y + 7);
+    drawText(buffer, para_heading_x + 5, base_y + 6);
+
+    sprintf(buffer, "%d", global->lfoEnable);
+    drawText(buffer, para_heading_x + 5, base_y + 9);
+    sprintf(buffer, "%d", global->lfoFrequency);
+    drawText(buffer, para_heading_x + 11, base_y + 9);
+
     sprintf(buffer, "%d", channel->ams);
     drawText(buffer, para_heading_x + 5, base_y + 10);
     sprintf(buffer, "%d", channel->fms);

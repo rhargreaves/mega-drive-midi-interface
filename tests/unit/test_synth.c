@@ -38,6 +38,7 @@ extern void __real_synth_pitchBend(u8 channel, u16 bend);
 extern void __real_synth_preset(u8 channel, const FmChannel* preset);
 extern void __real_synth_volume(u8 channel, u8 volume);
 extern const FmChannel* __real_synth_channelParameters(u8 channel);
+extern const Global* __real_synth_globalParameters();
 
 static void set_initial_registers()
 {
@@ -474,4 +475,11 @@ static void test_synth_exposes_fm_channel_parameters(UNUSED void** state)
     const FmChannel* chan = __real_synth_channelParameters(0);
 
     assert_int_equal(chan->stereo, STEREO_MODE_CENTRE);
+}
+
+static void test_synth_exposes_global_parameters(UNUSED void** state)
+{
+    const Global* global = __real_synth_globalParameters();
+
+    assert_int_equal(global->lfoFrequency, 1);
 }

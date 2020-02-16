@@ -4,13 +4,6 @@
 #include <stdbool.h>
 #include <ym2612.h>
 
-typedef struct Global Global;
-
-struct Global {
-    u8 lfoEnable;
-    u8 lfoFrequency;
-};
-
 static Global global = { .lfoEnable = 0, .lfoFrequency = 0 };
 static FmChannel fmChannels[MAX_FM_CHANS];
 static u8 noteOn;
@@ -350,4 +343,9 @@ static u8 volumeAdjustedTotalLevel(u8 channel, u8 totalLevel)
 const FmChannel* synth_channelParameters(u8 channel)
 {
     return fmChannel(channel);
+}
+
+const Global* synth_globalParameters()
+{
+    return &global;
 }

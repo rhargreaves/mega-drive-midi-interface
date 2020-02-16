@@ -59,6 +59,7 @@ MOCKS=midi_process \
 	synth_preset \
 	synth_volume \
 	synth_channelParameters \
+	synth_globalParameters \
 	fm_writeReg \
 	psg_noteOn \
 	psg_noteOff \

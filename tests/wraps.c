@@ -207,6 +207,11 @@ const FmChannel* __wrap_synth_channelParameters(u8 channel)
     return NULL;
 }
 
+const Global* __wrap_synth_globalParameters()
+{
+    return NULL;
+}
+
 void __wrap_comm_write(u8 data)
 {
     check_expected(data);
