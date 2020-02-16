@@ -307,9 +307,10 @@ void ui_update(void)
         return;
     }
 
+    printActivity();
+
     static u8 activityFrame = 0;
     if (++activityFrame == FRAMES_BEFORE_UPDATE_ACTIVITY) {
-        printActivity();
         printMappings();
         printBeat();
         printCommMode();
