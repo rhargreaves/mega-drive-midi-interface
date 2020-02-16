@@ -7,6 +7,7 @@
 #include "midi.h"
 #include "midi_receiver.h"
 #include "psg_chip.h"
+#include "serial.h"
 #include "synth.h"
 #include <genesis.h>
 
@@ -39,6 +40,7 @@ static bool showChanParameters = false;
 #define FONT_COLOUR_INDEX 15
 #define BG_COLOUR_INDEX 0
 
+#define FRAMES_BEFORE_UPDATE_CHAN_ACTIVITY 1
 #define FRAMES_BEFORE_UPDATE_ACTIVITY 5
 #define FRAMES_BEFORE_UPDATE_ERROR 11
 #define FRAMES_BEFORE_UPDATE_LOAD 47
@@ -307,7 +309,11 @@ void ui_update(void)
         return;
     }
 
-    printActivity();
+    static u8 chanActivityFrame = 0;
+    if (++chanActivityFrame == FRAMES_BEFORE_UPDATE_CHAN_ACTIVITY) {
+        printActivity();
+        chanActivityFrame = 0;
+    }
 
     static u8 activityFrame = 0;
     if (++activityFrame == FRAMES_BEFORE_UPDATE_ACTIVITY) {

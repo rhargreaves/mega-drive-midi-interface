@@ -35,7 +35,11 @@ CCFLAGS = -Wall -std=c11 -Werror \
 	-m68000 -O3 -c -fomit-frame-pointer -g
 Z80FLAGS = -vb2
 ASFLAGS = -m68000 --register-prefix-optional
-LIBS =  -L$(GENDEV)/m68k-elf/lib -L$(GENDEV)/lib/gcc/m68k-elf/$(GCC_VER)/* -L$(GENDEV)/sgdk/lib -lmd -lnosys
+LIBS = -L$(GENDEV)/m68k-elf/lib \
+	-L$(GENDEV)/lib/gcc/m68k-elf/$(GCC_VER)/* \
+	-L$(GENDEV)/sgdk/lib -lmd -lnosys \
+	--wrap=SYS_enableInts \
+	--wrap=SYS_disableInts
 LINKFLAGS = -T $(GENDEV)/sgdk/md.ld -nostdlib
 ARCHIVES = $(GENDEV)/sgdk/$(LIB)/libmd.a
 ARCHIVES += $(GENDEV)/$(LIB)/gcc/m68k-elf/$(GCC_VER)/libgcc.a
