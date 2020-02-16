@@ -169,17 +169,33 @@ static void updateAlgorithmDiagram(u8 algorithm)
     SPR_update();
 }
 
+static u8 getFmChanForMidiChan(u8 midiChan)
+{
+    DeviceChannel* devChans = midi_channelMappings();
+    for (u8 i = 0; i <= DEV_CHAN_MAX_FM; i++) {
+        DeviceChannel* devChan = &devChans[i];
+        if (devChan->midiChannel == midiChan) {
+            return devChan->number;
+        }
+    }
+    return -1;
+}
+
 static void printChannelParameters(void)
 {
     printChannelParameterHeadings();
 
-    u8 chan = 0;
+    u8 midiChan = 0;
+    u8 chan = getFmChanForMidiChan(midiChan);
+    if (chan == -1) {
+        return;
+    }
     const FmChannel* channel = synth_channelParameters(chan);
     const Global* global = synth_globalParameters();
     char buffer[4];
-    sprintf(buffer, "%d", chan);
+    sprintf(buffer, "%-2d", midiChan);
     drawText(buffer, para_heading_x + 5, base_y + 3);
-    sprintf(buffer, "%d", chan);
+    sprintf(buffer, "%-3d", chan);
     drawText(buffer, para_heading_x + 11, base_y + 3);
     sprintf(buffer, "%d", channel->algorithm);
     drawText(buffer, para_heading_x + 5, base_y + 5);
