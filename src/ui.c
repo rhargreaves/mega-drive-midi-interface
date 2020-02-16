@@ -72,6 +72,7 @@ static bool commInited = false;
 static bool commSerial = false;
 static u16 lastUpdateFrame = 0;
 static volatile u16 frame = 0;
+static u8 chanParasMidiChan = 0;
 
 static Sprite* algorSprites[FM_ALGORITHMS] = {};
 
@@ -93,9 +94,11 @@ static void initAlgorithmSprites(void)
             TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
         SPR_setVisibility(sprite, HIDDEN);
         algorSprites[i] = sprite;
-        VDP_setPaletteColors(
-            (PAL0 * 16), algor->palette->data, algor->palette->length);
     }
+
+    VDP_setPaletteColors(
+        (PAL0 * 16), activity.palette->data, activity.palette->length);
+
     SPR_update();
     SYS_enableInts();
 }
@@ -190,15 +193,14 @@ static void printChannelParameters(void)
 {
     printChannelParameterHeadings();
 
-    u8 midiChan = 0;
-    u8 chan = getFmChanForMidiChan(midiChan);
+    u8 chan = getFmChanForMidiChan(chanParasMidiChan);
     if (chan == -1) {
         return;
     }
     const FmChannel* channel = synth_channelParameters(chan);
     const Global* global = synth_globalParameters();
     char buffer[4];
-    sprintf(buffer, "%-2d", midiChan + 1);
+    sprintf(buffer, "%-2d", chanParasMidiChan + 1);
     drawText(buffer, para_heading_x + 5, base_y + 3);
     sprintf(buffer, "%-3d", chan + 1);
     drawText(buffer, para_heading_x + 11, base_y + 3);
@@ -333,6 +335,7 @@ void ui_update(void)
 void ui_setMidiChannelParametersVisibility(u8 chan, bool show)
 {
     showChanParameters = show;
+    chanParasMidiChan = chan;
     if (!show) {
         VDP_clearTextArea(0, MARGIN_Y + base_y + 3, MAX_X, 11);
         hideAllAlgorithms();
