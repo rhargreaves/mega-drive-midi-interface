@@ -142,8 +142,7 @@ static void printChannelParameterHeadings(void)
     drawText("FM", para_heading_x + 8, base_y + 3);
     drawText("Alg", para_heading_x, base_y + 6);
     drawText("FB", para_heading_x, base_y + 7);
-    drawText("LFO", para_heading_x, base_y + 8);
-    drawText("LFOHz", para_heading_x, base_y + 9);
+    drawText("LFO", para_heading_x, base_y + 9);
     drawText("AMS", para_heading_x, base_y + 10);
     drawText("FMS", para_heading_x, base_y + 11);
     drawText("Ster", para_heading_x, base_y + 12);
@@ -188,7 +187,23 @@ static void printChannelParameters(void)
     drawText(buffer, para_heading_x + 5, base_y + 10);
     sprintf(buffer, "%d", channel->fms);
     drawText(buffer, para_heading_x + 5, base_y + 11);
-    drawText("LR", para_heading_x + 5, base_y + 12);
+
+    char* stereoText;
+    switch (channel->stereo) {
+    case 0:
+        stereoText = "  ";
+        break;
+    case 1:
+        stereoText = "R ";
+        break;
+    case 2:
+        stereoText = "L ";
+        break;
+    default:
+        stereoText = "LR";
+        break;
+    }
+    drawText(stereoText, para_heading_x + 5, base_y + 12);
 
     for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
         u8 line = 4;
@@ -311,9 +326,9 @@ static void printChannels(void)
 {
     VDP_setTextPalette(PAL3);
     drawText(CHAN_HEADER, 0, CHAN_Y);
-    VDP_setTextPalette(PAL0);
     drawText(MIDI_HEADER, 0, MIDI_Y);
     drawText("Act.", 0, ACTIVITY_Y);
+    VDP_setTextPalette(PAL0);
 }
 
 static void printCommBuffer(void)
