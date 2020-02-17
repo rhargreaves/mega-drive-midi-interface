@@ -118,8 +118,11 @@ void synth_feedback(u8 channel, u8 feedback)
 
 void synth_operatorTotalLevel(u8 channel, u8 op, u8 totalLevel)
 {
-    getOperator(channel, op)->totalLevel = totalLevel;
-    updateOperatorTotalLevel(channel, op);
+    Operator* oper = getOperator(channel, op);
+    if (oper->totalLevel != totalLevel) {
+        oper->totalLevel = totalLevel;
+        updateOperatorTotalLevel(channel, op);
+    }
 }
 
 void synth_operatorMultiple(u8 channel, u8 op, u8 multiple)

@@ -171,6 +171,19 @@ static void test_synth_sets_feedback_and_algorithm(UNUSED void** state)
     }
 }
 
+static void test_synth_does_not_reset_operator_level_if_equal(
+    UNUSED void** state)
+{
+    const u8 baseReg = 0x40;
+    const u8 totalLevel = 50;
+    u8 chan = 0;
+    u8 op = 0;
+
+    expect_ym2612_write_operator(chan, op, baseReg, totalLevel);
+    __real_synth_operatorTotalLevel(chan, op, totalLevel);
+    __real_synth_operatorTotalLevel(chan, op, totalLevel);
+}
+
 static void test_synth_sets_operator_total_level(UNUSED void** state)
 {
     const u8 baseReg = 0x40;

@@ -139,6 +139,7 @@ int main(void)
         synth_test(test_synth_sets_algorithm),
         synth_test(test_synth_sets_feedback),
         synth_test(test_synth_sets_operator_total_level),
+        synth_test(test_synth_does_not_reset_operator_level_if_equal),
         synth_test(test_synth_sets_feedback_and_algorithm),
         synth_test(test_synth_sets_operator_multiple_and_detune),
         synth_test(test_synth_sets_operator_attack_rate_and_rate_scaling),
