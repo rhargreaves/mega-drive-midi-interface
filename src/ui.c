@@ -371,6 +371,7 @@ void ui_setMidiChannelParametersVisibility(u8 chan, bool show)
         hideAllAlgorithms();
         SPR_update();
     }
+    synthParameterValuesDirty = true;
 }
 
 static u16 loadPercent(void)
