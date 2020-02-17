@@ -75,6 +75,7 @@ static bool commSerial = false;
 static u16 lastUpdateFrame = 0;
 static volatile u16 frame = 0;
 static u8 chanParasMidiChan = 0;
+static u8 chanParasFmChan = 0;
 
 static bool synthParameterValuesDirty = false;
 
@@ -103,9 +104,11 @@ static void initAlgorithmSprites(void)
         (PAL0 * 16), activity.palette->data, activity.palette->length);
 }
 
-static void synthParameterUpdated(void)
+static void synthParameterUpdated(u8 fmChan)
 {
-    synthParameterValuesDirty = true;
+    if (fmChan == chanParasFmChan) {
+        synthParameterValuesDirty = true;
+    }
 }
 
 void ui_init(void)
@@ -219,6 +222,8 @@ static void printChannelParameters(void)
     if (chan == -1) {
         return;
     }
+    chanParasFmChan = chan;
+
     const FmChannel* channel = synth_channelParameters(chan);
     const Global* global = synth_globalParameters();
     char buffer[4];

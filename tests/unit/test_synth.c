@@ -42,6 +42,7 @@ extern const FmChannel* __real_synth_channelParameters(u8 channel);
 extern const Global* __real_synth_globalParameters();
 
 static bool updated = false;
+static u8 lastChan = -1;
 
 static void set_initial_registers()
 {
@@ -488,9 +489,10 @@ static void test_synth_exposes_global_parameters(UNUSED void** state)
     assert_int_equal(global->lfoFrequency, 1);
 }
 
-static void updateCallback(void)
+static void updateCallback(u8 chan)
 {
     updated = true;
+    lastChan = chan;
 }
 
 static void test_synth_calls_callback_when_parameter_changes(
@@ -500,9 +502,11 @@ static void test_synth_calls_callback_when_parameter_changes(
 
     const u8 defaultFeedback = 0;
     const u8 algorithm = 1;
-    u8 chan = 1;
-    expect_ym2612_write_channel(chan, 0xB0, (defaultFeedback << 3) + algorithm);
-    __real_synth_algorithm(chan, algorithm);
+    u8 fmChan = 1;
+    expect_ym2612_write_channel(
+        fmChan, 0xB0, (defaultFeedback << 3) + algorithm);
+    __real_synth_algorithm(fmChan, algorithm);
 
     assert_true(updated);
+    assert_int_equal(lastChan, fmChan);
 }
