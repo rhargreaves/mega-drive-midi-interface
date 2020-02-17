@@ -156,6 +156,7 @@ int main(void)
             test_synth_applies_volume_modifier_to_output_operators_algorithm_7),
         synth_test(
             test_synth_applies_volume_modifier_to_output_operators_algorithm_7_quieter),
+        synth_test(test_synth_does_not_apply_volume_if_equal),
         synth_test(
             test_synth_applies_volume_modifier_to_output_operators_algorithms_0_to_3),
         synth_test(

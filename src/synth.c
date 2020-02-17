@@ -92,6 +92,9 @@ void synth_pitch(u8 channel, u8 octave, u16 freqNumber)
 
 void synth_volume(u8 channel, u8 volume)
 {
+    if (volumes[channel] == volume) {
+        return;
+    }
     volumes[channel] = volume;
     for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
         updateOperatorTotalLevel(channel, op);

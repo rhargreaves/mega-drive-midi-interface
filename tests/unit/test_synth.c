@@ -391,6 +391,35 @@ static void test_synth_applies_volume_modifier_to_output_operators_algorithm_7(
     }
 }
 
+static void test_synth_does_not_apply_volume_if_equal(UNUSED void** state)
+{
+    const u8 algorithm = 7;
+    const u8 totalLevelReg = 0x40;
+    const u8 algorithmReg = 0xB0;
+    const u8 loudestTotalLevel = 0;
+    const u8 loudestVolume = 0x7F;
+    u8 chan = 0;
+    expect_ym2612_write_channel_any_data(chan, algorithmReg);
+    __real_synth_algorithm(chan, algorithm);
+
+    for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
+        expect_ym2612_write_operator(
+            chan, op, totalLevelReg, loudestTotalLevel);
+    }
+    for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
+        __real_synth_operatorTotalLevel(chan, op, loudestTotalLevel);
+    }
+
+    const u8 expectedTotalLevel = 0xb;
+    for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
+        expect_ym2612_write_operator(
+            chan, op, totalLevelReg, expectedTotalLevel);
+    }
+    __real_synth_volume(chan, loudestVolume / 2);
+
+    __real_synth_volume(chan, loudestVolume / 2);
+}
+
 static void
 test_synth_applies_volume_modifier_to_output_operators_algorithm_7_quieter(
     UNUSED void** state)
@@ -435,10 +464,14 @@ test_synth_applies_volume_modifier_to_output_operators_algorithms_0_to_3(
             expect_ym2612_write_channel(chan, algorithmReg, algorithm);
             __real_synth_algorithm(chan, algorithm);
 
-            expect_ym2612_write_operator(chan, 0, totalLevelReg, 0x27);
-            expect_ym2612_write_operator(chan, 1, totalLevelReg, 0x24);
-            expect_ym2612_write_operator(chan, 2, totalLevelReg, 0x4);
-            expect_ym2612_write_operator(chan, 3, totalLevelReg, 0x28);
+            if (algorithm == 0) {
+                /* Operator values are not re-applied for algorithms 1-3 due
+                to unnecessary YM2612 writing optimisation */
+                expect_ym2612_write_operator(chan, 0, totalLevelReg, 0x27);
+                expect_ym2612_write_operator(chan, 1, totalLevelReg, 0x24);
+                expect_ym2612_write_operator(chan, 2, totalLevelReg, 0x4);
+                expect_ym2612_write_operator(chan, 3, totalLevelReg, 0x28);
+            }
             __real_synth_volume(chan, loudestVolume / 4);
         }
     }
@@ -479,10 +512,14 @@ test_synth_applies_volume_modifier_to_output_operators_algorithms_5_and_6(
             expect_ym2612_write_channel(chan, algorithmReg, algorithm);
             __real_synth_algorithm(chan, algorithm);
 
-            expect_ym2612_write_operator(chan, 0, totalLevelReg, 0x27);
-            expect_ym2612_write_operator(chan, 1, totalLevelReg, 0x40);
-            expect_ym2612_write_operator(chan, 2, totalLevelReg, 0x29);
-            expect_ym2612_write_operator(chan, 3, totalLevelReg, 0x28);
+            if (algorithm == 5) {
+                /* Operator values are not re-applied for algorithms 1-3 due
+                to unnecessary YM2612 writing optimisation */
+                expect_ym2612_write_operator(chan, 0, totalLevelReg, 0x27);
+                expect_ym2612_write_operator(chan, 1, totalLevelReg, 0x40);
+                expect_ym2612_write_operator(chan, 2, totalLevelReg, 0x29);
+                expect_ym2612_write_operator(chan, 3, totalLevelReg, 0x28);
+            }
             __real_synth_volume(chan, loudestVolume / 4);
         }
     }

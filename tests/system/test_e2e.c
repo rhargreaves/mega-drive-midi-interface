@@ -26,14 +26,6 @@ static int test_e2e_setup(void** state)
     return 0;
 }
 
-static void expect_total_level_set_for_current_algorithm(u8 channel)
-{
-    expect_ym2612_write_operator_any_data(channel, 0, 0x40);
-    expect_ym2612_write_operator_any_data(channel, 0, 0x44);
-    expect_ym2612_write_operator_any_data(channel, 0, 0x48);
-    expect_ym2612_write_operator_any_data(channel, 0, 0x4C);
-}
-
 static void test_midi_note_on_event_sent_to_ym2612(void** state)
 {
     const u8 noteOnStatus = 0x90;
@@ -44,7 +36,6 @@ static void test_midi_note_on_event_sent_to_ym2612(void** state)
     stub_usb_receive_byte(noteOnKey);
     stub_usb_receive_byte(noteOnVelocity);
 
-    expect_total_level_set_for_current_algorithm(0);
     expect_ym2612_write_channel(0, 0xA4, 0x1A);
     expect_ym2612_write_channel(0, 0xA0, 0x8D);
 
@@ -73,7 +64,6 @@ static void test_polyphonic_midi_sent_to_separate_ym2612_channels(void** state)
     stub_usb_receive_byte(noteOnKey1);
     stub_usb_receive_byte(noteOnVelocity);
 
-    expect_total_level_set_for_current_algorithm(0);
     expect_ym2612_write_channel(0, 0xA4, 0x1A);
     expect_ym2612_write_channel(0, 0xA0, 0x8D);
     expect_ym2612_write_reg(0, 0x28, 0xF0);
@@ -84,7 +74,6 @@ static void test_polyphonic_midi_sent_to_separate_ym2612_channels(void** state)
     stub_usb_receive_byte(noteOnKey2);
     stub_usb_receive_byte(noteOnVelocity);
 
-    expect_total_level_set_for_current_algorithm(1);
     expect_ym2612_write_channel(1, 0xA4, 0x1A);
     expect_ym2612_write_channel(1, 0xA0, 0xB4);
     expect_ym2612_write_reg(0, 0x28, 0xF1);
@@ -138,7 +127,6 @@ static void test_general_midi_reset_sysex_stops_all_notes(void** state)
     stub_usb_receive_byte(noteOnKey);
     stub_usb_receive_byte(noteOnVelocity);
 
-    expect_total_level_set_for_current_algorithm(0);
     expect_ym2612_write_channel(0, 0xA4, 0x1A);
     expect_ym2612_write_channel(0, 0xA0, 0x8D);
     expect_ym2612_write_reg(0, 0x28, 0xF0);
