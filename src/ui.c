@@ -326,6 +326,10 @@ void ui_update(void)
     static u8 chanActivityFrame = 0;
     if (++chanActivityFrame == FRAMES_BEFORE_UPDATE_CHAN_ACTIVITY) {
         printActivity();
+        if (showChanParameters && synthParameterValuesDirty) {
+            printChannelParameters();
+            synthParameterValuesDirty = false;
+        }
         chanActivityFrame = 0;
     }
 
@@ -336,12 +340,6 @@ void ui_update(void)
         printCommMode();
         printCommBuffer();
         printLog();
-
-        if (showChanParameters && synthParameterValuesDirty) {
-            printChannelParameters();
-            synthParameterValuesDirty = false;
-        }
-
         activityFrame = 0;
     }
 
