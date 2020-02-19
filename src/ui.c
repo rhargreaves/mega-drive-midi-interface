@@ -171,10 +171,9 @@ static void printChannelParameterHeadings(void)
     drawText("Alg", para_heading_x, base_y + 5);
     drawText("FB", para_heading_x, base_y + 6);
     drawText("LFO", para_heading_x, base_y + 9);
-    drawText("Hz", para_heading_x + 8, base_y + 9);
     drawText("AMS", para_heading_x, base_y + 10);
     drawText("FMS", para_heading_x, base_y + 11);
-    drawText("Ster", para_heading_x, base_y + 12);
+    drawText("Str", para_heading_x, base_y + 12);
     VDP_setTextPalette(PAL0);
 }
 
@@ -228,6 +227,23 @@ static const char* stereoText(u8 stereo)
     }
 }
 
+static const char* lfoEnableText(u8 lfoEnable)
+{
+    switch (lfoEnable) {
+    case 0:
+        return "Off";
+    default:
+        return "On ";
+    }
+}
+
+static const char* lfoFreqText(u8 lfoFreq)
+{
+    static const char TEXT[][8] = { "3.98Hz", "5.56Hz", "6.02Hz", "6.37Hz",
+        "6.88Hz", "9.63Hz", "48.1Hz", "72.2Hz" };
+    return TEXT[lfoFreq];
+}
+
 static void printChannelParameters(void)
 {
     printChannelParameterHeadings();
@@ -240,22 +256,20 @@ static void printChannelParameters(void)
 
     const FmChannel* channel = synth_channelParameters(chan);
     const Global* global = synth_globalParameters();
-    const u8 col1_value_x = para_heading_x + 5;
+    const u8 col1_value_x = para_heading_x + 4;
     const u8 col2_value_x = para_heading_x + 11;
 
     char buffer[4];
     sprintf(buffer, "%-2d", chanParasMidiChan + 1);
-    drawText(buffer, col1_value_x, base_y + 3);
+    drawText(buffer, col1_value_x + 1, base_y + 3);
     sprintf(buffer, "%-3d", chan + 1);
     drawText(buffer, col2_value_x, base_y + 3);
     sprintf(buffer, "%d", channel->algorithm);
     drawText(buffer, col1_value_x, base_y + 5);
     sprintf(buffer, "%d", channel->feedback);
     drawText(buffer, col1_value_x, base_y + 6);
-    sprintf(buffer, "%d", global->lfoEnable);
-    drawText(buffer, col1_value_x, base_y + 9);
-    sprintf(buffer, "%d", global->lfoFrequency);
-    drawText(buffer, col2_value_x, base_y + 9);
+    drawText(lfoEnableText(global->lfoEnable), col1_value_x, base_y + 9);
+    drawText(lfoFreqText(global->lfoFrequency), col1_value_x + 4, base_y + 9);
     sprintf(buffer, "%d", channel->ams);
     drawText(buffer, col1_value_x, base_y + 10);
     sprintf(buffer, "%d", channel->fms);
