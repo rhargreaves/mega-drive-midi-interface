@@ -240,43 +240,42 @@ static void printChannelParameters(void)
 
     const FmChannel* channel = synth_channelParameters(chan);
     const Global* global = synth_globalParameters();
+    const u8 col1_value_x = para_heading_x + 5;
+    const u8 col2_value_x = para_heading_x + 11;
+
     char buffer[4];
     sprintf(buffer, "%-2d", chanParasMidiChan + 1);
-    drawText(buffer, para_heading_x + 5, base_y + 3);
+    drawText(buffer, col1_value_x, base_y + 3);
     sprintf(buffer, "%-3d", chan + 1);
-    drawText(buffer, para_heading_x + 11, base_y + 3);
+    drawText(buffer, col2_value_x, base_y + 3);
     sprintf(buffer, "%d", channel->algorithm);
-    drawText(buffer, para_heading_x + 5, base_y + 5);
+    drawText(buffer, col1_value_x, base_y + 5);
     sprintf(buffer, "%d", channel->feedback);
-    drawText(buffer, para_heading_x + 5, base_y + 6);
-
+    drawText(buffer, col1_value_x, base_y + 6);
     sprintf(buffer, "%d", global->lfoEnable);
-    drawText(buffer, para_heading_x + 5, base_y + 9);
+    drawText(buffer, col1_value_x, base_y + 9);
     sprintf(buffer, "%d", global->lfoFrequency);
-    drawText(buffer, para_heading_x + 11, base_y + 9);
-
+    drawText(buffer, col2_value_x, base_y + 9);
     sprintf(buffer, "%d", channel->ams);
-    drawText(buffer, para_heading_x + 5, base_y + 10);
+    drawText(buffer, col1_value_x, base_y + 10);
     sprintf(buffer, "%d", channel->fms);
-    drawText(buffer, para_heading_x + 5, base_y + 11);
+    drawText(buffer, col1_value_x, base_y + 11);
 
-    drawText(stereoText(channel->stereo), para_heading_x + 5, base_y + 12);
+    drawText(stereoText(channel->stereo), col1_value_x, base_y + 12);
 
     for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
         u8 line = 4;
-        printOperatorValue(channel->operators[op].totalLevel, op, line++);
-        printOperatorValue(channel->operators[op].detune, op, line++);
-        printOperatorValue(channel->operators[op].multiple, op, line++);
-        printOperatorValue(channel->operators[op].rateScaling, op, line++);
-        printOperatorValue(
-            channel->operators[op].amplitudeModulation, op, line++);
-        printOperatorValue(channel->operators[op].firstDecayRate, op, line++);
-        printOperatorValue(
-            channel->operators[op].secondaryDecayRate, op, line++);
-        printOperatorValue(
-            channel->operators[op].secondaryAmplitude, op, line++);
-        printOperatorValue(channel->operators[op].releaseRate, op, line++);
-        printOperatorValue(channel->operators[op].ssgEg, op, line++);
+        Operator* oper = &channel->operators[op];
+        printOperatorValue(oper->totalLevel, op, line++);
+        printOperatorValue(oper->detune, op, line++);
+        printOperatorValue(oper->multiple, op, line++);
+        printOperatorValue(oper->rateScaling, op, line++);
+        printOperatorValue(oper->amplitudeModulation, op, line++);
+        printOperatorValue(oper->firstDecayRate, op, line++);
+        printOperatorValue(oper->secondaryDecayRate, op, line++);
+        printOperatorValue(oper->secondaryAmplitude, op, line++);
+        printOperatorValue(oper->releaseRate, op, line++);
+        printOperatorValue(oper->ssgEg, op, line++);
     }
 
     updateAlgorithmDiagram(channel->algorithm);
