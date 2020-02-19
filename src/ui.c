@@ -214,6 +214,20 @@ static u8 getFmChanForMidiChan(u8 midiChan)
     return -1;
 }
 
+static const char* stereoText(u8 stereo)
+{
+    switch (stereo) {
+    case 0:
+        return "  ";
+    case 1:
+        return "R ";
+    case 2:
+        return "L ";
+    default:
+        return "LR";
+    }
+}
+
 static void printChannelParameters(void)
 {
     printChannelParameterHeadings();
@@ -246,22 +260,7 @@ static void printChannelParameters(void)
     sprintf(buffer, "%d", channel->fms);
     drawText(buffer, para_heading_x + 5, base_y + 11);
 
-    char* stereoText;
-    switch (channel->stereo) {
-    case 0:
-        stereoText = "  ";
-        break;
-    case 1:
-        stereoText = "R ";
-        break;
-    case 2:
-        stereoText = "L ";
-        break;
-    default:
-        stereoText = "LR";
-        break;
-    }
-    drawText(stereoText, para_heading_x + 5, base_y + 12);
+    drawText(stereoText(channel->stereo), para_heading_x + 5, base_y + 12);
 
     for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
         u8 line = 4;
