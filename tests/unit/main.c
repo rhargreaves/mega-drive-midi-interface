@@ -166,6 +166,8 @@ int main(void)
         synth_test(test_synth_exposes_fm_channel_parameters),
         synth_test(test_synth_exposes_global_parameters),
         synth_test(test_synth_calls_callback_when_parameter_changes),
+        synth_test(test_synth_calls_callback_when_lfo_freq_changes),
+        synth_test(test_synth_calls_callback_when_lfo_enable_changes),
 
         cmocka_unit_test(test_psg_chip_sets_attenuation),
         cmocka_unit_test(test_psg_chip_sets_frequency),

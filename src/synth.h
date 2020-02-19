@@ -45,7 +45,12 @@ struct Global {
     u8 lfoFrequency;
 };
 
-typedef void ParameterUpdatedCallback(u8 fmChan);
+typedef enum ParameterUpdated ParameterUpdated;
+
+enum ParameterUpdated { Channel, Lfo };
+
+typedef void ParameterUpdatedCallback(
+    u8 fmChan, ParameterUpdated parameterUpdated);
 
 void synth_init(const FmChannel* initialPreset);
 void synth_noteOn(u8 channel);

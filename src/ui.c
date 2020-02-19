@@ -104,9 +104,9 @@ static void initAlgorithmSprites(void)
         (PAL0 * 16), activity.palette->data, activity.palette->length);
 }
 
-static void synthParameterUpdated(u8 fmChan)
+static void synthParameterUpdated(u8 fmChan, ParameterUpdated parameterUpdated)
 {
-    if (fmChan == chanParasFmChan) {
+    if (fmChan == chanParasFmChan || parameterUpdated == Lfo) {
         synthParameterValuesDirty = true;
     }
 }

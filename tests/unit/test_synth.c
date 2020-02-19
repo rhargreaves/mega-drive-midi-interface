@@ -43,6 +43,7 @@ extern const Global* __real_synth_globalParameters();
 
 static bool updated = false;
 static u8 lastChan = -1;
+static ParameterUpdated lastParameterUpdated = -1;
 
 static void set_initial_registers()
 {
@@ -539,10 +540,11 @@ static void test_synth_exposes_global_parameters(UNUSED void** state)
     assert_int_equal(global->lfoFrequency, 1);
 }
 
-static void updateCallback(u8 chan)
+static void updateCallback(u8 chan, ParameterUpdated parameterUpdated)
 {
     updated = true;
     lastChan = chan;
+    lastParameterUpdated = parameterUpdated;
 }
 
 static void test_synth_calls_callback_when_parameter_changes(
@@ -559,4 +561,28 @@ static void test_synth_calls_callback_when_parameter_changes(
 
     assert_true(updated);
     assert_int_equal(lastChan, fmChan);
+    assert_int_equal(lastParameterUpdated, Channel);
+}
+
+static void test_synth_calls_callback_when_lfo_freq_changes(UNUSED void** state)
+{
+    synth_setParameterUpdateCallback(&updateCallback);
+
+    expect_ym2612_write_reg_any_data(0, 0x22);
+    __real_synth_globalLfoFrequency(1);
+
+    assert_true(updated);
+    assert_int_equal(lastParameterUpdated, Lfo);
+}
+
+static void test_synth_calls_callback_when_lfo_enable_changes(
+    UNUSED void** state)
+{
+    synth_setParameterUpdateCallback(&updateCallback);
+
+    expect_ym2612_write_reg_any_data(0, 0x22);
+    __real_synth_enableLfo(0);
+
+    assert_true(updated);
+    assert_int_equal(lastParameterUpdated, Lfo);
 }

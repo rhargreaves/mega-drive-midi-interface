@@ -43,7 +43,9 @@ static Operator* getOperator(u8 channel, u8 operator);
 static u8 effectiveTotalLevel(u8 channel, u8 operator, u8 totalLevel);
 static bool isOutputOperator(u8 algorithm, u8 operator);
 static u8 volumeAdjustedTotalLevel(u8 channel, u8 totalLevel);
-static void parameterUpdated(u8 channel);
+static void channelParameterUpdated(u8 channel);
+static void otherParameterUpdated(
+    u8 channel, ParameterUpdated parameterUpdated);
 
 void synth_init(const FmChannel* initialPreset)
 {
@@ -101,28 +103,28 @@ void synth_volume(u8 channel, u8 volume)
     for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
         updateOperatorTotalLevel(channel, op);
     }
-    parameterUpdated(channel);
+    channelParameterUpdated(channel);
 }
 
 void synth_stereo(u8 channel, u8 stereo)
 {
     fmChannel(channel)->stereo = stereo;
     updateStereoAmsFms(channel);
-    parameterUpdated(channel);
+    channelParameterUpdated(channel);
 }
 
 void synth_algorithm(u8 channel, u8 algorithm)
 {
     fmChannel(channel)->algorithm = algorithm;
     updateAlgorithmAndFeedback(channel);
-    parameterUpdated(channel);
+    channelParameterUpdated(channel);
 }
 
 void synth_feedback(u8 channel, u8 feedback)
 {
     fmChannel(channel)->feedback = feedback;
     updateAlgorithmAndFeedback(channel);
-    parameterUpdated(channel);
+    channelParameterUpdated(channel);
 }
 
 void synth_operatorTotalLevel(u8 channel, u8 op, u8 totalLevel)
@@ -133,70 +135,70 @@ void synth_operatorTotalLevel(u8 channel, u8 op, u8 totalLevel)
     }
     oper->totalLevel = totalLevel;
     updateOperatorTotalLevel(channel, op);
-    parameterUpdated(channel);
+    channelParameterUpdated(channel);
 }
 
 void synth_operatorMultiple(u8 channel, u8 op, u8 multiple)
 {
     getOperator(channel, op)->multiple = multiple;
     updateOperatorMultipleAndDetune(channel, op);
-    parameterUpdated(channel);
+    channelParameterUpdated(channel);
 }
 
 void synth_operatorDetune(u8 channel, u8 op, u8 detune)
 {
     getOperator(channel, op)->detune = detune;
     updateOperatorMultipleAndDetune(channel, op);
-    parameterUpdated(channel);
+    channelParameterUpdated(channel);
 }
 
 void synth_operatorRateScaling(u8 channel, u8 op, u8 rateScaling)
 {
     getOperator(channel, op)->rateScaling = rateScaling;
     updateOperatorRateScalingAndAttackRate(channel, op);
-    parameterUpdated(channel);
+    channelParameterUpdated(channel);
 }
 
 void synth_operatorAttackRate(u8 channel, u8 op, u8 attackRate)
 {
     getOperator(channel, op)->attackRate = attackRate;
     updateOperatorRateScalingAndAttackRate(channel, op);
-    parameterUpdated(channel);
+    channelParameterUpdated(channel);
 }
 
 void synth_operatorSecondDecayRate(u8 channel, u8 op, u8 secondDecayRate)
 {
     getOperator(channel, op)->secondaryDecayRate = secondDecayRate;
     updateOperatorSecondaryDecayRate(channel, op);
-    parameterUpdated(channel);
+    channelParameterUpdated(channel);
 }
 
 void synth_operatorReleaseRate(u8 channel, u8 op, u8 releaseRate)
 {
     getOperator(channel, op)->releaseRate = releaseRate;
     updateOperatorReleaseRateAndSecondaryAmplitude(channel, op);
-    parameterUpdated(channel);
+    channelParameterUpdated(channel);
 }
 
 void synth_operatorSsgEg(u8 channel, u8 op, u8 ssgEg)
 {
     getOperator(channel, op)->ssgEg = ssgEg;
     updateOperatorSsgEg(channel, op);
-    parameterUpdated(channel);
+    channelParameterUpdated(channel);
 }
 
 void synth_operatorSecondaryAmplitude(u8 channel, u8 op, u8 secondaryAmplitude)
 {
     getOperator(channel, op)->secondaryAmplitude = secondaryAmplitude;
     updateOperatorReleaseRateAndSecondaryAmplitude(channel, op);
-    parameterUpdated(channel);
+    channelParameterUpdated(channel);
 }
 
 void synth_operatorFirstDecayRate(u8 channel, u8 op, u8 firstDecayRate)
 {
     getOperator(channel, op)->firstDecayRate = firstDecayRate;
     updateOperatorAmplitudeModulationAndFirstDecayRate(channel, op);
-    parameterUpdated(channel);
+    channelParameterUpdated(channel);
 }
 
 void synth_operatorAmplitudeModulation(
@@ -204,33 +206,35 @@ void synth_operatorAmplitudeModulation(
 {
     getOperator(channel, op)->amplitudeModulation = amplitudeModulation;
     updateOperatorAmplitudeModulationAndFirstDecayRate(channel, op);
-    parameterUpdated(channel);
+    channelParameterUpdated(channel);
 }
 
 void synth_enableLfo(u8 enable)
 {
     global.lfoEnable = enable;
     updateGlobalLfo();
+    otherParameterUpdated(0, Lfo);
 }
 
 void synth_globalLfoFrequency(u8 freq)
 {
     global.lfoFrequency = freq;
     updateGlobalLfo();
+    otherParameterUpdated(0, Lfo);
 }
 
 void synth_ams(u8 channel, u8 ams)
 {
     fmChannel(channel)->ams = ams;
     updateStereoAmsFms(channel);
-    parameterUpdated(channel);
+    channelParameterUpdated(channel);
 }
 
 void synth_fms(u8 channel, u8 fms)
 {
     fmChannel(channel)->fms = fms;
     updateStereoAmsFms(channel);
-    parameterUpdated(channel);
+    channelParameterUpdated(channel);
 }
 
 u8 synth_busy(void)
@@ -242,13 +246,20 @@ void synth_preset(u8 channel, const FmChannel* preset)
 {
     memcpy(&fmChannels[channel], preset, sizeof(FmChannel));
     updateChannel(channel);
-    parameterUpdated(channel);
+    channelParameterUpdated(channel);
 }
 
-static void parameterUpdated(u8 channel)
+static void otherParameterUpdated(u8 channel, ParameterUpdated parameterUpdated)
 {
     if (parameterUpdatedCallback) {
-        parameterUpdatedCallback(channel);
+        parameterUpdatedCallback(channel, parameterUpdated);
+    }
+}
+
+static void channelParameterUpdated(u8 channel)
+{
+    if (parameterUpdatedCallback) {
+        parameterUpdatedCallback(channel, Channel);
     }
 }
 
