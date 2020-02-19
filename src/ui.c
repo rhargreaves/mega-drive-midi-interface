@@ -15,6 +15,8 @@
 
 static bool showChanParameters = false;
 
+#define UNKNOWN_FM_CHANNEL 0xFF
+
 #define MAX_Y 27
 #define MAX_X 39
 #define MARGIN_X 1
@@ -210,7 +212,7 @@ static u8 getFmChanForMidiChan(u8 midiChan)
             return devChan->number;
         }
     }
-    return -1;
+    return UNKNOWN_FM_CHANNEL;
 }
 
 static const char* stereoText(u8 stereo)
@@ -246,6 +248,9 @@ static const char* lfoFreqText(u8 lfoFreq)
 
 static const char* amsText(u8 ams)
 {
+    if (ams > 3) {
+        return "ERROR";
+    }
     static const char TEXT[][7] = { "0dB   ", "1.4dB ", "5.9dB ", "11.8dB" };
     return TEXT[ams];
 }
@@ -259,23 +264,14 @@ static const char* fmsText(u8 fms)
 
 static void printChannelParameters(void)
 {
-    printChannelParameterHeadings();
-
-    u8 chan = getFmChanForMidiChan(chanParasMidiChan);
-    if (chan == -1) {
-        return;
-    }
-    chanParasFmChan = chan;
-
-    const FmChannel* channel = synth_channelParameters(chan);
+    const FmChannel* channel = synth_channelParameters(chanParasFmChan);
     const Global* global = synth_globalParameters();
     const u8 col1_value_x = para_heading_x + 4;
     const u8 col2_value_x = para_heading_x + 11;
-
     char buffer[4];
     sprintf(buffer, "%-2d", chanParasMidiChan + 1);
     drawText(buffer, col1_value_x + 1, base_y + 3);
-    sprintf(buffer, "%-3d", chan + 1);
+    sprintf(buffer, "%-3d", chanParasFmChan + 1);
     drawText(buffer, col2_value_x, base_y + 3);
     sprintf(buffer, "%d", channel->algorithm);
     drawText(buffer, col1_value_x, base_y + 5);
@@ -285,9 +281,7 @@ static void printChannelParameters(void)
     drawText(lfoFreqText(global->lfoFrequency), col1_value_x + 4, base_y + 9);
     drawText(amsText(channel->ams), col1_value_x, base_y + 10);
     drawText(fmsText(channel->fms), col1_value_x, base_y + 11);
-
     drawText(stereoText(channel->stereo), col1_value_x, base_y + 12);
-
     for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
         u8 line = 4;
         const Operator* oper = &channel->operators[op];
@@ -302,7 +296,6 @@ static void printChannelParameters(void)
         printOperatorValue(oper->releaseRate, op, line++);
         printOperatorValue(oper->ssgEg, op, line++);
     }
-
     updateAlgorithmDiagram(channel->algorithm);
 }
 
@@ -349,10 +342,23 @@ void ui_update(void)
     static u8 chanActivityFrame = 0;
     if (++chanActivityFrame == FRAMES_BEFORE_UPDATE_CHAN_ACTIVITY) {
         printActivity();
-        if (showChanParameters && synthParameterValuesDirty) {
-            printChannelParameters();
-            synthParameterValuesDirty = false;
+
+        if (showChanParameters) {
+            u8 chan = getFmChanForMidiChan(chanParasMidiChan);
+            if (chan == UNKNOWN_FM_CHANNEL) {
+                return;
+            }
+            if (chanParasFmChan != chan) {
+                chanParasFmChan = chan;
+                synthParameterValuesDirty = true;
+            }
+
+            if (synthParameterValuesDirty) {
+                printChannelParameters();
+                synthParameterValuesDirty = false;
+            }
         }
+
         chanActivityFrame = 0;
     }
 
@@ -392,7 +398,9 @@ void ui_setMidiChannelParametersVisibility(u8 chan, bool show)
 {
     showChanParameters = show;
     chanParasMidiChan = chan;
-    if (!show) {
+    if (show) {
+        printChannelParameterHeadings();
+    } else {
         VDP_clearTextArea(0, MARGIN_Y + base_y + 3, MAX_X, 11);
         hideAllAlgorithms();
         SPR_update();
