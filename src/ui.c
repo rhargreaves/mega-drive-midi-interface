@@ -244,6 +244,19 @@ static const char* lfoFreqText(u8 lfoFreq)
     return TEXT[lfoFreq];
 }
 
+static const char* amsText(u8 ams)
+{
+    static const char TEXT[][7] = { "0dB   ", "1.4dB ", "5.9dB ", "11.8dB" };
+    return TEXT[ams];
+}
+
+static const char* fmsText(u8 fms)
+{
+    static const char TEXT[][5]
+        = { "0%  ", "3.4%", "6.7%", "10% ", "14% ", "20% ", "40% ", "80% " };
+    return TEXT[fms];
+}
+
 static void printChannelParameters(void)
 {
     printChannelParameterHeadings();
@@ -270,10 +283,8 @@ static void printChannelParameters(void)
     drawText(buffer, col1_value_x, base_y + 6);
     drawText(lfoEnableText(global->lfoEnable), col1_value_x, base_y + 9);
     drawText(lfoFreqText(global->lfoFrequency), col1_value_x + 4, base_y + 9);
-    sprintf(buffer, "%d", channel->ams);
-    drawText(buffer, col1_value_x, base_y + 10);
-    sprintf(buffer, "%d", channel->fms);
-    drawText(buffer, col1_value_x, base_y + 11);
+    drawText(amsText(channel->ams), col1_value_x, base_y + 10);
+    drawText(fmsText(channel->fms), col1_value_x, base_y + 11);
 
     drawText(stereoText(channel->stereo), col1_value_x, base_y + 12);
 
