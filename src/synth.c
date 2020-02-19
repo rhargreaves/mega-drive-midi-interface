@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <ym2612.h>
 
-static Global global = { .lfoEnable = 0, .lfoFrequency = 0 };
+static Global global = { .lfoEnable = 1, .lfoFrequency = 0 };
 static FmChannel fmChannels[MAX_FM_CHANS];
 static u8 noteOn;
 static u8 volumes[MAX_FM_CHANS];
@@ -54,6 +54,7 @@ void synth_init(const FmChannel* initialPreset)
         memcpy(&fmChannels[chan], initialPreset, sizeof(FmChannel));
         updateChannel(chan);
     }
+    updateGlobalLfo();
 }
 
 static void updateChannel(u8 chan)

@@ -46,7 +46,7 @@ static u8 lastChan = -1;
 
 static void set_initial_registers()
 {
-    const u16 count = 187;
+    const u16 count = 188;
     expect_any_count(__wrap_YM2612_writeReg, part, count);
     expect_any_count(__wrap_YM2612_writeReg, reg, count);
     expect_any_count(__wrap_YM2612_writeReg, data, count);
