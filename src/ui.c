@@ -265,7 +265,7 @@ static void printChannelParameters(void)
 
     for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
         u8 line = 4;
-        Operator* oper = &channel->operators[op];
+        const Operator* oper = &channel->operators[op];
         printOperatorValue(oper->totalLevel, op, line++);
         printOperatorValue(oper->detune, op, line++);
         printOperatorValue(oper->multiple, op, line++);
