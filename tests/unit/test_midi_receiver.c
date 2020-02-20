@@ -132,24 +132,29 @@ static void test_midi_receiver_sets_pitch_bend(UNUSED void** state)
     midi_receiver_read();
 }
 
-static void test_midi_receiver_increments_midi_clock(UNUSED void** state)
+static void test_midi_receiver_does_nothing_on_midi_clock(UNUSED void** state)
 {
+    midi_receiver_init();
+
     u8 status = STATUS_CLOCK;
     will_return(__wrap_comm_read, status);
 
-    expect_function_call(__wrap_midi_clock);
-
     midi_receiver_read();
+
+    assert_int_equal(midi_receiver_lastUnknownStatus(), 0);
 }
 
-static void test_midi_receiver_starts_midi(UNUSED void** state)
+static void test_midi_receiver_does_nothing_on_midi_start_midi(
+    UNUSED void** state)
 {
+    midi_receiver_init();
+
     u8 status = STATUS_START;
     will_return(__wrap_comm_read, status);
 
-    expect_function_call(__wrap_midi_start);
-
     midi_receiver_read();
+
+    assert_int_equal(midi_receiver_lastUnknownStatus(), 0);
 }
 
 static void test_midi_receiver_swallows_midi_stop(UNUSED void** state)
@@ -176,20 +181,18 @@ static void test_midi_receiver_swallows_midi_continue(UNUSED void** state)
     assert_int_equal(midi_receiver_lastUnknownStatus(), 0);
 }
 
-static void test_midi_receiver_sets_position(UNUSED void** state)
+static void test_midi_receiver_does_nothing_on_midi_position(
+    UNUSED void** state)
 {
     u8 status = STATUS_SONG_POSITION;
-    u16 beat = 0x3FFF;
-    u8 beatLSB = beat & 0x007F;
-    u8 beatMSB = (beat >> 7) & 0x007F;
 
     will_return(__wrap_comm_read, status);
-    will_return(__wrap_comm_read, beatLSB);
-    will_return(__wrap_comm_read, beatMSB);
-
-    expect_value(__wrap_midi_position, beat, beat);
+    will_return(__wrap_comm_read, 0);
+    will_return(__wrap_comm_read, 0);
 
     midi_receiver_read();
+
+    assert_int_equal(midi_receiver_lastUnknownStatus(), 0);
 }
 
 static void test_midi_receiver_sets_midi_program(UNUSED void** state)

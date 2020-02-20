@@ -186,16 +186,6 @@ Output operators are coloured blue. Operator 1 can also feedback into itself (se
 
 _Note: Documentation on the YM2612 frequently muddles the second and third operators of algorithms 0 to 4 and 6. This is likely due to the original SEGA documentation incorrectly labelling the operator register addresses in sequential order, rather than 1st, 3rd, 2nd, 4th. That said, it seems to be generally common to keep the sequential order of the register addresses and simply correct the layout diagrams. This project favours this approach._
 
-### System Real-Time Messages
-
-| Status | Description           | Effect                 |
-| ------ | --------------------- | ---------------------- |
-| 0xF2   | Song Position Pointer | Set Beat Counter       |
-| 0xF8   | Timing Clock          | Increment Beat Counter |
-| 0xFA   | Start                 | Reset Beat Counter     |
-| 0xFB   | Continue              | None                   |
-| 0xFC   | Stop                  | None                   |
-
 ## Configuration & Advanced Operations
 
 The interface is configurable by sending specific System Exclusive messages to the Mega Drive. There are also a number of advanced operations which have a specific effect when received. A list of all possible SysEx messages are given below:

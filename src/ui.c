@@ -18,8 +18,6 @@
 #define MAX_EFFECTIVE_Y (MAX_Y - MARGIN_Y - MARGIN_Y)
 #define MAX_ERROR_X 30
 #define ERROR_Y (MAX_EFFECTIVE_Y - 2)
-#define BEATS_X 6
-#define BEATS_Y 2
 #define DYN_X 22
 #define DYN_Y 2
 #define LOG_Y 22
@@ -49,7 +47,6 @@ static void checkLastError(void);
 static void printChannels(void);
 static void printHeader(void);
 static void printLoad(void);
-static void printBeat(void);
 static u16 loadPercent(void);
 static void updateKeyOnOff(void);
 static void drawText(const char* text, u16 x, u16 y);
@@ -82,7 +79,6 @@ void ui_init(void)
     printHeader();
     printChannels();
     printLoad();
-    printBeat();
     printCommMode();
     printMappings();
     printDynamicModeStatus(midi_dynamicMode());
@@ -156,7 +152,6 @@ void ui_update(void)
     if (++activityFrame == FRAMES_BEFORE_UPDATE_ACTIVITY) {
         activityFrame = 0;
         printMappings();
-        printBeat();
         printCommMode();
         printCommBuffer();
         printLog();
@@ -275,21 +270,6 @@ static void printChanActivity(u16 busy, u16 maxChannels, u16 x)
         SPR_setFrame(activitySprites[chan], ((busy >> chan) & 1) ? 1 : 0);
     }
     SPR_update();
-}
-
-static void printBeat(void)
-{
-    static u16 lastSixteenth = 0xFFFF;
-    Timing* timing = midi_timing();
-    if (timing->sixteenth != lastSixteenth) {
-        static char text[16];
-        sprintf(text, "%3i. %i. %i ", timing->bar + 1, timing->barBeat + 1,
-            timing->sixteenth + 1);
-        VDP_setTextPalette(PAL2);
-        drawText(text, BEATS_X, BEATS_Y);
-        VDP_setTextPalette(PAL0);
-        lastSixteenth = timing->sixteenth;
-    }
 }
 
 static void printBaudRate(void)

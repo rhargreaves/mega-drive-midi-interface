@@ -87,16 +87,6 @@ struct ControlChange {
     u8 value;
 };
 
-typedef struct Timing Timing;
-
-struct Timing {
-    u8 clock;
-    u16 bar;
-    u8 barBeat;
-    u8 sixteenth;
-    u16 clocks;
-};
-
 typedef struct VTable VTable;
 
 struct VTable {
@@ -130,11 +120,7 @@ void midi_noteOff(u8 chan, u8 pitch);
 void midi_pitchBend(u8 chan, u16 bend);
 ControlChange* midi_lastUnknownCC(void);
 void midi_cc(u8 chan, u8 controller, u8 value);
-void midi_clock(void);
-void midi_start(void);
-void midi_position(u16 beat);
 void midi_program(u8 chan, u8 program);
-Timing* midi_timing(void);
 void midi_sysex(const u8* data, u16 length);
 bool midi_dynamicMode(void);
 DeviceChannel* midi_channelMappings(void);

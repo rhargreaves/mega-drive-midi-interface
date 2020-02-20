@@ -289,30 +289,10 @@ void __wrap_midi_cc(u8 chan, u8 controller, u8 value)
     check_expected(value);
 }
 
-void __wrap_midi_clock(void)
-{
-    function_called();
-}
-
-void __wrap_midi_start(void)
-{
-    function_called();
-}
-
-void __wrap_midi_position(u16 beat)
-{
-    check_expected(beat);
-}
-
 void __wrap_midi_program(u8 chan, u8 program)
 {
     check_expected(chan);
     check_expected(program);
-}
-
-Timing* __wrap_midi_timing(void)
-{
-    return mock_type(Timing*);
 }
 
 void __wrap_midi_sysex(u8* data, u16 length)

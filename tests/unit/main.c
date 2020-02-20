@@ -11,7 +11,6 @@
 #include "test_midi_psg.c"
 #include "test_midi_receiver.c"
 #include "test_midi_sysex.c"
-#include "test_midi_timing.c"
 #include "test_psg_chip.c"
 #include "test_synth.c"
 #include <cmocka.h>
@@ -37,11 +36,11 @@ int main(void)
             test_midi_receiver_sets_unknown_event_for_unknown_system_message),
         cmocka_unit_test(test_midi_receiver_sets_CC),
         cmocka_unit_test(test_midi_receiver_sets_pitch_bend),
-        cmocka_unit_test(test_midi_receiver_increments_midi_clock),
-        cmocka_unit_test(test_midi_receiver_starts_midi),
+        cmocka_unit_test(test_midi_receiver_does_nothing_on_midi_clock),
+        cmocka_unit_test(test_midi_receiver_does_nothing_on_midi_start_midi),
         cmocka_unit_test(test_midi_receiver_swallows_midi_stop),
         cmocka_unit_test(test_midi_receiver_swallows_midi_continue),
-        cmocka_unit_test(test_midi_receiver_sets_position),
+        cmocka_unit_test(test_midi_receiver_does_nothing_on_midi_position),
         cmocka_unit_test(test_midi_receiver_sets_midi_program),
         cmocka_unit_test(test_midi_receiver_sends_sysex_to_midi_layer),
 
@@ -104,11 +103,6 @@ int main(void)
         midi_test(test_midi_sets_unknown_CC),
         midi_test(test_midi_polyphonic_mode_sends_CCs_to_all_FM_channels),
         midi_test(test_midi_set_overflow_flag_on_polyphony_breach),
-        midi_test(test_midi_increments_beat_every_24th_clock),
-        midi_test(test_midi_start_resets_clock),
-        midi_test(test_midi_position_sets_correct_timing),
-        midi_test(test_midi_timing_sets_bar_number),
-        midi_test(test_midi_increments_clocks),
         midi_test(test_midi_sets_fm_preset),
         midi_test(test_midi_sysex_general_midi_reset_resets_synth_volume),
         midi_test(test_midi_sysex_sends_all_notes_off),

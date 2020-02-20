@@ -30,7 +30,6 @@ static void controlChange(u8 status);
 static void pitchBend(u8 status);
 static void systemMessage(u8 status);
 static void setUnknownStatus(u8 status);
-static void songPosition(void);
 static void program(u8 status);
 static u16 read_14bit_value(void);
 static void readSysEx(void);
@@ -127,12 +126,6 @@ static void program(u8 status)
     midi_program(chan, program);
 }
 
-static void songPosition(void)
-{
-    u16 beat = read_14bit_value();
-    midi_position(beat);
-}
-
 static u16 read_14bit_value(void)
 {
     u16 lower = comm_read();
@@ -144,15 +137,11 @@ static void systemMessage(u8 status)
 {
     u8 type = STATUS_LOWER(status);
     switch (type) {
-    case SYSTEM_CLOCK:
-        midi_clock();
-        break;
-    case SYSTEM_START:
-        midi_start();
-        break;
     case SYSTEM_SONG_POSITION:
-        songPosition();
+        read_14bit_value();
         break;
+    case SYSTEM_CLOCK:
+    case SYSTEM_START:
     case SYSTEM_CONTINUE:
     case SYSTEM_STOP:
         break;

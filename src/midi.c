@@ -41,7 +41,6 @@ struct MidiChannel {
 
 static MidiChannel midiChannels[MIDI_CHANNELS];
 static ControlChange lastUnknownControlChange;
-static Timing timing;
 static bool dynamicMode;
 static bool disableNonGeneralMidiCCs;
 static bool stickToDeviceType;
@@ -84,7 +83,6 @@ static void initAllDeviceChannels(void)
 
 static void resetAllState(void)
 {
-    memset(&timing, 0, sizeof(Timing));
     memset(&lastUnknownControlChange, 0, sizeof(ControlChange));
     for (u8 i = 0; i < MIDI_CHANNELS; i++) {
         initMidiChannel(i);
@@ -405,37 +403,6 @@ void midi_pitchBend(u8 chan, u16 bend)
     }
 }
 
-void midi_clock(void)
-{
-    timing.clocks++;
-    if (++timing.clock == 6) {
-        timing.clock = 0;
-        if (++timing.sixteenth == 4) {
-            timing.sixteenth = 0;
-            if (++timing.barBeat == 4) {
-                timing.bar++;
-                timing.barBeat = 0;
-            }
-        }
-    }
-}
-
-void midi_start(void)
-{
-    midi_position(0);
-}
-
-/* midiBeat = 1/16th note = 6 clocks */
-void midi_position(u16 midiBeat)
-{
-    const u16 BEATS_IN_BAR = 4;
-    timing.clocks = midiBeat * 6;
-    timing.clock = timing.clocks % 6;
-    timing.bar = midiBeat / 16;
-    timing.barBeat = (midiBeat / 4) % BEATS_IN_BAR;
-    timing.sixteenth = midiBeat % 4;
-}
-
 void midi_program(u8 chan, u8 program)
 {
     MidiChannel* midiChannel = &midiChannels[chan];
@@ -473,11 +440,6 @@ static void allNotesOff(u8 chan)
             devChan->ops->allNotesOff(devChan->number);
         }
     }
-}
-
-Timing* midi_timing(void)
-{
-    return &timing;
 }
 
 static bool sysex_valid(const u8* sourceData, const u16 sourceLength,

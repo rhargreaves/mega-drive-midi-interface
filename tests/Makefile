@@ -71,10 +71,6 @@ MOCKS=midi_process \
 	midi_pitchBend \
 	midi_getPolyphonic \
 	midi_cc \
-	midi_clock \
-	midi_start \
-	midi_position \
-	midi_timing \
 	midi_program \
 	midi_sysex \
 	midi_mappings \
