@@ -221,9 +221,10 @@ static void printCommBuffer(void)
     if (!commSerial) {
         return;
     }
-    char text[32];
-    sprintf(text, "%4d Free", buffer_available());
-    drawText(text, 29, MAX_EFFECTIVE_Y);
+    u16 bufferAvailable = buffer_available();
+    if (bufferAvailable < 32) {
+        log_warn("Serial port buffer has %d bytes left", bufferAvailable, 0, 0);
+    }
 }
 
 static void updateKeyOnOff(void)
@@ -275,7 +276,7 @@ static void printChanActivity(u16 busy, u16 maxChannels, u16 x)
 static void printBaudRate(void)
 {
     char baudRateText[9];
-    sprintf(baudRateText, "%d bps", comm_serial_baudRate());
+    sprintf(baudRateText, "%dbps", comm_serial_baudRate());
     drawText(baudRateText, 17, MAX_EFFECTIVE_Y);
 }
 
@@ -322,9 +323,8 @@ static void printLoad(void)
 
 static void printDynamicModeStatus(bool enabled)
 {
-    VDP_setTextPalette(PAL2);
-    drawText(enabled ? "Dynamic" : "Static ", DYN_X, DYN_Y);
-    VDP_setTextPalette(PAL0);
+    drawText(
+        enabled ? "Dynamic" : " Static", MAX_EFFECTIVE_X - 6, MAX_EFFECTIVE_Y);
 }
 
 static void printDynamicModeIfNeeded(void)
