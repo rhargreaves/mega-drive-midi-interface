@@ -25,6 +25,20 @@ static Global lastGlobal = {};
 static bool forceRefresh = false;
 
 static void updateFmValues(void);
+static void initAlgorithmSprites(void);
+static void updateFmValuesIfChanSelected(void);
+static void synthParameterUpdated(u8 fmChan, ParameterUpdated parameterUpdated);
+
+void ui_fm_init(void)
+{
+    synth_setParameterUpdateCallback(synthParameterUpdated);
+    initAlgorithmSprites();
+}
+
+void ui_fm_update(void)
+{
+    updateFmValuesIfChanSelected();
+}
 
 static void initAlgorithmSprites(void)
 {
@@ -49,12 +63,6 @@ static void synthParameterUpdated(u8 fmChan, ParameterUpdated parameterUpdated)
     if (fmChan == chanParasFmChan || parameterUpdated == Lfo) {
         synthParameterValuesDirty = true;
     }
-}
-
-void ui_fm_init(void)
-{
-    synth_setParameterUpdateCallback(synthParameterUpdated);
-    initAlgorithmSprites();
 }
 
 static void printChannelParameterHeadings(void)
@@ -321,9 +329,4 @@ void ui_fm_setMidiChannelParametersVisibility(u8 chan, bool show)
         SPR_update();
     }
     synthParameterValuesDirty = true;
-}
-
-void ui_fm_update(void)
-{
-    updateFmValuesIfChanSelected();
 }
