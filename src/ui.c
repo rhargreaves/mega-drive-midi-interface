@@ -18,16 +18,15 @@
 #define MAX_EFFECTIVE_Y (MAX_Y - MARGIN_Y - MARGIN_Y)
 #define MAX_ERROR_X 30
 #define ERROR_Y (MAX_EFFECTIVE_Y - 2)
-#define DYN_X 22
-#define DYN_Y 2
 #define LOG_Y 22
 #define RIGHTED_TEXT_X(text) (MAX_EFFECTIVE_X - (sizeof(text) - 1) + 1)
 #define CENTRED_TEXT_X(text) ((MAX_EFFECTIVE_X - (sizeof(text) - 1)) / 2)
 #define CHAN_X_GAP 3
 #define ACTIVITY_FM_X 6
-#define ACTIVITY_Y 8
-#define CHAN_Y 4
-#define MIDI_Y 6
+
+#define CHAN_Y 2
+#define MIDI_Y CHAN_Y + 2
+#define ACTIVITY_Y MIDI_Y + 2
 
 #define PALETTE_INDEX(pal, index) ((pal * 16) + index)
 #define FONT_COLOUR_INDEX 15

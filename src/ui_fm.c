@@ -8,7 +8,7 @@
 
 #define UNKNOWN_FM_CHANNEL 0xFF
 
-static const u8 BASE_Y = 8;
+static const u8 BASE_Y = 6;
 static const u8 OP_HEADING_X = 15;
 static const u8 FM_HEADING_X = 0;
 
