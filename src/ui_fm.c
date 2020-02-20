@@ -237,60 +237,70 @@ static void updateFmValues(void)
         Operator* lastOper = &lastChannel.operators[op];
 
         if (oper->totalLevel != lastOper->totalLevel || forceRefresh) {
-            printOperatorValue(oper->totalLevel, op, line++);
+            printOperatorValue(oper->totalLevel, op, line);
             lastOper->totalLevel = oper->totalLevel;
         }
+        line++;
 
         if (oper->detune != lastOper->detune || forceRefresh) {
-            printOperatorValue(oper->detune, op, line++);
+            printOperatorValue(oper->detune, op, line);
             lastOper->detune = oper->detune;
         }
+        line++;
 
         if (oper->multiple != lastOper->multiple || forceRefresh) {
-            printOperatorValue(oper->multiple, op, line++);
+            printOperatorValue(oper->multiple, op, line);
             lastOper->multiple = oper->multiple;
         }
+        line++;
 
         if (oper->rateScaling != lastOper->rateScaling || forceRefresh) {
-            printOperatorValue(oper->rateScaling, op, line++);
+            printOperatorValue(oper->rateScaling, op, line);
             lastOper->rateScaling = oper->rateScaling;
         }
+        line++;
 
         if (oper->amplitudeModulation != lastOper->amplitudeModulation
             || forceRefresh) {
-            printOperatorValue(oper->amplitudeModulation, op, line++);
+            printOperatorValue(oper->amplitudeModulation, op, line);
             lastOper->amplitudeModulation = oper->amplitudeModulation;
         }
+        line++;
 
         if (oper->firstDecayRate != lastOper->firstDecayRate || forceRefresh) {
-            printOperatorValue(oper->firstDecayRate, op, line++);
+            printOperatorValue(oper->firstDecayRate, op, line);
             lastOper->firstDecayRate = oper->firstDecayRate;
         }
+        line++;
 
         if (oper->secondaryDecayRate != lastOper->secondaryDecayRate
             || forceRefresh) {
-            printOperatorValue(oper->secondaryDecayRate, op, line++);
+            printOperatorValue(oper->secondaryDecayRate, op, line);
             lastOper->secondaryDecayRate = oper->secondaryDecayRate;
         }
+        line++;
 
         if (oper->secondaryAmplitude != lastOper->secondaryAmplitude
             || forceRefresh) {
-            printOperatorValue(oper->secondaryAmplitude, op, line++);
+            printOperatorValue(oper->secondaryAmplitude, op, line);
             lastOper->secondaryAmplitude = oper->secondaryAmplitude;
         }
+        line++;
 
         if (oper->releaseRate != lastOper->releaseRate || forceRefresh) {
-            printOperatorValue(oper->releaseRate, op, line++);
+            printOperatorValue(oper->releaseRate, op, line);
             lastOper->releaseRate = oper->releaseRate;
         }
+        line++;
 
         if (oper->releaseRate != lastOper->releaseRate || forceRefresh) {
-            printOperatorValue(oper->releaseRate, op, line++);
+            printOperatorValue(oper->releaseRate, op, line);
             lastOper->releaseRate = oper->releaseRate;
         }
+        line++;
 
         if (oper->ssgEg != lastOper->ssgEg || forceRefresh) {
-            printOperatorValue(oper->ssgEg, op, line++);
+            printOperatorValue(oper->ssgEg, op, line);
             lastOper->ssgEg = oper->ssgEg;
         }
     }
