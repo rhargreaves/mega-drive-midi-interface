@@ -293,12 +293,6 @@ static void updateFmValues(void)
         }
         line++;
 
-        if (oper->releaseRate != lastOper->releaseRate || forceRefresh) {
-            printOperatorValue(oper->releaseRate, op, line);
-            lastOper->releaseRate = oper->releaseRate;
-        }
-        line++;
-
         if (oper->ssgEg != lastOper->ssgEg || forceRefresh) {
             printOperatorValue(oper->ssgEg, op, line);
             lastOper->ssgEg = oper->ssgEg;
