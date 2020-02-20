@@ -103,7 +103,6 @@ void synth_volume(u8 channel, u8 volume)
     for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
         updateOperatorTotalLevel(channel, op);
     }
-    channelParameterUpdated(channel);
 }
 
 void synth_stereo(u8 channel, u8 stereo)
