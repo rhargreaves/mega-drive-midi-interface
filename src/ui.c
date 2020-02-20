@@ -58,7 +58,7 @@ static void printHeader(void);
 static void printLoad(void);
 static void printBeat(void);
 static u16 loadPercent(void);
-static void printActivity(void);
+static void updateKeyOnOff(void);
 static void drawText(const char* text, u16 x, u16 y);
 static void printChanActivity(u16 busy, u16 maxChannels, u16 x);
 static void printBaudRate(void);
@@ -69,7 +69,7 @@ static void printDynamicModeIfNeeded(void);
 static void printDynamicModeStatus(bool enabled);
 static void printMappingsIfDirty(u8* midiChans);
 static void printMappings(void);
-static void printChannelParameters(void);
+static void updateFmValues(void);
 
 static u16 loadPercentSum = 0;
 static bool commInited = false;
@@ -268,7 +268,7 @@ static FmChannel lastChannel = {};
 static Global lastGlobal = {};
 static bool forceRefresh = false;
 
-static void printChannelParameters(void)
+static void updateFmValues(void)
 {
     const FmChannel* channel = synth_channelParameters(chanParasFmChan);
     const Global* global = synth_globalParameters();
@@ -335,16 +335,65 @@ static void printChannelParameters(void)
     for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
         u8 line = 4;
         const Operator* oper = &channel->operators[op];
-        printOperatorValue(oper->totalLevel, op, line++);
-        printOperatorValue(oper->detune, op, line++);
-        printOperatorValue(oper->multiple, op, line++);
-        printOperatorValue(oper->rateScaling, op, line++);
-        printOperatorValue(oper->amplitudeModulation, op, line++);
-        printOperatorValue(oper->firstDecayRate, op, line++);
-        printOperatorValue(oper->secondaryDecayRate, op, line++);
-        printOperatorValue(oper->secondaryAmplitude, op, line++);
-        printOperatorValue(oper->releaseRate, op, line++);
-        printOperatorValue(oper->ssgEg, op, line++);
+        Operator* lastOper = &lastChannel.operators[op];
+
+        if (oper->totalLevel != lastOper->totalLevel || forceRefresh) {
+            printOperatorValue(oper->totalLevel, op, line++);
+            lastOper->totalLevel = oper->totalLevel;
+        }
+
+        if (oper->detune != lastOper->detune || forceRefresh) {
+            printOperatorValue(oper->detune, op, line++);
+            lastOper->detune = oper->detune;
+        }
+
+        if (oper->multiple != lastOper->multiple || forceRefresh) {
+            printOperatorValue(oper->multiple, op, line++);
+            lastOper->multiple = oper->multiple;
+        }
+
+        if (oper->rateScaling != lastOper->rateScaling || forceRefresh) {
+            printOperatorValue(oper->rateScaling, op, line++);
+            lastOper->rateScaling = oper->rateScaling;
+        }
+
+        if (oper->amplitudeModulation != lastOper->amplitudeModulation
+            || forceRefresh) {
+            printOperatorValue(oper->amplitudeModulation, op, line++);
+            lastOper->amplitudeModulation = oper->amplitudeModulation;
+        }
+
+        if (oper->firstDecayRate != lastOper->firstDecayRate || forceRefresh) {
+            printOperatorValue(oper->firstDecayRate, op, line++);
+            lastOper->firstDecayRate = oper->firstDecayRate;
+        }
+
+        if (oper->secondaryDecayRate != lastOper->secondaryDecayRate
+            || forceRefresh) {
+            printOperatorValue(oper->secondaryDecayRate, op, line++);
+            lastOper->secondaryDecayRate = oper->secondaryDecayRate;
+        }
+
+        if (oper->secondaryAmplitude != lastOper->secondaryAmplitude
+            || forceRefresh) {
+            printOperatorValue(oper->secondaryAmplitude, op, line++);
+            lastOper->secondaryAmplitude = oper->secondaryAmplitude;
+        }
+
+        if (oper->releaseRate != lastOper->releaseRate || forceRefresh) {
+            printOperatorValue(oper->releaseRate, op, line++);
+            lastOper->releaseRate = oper->releaseRate;
+        }
+
+        if (oper->releaseRate != lastOper->releaseRate || forceRefresh) {
+            printOperatorValue(oper->releaseRate, op, line++);
+            lastOper->releaseRate = oper->releaseRate;
+        }
+
+        if (oper->ssgEg != lastOper->ssgEg || forceRefresh) {
+            printOperatorValue(oper->ssgEg, op, line++);
+            lastOper->ssgEg = oper->ssgEg;
+        }
     }
 
     forceRefresh = false;
@@ -384,62 +433,62 @@ static void printLog(void)
     logLine++;
 }
 
+static void updateFmValuesIfChanSelected(void)
+{
+    if (!showChanParameters) {
+        return;
+    }
+
+    u8 chan = getFmChanForMidiChan(chanParasMidiChan);
+    if (chan == UNKNOWN_FM_CHANNEL) {
+        return;
+    }
+    if (chanParasFmChan != chan) {
+        chanParasFmChan = chan;
+        synthParameterValuesDirty = true;
+    }
+
+    if (synthParameterValuesDirty) {
+        updateFmValues();
+        synthParameterValuesDirty = false;
+    }
+}
+
 void ui_update(void)
 {
     if (lastUpdateFrame == frame) {
         return;
     }
-
-    static u8 chanActivityFrame = 0;
-    if (++chanActivityFrame == FRAMES_BEFORE_UPDATE_CHAN_ACTIVITY) {
-        printActivity();
-
-        if (showChanParameters) {
-            u8 chan = getFmChanForMidiChan(chanParasMidiChan);
-            if (chan == UNKNOWN_FM_CHANNEL) {
-                return;
-            }
-            if (chanParasFmChan != chan) {
-                chanParasFmChan = chan;
-                synthParameterValuesDirty = true;
-            }
-
-            if (synthParameterValuesDirty) {
-                printChannelParameters();
-                synthParameterValuesDirty = false;
-            }
-        }
-
-        chanActivityFrame = 0;
-    }
+    updateKeyOnOff();
+    updateFmValuesIfChanSelected();
 
     static u8 activityFrame = 0;
     if (++activityFrame == FRAMES_BEFORE_UPDATE_ACTIVITY) {
+        activityFrame = 0;
         printMappings();
         printBeat();
         printCommMode();
         printCommBuffer();
         printLog();
-        activityFrame = 0;
     }
 
     static u8 loadCalculationFrame = 0;
     if (++loadCalculationFrame == FRAMES_BEFORE_UPDATE_LOAD_PERCENT) {
-        loadPercentSum += loadPercent();
         loadCalculationFrame = 0;
+        loadPercentSum += loadPercent();
     }
 
     static u8 loadFrame = 0;
     if (++loadFrame == FRAMES_BEFORE_UPDATE_LOAD) {
+        loadFrame = 0;
         printLoad();
         printDynamicModeIfNeeded();
-        loadFrame = 0;
     }
 
     static u8 errorFrame = 0;
     if (++errorFrame == FRAMES_BEFORE_UPDATE_ERROR) {
-        checkLastError();
         errorFrame = 0;
+        checkLastError();
     }
 
     lastUpdateFrame = frame;
@@ -500,7 +549,7 @@ static void printCommBuffer(void)
     drawText(text, 29, MAX_EFFECTIVE_Y);
 }
 
-static void printActivity(void)
+static void updateKeyOnOff(void)
 {
     static u16 lastBusy = 0;
     u16 busy = synth_busy() | (psg_busy() << 6);
