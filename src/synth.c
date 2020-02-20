@@ -311,7 +311,7 @@ static void updateStereoAmsFms(u8 channel)
 {
     FmChannel* chan = fmChannel(channel);
     writeChannelReg(
-        channel, 0xB4, (chan->stereo << 6) + (chan->ams << 3) + chan->fms);
+        channel, 0xB4, (chan->stereo << 6) + (chan->ams << 4) + chan->fms);
 }
 
 static void updateOperatorMultipleAndDetune(u8 channel, u8 operator)
