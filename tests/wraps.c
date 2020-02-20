@@ -374,7 +374,7 @@ void __wrap_psg_frequency(u8 channel, u16 freq)
     check_expected(freq);
 }
 
-void __wrap_ui_setMidiChannelParametersVisibility(u8 chan, bool show)
+void __wrap_ui_fm_setMidiChannelParametersVisibility(u8 chan, bool show)
 {
     check_expected(chan);
     check_expected(show);

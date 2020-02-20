@@ -80,8 +80,9 @@ void test_midi_shows_fm_parameter_ui(UNUSED void** state)
     u8 cc = 83;
     u8 show = 127;
 
-    expect_value(__wrap_ui_setMidiChannelParametersVisibility, chan, midiChan);
-    expect_value(__wrap_ui_setMidiChannelParametersVisibility, show, true);
+    expect_value(
+        __wrap_ui_fm_setMidiChannelParametersVisibility, chan, midiChan);
+    expect_value(__wrap_ui_fm_setMidiChannelParametersVisibility, show, true);
 
     __real_midi_cc(midiChan, cc, show);
 }
@@ -92,8 +93,9 @@ void test_midi_hides_fm_parameter_ui(UNUSED void** state)
     u8 cc = 83;
     u8 hide = 0;
 
-    expect_value(__wrap_ui_setMidiChannelParametersVisibility, chan, midiChan);
-    expect_value(__wrap_ui_setMidiChannelParametersVisibility, show, false);
+    expect_value(
+        __wrap_ui_fm_setMidiChannelParametersVisibility, chan, midiChan);
+    expect_value(__wrap_ui_fm_setMidiChannelParametersVisibility, show, false);
 
     __real_midi_cc(midiChan, cc, hide);
 }

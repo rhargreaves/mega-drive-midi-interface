@@ -9,18 +9,11 @@
 #include "psg_chip.h"
 #include "serial.h"
 #include "synth.h"
+#include "ui_fm.h"
 #include <genesis.h>
 
 #include "sprite.h"
 
-static bool showChanParameters = false;
-
-#define UNKNOWN_FM_CHANNEL 0xFF
-
-#define MAX_Y 27
-#define MAX_X 39
-#define MARGIN_X 1
-#define MARGIN_Y 1
 #define MAX_EFFECTIVE_X (MAX_X - MARGIN_X - MARGIN_X)
 #define MAX_EFFECTIVE_Y (MAX_Y - MARGIN_Y - MARGIN_Y)
 #define MAX_ERROR_X 30
@@ -69,49 +62,14 @@ static void printDynamicModeIfNeeded(void);
 static void printDynamicModeStatus(bool enabled);
 static void printMappingsIfDirty(u8* midiChans);
 static void printMappings(void);
-static void updateFmValues(void);
 
 static u16 loadPercentSum = 0;
 static bool commInited = false;
 static bool commSerial = false;
 static u16 lastUpdateFrame = 0;
 static volatile u16 frame = 0;
-static u8 chanParasMidiChan = 0;
-static u8 chanParasFmChan = 0;
 
-static bool synthParameterValuesDirty = false;
-
-static Sprite* algorSprites[FM_ALGORITHMS];
 static Sprite* activitySprites[DEV_CHANS];
-
-static const u8 base_y = 8;
-const u8 op_heading_x = 15;
-const u8 para_heading_x = 0;
-
-static void initAlgorithmSprites(void)
-{
-    const SpriteDefinition* algors[] = { &algor_0, &algor_1, &algor_2, &algor_3,
-        &algor_4, &algor_5, &algor_6, &algor_7 };
-
-    for (int i = 0; i < FM_ALGORITHMS; i++) {
-        const SpriteDefinition* algor = algors[i];
-        Sprite* sprite = SPR_addSprite(algor, fix32ToInt(FIX32(9 * 8)),
-            fix32ToInt(FIX32((base_y + 6) * 8)),
-            TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
-        SPR_setVisibility(sprite, HIDDEN);
-        algorSprites[i] = sprite;
-    }
-
-    VDP_setPaletteColors(
-        (PAL0 * 16), activity.palette->data, activity.palette->length);
-}
-
-static void synthParameterUpdated(u8 fmChan, ParameterUpdated parameterUpdated)
-{
-    if (fmChan == chanParasFmChan || parameterUpdated == Lfo) {
-        synthParameterValuesDirty = true;
-    }
-}
 
 void ui_init(void)
 {
@@ -129,11 +87,8 @@ void ui_init(void)
     printMappings();
     printDynamicModeStatus(midi_dynamicMode());
 
-    synth_setParameterUpdateCallback(synthParameterUpdated);
-
     SYS_disableInts();
     SPR_init();
-    initAlgorithmSprites();
 
     for (int i = 0; i < DEV_CHANS; i++) {
         Sprite* sprite = SPR_addSprite(&activity,
@@ -146,257 +101,13 @@ void ui_init(void)
 
     SPR_update();
     SYS_enableInts();
+
+    ui_fm_init();
 }
 
 void ui_vsync(void)
 {
     frame++;
-}
-
-static void printChannelParameterHeadings(void)
-{
-    VDP_setTextPalette(PAL3);
-    drawText("Op.   1   2   3   4", op_heading_x, base_y + 3);
-    drawText(" TL", op_heading_x, base_y + 4);
-    drawText(" DT", op_heading_x, base_y + 5);
-    drawText("MUL", op_heading_x, base_y + 6);
-    drawText(" RS", op_heading_x, base_y + 7);
-    drawText(" AM", op_heading_x, base_y + 8);
-    drawText("D1R", op_heading_x, base_y + 9);
-    drawText("D2R", op_heading_x, base_y + 10);
-    drawText(" SL", op_heading_x, base_y + 11);
-    drawText(" RR", op_heading_x, base_y + 12);
-    drawText("SSG", op_heading_x, base_y + 13);
-
-    drawText("MIDI", para_heading_x, base_y + 3);
-    drawText("FM", para_heading_x + 8, base_y + 3);
-    drawText("Alg", para_heading_x, base_y + 5);
-    drawText("FB", para_heading_x, base_y + 6);
-    drawText("LFO", para_heading_x, base_y + 9);
-    drawText("AMS", para_heading_x, base_y + 10);
-    drawText("FMS", para_heading_x, base_y + 11);
-    drawText("Str", para_heading_x, base_y + 12);
-    VDP_setTextPalette(PAL0);
-}
-
-static void printOperatorValue(u16 value, u8 op, u8 line)
-{
-    const u8 op_value_x = op_heading_x + 4;
-    const u8 op_value_gap = 4;
-
-    char buffer[4];
-    sprintf(buffer, "%3d", value);
-    drawText(buffer, op_value_x + (op * op_value_gap), base_y + line);
-}
-
-static void hideAllAlgorithms(void)
-{
-    for (u8 i = 0; i < FM_ALGORITHMS; i++) {
-        SPR_setVisibility(algorSprites[i], HIDDEN);
-    }
-}
-
-static void updateAlgorithmDiagram(u8 algorithm)
-{
-    hideAllAlgorithms();
-    SPR_setVisibility(algorSprites[algorithm], VISIBLE);
-    SPR_update();
-}
-
-static u8 getFmChanForMidiChan(u8 midiChan)
-{
-    DeviceChannel* devChans = midi_channelMappings();
-    for (u8 i = 0; i <= DEV_CHAN_MAX_FM; i++) {
-        DeviceChannel* devChan = &devChans[i];
-        if (devChan->midiChannel == midiChan) {
-            return devChan->number;
-        }
-    }
-    return UNKNOWN_FM_CHANNEL;
-}
-
-static const char* stereoText(u8 stereo)
-{
-    switch (stereo) {
-    case 0:
-        return "  ";
-    case 1:
-        return "R ";
-    case 2:
-        return "L ";
-    default:
-        return "LR";
-    }
-}
-
-static const char* lfoEnableText(u8 lfoEnable)
-{
-    switch (lfoEnable) {
-    case 0:
-        return "Off";
-    default:
-        return "On ";
-    }
-}
-
-static const char* lfoFreqText(u8 lfoFreq)
-{
-    static const char TEXT[][8] = { "3.98Hz", "5.56Hz", "6.02Hz", "6.37Hz",
-        "6.88Hz", "9.63Hz", "48.1Hz", "72.2Hz" };
-    return TEXT[lfoFreq];
-}
-
-static const char* amsText(u8 ams)
-{
-    if (ams > 3) {
-        return "ERROR";
-    }
-    static const char TEXT[][7] = { "0dB   ", "1.4dB ", "5.9dB ", "11.8dB" };
-    return TEXT[ams];
-}
-
-static const char* fmsText(u8 fms)
-{
-    static const char TEXT[][5]
-        = { "0%  ", "3.4%", "6.7%", "10% ", "14% ", "20% ", "40% ", "80% " };
-    return TEXT[fms];
-}
-
-static u8 lastChanParasFmChan = 0;
-static u8 lastChanParasMidiChannel = 0;
-static FmChannel lastChannel = {};
-static Global lastGlobal = {};
-static bool forceRefresh = false;
-
-static void updateFmValues(void)
-{
-    const FmChannel* channel = synth_channelParameters(chanParasFmChan);
-    const Global* global = synth_globalParameters();
-
-    const u8 col1_value_x = para_heading_x + 4;
-    const u8 col2_value_x = para_heading_x + 11;
-    char buffer[4];
-
-    if (chanParasMidiChan != lastChanParasMidiChannel || forceRefresh) {
-        sprintf(buffer, "%-2d", chanParasMidiChan + 1);
-        drawText(buffer, col1_value_x + 1, base_y + 3);
-        lastChanParasMidiChannel = chanParasMidiChan;
-    }
-
-    if (chanParasFmChan != lastChanParasFmChan || forceRefresh) {
-        sprintf(buffer, "%-3d", chanParasFmChan + 1);
-        drawText(buffer, col2_value_x, base_y + 3);
-        lastChanParasFmChan = chanParasFmChan;
-    }
-
-    if (channel->algorithm != lastChannel.algorithm || forceRefresh) {
-        sprintf(buffer, "%d", channel->algorithm);
-        drawText(buffer, col1_value_x, base_y + 5);
-        lastChannel.algorithm = channel->algorithm;
-    }
-
-    if (channel->feedback != lastChannel.feedback || forceRefresh) {
-        sprintf(buffer, "%d", channel->feedback);
-        drawText(buffer, col1_value_x, base_y + 6);
-        lastChannel.feedback = channel->feedback;
-    }
-
-    if (global->lfoEnable != lastGlobal.lfoEnable || forceRefresh) {
-        drawText(lfoEnableText(global->lfoEnable), col1_value_x, base_y + 9);
-        lastGlobal.lfoEnable = global->lfoEnable;
-    }
-
-    if (global->lfoFrequency != lastGlobal.lfoFrequency || forceRefresh) {
-        drawText(
-            lfoFreqText(global->lfoFrequency), col1_value_x + 4, base_y + 9);
-        lastGlobal.lfoFrequency = global->lfoFrequency;
-    }
-
-    if (channel->ams != lastChannel.ams || forceRefresh) {
-        drawText(amsText(channel->ams), col1_value_x, base_y + 10);
-        lastChannel.ams = channel->ams;
-    }
-
-    if (channel->fms != lastChannel.fms || forceRefresh) {
-        drawText(fmsText(channel->fms), col1_value_x, base_y + 11);
-        lastChannel.fms = channel->fms;
-    }
-
-    if (channel->stereo != lastChannel.stereo || forceRefresh) {
-        drawText(stereoText(channel->stereo), col1_value_x, base_y + 12);
-        lastChannel.stereo = channel->stereo;
-    }
-
-    if (channel->algorithm != lastChannel.algorithm || forceRefresh) {
-        updateAlgorithmDiagram(channel->algorithm);
-        lastChannel.algorithm = channel->algorithm;
-    }
-
-    for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
-        u8 line = 4;
-        const Operator* oper = &channel->operators[op];
-        Operator* lastOper = &lastChannel.operators[op];
-
-        if (oper->totalLevel != lastOper->totalLevel || forceRefresh) {
-            printOperatorValue(oper->totalLevel, op, line++);
-            lastOper->totalLevel = oper->totalLevel;
-        }
-
-        if (oper->detune != lastOper->detune || forceRefresh) {
-            printOperatorValue(oper->detune, op, line++);
-            lastOper->detune = oper->detune;
-        }
-
-        if (oper->multiple != lastOper->multiple || forceRefresh) {
-            printOperatorValue(oper->multiple, op, line++);
-            lastOper->multiple = oper->multiple;
-        }
-
-        if (oper->rateScaling != lastOper->rateScaling || forceRefresh) {
-            printOperatorValue(oper->rateScaling, op, line++);
-            lastOper->rateScaling = oper->rateScaling;
-        }
-
-        if (oper->amplitudeModulation != lastOper->amplitudeModulation
-            || forceRefresh) {
-            printOperatorValue(oper->amplitudeModulation, op, line++);
-            lastOper->amplitudeModulation = oper->amplitudeModulation;
-        }
-
-        if (oper->firstDecayRate != lastOper->firstDecayRate || forceRefresh) {
-            printOperatorValue(oper->firstDecayRate, op, line++);
-            lastOper->firstDecayRate = oper->firstDecayRate;
-        }
-
-        if (oper->secondaryDecayRate != lastOper->secondaryDecayRate
-            || forceRefresh) {
-            printOperatorValue(oper->secondaryDecayRate, op, line++);
-            lastOper->secondaryDecayRate = oper->secondaryDecayRate;
-        }
-
-        if (oper->secondaryAmplitude != lastOper->secondaryAmplitude
-            || forceRefresh) {
-            printOperatorValue(oper->secondaryAmplitude, op, line++);
-            lastOper->secondaryAmplitude = oper->secondaryAmplitude;
-        }
-
-        if (oper->releaseRate != lastOper->releaseRate || forceRefresh) {
-            printOperatorValue(oper->releaseRate, op, line++);
-            lastOper->releaseRate = oper->releaseRate;
-        }
-
-        if (oper->releaseRate != lastOper->releaseRate || forceRefresh) {
-            printOperatorValue(oper->releaseRate, op, line++);
-            lastOper->releaseRate = oper->releaseRate;
-        }
-
-        if (oper->ssgEg != lastOper->ssgEg || forceRefresh) {
-            printOperatorValue(oper->ssgEg, op, line++);
-            lastOper->ssgEg = oper->ssgEg;
-        }
-    }
-
-    forceRefresh = false;
 }
 
 static void printMappings(void)
@@ -433,34 +144,13 @@ static void printLog(void)
     logLine++;
 }
 
-static void updateFmValuesIfChanSelected(void)
-{
-    if (!showChanParameters) {
-        return;
-    }
-
-    u8 chan = getFmChanForMidiChan(chanParasMidiChan);
-    if (chan == UNKNOWN_FM_CHANNEL) {
-        return;
-    }
-    if (chanParasFmChan != chan) {
-        chanParasFmChan = chan;
-        synthParameterValuesDirty = true;
-    }
-
-    if (synthParameterValuesDirty) {
-        updateFmValues();
-        synthParameterValuesDirty = false;
-    }
-}
-
 void ui_update(void)
 {
     if (lastUpdateFrame == frame) {
         return;
     }
+
     updateKeyOnOff();
-    updateFmValuesIfChanSelected();
 
     static u8 activityFrame = 0;
     if (++activityFrame == FRAMES_BEFORE_UPDATE_ACTIVITY) {
@@ -491,22 +181,9 @@ void ui_update(void)
         checkLastError();
     }
 
-    lastUpdateFrame = frame;
-}
+    ui_fm_update();
 
-void ui_setMidiChannelParametersVisibility(u8 chan, bool show)
-{
-    showChanParameters = show;
-    chanParasMidiChan = chan;
-    if (show) {
-        forceRefresh = true;
-        printChannelParameterHeadings();
-    } else {
-        VDP_clearTextArea(0, MARGIN_Y + base_y + 3, MAX_X, 11);
-        hideAllAlgorithms();
-        SPR_update();
-    }
-    synthParameterValuesDirty = true;
+    lastUpdateFrame = frame;
 }
 
 static u16 loadPercent(void)
@@ -517,6 +194,11 @@ static u16 loadPercent(void)
         return 0;
     }
     return (busy * 100) / (idle + busy);
+}
+
+void ui_drawText(const char* text, u16 x, u16 y)
+{
+    drawText(text, x, y);
 }
 
 static void drawText(const char* text, u16 x, u16 y)

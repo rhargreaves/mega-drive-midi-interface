@@ -84,7 +84,7 @@ MOCKS=midi_process \
 	log_info \
 	log_warn \
 	log_dequeue \
-	ui_setMidiChannelParametersVisibility
+	ui_fm_setMidiChannelParametersVisibility
 
 MD_MOCKS=SYS_setVIntCallback \
 	VDP_setTextPalette \
