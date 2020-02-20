@@ -262,26 +262,76 @@ static const char* fmsText(u8 fms)
     return TEXT[fms];
 }
 
+static u8 lastChanParasFmChan = 0;
+static u8 lastChanParasMidiChannel = 0;
+static FmChannel lastChannel = {};
+static Global lastGlobal = {};
+static bool forceRefresh = false;
+
 static void printChannelParameters(void)
 {
     const FmChannel* channel = synth_channelParameters(chanParasFmChan);
     const Global* global = synth_globalParameters();
+
     const u8 col1_value_x = para_heading_x + 4;
     const u8 col2_value_x = para_heading_x + 11;
     char buffer[4];
-    sprintf(buffer, "%-2d", chanParasMidiChan + 1);
-    drawText(buffer, col1_value_x + 1, base_y + 3);
-    sprintf(buffer, "%-3d", chanParasFmChan + 1);
-    drawText(buffer, col2_value_x, base_y + 3);
-    sprintf(buffer, "%d", channel->algorithm);
-    drawText(buffer, col1_value_x, base_y + 5);
-    sprintf(buffer, "%d", channel->feedback);
-    drawText(buffer, col1_value_x, base_y + 6);
-    drawText(lfoEnableText(global->lfoEnable), col1_value_x, base_y + 9);
-    drawText(lfoFreqText(global->lfoFrequency), col1_value_x + 4, base_y + 9);
-    drawText(amsText(channel->ams), col1_value_x, base_y + 10);
-    drawText(fmsText(channel->fms), col1_value_x, base_y + 11);
-    drawText(stereoText(channel->stereo), col1_value_x, base_y + 12);
+
+    if (chanParasMidiChan != lastChanParasMidiChannel || forceRefresh) {
+        sprintf(buffer, "%-2d", chanParasMidiChan + 1);
+        drawText(buffer, col1_value_x + 1, base_y + 3);
+        lastChanParasMidiChannel = chanParasMidiChan;
+    }
+
+    if (chanParasFmChan != lastChanParasFmChan || forceRefresh) {
+        sprintf(buffer, "%-3d", chanParasFmChan + 1);
+        drawText(buffer, col2_value_x, base_y + 3);
+        lastChanParasFmChan = chanParasFmChan;
+    }
+
+    if (channel->algorithm != lastChannel.algorithm || forceRefresh) {
+        sprintf(buffer, "%d", channel->algorithm);
+        drawText(buffer, col1_value_x, base_y + 5);
+        lastChannel.algorithm = channel->algorithm;
+    }
+
+    if (channel->feedback != lastChannel.feedback || forceRefresh) {
+        sprintf(buffer, "%d", channel->feedback);
+        drawText(buffer, col1_value_x, base_y + 6);
+        lastChannel.feedback = channel->feedback;
+    }
+
+    if (global->lfoEnable != lastGlobal.lfoEnable || forceRefresh) {
+        drawText(lfoEnableText(global->lfoEnable), col1_value_x, base_y + 9);
+        lastGlobal.lfoEnable = global->lfoEnable;
+    }
+
+    if (global->lfoFrequency != lastGlobal.lfoFrequency || forceRefresh) {
+        drawText(
+            lfoFreqText(global->lfoFrequency), col1_value_x + 4, base_y + 9);
+        lastGlobal.lfoFrequency = global->lfoFrequency;
+    }
+
+    if (channel->ams != lastChannel.ams || forceRefresh) {
+        drawText(amsText(channel->ams), col1_value_x, base_y + 10);
+        lastChannel.ams = channel->ams;
+    }
+
+    if (channel->fms != lastChannel.fms || forceRefresh) {
+        drawText(fmsText(channel->fms), col1_value_x, base_y + 11);
+        lastChannel.fms = channel->fms;
+    }
+
+    if (channel->stereo != lastChannel.stereo || forceRefresh) {
+        drawText(stereoText(channel->stereo), col1_value_x, base_y + 12);
+        lastChannel.stereo = channel->stereo;
+    }
+
+    if (channel->algorithm != lastChannel.algorithm || forceRefresh) {
+        updateAlgorithmDiagram(channel->algorithm);
+        lastChannel.algorithm = channel->algorithm;
+    }
+
     for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
         u8 line = 4;
         const Operator* oper = &channel->operators[op];
@@ -296,7 +346,8 @@ static void printChannelParameters(void)
         printOperatorValue(oper->releaseRate, op, line++);
         printOperatorValue(oper->ssgEg, op, line++);
     }
-    updateAlgorithmDiagram(channel->algorithm);
+
+    forceRefresh = false;
 }
 
 static void printMappings(void)
@@ -399,6 +450,7 @@ void ui_setMidiChannelParametersVisibility(u8 chan, bool show)
     showChanParameters = show;
     chanParasMidiChan = chan;
     if (show) {
+        forceRefresh = true;
         printChannelParameterHeadings();
     } else {
         VDP_clearTextArea(0, MARGIN_Y + base_y + 3, MAX_X, 11);
