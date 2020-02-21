@@ -70,15 +70,16 @@ static void printChannelParameterHeadings(void)
     VDP_setTextPalette(PAL3);
     ui_drawText("Op.   1   2   3   4", OP_HEADING_X, BASE_Y + 3);
     ui_drawText(" TL", OP_HEADING_X, BASE_Y + 4);
-    ui_drawText(" DT", OP_HEADING_X, BASE_Y + 5);
+    ui_drawText(" AR", OP_HEADING_X, BASE_Y + 5);
     ui_drawText("MUL", OP_HEADING_X, BASE_Y + 6);
-    ui_drawText(" RS", OP_HEADING_X, BASE_Y + 7);
-    ui_drawText(" AM", OP_HEADING_X, BASE_Y + 8);
-    ui_drawText("D1R", OP_HEADING_X, BASE_Y + 9);
-    ui_drawText("D2R", OP_HEADING_X, BASE_Y + 10);
-    ui_drawText(" SL", OP_HEADING_X, BASE_Y + 11);
-    ui_drawText(" RR", OP_HEADING_X, BASE_Y + 12);
-    ui_drawText("SSG", OP_HEADING_X, BASE_Y + 13);
+    ui_drawText(" DT", OP_HEADING_X, BASE_Y + 7);
+    ui_drawText(" RS", OP_HEADING_X, BASE_Y + 8);
+    ui_drawText(" AM", OP_HEADING_X, BASE_Y + 9);
+    ui_drawText("D1R", OP_HEADING_X, BASE_Y + 10);
+    ui_drawText("D2R", OP_HEADING_X, BASE_Y + 11);
+    ui_drawText(" SL", OP_HEADING_X, BASE_Y + 12);
+    ui_drawText(" RR", OP_HEADING_X, BASE_Y + 13);
+    ui_drawText("SSG", OP_HEADING_X, BASE_Y + 14);
 
     ui_drawText("MIDI", FM_HEADING_X, BASE_Y + 3);
     ui_drawText("FM", FM_HEADING_X + 8, BASE_Y + 3);
@@ -244,9 +245,9 @@ static void updateFmValues(void)
             lastOper->totalLevel = oper->totalLevel;
         }
 
-        if (oper->detune != lastOper->detune || forceRefresh) {
-            printOperatorValue(oper->detune, op, 5);
-            lastOper->detune = oper->detune;
+        if (oper->attackRate != lastOper->attackRate || forceRefresh) {
+            printOperatorValue(oper->attackRate, op, 5);
+            lastOper->attackRate = oper->attackRate;
         }
 
         if (oper->multiple != lastOper->multiple || forceRefresh) {
@@ -254,41 +255,46 @@ static void updateFmValues(void)
             lastOper->multiple = oper->multiple;
         }
 
+        if (oper->detune != lastOper->detune || forceRefresh) {
+            printOperatorValue(oper->detune, op, 7);
+            lastOper->detune = oper->detune;
+        }
+
         if (oper->rateScaling != lastOper->rateScaling || forceRefresh) {
-            printOperatorValue(oper->rateScaling, op, 7);
+            printOperatorValue(oper->rateScaling, op, 8);
             lastOper->rateScaling = oper->rateScaling;
         }
 
         if (oper->amplitudeModulation != lastOper->amplitudeModulation
             || forceRefresh) {
-            printOperatorValue(oper->amplitudeModulation, op, 8);
+            printOperatorValue(oper->amplitudeModulation, op, 9);
             lastOper->amplitudeModulation = oper->amplitudeModulation;
         }
 
         if (oper->firstDecayRate != lastOper->firstDecayRate || forceRefresh) {
-            printOperatorValue(oper->firstDecayRate, op, 9);
+            printOperatorValue(oper->firstDecayRate, op, 10);
             lastOper->firstDecayRate = oper->firstDecayRate;
         }
 
         if (oper->secondaryDecayRate != lastOper->secondaryDecayRate
             || forceRefresh) {
-            printOperatorValue(oper->secondaryDecayRate, op, 10);
+            printOperatorValue(oper->secondaryDecayRate, op, 11);
             lastOper->secondaryDecayRate = oper->secondaryDecayRate;
         }
 
         if (oper->secondaryAmplitude != lastOper->secondaryAmplitude
             || forceRefresh) {
-            printOperatorValue(oper->secondaryAmplitude, op, 11);
+            printOperatorValue(oper->secondaryAmplitude, op, 12);
             lastOper->secondaryAmplitude = oper->secondaryAmplitude;
         }
 
         if (oper->releaseRate != lastOper->releaseRate || forceRefresh) {
-            printOperatorValue(oper->releaseRate, op, 12);
+            printOperatorValue(oper->releaseRate, op, 13);
             lastOper->releaseRate = oper->releaseRate;
         }
 
         if (oper->ssgEg != lastOper->ssgEg || forceRefresh) {
-            printOperatorValue(oper->ssgEg, op, 13);
+            printOperatorValue(oper->ssgEg, op, 14);
             lastOper->ssgEg = oper->ssgEg;
         }
     }
