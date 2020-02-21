@@ -15,6 +15,7 @@ Control the Yamaha YM2612 and PSG chips of the SEGA Mega Drive via MIDI.
   - Mega Everdrive's X7 USB port
   - [Custom-built USB cable connected to a controller port](https://github.com/rhargreaves/mega-drive-serial-port#hardware).
 - Fine-grained control of YM2612 registers via [GenMDM-style CCs](https://catskullelectronics.com/public/genMDM.pdf)
+- Optionally outputs FM parameter values to the screen for a specific MIDI channel (see CC 83)
 
 ## Getting Started
 
@@ -88,8 +89,6 @@ You can use CC 83 to show the current FM parameters for the specific channel:
 <p align="center">
     <img src="https://github.com/rhargreaves/mega-drive-midi-interface/raw/master/docs/chan_paras.jpg" width="600" />
 </p>
-
-**Warning: This is not currently optimised, so induces a significant slow down!**
 
 ### Polyphonic Mode
 
