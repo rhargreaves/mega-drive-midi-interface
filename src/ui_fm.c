@@ -172,6 +172,18 @@ static const char* fmsText(u8 fms)
     return TEXT[fms];
 }
 
+static bool updateFmValue(
+    u8* last, const u8* current, bool forceRefresh, char* buffer, u8 x, u8 y)
+{
+    if (*last != *current || forceRefresh) {
+        sprintf(buffer, "%d", *current);
+        ui_drawText(buffer, x, y);
+        *last = *current;
+        return true;
+    }
+    return false;
+}
+
 static void updateFmValues(void)
 {
     const FmChannel* channel = synth_channelParameters(chanParasFmChan);
@@ -193,17 +205,15 @@ static void updateFmValues(void)
         lastChanParasFmChan = chanParasFmChan;
     }
 
-    if (channel->algorithm != lastChannel.algorithm || forceRefresh) {
-        sprintf(buffer, "%d", channel->algorithm);
-        ui_drawText(buffer, col1_value_x, BASE_Y + 5);
-        lastChannel.algorithm = channel->algorithm;
+    if (updateFmValue(&lastChannel.algorithm, &channel->algorithm, forceRefresh,
+            buffer, col1_value_x, BASE_Y + 5)) {
+        updateAlgorithmDiagram(channel->algorithm);
     }
 
-    if (channel->feedback != lastChannel.feedback || forceRefresh) {
-        sprintf(buffer, "%d", channel->feedback);
-        ui_drawText(buffer, col1_value_x, BASE_Y + 6);
-        lastChannel.feedback = channel->feedback;
-    }
+    updateFmValue(&lastChannel.feedback, &channel->feedback, forceRefresh,
+        buffer, col1_value_x, BASE_Y + 6);
+    updateFmValue(&lastGlobal.lfoEnable, &global->lfoEnable, forceRefresh,
+        buffer, col1_value_x, BASE_Y + 6);
 
     if (global->lfoEnable != lastGlobal.lfoEnable || forceRefresh) {
         ui_drawText(lfoEnableText(global->lfoEnable), col1_value_x, BASE_Y + 9);
@@ -229,11 +239,6 @@ static void updateFmValues(void)
     if (channel->stereo != lastChannel.stereo || forceRefresh) {
         ui_drawText(stereoText(channel->stereo), col1_value_x, BASE_Y + 12);
         lastChannel.stereo = channel->stereo;
-    }
-
-    if (channel->algorithm != lastChannel.algorithm || forceRefresh) {
-        updateAlgorithmDiagram(channel->algorithm);
-        lastChannel.algorithm = channel->algorithm;
     }
 
     for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
