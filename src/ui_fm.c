@@ -88,7 +88,7 @@ static void printChannelParameterHeadings(void)
     ui_drawText("LFO", FM_HEADING_X, BASE_Y + 9);
     ui_drawText("AMS", FM_HEADING_X, BASE_Y + 10);
     ui_drawText("FMS", FM_HEADING_X, BASE_Y + 11);
-    ui_drawText("Str", FM_HEADING_X, BASE_Y + 12);
+    ui_drawText("Pan", FM_HEADING_X, BASE_Y + 12);
     VDP_setTextPalette(PAL0);
 }
 
