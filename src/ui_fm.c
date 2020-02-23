@@ -231,30 +231,22 @@ static void updateFmValues(void)
 
     updateFmValueText(&lastChanParasMidiChannel, &chanParasMidiChan,
         forceRefresh, chanNumber, col1_value_x + 1, BASE_Y + 3);
-
     updateFmValueText(&lastChanParasFmChan, &chanParasFmChan, forceRefresh,
         chanNumber, col2_value_x, BASE_Y + 3);
-
     if (updateFmValue(&lastChannel.algorithm, &channel->algorithm, forceRefresh,
             "%d", col1_value_x, BASE_Y + 5)) {
         updateAlgorithmDiagram(channel->algorithm);
     }
-
     updateFmValue(&lastChannel.feedback, &channel->feedback, forceRefresh, "%d",
         col1_value_x, BASE_Y + 6);
-
     updateFmValueText(&lastGlobal.lfoEnable, &global->lfoEnable, forceRefresh,
         lfoEnableText, col1_value_x, BASE_Y + 9);
-
     updateFmValueText(&lastGlobal.lfoFrequency, &global->lfoFrequency,
         forceRefresh, lfoFreqText, col1_value_x + 4, BASE_Y + 9);
-
     updateFmValueText(&lastChannel.ams, &channel->ams, forceRefresh, amsText,
         col1_value_x, BASE_Y + 10);
-
     updateFmValueText(&lastChannel.fms, &channel->fms, forceRefresh, fmsText,
         col1_value_x, BASE_Y + 11);
-
     updateFmValueText(&lastChannel.stereo, &channel->stereo, forceRefresh,
         stereoText, col1_value_x, BASE_Y + 12);
 
@@ -266,54 +258,24 @@ static void updateFmValues(void)
             &lastOper->totalLevel, &oper->totalLevel, forceRefresh, op, 4);
         updateOperatorValueText(
             &lastOper->attackRate, &oper->attackRate, forceRefresh, op, 5);
-
-        if (oper->multiple != lastOper->multiple || forceRefresh) {
-            printOperatorValue(oper->multiple, op, 6);
-            lastOper->multiple = oper->multiple;
-        }
-
-        if (oper->detune != lastOper->detune || forceRefresh) {
-            printOperatorValue(oper->detune, op, 7);
-            lastOper->detune = oper->detune;
-        }
-
-        if (oper->rateScaling != lastOper->rateScaling || forceRefresh) {
-            printOperatorValue(oper->rateScaling, op, 8);
-            lastOper->rateScaling = oper->rateScaling;
-        }
-
-        if (oper->amplitudeModulation != lastOper->amplitudeModulation
-            || forceRefresh) {
-            printOperatorValue(oper->amplitudeModulation, op, 9);
-            lastOper->amplitudeModulation = oper->amplitudeModulation;
-        }
-
-        if (oper->firstDecayRate != lastOper->firstDecayRate || forceRefresh) {
-            printOperatorValue(oper->firstDecayRate, op, 10);
-            lastOper->firstDecayRate = oper->firstDecayRate;
-        }
-
-        if (oper->secondaryDecayRate != lastOper->secondaryDecayRate
-            || forceRefresh) {
-            printOperatorValue(oper->secondaryDecayRate, op, 11);
-            lastOper->secondaryDecayRate = oper->secondaryDecayRate;
-        }
-
-        if (oper->secondaryAmplitude != lastOper->secondaryAmplitude
-            || forceRefresh) {
-            printOperatorValue(oper->secondaryAmplitude, op, 12);
-            lastOper->secondaryAmplitude = oper->secondaryAmplitude;
-        }
-
-        if (oper->releaseRate != lastOper->releaseRate || forceRefresh) {
-            printOperatorValue(oper->releaseRate, op, 13);
-            lastOper->releaseRate = oper->releaseRate;
-        }
-
-        if (oper->ssgEg != lastOper->ssgEg || forceRefresh) {
-            printOperatorValue(oper->ssgEg, op, 14);
-            lastOper->ssgEg = oper->ssgEg;
-        }
+        updateOperatorValueText(
+            &lastOper->multiple, &oper->multiple, forceRefresh, op, 6);
+        updateOperatorValueText(
+            &lastOper->detune, &oper->detune, forceRefresh, op, 7);
+        updateOperatorValueText(
+            &lastOper->rateScaling, &oper->rateScaling, forceRefresh, op, 8);
+        updateOperatorValueText(&lastOper->amplitudeModulation,
+            &oper->amplitudeModulation, forceRefresh, op, 9);
+        updateOperatorValueText(&lastOper->firstDecayRate,
+            &oper->firstDecayRate, forceRefresh, op, 10);
+        updateOperatorValueText(&lastOper->secondaryDecayRate,
+            &oper->secondaryDecayRate, forceRefresh, op, 11);
+        updateOperatorValueText(&lastOper->secondaryAmplitude,
+            &oper->secondaryAmplitude, forceRefresh, op, 12);
+        updateOperatorValueText(
+            &lastOper->releaseRate, &oper->releaseRate, forceRefresh, op, 13);
+        updateOperatorValueText(
+            &lastOper->ssgEg, &oper->ssgEg, forceRefresh, op, 14);
     }
     forceRefresh = false;
 }
