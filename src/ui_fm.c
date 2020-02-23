@@ -24,10 +24,14 @@ static FmChannel lastChannel = {};
 static Global lastGlobal = {};
 static bool forceRefresh = false;
 
+typedef const char* FormatTextFunc(u8 value);
+
 static void updateFmValues(void);
 static void initAlgorithmSprites(void);
 static void updateFmValuesIfChanSelected(void);
 static void synthParameterUpdated(u8 fmChan, ParameterUpdated parameterUpdated);
+static bool updateFmValueText(u8* last, const u8* current, bool forceRefresh,
+    FormatTextFunc formatFunc, u8 x, u8 y);
 
 void ui_fm_init(void)
 {
@@ -172,16 +176,35 @@ static const char* fmsText(u8 fms)
     return TEXT[fms];
 }
 
-static bool updateFmValue(
-    u8* last, const u8* current, bool forceRefresh, char* buffer, u8 x, u8 y)
+static bool updateFmValue(u8* last, const u8* current, bool forceRefresh,
+    const char* format, u8 x, u8 y)
 {
+    char buffer[4];
     if (*last != *current || forceRefresh) {
-        sprintf(buffer, "%d", *current);
+        sprintf(buffer, format, *current);
         ui_drawText(buffer, x, y);
         *last = *current;
         return true;
     }
     return false;
+}
+
+static bool updateFmValueText(u8* last, const u8* current, bool forceRefresh,
+    FormatTextFunc formatFunc, u8 x, u8 y)
+{
+    if (*last != *current || forceRefresh) {
+        ui_drawText(formatFunc(*current), x, y);
+        *last = *current;
+        return true;
+    }
+    return false;
+}
+
+static const char* chanNumber(u8 chan)
+{
+    static char buffer[4];
+    sprintf(buffer, "%-2d", chan + 1);
+    return buffer;
 }
 
 static void updateFmValues(void)
@@ -191,55 +214,35 @@ static void updateFmValues(void)
 
     const u8 col1_value_x = FM_HEADING_X + 4;
     const u8 col2_value_x = FM_HEADING_X + 11;
-    char buffer[4];
 
-    if (chanParasMidiChan != lastChanParasMidiChannel || forceRefresh) {
-        sprintf(buffer, "%-2d", chanParasMidiChan + 1);
-        ui_drawText(buffer, col1_value_x + 1, BASE_Y + 3);
-        lastChanParasMidiChannel = chanParasMidiChan;
-    }
+    updateFmValueText(&lastChanParasMidiChannel, &chanParasMidiChan,
+        forceRefresh, chanNumber, col1_value_x + 1, BASE_Y + 3);
 
-    if (chanParasFmChan != lastChanParasFmChan || forceRefresh) {
-        sprintf(buffer, "%-3d", chanParasFmChan + 1);
-        ui_drawText(buffer, col2_value_x, BASE_Y + 3);
-        lastChanParasFmChan = chanParasFmChan;
-    }
+    updateFmValueText(&lastChanParasFmChan, &chanParasFmChan, forceRefresh,
+        chanNumber, col2_value_x, BASE_Y + 3);
 
     if (updateFmValue(&lastChannel.algorithm, &channel->algorithm, forceRefresh,
-            buffer, col1_value_x, BASE_Y + 5)) {
+            "%d", col1_value_x, BASE_Y + 5)) {
         updateAlgorithmDiagram(channel->algorithm);
     }
 
-    updateFmValue(&lastChannel.feedback, &channel->feedback, forceRefresh,
-        buffer, col1_value_x, BASE_Y + 6);
-    updateFmValue(&lastGlobal.lfoEnable, &global->lfoEnable, forceRefresh,
-        buffer, col1_value_x, BASE_Y + 6);
+    updateFmValue(&lastChannel.feedback, &channel->feedback, forceRefresh, "%d",
+        col1_value_x, BASE_Y + 6);
 
-    if (global->lfoEnable != lastGlobal.lfoEnable || forceRefresh) {
-        ui_drawText(lfoEnableText(global->lfoEnable), col1_value_x, BASE_Y + 9);
-        lastGlobal.lfoEnable = global->lfoEnable;
-    }
+    updateFmValueText(&lastGlobal.lfoEnable, &global->lfoEnable, forceRefresh,
+        lfoEnableText, col1_value_x, BASE_Y + 9);
 
-    if (global->lfoFrequency != lastGlobal.lfoFrequency || forceRefresh) {
-        ui_drawText(
-            lfoFreqText(global->lfoFrequency), col1_value_x + 4, BASE_Y + 9);
-        lastGlobal.lfoFrequency = global->lfoFrequency;
-    }
+    updateFmValueText(&lastGlobal.lfoFrequency, &global->lfoFrequency,
+        forceRefresh, lfoFreqText, col1_value_x + 4, BASE_Y + 9);
 
-    if (channel->ams != lastChannel.ams || forceRefresh) {
-        ui_drawText(amsText(channel->ams), col1_value_x, BASE_Y + 10);
-        lastChannel.ams = channel->ams;
-    }
+    updateFmValueText(&lastChannel.ams, &channel->ams, forceRefresh, amsText,
+        col1_value_x, BASE_Y + 10);
 
-    if (channel->fms != lastChannel.fms || forceRefresh) {
-        ui_drawText(fmsText(channel->fms), col1_value_x, BASE_Y + 11);
-        lastChannel.fms = channel->fms;
-    }
+    updateFmValueText(&lastChannel.fms, &channel->fms, forceRefresh, fmsText,
+        col1_value_x, BASE_Y + 11);
 
-    if (channel->stereo != lastChannel.stereo || forceRefresh) {
-        ui_drawText(stereoText(channel->stereo), col1_value_x, BASE_Y + 12);
-        lastChannel.stereo = channel->stereo;
-    }
+    updateFmValueText(&lastChannel.stereo, &channel->stereo, forceRefresh,
+        stereoText, col1_value_x, BASE_Y + 12);
 
     for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
         const Operator* oper = &channel->operators[op];
@@ -335,7 +338,7 @@ void ui_fm_setMidiChannelParametersVisibility(u8 chan, bool show)
         forceRefresh = true;
         printChannelParameterHeadings();
     } else {
-        VDP_clearTextArea(0, MARGIN_Y + BASE_Y + 3, MAX_X, 11);
+        VDP_clearTextArea(0, MARGIN_Y + BASE_Y + 3, MAX_X, 12);
         hideAllAlgorithms();
         SPR_update();
     }
