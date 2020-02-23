@@ -30,7 +30,7 @@ static void updateFmValues(void);
 static void initAlgorithmSprites(void);
 static void updateFmValuesIfChanSelected(void);
 static void synthParameterUpdated(u8 fmChan, ParameterUpdated parameterUpdated);
-static bool updateFmValueText(u8* last, const u8* current, bool forceRefresh,
+static bool updateFmValue(u8* last, const u8* current, bool forceRefresh,
     FormatTextFunc formatFunc, u8 x, u8 y);
 
 void ui_fm_init(void)
@@ -94,16 +94,6 @@ static void printChannelParameterHeadings(void)
     ui_drawText("FMS", FM_HEADING_X, BASE_Y + 11);
     ui_drawText("Pan", FM_HEADING_X, BASE_Y + 12);
     VDP_setTextPalette(PAL0);
-}
-
-static void printOperatorValue(u16 value, u8 op, u8 line)
-{
-    const u8 OP_VALUE_X = OP_HEADING_X + 4;
-    const u8 OP_VALUE_GAP = 4;
-
-    char buffer[4];
-    sprintf(buffer, "%3d", value);
-    ui_drawText(buffer, OP_VALUE_X + (op * OP_VALUE_GAP), BASE_Y + line);
 }
 
 static void hideAllAlgorithms(void)
@@ -176,20 +166,21 @@ static const char* fmsText(u8 fms)
     return TEXT[fms];
 }
 
-static bool updateFmValue(u8* last, const u8* current, bool forceRefresh,
-    const char* format, u8 x, u8 y)
+static const char* chanNumber(u8 chan)
 {
-    char buffer[4];
-    if (*last != *current || forceRefresh) {
-        sprintf(buffer, format, *current);
-        ui_drawText(buffer, x, y);
-        *last = *current;
-        return true;
-    }
-    return false;
+    static char buffer[3];
+    sprintf(buffer, "%-2d", chan + 1);
+    return buffer;
 }
 
-static bool updateFmValueText(u8* last, const u8* current, bool forceRefresh,
+static const char* formatNum(u8 value)
+{
+    static char buffer[3];
+    sprintf(buffer, "%d", value);
+    return buffer;
+}
+
+static bool updateFmValue(u8* last, const u8* current, bool forceRefresh,
     FormatTextFunc formatFunc, u8 x, u8 y)
 {
     if (*last != *current || forceRefresh) {
@@ -198,13 +189,6 @@ static bool updateFmValueText(u8* last, const u8* current, bool forceRefresh,
         return true;
     }
     return false;
-}
-
-static const char* chanNumber(u8 chan)
-{
-    static char buffer[4];
-    sprintf(buffer, "%-2d", chan + 1);
-    return buffer;
 }
 
 static void updateOpValue(
@@ -221,35 +205,8 @@ static void updateOpValue(
     }
 }
 
-static void updateFmValues(void)
+static void updateOpValues(const FmChannel* channel, bool forceRefresh)
 {
-    const FmChannel* channel = synth_channelParameters(chanParasFmChan);
-    const Global* global = synth_globalParameters();
-
-    const u8 col1_value_x = FM_HEADING_X + 4;
-    const u8 col2_value_x = FM_HEADING_X + 11;
-
-    updateFmValueText(&lastChanParasMidiChannel, &chanParasMidiChan,
-        forceRefresh, chanNumber, col1_value_x + 1, BASE_Y + 3);
-    updateFmValueText(&lastChanParasFmChan, &chanParasFmChan, forceRefresh,
-        chanNumber, col2_value_x, BASE_Y + 3);
-    if (updateFmValue(&lastChannel.algorithm, &channel->algorithm, forceRefresh,
-            "%d", col1_value_x, BASE_Y + 5)) {
-        updateAlgorithmDiagram(channel->algorithm);
-    }
-    updateFmValue(&lastChannel.feedback, &channel->feedback, forceRefresh, "%d",
-        col1_value_x, BASE_Y + 6);
-    updateFmValueText(&lastGlobal.lfoEnable, &global->lfoEnable, forceRefresh,
-        lfoEnableText, col1_value_x, BASE_Y + 9);
-    updateFmValueText(&lastGlobal.lfoFrequency, &global->lfoFrequency,
-        forceRefresh, lfoFreqText, col1_value_x + 4, BASE_Y + 9);
-    updateFmValueText(&lastChannel.ams, &channel->ams, forceRefresh, amsText,
-        col1_value_x, BASE_Y + 10);
-    updateFmValueText(&lastChannel.fms, &channel->fms, forceRefresh, fmsText,
-        col1_value_x, BASE_Y + 11);
-    updateFmValueText(&lastChannel.stereo, &channel->stereo, forceRefresh,
-        stereoText, col1_value_x, BASE_Y + 12);
-
     for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
         const Operator* oper = &channel->operators[op];
         Operator* lastOper = &lastChannel.operators[op];
@@ -275,6 +232,37 @@ static void updateFmValues(void)
             &lastOper->releaseRate, &oper->releaseRate, forceRefresh, op, 13);
         updateOpValue(&lastOper->ssgEg, &oper->ssgEg, forceRefresh, op, 14);
     }
+}
+
+static void updateFmValues(void)
+{
+    const FmChannel* channel = synth_channelParameters(chanParasFmChan);
+    const Global* global = synth_globalParameters();
+
+    const u8 col1_value_x = FM_HEADING_X + 4;
+    const u8 col2_value_x = FM_HEADING_X + 11;
+
+    updateFmValue(&lastChanParasMidiChannel, &chanParasMidiChan, forceRefresh,
+        chanNumber, col1_value_x + 1, BASE_Y + 3);
+    updateFmValue(&lastChanParasFmChan, &chanParasFmChan, forceRefresh,
+        chanNumber, col2_value_x, BASE_Y + 3);
+    if (updateFmValue(&lastChannel.algorithm, &channel->algorithm, forceRefresh,
+            formatNum, col1_value_x, BASE_Y + 5)) {
+        updateAlgorithmDiagram(channel->algorithm);
+    }
+    updateFmValue(&lastChannel.feedback, &channel->feedback, forceRefresh,
+        formatNum, col1_value_x, BASE_Y + 6);
+    updateFmValue(&lastGlobal.lfoEnable, &global->lfoEnable, forceRefresh,
+        lfoEnableText, col1_value_x, BASE_Y + 9);
+    updateFmValue(&lastGlobal.lfoFrequency, &global->lfoFrequency, forceRefresh,
+        lfoFreqText, col1_value_x + 4, BASE_Y + 9);
+    updateFmValue(&lastChannel.ams, &channel->ams, forceRefresh, amsText,
+        col1_value_x, BASE_Y + 10);
+    updateFmValue(&lastChannel.fms, &channel->fms, forceRefresh, fmsText,
+        col1_value_x, BASE_Y + 11);
+    updateFmValue(&lastChannel.stereo, &channel->stereo, forceRefresh,
+        stereoText, col1_value_x, BASE_Y + 12);
+    updateOpValues(channel, forceRefresh);
     forceRefresh = false;
 }
 
