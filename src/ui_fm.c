@@ -239,29 +239,29 @@ static void updateFmValues(void)
     const FmChannel* channel = synth_channelParameters(chanParasFmChan);
     const Global* global = synth_globalParameters();
 
-    const u8 col1_value_x = FM_HEADING_X + 4;
-    const u8 col2_value_x = FM_HEADING_X + 11;
+    const u8 COL1_VALUE_X = FM_HEADING_X + 4;
+    const u8 COL2_VALUE_X = FM_HEADING_X + 11;
 
     updateFmValue(&lastChanParasMidiChannel, &chanParasMidiChan, forceRefresh,
-        chanNumber, col1_value_x + 1, BASE_Y + 3);
+        chanNumber, COL1_VALUE_X + 1, BASE_Y + 3);
     updateFmValue(&lastChanParasFmChan, &chanParasFmChan, forceRefresh,
-        chanNumber, col2_value_x, BASE_Y + 3);
+        chanNumber, COL2_VALUE_X, BASE_Y + 3);
     if (updateFmValue(&lastChannel.algorithm, &channel->algorithm, forceRefresh,
-            formatNum, col1_value_x, BASE_Y + 5)) {
+            formatNum, COL1_VALUE_X, BASE_Y + 5)) {
         updateAlgorithmDiagram(channel->algorithm);
     }
     updateFmValue(&lastChannel.feedback, &channel->feedback, forceRefresh,
-        formatNum, col1_value_x, BASE_Y + 6);
+        formatNum, COL1_VALUE_X, BASE_Y + 6);
     updateFmValue(&lastGlobal.lfoEnable, &global->lfoEnable, forceRefresh,
-        lfoEnableText, col1_value_x, BASE_Y + 9);
+        lfoEnableText, COL1_VALUE_X, BASE_Y + 9);
     updateFmValue(&lastGlobal.lfoFrequency, &global->lfoFrequency, forceRefresh,
-        lfoFreqText, col1_value_x + 4, BASE_Y + 9);
+        lfoFreqText, COL1_VALUE_X + 4, BASE_Y + 9);
     updateFmValue(&lastChannel.ams, &channel->ams, forceRefresh, amsText,
-        col1_value_x, BASE_Y + 10);
+        COL1_VALUE_X, BASE_Y + 10);
     updateFmValue(&lastChannel.fms, &channel->fms, forceRefresh, fmsText,
-        col1_value_x, BASE_Y + 11);
+        COL1_VALUE_X, BASE_Y + 11);
     updateFmValue(&lastChannel.stereo, &channel->stereo, forceRefresh,
-        stereoText, col1_value_x, BASE_Y + 12);
+        stereoText, COL1_VALUE_X, BASE_Y + 12);
     updateOpValues(channel, forceRefresh);
     forceRefresh = false;
 }
