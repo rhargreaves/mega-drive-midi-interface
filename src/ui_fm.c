@@ -207,6 +207,20 @@ static const char* chanNumber(u8 chan)
     return buffer;
 }
 
+static void updateOperatorValueText(
+    u8* last, const u8* current, bool forceRefresh, u8 op, u8 line)
+{
+    const u8 OP_VALUE_X = OP_HEADING_X + 4;
+    const u8 OP_VALUE_GAP = 4;
+
+    if (*last != *current || forceRefresh) {
+        char buffer[4];
+        sprintf(buffer, "%3d", *current);
+        ui_drawText(buffer, OP_VALUE_X + (op * OP_VALUE_GAP), BASE_Y + line);
+        *last = *current;
+    }
+}
+
 static void updateFmValues(void)
 {
     const FmChannel* channel = synth_channelParameters(chanParasFmChan);
@@ -248,15 +262,10 @@ static void updateFmValues(void)
         const Operator* oper = &channel->operators[op];
         Operator* lastOper = &lastChannel.operators[op];
 
-        if (oper->totalLevel != lastOper->totalLevel || forceRefresh) {
-            printOperatorValue(oper->totalLevel, op, 4);
-            lastOper->totalLevel = oper->totalLevel;
-        }
-
-        if (oper->attackRate != lastOper->attackRate || forceRefresh) {
-            printOperatorValue(oper->attackRate, op, 5);
-            lastOper->attackRate = oper->attackRate;
-        }
+        updateOperatorValueText(
+            &lastOper->totalLevel, &oper->totalLevel, forceRefresh, op, 4);
+        updateOperatorValueText(
+            &lastOper->attackRate, &oper->attackRate, forceRefresh, op, 5);
 
         if (oper->multiple != lastOper->multiple || forceRefresh) {
             printOperatorValue(oper->multiple, op, 6);
