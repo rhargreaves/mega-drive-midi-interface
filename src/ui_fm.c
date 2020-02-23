@@ -207,7 +207,7 @@ static const char* chanNumber(u8 chan)
     return buffer;
 }
 
-static void updateOperatorValueText(
+static void updateOpValue(
     u8* last, const u8* current, bool forceRefresh, u8 op, u8 line)
 {
     const u8 OP_VALUE_X = OP_HEADING_X + 4;
@@ -254,28 +254,26 @@ static void updateFmValues(void)
         const Operator* oper = &channel->operators[op];
         Operator* lastOper = &lastChannel.operators[op];
 
-        updateOperatorValueText(
+        updateOpValue(
             &lastOper->totalLevel, &oper->totalLevel, forceRefresh, op, 4);
-        updateOperatorValueText(
+        updateOpValue(
             &lastOper->attackRate, &oper->attackRate, forceRefresh, op, 5);
-        updateOperatorValueText(
+        updateOpValue(
             &lastOper->multiple, &oper->multiple, forceRefresh, op, 6);
-        updateOperatorValueText(
-            &lastOper->detune, &oper->detune, forceRefresh, op, 7);
-        updateOperatorValueText(
+        updateOpValue(&lastOper->detune, &oper->detune, forceRefresh, op, 7);
+        updateOpValue(
             &lastOper->rateScaling, &oper->rateScaling, forceRefresh, op, 8);
-        updateOperatorValueText(&lastOper->amplitudeModulation,
+        updateOpValue(&lastOper->amplitudeModulation,
             &oper->amplitudeModulation, forceRefresh, op, 9);
-        updateOperatorValueText(&lastOper->firstDecayRate,
-            &oper->firstDecayRate, forceRefresh, op, 10);
-        updateOperatorValueText(&lastOper->secondaryDecayRate,
-            &oper->secondaryDecayRate, forceRefresh, op, 11);
-        updateOperatorValueText(&lastOper->secondaryAmplitude,
-            &oper->secondaryAmplitude, forceRefresh, op, 12);
-        updateOperatorValueText(
+        updateOpValue(&lastOper->firstDecayRate, &oper->firstDecayRate,
+            forceRefresh, op, 10);
+        updateOpValue(&lastOper->secondaryDecayRate, &oper->secondaryDecayRate,
+            forceRefresh, op, 11);
+        updateOpValue(&lastOper->secondaryAmplitude, &oper->secondaryAmplitude,
+            forceRefresh, op, 12);
+        updateOpValue(
             &lastOper->releaseRate, &oper->releaseRate, forceRefresh, op, 13);
-        updateOperatorValueText(
-            &lastOper->ssgEg, &oper->ssgEg, forceRefresh, op, 14);
+        updateOpValue(&lastOper->ssgEg, &oper->ssgEg, forceRefresh, op, 14);
     }
     forceRefresh = false;
 }
