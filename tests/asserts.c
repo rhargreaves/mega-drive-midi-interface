@@ -5,7 +5,6 @@
 #include "asserts.h"
 #include "comm.h"
 #include "wraps.h"
-#include <cmocka.h>
 
 #define REG_PART(chan) chan < 3 ? 0 : 1
 #define REG_OFFSET(chan) chan % 3
@@ -92,4 +91,10 @@ void expect_synth_volume_any(void)
 {
     expect_any(__wrap_synth_volume, channel);
     expect_any(__wrap_synth_volume, volume);
+}
+
+void expect_psg_attenuation(u8 chan, u8 attenu)
+{
+    expect_value(__wrap_psg_attenuation, channel, chan);
+    expect_value(__wrap_psg_attenuation, attenuation, attenu);
 }

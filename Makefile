@@ -137,6 +137,10 @@ bin/%.bin: %.elf
 boot/rom_head.bin: boot/rom_head.o
 	$(LD) $(LINKFLAGS) --oformat binary -o $@ $<
 
+unit-test:
+	$(MAKE) -C tests clean-target unit
+.PHONY: unit-test
+
 test:
 	$(MAKE) -C tests
 .PHONY: test

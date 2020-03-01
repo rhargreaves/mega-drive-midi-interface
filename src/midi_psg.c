@@ -25,11 +25,13 @@ static const u8 ATTENUATIONS[] = { 15, 14, 14, 14, 13, 13, 13, 13, 12, 12, 12,
 typedef struct MidiPsgChannel MidiPsgChannel;
 
 struct MidiPsgChannel {
+    u8 chanNum;
     u8 key;
     u8 attenuation;
     bool noteOn;
     u8 volume;
     u8 velocity;
+    u8 envelope;
 };
 
 static MidiPsgChannel psgChannels[MAX_PSG_CHANS];
@@ -40,6 +42,7 @@ void midi_psg_init(void)
 {
     for (u8 chan = 0; chan < MAX_PSG_CHANS; chan++) {
         MidiPsgChannel* psgChan = psgChannel(chan);
+        psgChan->chanNum = chan;
         psgChan->noteOn = false;
         psgChan->volume = MAX_MIDI_VOLUME;
         psgChan->velocity = MAX_MIDI_VOLUME;
@@ -94,10 +97,25 @@ void midi_psg_pitchBend(u8 chan, u16 bend)
 
 void midi_psg_program(u8 chan, u8 program)
 {
+    MidiPsgChannel* psgChan = psgChannel(chan);
+    psgChan->envelope = program;
 }
 
 void midi_psg_pan(u8 chan, u8 pan)
 {
+}
+
+static void incrementEnvelope(MidiPsgChannel* chan)
+{
+    psg_attenuation(chan->chanNum, PSG_ATTENUATION_SILENCE);
+}
+
+void midi_psg_tick(void)
+{
+    MidiPsgChannel* psgChan = psgChannel(0);
+    if (psgChan->noteOn) {
+        incrementEnvelope(psgChan);
+    }
 }
 
 static u16 freqForMidiKey(u8 midiKey)

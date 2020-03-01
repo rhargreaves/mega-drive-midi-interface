@@ -13,3 +13,4 @@ void expect_synth_pitch_any(void);
 void expect_synth_pitch(u8 channel, u8 octave, u16 freqNumber);
 void expect_synth_volume_any(void);
 void expect_synth_volume(u8 channel, u8 volume);
+void expect_psg_attenuation(u8 chan, u8 attenu);
