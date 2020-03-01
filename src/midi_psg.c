@@ -99,6 +99,15 @@ static u8 effectiveAttenuation(MidiPsgChannel* psgChan)
     return effectiveAtt;
 }
 
+static void applyCurrentEnvelopeStep(MidiPsgChannel* psgChan)
+{
+    if (*psgChan->envelopeStep == EEF_LOOP_START) {
+        psgChan->envelopeStep++;
+        psgChan->envelopeLoopStart = psgChan->envelopeStep;
+    }
+    psg_attenuation(psgChan->chanNum, effectiveAttenuation(psgChan));
+}
+
 void midi_psg_noteOn(u8 chan, u8 key, u8 velocity)
 {
     if (key < MIN_MIDI_KEY) {
@@ -108,11 +117,7 @@ void midi_psg_noteOn(u8 chan, u8 key, u8 velocity)
     psg_frequency(chan, freqForMidiKey(key));
     psgChan->velocity = velocity;
     psgChan->envelopeStep = ENVELOPES[psgChan->envelope];
-    if (*psgChan->envelopeStep == EEF_LOOP_START) {
-        psgChan->envelopeStep++;
-        psgChan->envelopeLoopStart = psgChan->envelopeStep;
-    }
-    psg_attenuation(chan, effectiveAttenuation(psgChan));
+    applyCurrentEnvelopeStep(psgChan);
     psgChan->key = key;
     psgChan->noteOn = true;
 }
@@ -175,12 +180,7 @@ static void incrementEnvelopeStep(MidiPsgChannel* chan)
             return;
         }
     }
-    if (*chan->envelopeStep == EEF_LOOP_START) {
-        chan->envelopeStep++;
-        chan->envelopeLoopStart = chan->envelopeStep;
-    }
-    u8 attenuation = *chan->envelopeStep;
-    psg_attenuation(chan->chanNum, attenuation);
+    applyCurrentEnvelopeStep(chan);
 }
 
 void midi_psg_tick(void)
