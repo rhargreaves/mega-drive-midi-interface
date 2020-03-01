@@ -17,6 +17,11 @@ static int test_scheduler_setup(void** state)
     return 0;
 }
 
+static void test_scheduler_nothing_called_on_vsync(UNUSED void** state)
+{
+    scheduler_vsync();
+}
+
 static void test_scheduler_updates_ui_once_after_vsync(UNUSED void** state)
 {
     expect_function_call(__wrap_ui_update);
