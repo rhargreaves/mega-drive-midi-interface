@@ -8,6 +8,7 @@
 #define MIN_MIDI_KEY 45
 
 #define EEF_END 0xFF
+#define EEF_LOOP_START 0xFE
 
 static const u16 FREQUENCIES[] = { 110, 117, 123, 131, 139, 147, 156, 165, 175,
     185, 196, 208, 220, 233, 247, 262, 277, 294, 311, 330, 349, 370, 392, 415,
@@ -29,9 +30,10 @@ static const u8 ENVELOPE_1[] = { 0x00, 0x0F, EEF_END };
 static const u8 ENVELOPE_2[] = { 0x00, 0x07, 0x0F, EEF_END };
 static const u8 ENVELOPE_3[] = { 0x00, 0x01, 0x02, 0x01, 0x01, 0x02, 0x02, 0x03,
     0x03, 0x04, 0x04, 0x08, 0x08, 0x08, 0x08, 0x0A, 0x0A, 0x0C, 0x0C, EEF_END };
+static const u8 ENVELOPE_4[] = { EEF_LOOP_START, 0x00, 0x07, EEF_END };
 
 static const u8* ENVELOPES[MIDI_PROGRAMS] = { ENVELOPE_0, ENVELOPE_1,
-    ENVELOPE_2, ENVELOPE_3, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,
+    ENVELOPE_2, ENVELOPE_3, ENVELOPE_4, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,
     ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,
     ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,
     ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,
@@ -64,6 +66,7 @@ struct MidiPsgChannel {
     u8 velocity;
     u8 envelope;
     const u8* envelopeStep;
+    const u8* envelopeLoopStart;
 };
 
 static MidiPsgChannel psgChannels[MAX_PSG_CHANS];
@@ -80,6 +83,7 @@ void midi_psg_init(void)
         psgChan->velocity = MAX_MIDI_VOLUME;
         psgChan->envelope = 0;
         psgChan->envelopeStep = NULL;
+        psgChan->envelopeLoopStart = NULL;
     }
 }
 
@@ -102,9 +106,12 @@ void midi_psg_noteOn(u8 chan, u8 key, u8 velocity)
     }
     MidiPsgChannel* psgChan = psgChannel(chan);
     psg_frequency(chan, freqForMidiKey(key));
-
     psgChan->velocity = velocity;
     psgChan->envelopeStep = ENVELOPES[psgChan->envelope];
+    if (*psgChan->envelopeStep == EEF_LOOP_START) {
+        psgChan->envelopeStep++;
+        psgChan->envelopeLoopStart = psgChan->envelopeStep;
+    }
     psg_attenuation(chan, effectiveAttenuation(psgChan));
     psgChan->key = key;
     psgChan->noteOn = true;
@@ -155,11 +162,22 @@ void midi_psg_pan(u8 chan, u8 pan)
 static void incrementEnvelopeStep(MidiPsgChannel* chan)
 {
     if (*chan->envelopeStep == EEF_END) {
-        return;
+        if (chan->envelopeLoopStart != NULL) {
+            chan->envelopeStep = chan->envelopeLoopStart;
+        }
+    } else {
+        chan->envelopeStep++;
     }
-    chan->envelopeStep++;
     if (*chan->envelopeStep == EEF_END) {
-        return;
+        if (chan->envelopeLoopStart != NULL) {
+            chan->envelopeStep = chan->envelopeLoopStart;
+        } else {
+            return;
+        }
+    }
+    if (*chan->envelopeStep == EEF_LOOP_START) {
+        chan->envelopeStep++;
+        chan->envelopeLoopStart = chan->envelopeStep;
     }
     u8 attenuation = *chan->envelopeStep;
     psg_attenuation(chan->chanNum, attenuation);
