@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <types.h>
 
+#define MIDI_PROGRAMS 128
 #define MAX_MIDI_VOLUME 127
 #define DEFAULT_MIDI_PAN 64
 #define DEFAULT_MIDI_PITCH_BEND 0x2000

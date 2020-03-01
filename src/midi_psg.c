@@ -24,11 +24,34 @@ static const u8 ATTENUATIONS[] = { 15, 14, 14, 14, 13, 13, 13, 13, 12, 12, 12,
     2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-static const u8 ENVELOPE_0[] = { EEF_END };
+static const u8 ENVELOPE_0[] = { 0x00, EEF_END };
 static const u8 ENVELOPE_1[] = { 0x00, 0x0F, EEF_END };
 static const u8 ENVELOPE_2[] = { 0x00, 0x07, 0x0F, EEF_END };
+static const u8 ENVELOPE_3[] = { 0x00, 0x01, 0x02, 0x01, 0x01, 0x02, 0x02, 0x03,
+    0x03, 0x04, 0x04, 0x08, 0x08, 0x08, 0x08, 0x0A, 0x0A, 0x0C, 0x0C, EEF_END };
 
-static const u8* ENVELOPES[] = { ENVELOPE_0, ENVELOPE_1, ENVELOPE_2 };
+static const u8* ENVELOPES[MIDI_PROGRAMS] = { ENVELOPE_0, ENVELOPE_1,
+    ENVELOPE_2, ENVELOPE_3, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,
+    ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,
+    ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,
+    ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,
+    ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,
+    ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,
+    ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,
+    ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,
+    ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,
+    ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,
+    ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,
+    ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,
+    ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,
+    ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,
+    ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,
+    ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,
+    ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,
+    ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,
+    ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,
+    ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,
+    ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0 };
 
 typedef struct MidiPsgChannel MidiPsgChannel;
 
@@ -60,6 +83,17 @@ void midi_psg_init(void)
     }
 }
 
+static u8 effectiveAttenuation(MidiPsgChannel* psgChan)
+{
+    u8 att = ATTENUATIONS[(psgChan->volume * psgChan->velocity) / 0x7F];
+    u8 invAtt = PSG_ATTENUATION_SILENCE - att;
+    u8 envAtt = *psgChan->envelopeStep;
+    u8 invEnvAtt = PSG_ATTENUATION_SILENCE - envAtt;
+    u8 invEffectiveAtt = (invAtt * invEnvAtt) / PSG_ATTENUATION_SILENCE;
+    u8 effectiveAtt = PSG_ATTENUATION_SILENCE - invEffectiveAtt;
+    return effectiveAtt;
+}
+
 void midi_psg_noteOn(u8 chan, u8 key, u8 velocity)
 {
     if (key < MIN_MIDI_KEY) {
@@ -68,17 +102,10 @@ void midi_psg_noteOn(u8 chan, u8 key, u8 velocity)
     MidiPsgChannel* psgChan = psgChannel(chan);
     psg_frequency(chan, freqForMidiKey(key));
 
-    u8 att = ATTENUATIONS[(psgChan->volume * velocity) / 0x7F];
-
-    if (psgChan->envelope != 0) {
-        psgChan->envelopeStep = ENVELOPES[psgChan->envelope];
-        att = *psgChan->envelopeStep;
-    }
-
-    psg_attenuation(chan, att);
-
-    psgChan->key = key;
     psgChan->velocity = velocity;
+    psgChan->envelopeStep = ENVELOPES[psgChan->envelope];
+    psg_attenuation(chan, effectiveAttenuation(psgChan));
+    psgChan->key = key;
     psgChan->noteOn = true;
 }
 
@@ -101,8 +128,7 @@ void midi_psg_channelVolume(u8 chan, u8 volume)
     MidiPsgChannel* psgChan = psgChannel(chan);
     psgChan->volume = volume;
     if (psgChan->noteOn) {
-        psg_attenuation(
-            chan, ATTENUATIONS[(psgChan->volume * psgChan->velocity) / 0x7F]);
+        psg_attenuation(chan, effectiveAttenuation(psgChan));
     }
 }
 
