@@ -7,6 +7,8 @@
 #define MAX_PSG_CHAN 9
 #define MIN_MIDI_KEY 45
 
+#define EEF_END 0xFF
+
 static const u16 FREQUENCIES[] = { 110, 117, 123, 131, 139, 147, 156, 165, 175,
     185, 196, 208, 220, 233, 247, 262, 277, 294, 311, 330, 349, 370, 392, 415,
     440, 466, 494, 523, 554, 587, 622, 659, 698, 740, 784, 831, 880, 932, 988,
@@ -22,6 +24,12 @@ static const u8 ATTENUATIONS[] = { 15, 14, 14, 14, 13, 13, 13, 13, 12, 12, 12,
     2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
+static const u8 ENVELOPE_0[] = { EEF_END };
+static const u8 ENVELOPE_1[] = { 0x00, 0x0F, EEF_END };
+static const u8 ENVELOPE_2[] = { 0x00, 0x07, 0x0F, EEF_END };
+
+static const u8* ENVELOPES[] = { ENVELOPE_0, ENVELOPE_1, ENVELOPE_2 };
+
 typedef struct MidiPsgChannel MidiPsgChannel;
 
 struct MidiPsgChannel {
@@ -32,6 +40,7 @@ struct MidiPsgChannel {
     u8 volume;
     u8 velocity;
     u8 envelope;
+    const u8* envelopeStep;
 };
 
 static MidiPsgChannel psgChannels[MAX_PSG_CHANS];
@@ -46,6 +55,8 @@ void midi_psg_init(void)
         psgChan->noteOn = false;
         psgChan->volume = MAX_MIDI_VOLUME;
         psgChan->velocity = MAX_MIDI_VOLUME;
+        psgChan->envelope = 0;
+        psgChan->envelopeStep = NULL;
     }
 }
 
@@ -56,7 +67,16 @@ void midi_psg_noteOn(u8 chan, u8 key, u8 velocity)
     }
     MidiPsgChannel* psgChan = psgChannel(chan);
     psg_frequency(chan, freqForMidiKey(key));
-    psg_attenuation(chan, ATTENUATIONS[(psgChan->volume * velocity) / 0x7F]);
+
+    u8 att = ATTENUATIONS[(psgChan->volume * velocity) / 0x7F];
+
+    if (psgChan->envelope != 0) {
+        psgChan->envelopeStep = ENVELOPES[psgChan->envelope];
+        att = *psgChan->envelopeStep;
+    }
+
+    psg_attenuation(chan, att);
+
     psgChan->key = key;
     psgChan->velocity = velocity;
     psgChan->noteOn = true;
@@ -105,16 +125,24 @@ void midi_psg_pan(u8 chan, u8 pan)
 {
 }
 
-static void incrementEnvelope(MidiPsgChannel* chan)
+static void incrementEnvelopeStep(MidiPsgChannel* chan)
 {
-    psg_attenuation(chan->chanNum, PSG_ATTENUATION_SILENCE);
+    if (*chan->envelopeStep == EEF_END) {
+        return;
+    }
+    chan->envelopeStep++;
+    if (*chan->envelopeStep == EEF_END) {
+        return;
+    }
+    u8 attenuation = *chan->envelopeStep;
+    psg_attenuation(chan->chanNum, attenuation);
 }
 
 void midi_psg_tick(void)
 {
     MidiPsgChannel* psgChan = psgChannel(0);
     if (psgChan->noteOn) {
-        incrementEnvelope(psgChan);
+        incrementEnvelopeStep(psgChan);
     }
 }
 

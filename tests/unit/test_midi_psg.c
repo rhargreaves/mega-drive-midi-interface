@@ -203,11 +203,9 @@ static void test_midi_plays_psg_envelope(UNUSED void** state)
     expect_value(__wrap_psg_frequency, channel, expectedPsgChan);
     expect_value(__wrap_psg_frequency, freq, 262);
     expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
-
     __real_midi_noteOn(chan, 60, MAX_MIDI_VOLUME);
 
     expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_SILENCE);
-
     __real_midi_psg_tick();
 }
 
@@ -216,15 +214,16 @@ static void test_midi_plays_advanced_psg_envelope(UNUSED void** state)
     u8 chan = MIN_PSG_CHAN;
     u8 expectedPsgChan = 0;
 
-    __real_midi_program(chan, 1);
+    __real_midi_program(chan, 2);
 
     expect_value(__wrap_psg_frequency, channel, expectedPsgChan);
     expect_value(__wrap_psg_frequency, freq, 262);
     expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
-
     __real_midi_noteOn(chan, 60, MAX_MIDI_VOLUME);
 
-    expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_SILENCE);
+    expect_psg_attenuation(expectedPsgChan, 7);
+    __real_midi_psg_tick();
 
+    expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_SILENCE);
     __real_midi_psg_tick();
 }
