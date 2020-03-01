@@ -25,7 +25,7 @@ static const u8 ATTENUATIONS[] = { 15, 14, 14, 14, 13, 13, 13, 13, 12, 12, 12,
     2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-static const u8 ENVELOPE_0[] = { 0x00, EEF_END };
+static const u8 ENVELOPE_0[] = { EEF_LOOP_START, 0x00, EEF_END };
 static const u8 ENVELOPE_1[] = { 0x00, 0x0F, EEF_END };
 static const u8 ENVELOPE_2[] = { 0x00, 0x07, 0x0F, EEF_END };
 static const u8 ENVELOPE_3[] = { 0x00, 0x01, 0x02, 0x01, 0x01, 0x02, 0x02, 0x03,
