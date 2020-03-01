@@ -5,6 +5,7 @@
 
 #define PSG_ATTENUATION_SILENCE 0xF
 #define PSG_ATTENUATION_LOUDEST 0
+#define MAX_ATTENUATION PSG_ATTENUATION_SILENCE
 
 void psg_noteOff(u8 channel);
 void psg_noteOn(u8 channel, u16 freq);

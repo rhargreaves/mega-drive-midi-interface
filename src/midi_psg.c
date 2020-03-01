@@ -87,11 +87,11 @@ static u8 effectiveAttenuation(MidiPsgChannel* psgChan)
 {
     u8 att
         = ATTENUATIONS[(psgChan->volume * psgChan->velocity) / MAX_MIDI_VOLUME];
-    u8 invAtt = PSG_ATTENUATION_SILENCE - att;
+    u8 invAtt = MAX_ATTENUATION - att;
     u8 envAtt = *psgChan->envelopeStep;
-    u8 invEnvAtt = PSG_ATTENUATION_SILENCE - envAtt;
-    u8 invEffectiveAtt = (invAtt * invEnvAtt) / PSG_ATTENUATION_SILENCE;
-    u8 effectiveAtt = PSG_ATTENUATION_SILENCE - invEffectiveAtt;
+    u8 invEnvAtt = MAX_ATTENUATION - envAtt;
+    u8 invEffectiveAtt = (invAtt * invEnvAtt) / MAX_ATTENUATION;
+    u8 effectiveAtt = MAX_ATTENUATION - invEffectiveAtt;
     return effectiveAtt;
 }
 
