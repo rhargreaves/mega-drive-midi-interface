@@ -85,7 +85,8 @@ void midi_psg_init(void)
 
 static u8 effectiveAttenuation(MidiPsgChannel* psgChan)
 {
-    u8 att = ATTENUATIONS[(psgChan->volume * psgChan->velocity) / 0x7F];
+    u8 att
+        = ATTENUATIONS[(psgChan->volume * psgChan->velocity) / MAX_MIDI_VOLUME];
     u8 invAtt = PSG_ATTENUATION_SILENCE - att;
     u8 envAtt = *psgChan->envelopeStep;
     u8 invEnvAtt = PSG_ATTENUATION_SILENCE - envAtt;
