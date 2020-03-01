@@ -31,9 +31,10 @@ static const u8 ENVELOPE_2[] = { 0x00, 0x07, 0x0F, EEF_END };
 static const u8 ENVELOPE_3[] = { 0x00, 0x01, 0x02, 0x01, 0x01, 0x02, 0x02, 0x03,
     0x03, 0x04, 0x04, 0x08, 0x08, 0x08, 0x08, 0x0A, 0x0A, 0x0C, 0x0C, EEF_END };
 static const u8 ENVELOPE_4[] = { EEF_LOOP_START, 0x00, 0x07, EEF_END };
+static const u8 ENVELOPE_5[] = { EEF_END };
 
 static const u8* ENVELOPES[MIDI_PROGRAMS] = { ENVELOPE_0, ENVELOPE_1,
-    ENVELOPE_2, ENVELOPE_3, ENVELOPE_4, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,
+    ENVELOPE_2, ENVELOPE_3, ENVELOPE_4, ENVELOPE_5, ENVELOPE_0, ENVELOPE_0,
     ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,
     ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,
     ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,
@@ -99,11 +100,19 @@ static u8 effectiveAttenuation(MidiPsgChannel* psgChan)
     return effectiveAtt;
 }
 
-static void applyCurrentEnvelopeStep(MidiPsgChannel* psgChan)
+static void applyEnvelopeStep(MidiPsgChannel* psgChan)
 {
     if (*psgChan->envelopeStep == EEF_LOOP_START) {
         psgChan->envelopeStep++;
         psgChan->envelopeLoopStart = psgChan->envelopeStep;
+    }
+    if (*psgChan->envelopeStep == EEF_END) {
+        if (psgChan->envelopeLoopStart != NULL) {
+            psgChan->envelopeStep = psgChan->envelopeLoopStart;
+        } else {
+            psg_attenuation(psgChan->chanNum, PSG_ATTENUATION_SILENCE);
+            return;
+        }
     }
     psg_attenuation(psgChan->chanNum, effectiveAttenuation(psgChan));
 }
@@ -117,7 +126,7 @@ void midi_psg_noteOn(u8 chan, u8 key, u8 velocity)
     psg_frequency(chan, freqForMidiKey(key));
     psgChan->velocity = velocity;
     psgChan->envelopeStep = ENVELOPES[psgChan->envelope];
-    applyCurrentEnvelopeStep(psgChan);
+    applyEnvelopeStep(psgChan);
     psgChan->key = key;
     psgChan->noteOn = true;
 }
@@ -166,21 +175,10 @@ void midi_psg_pan(u8 chan, u8 pan)
 
 static void incrementEnvelopeStep(MidiPsgChannel* chan)
 {
-    if (*chan->envelopeStep == EEF_END) {
-        if (chan->envelopeLoopStart != NULL) {
-            chan->envelopeStep = chan->envelopeLoopStart;
-        }
-    } else {
+    if (*chan->envelopeStep != EEF_END) {
         chan->envelopeStep++;
     }
-    if (*chan->envelopeStep == EEF_END) {
-        if (chan->envelopeLoopStart != NULL) {
-            chan->envelopeStep = chan->envelopeLoopStart;
-        } else {
-            return;
-        }
-    }
-    applyCurrentEnvelopeStep(chan);
+    applyEnvelopeStep(chan);
 }
 
 void midi_psg_tick(void)
