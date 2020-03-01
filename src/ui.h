@@ -13,6 +13,5 @@
 #define MARGIN_Y 1
 
 void ui_init(void);
-void ui_vsync(void);
 void ui_update(void);
 void ui_drawText(const char* text, u16 x, u16 y);

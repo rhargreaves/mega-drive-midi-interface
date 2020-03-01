@@ -1,8 +1,8 @@
 #include "midi_receiver.h"
 #include "comm.h"
 #include "midi.h"
+#include "scheduler.h"
 #include "synth.h"
-#include "ui.h"
 #include <string.h>
 
 #define STATUS_LOWER(status) (status & 0x0F)
@@ -45,7 +45,7 @@ void midi_receiver_perpectual_read(void)
         while (comm_readReady()) {
             midi_receiver_read();
         }
-        ui_update();
+        scheduler_doEvents();
     }
 }
 

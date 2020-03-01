@@ -62,8 +62,6 @@ static void printMappings(void);
 static u16 loadPercentSum = 0;
 static bool commInited = false;
 static bool commSerial = false;
-static u16 lastUpdateFrame = 0;
-static volatile u16 frame = 0;
 
 static Sprite* activitySprites[DEV_CHANS];
 
@@ -98,11 +96,6 @@ void ui_init(void)
     SYS_enableInts();
 
     ui_fm_init();
-}
-
-void ui_vsync(void)
-{
-    frame++;
 }
 
 static void printMappings(void)
@@ -141,10 +134,6 @@ static void printLog(void)
 
 void ui_update(void)
 {
-    if (lastUpdateFrame == frame) {
-        return;
-    }
-
     updateKeyOnOff();
 
     static u8 activityFrame = 0;
@@ -176,8 +165,6 @@ void ui_update(void)
     }
 
     ui_fm_update();
-
-    lastUpdateFrame = frame;
 }
 
 static u16 loadPercent(void)

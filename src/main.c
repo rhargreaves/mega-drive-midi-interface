@@ -3,6 +3,7 @@
 #include "midi.h"
 #include "midi_receiver.h"
 #include "presets.h"
+#include "scheduler.h"
 #include "sys.h"
 #include "ui.h"
 
@@ -14,6 +15,6 @@ int main()
     midi_receiver_init();
     ui_init();
     SYS_setVIntAligned(false);
-    SYS_setVIntCallback(ui_vsync);
+    SYS_setVIntCallback(scheduler_vsync);
     midi_receiver_perpectual_read();
 }
