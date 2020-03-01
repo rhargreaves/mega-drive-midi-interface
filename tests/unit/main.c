@@ -218,7 +218,7 @@ int main(void)
             test_log_returns_null_when_no_more_logs_are_available_to_be_dequeued),
 
         scheduler_test(test_scheduler_nothing_called_on_vsync),
-        scheduler_test(test_scheduler_updates_ui_once_after_vsync)
+        scheduler_test(test_scheduler_processes_frame_events_once_after_vsync)
 
     };
 

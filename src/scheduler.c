@@ -1,4 +1,5 @@
 #include "scheduler.h"
+#include "midi_psg.h"
 #include "ui.h"
 #include <types.h>
 
@@ -18,6 +19,7 @@ void scheduler_vsync(void)
 
 static void onFrame(void)
 {
+    midi_psg_tick();
     ui_update();
 }
 

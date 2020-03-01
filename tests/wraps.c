@@ -316,6 +316,11 @@ DeviceChannel* __wrap_midi_channelMappings(void)
     return mock_type(DeviceChannel*);
 }
 
+void __wrap_midi_psg_tick(void)
+{
+    function_called();
+}
+
 void __wrap_fm_writeReg(u16 part, u8 reg, u8 data)
 {
     check_expected(part);

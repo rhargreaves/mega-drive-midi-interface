@@ -22,8 +22,10 @@ static void test_scheduler_nothing_called_on_vsync(UNUSED void** state)
     scheduler_vsync();
 }
 
-static void test_scheduler_updates_ui_once_after_vsync(UNUSED void** state)
+static void test_scheduler_processes_frame_events_once_after_vsync(
+    UNUSED void** state)
 {
+    expect_function_call(__wrap_midi_psg_tick);
     expect_function_call(__wrap_ui_update);
 
     scheduler_vsync();
