@@ -360,6 +360,11 @@ void __wrap_ui_fm_setMidiChannelParametersVisibility(u8 chan, bool show)
     check_expected(show);
 }
 
+void __wrap_ui_update(void)
+{
+    function_called();
+}
+
 void __wrap_YM2612_writeReg(const u16 part, const u8 reg, const u8 data)
 {
     if (disableChecks)

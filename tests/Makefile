@@ -81,6 +81,7 @@ MOCKS=midi_process \
 	log_warn \
 	log_dequeue \
 	ui_fm_setMidiChannelParametersVisibility \
+	ui_update \
 	scheduler_init
 
 MD_MOCKS=SYS_setVIntCallback \
