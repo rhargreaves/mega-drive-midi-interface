@@ -12,6 +12,7 @@
 #include "test_midi_receiver.c"
 #include "test_midi_sysex.c"
 #include "test_psg_chip.c"
+#include "test_scheduler.c"
 #include "test_synth.c"
 #include <cmocka.h>
 
@@ -21,6 +22,7 @@
 #define synth_test(test) cmocka_unit_test_setup(test, test_synth_setup)
 #define comm_test(test) cmocka_unit_test_setup(test, test_comm_setup)
 #define log_test(test) cmocka_unit_test_setup(test, test_log_setup)
+#define scheduler_test(test) cmocka_unit_test_setup(test, test_scheduler_setup)
 
 int main(void)
 {
@@ -213,7 +215,10 @@ int main(void)
         log_test(test_log_stores_two_logs),
         log_test(test_log_stores_multiple_logs_and_overwrites_older),
         log_test(
-            test_log_returns_null_when_no_more_logs_are_available_to_be_dequeued)
+            test_log_returns_null_when_no_more_logs_are_available_to_be_dequeued),
+
+        scheduler_test(test_scheduler_does_frame_event_after_vsync)
+
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);

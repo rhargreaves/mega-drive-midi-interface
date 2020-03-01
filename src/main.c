@@ -9,6 +9,7 @@
 
 int main()
 {
+    scheduler_init();
     log_init();
     comm_init();
     midi_init(M_BANK_0, P_BANK_0);

@@ -2,8 +2,14 @@
 #include "ui.h"
 #include <types.h>
 
-static u16 previousFrame = 0;
-static volatile u16 frame = 0;
+static u16 previousFrame;
+static volatile u16 frame;
+
+void scheduler_init(void)
+{
+    previousFrame = 0;
+    frame = 0;
+}
 
 void scheduler_vsync(void)
 {
