@@ -74,6 +74,12 @@ static MidiPsgChannel psgChannels[MAX_PSG_CHANS];
 static u16 freqForMidiKey(u8 midiKey);
 static MidiPsgChannel* psgChannel(u8 psgChan);
 
+static void initEnvelope(MidiPsgChannel* psgChan)
+{
+    psgChan->envelopeStep = ENVELOPES[psgChan->envelope];
+    psgChan->envelopeLoopStart = NULL;
+}
+
 void midi_psg_init(void)
 {
     for (u8 chan = 0; chan < MAX_PSG_CHANS; chan++) {
@@ -83,8 +89,7 @@ void midi_psg_init(void)
         psgChan->volume = MAX_MIDI_VOLUME;
         psgChan->velocity = MAX_MIDI_VOLUME;
         psgChan->envelope = 0;
-        psgChan->envelopeStep = NULL;
-        psgChan->envelopeLoopStart = NULL;
+        initEnvelope(psgChan);
     }
 }
 
@@ -125,7 +130,7 @@ void midi_psg_noteOn(u8 chan, u8 key, u8 velocity)
     MidiPsgChannel* psgChan = psgChannel(chan);
     psg_frequency(chan, freqForMidiKey(key));
     psgChan->velocity = velocity;
-    psgChan->envelopeStep = ENVELOPES[psgChan->envelope];
+    initEnvelope(psgChan);
     applyEnvelopeStep(psgChan);
     psgChan->key = key;
     psgChan->noteOn = true;
