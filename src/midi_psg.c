@@ -166,9 +166,11 @@ static void incrementEnvelopeStep(MidiPsgChannel* chan)
 
 void midi_psg_tick(void)
 {
-    MidiPsgChannel* psgChan = psgChannel(0);
-    if (psgChan->noteOn) {
-        incrementEnvelopeStep(psgChan);
+    for (u8 chan = 0; chan < MAX_PSG_CHANS; chan++) {
+        MidiPsgChannel* psgChan = psgChannel(chan);
+        if (psgChan->noteOn) {
+            incrementEnvelopeStep(psgChan);
+        }
     }
 }
 
