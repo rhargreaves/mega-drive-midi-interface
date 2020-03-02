@@ -105,6 +105,12 @@ static u8 effectiveAttenuation(MidiPsgChannel* psgChan)
     return effectiveAtt;
 }
 
+static void noteOff(MidiPsgChannel* psgChan)
+{
+    psg_attenuation(psgChan->chanNum, PSG_ATTENUATION_SILENCE);
+    psgChan->noteOn = false;
+}
+
 static void applyEnvelopeStep(MidiPsgChannel* psgChan)
 {
     if (*psgChan->envelopeStep == EEF_LOOP_START) {
@@ -115,7 +121,7 @@ static void applyEnvelopeStep(MidiPsgChannel* psgChan)
         if (psgChan->envelopeLoopStart != NULL) {
             psgChan->envelopeStep = psgChan->envelopeLoopStart;
         } else {
-            psg_attenuation(psgChan->chanNum, PSG_ATTENUATION_SILENCE);
+            noteOff(psgChan);
             return;
         }
     }
@@ -140,8 +146,7 @@ void midi_psg_noteOff(u8 chan, u8 pitch)
 {
     MidiPsgChannel* psgChan = psgChannel(chan);
     if (psgChan->noteOn && psgChan->key == pitch) {
-        psg_attenuation(chan, PSG_ATTENUATION_SILENCE);
-        psgChan->noteOn = false;
+        noteOff(psgChan);
     }
 }
 

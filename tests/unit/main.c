@@ -72,6 +72,7 @@ int main(void)
         midi_test(test_midi_plays_advanced_psg_envelope),
         midi_test(test_midi_loops_psg_envelope),
         midi_test(test_midi_psg_envelope_with_only_end_flag_is_silent),
+        midi_test(test_midi_psg_envelope_with_end_flag_sends_note_off),
         midi_test(test_midi_channel_volume_sets_volume),
         midi_test(test_midi_pan_sets_synth_stereo_mode_right),
         midi_test(test_midi_pan_sets_synth_stereo_mode_left),
