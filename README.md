@@ -9,7 +9,7 @@ Control the Yamaha YM2612 and PSG chips of the SEGA Mega Drive via MIDI.
 ## Features
 
 - Built-in FM presets for General MIDI compatibility
-- Built-in PSG envelopes based on the [EEF](docs/eef.md) format
+- Built-in PSG envelopes based on the [EEF](<https://github.com/rhargreaves/mega-drive-midi-interface/wiki/Echo-Envelope-Format-(EEF)>) format
 - Supports MIDI 1.0 CCs & events (e.g. panning, volume, pitch bending)
 - Polythonic support via FM channel pooling
 - Connectivity via:
