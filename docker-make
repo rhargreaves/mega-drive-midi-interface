@@ -1,2 +1,3 @@
 #!/bin/bash -e
+export BUILD=$(git describe --tags --abbrev=0)
 . ./docker-run make "$@"

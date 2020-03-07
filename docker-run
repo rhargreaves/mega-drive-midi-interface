@@ -5,7 +5,7 @@ docker run \
     --cap-add=SYS_PTRACE \
     --privileged \
     -p 2345:2345 \
-    -e VERSION \
+    -e BUILD \
     -e CMOCKA_MESSAGE_OUTPUT \
     -e CMOCKA_XML_FILE \
     --rm \
