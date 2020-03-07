@@ -144,14 +144,14 @@ _Range determines how the possible 128 MIDI values are divided to give the respe
 
 #### Per Channel
 
-| Parameter                        | CC  | Range |
-| -------------------------------- | --- | ----- |
-| Algorithm                        | 14  | 8     |
-| Feedback                         | 15  | 8     |
-| Frequency Modulation Level (FMS) | 75  | 8     |
-| Amplitude Modulation Level (AMS) | 76  | 4     |
-| Stereo                           | 77  | 4     |
-| Show Parameters on UI            | 83  | 2     |
+| Parameter                                                                                                            | CC  | Range |
+| -------------------------------------------------------------------------------------------------------------------- | --- | ----- |
+| Algorithm ([reference](https://github.com/rhargreaves/mega-drive-midi-interface/wiki/FM-Algorithm-Operator-Routing)) | 14  | 8     |
+| Feedback                                                                                                             | 15  | 8     |
+| Frequency Modulation Level (FMS)                                                                                     | 75  | 8     |
+| Amplitude Modulation Level (AMS)                                                                                     | 76  | 4     |
+| Stereo                                                                                                               | 77  | 4     |
+| Show Parameters on UI                                                                                                | 83  | 2     |
 
 #### Per Channel & Operator
 
@@ -168,23 +168,6 @@ _Range determines how the possible 128 MIDI values are divided to give the respe
 | Release Rate (RR)            | 59          | 60          | 61          | 62          | 16    |
 | Amplitude Modulation (AM)    | 70          | 71          | 72          | 73          | 2     |
 | SSG-EG                       | 90          | 91          | 92          | 93          | 16    |
-
-### FM Algorithm Operator Routing
-
-Output operators are coloured blue. Operator 1 can also feedback into itself (see CC 15). Operators are numbered in the same order as the register placement (e.g. 0x30, 0x34, 0x38, 0x3C).
-
-| Algorithm | Operator Arrangement                |
-| --------- | ----------------------------------- |
-| 0         | <img src="docs/algorithms/0.svg" /> |
-| 1         | <img src="docs/algorithms/1.svg" /> |
-| 2         | <img src="docs/algorithms/2.svg" /> |
-| 3         | <img src="docs/algorithms/3.svg" /> |
-| 4         | <img src="docs/algorithms/4.svg" /> |
-| 5         | <img src="docs/algorithms/5.svg" /> |
-| 6         | <img src="docs/algorithms/6.svg" /> |
-| 7         | <img src="docs/algorithms/7.svg" /> |
-
-_Note: Documentation on the YM2612 frequently muddles the second and third operators of algorithms 0 to 4 and 6. This is likely due to the original SEGA documentation incorrectly labelling the operator register addresses in sequential order, rather than 1st, 3rd, 2nd, 4th. That said, it seems to be generally common to keep the sequential order of the register addresses and simply correct the layout diagrams. This project favours this approach._
 
 ## Configuration & Advanced Operations
 
