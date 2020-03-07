@@ -9,6 +9,7 @@ Control the Yamaha YM2612 and PSG chips of the SEGA Mega Drive via MIDI.
 ## Features
 
 - Built-in FM presets for General MIDI compatibility
+- Built-in PSG envelopes based on the [EEF](docs/eef.md) format
 - Supports MIDI 1.0 CCs & events (e.g. panning, volume, pitch bending)
 - Polythonic support via FM channel pooling
 - Connectivity via:
@@ -21,7 +22,7 @@ Control the Yamaha YM2612 and PSG chips of the SEGA Mega Drive via MIDI.
 
 ### Hardware Requirements
 
-- SEGA Mega Drive/Genesis Console (Model 1 or 2)
+- SEGA Mega Drive/Genesis Console (Model 1 or 2, NTSC or PAL)
 
 Either:
 
@@ -33,7 +34,7 @@ Or:
 - Generic flash cart for loading the ROM
 - USB serial cable for connectivity into Controller Port 2, [based on these specifications](https://github.com/rhargreaves/mega-drive-serial-port#hardware)
 
-**Due to speed limitations on the controller port serial interface, EverDrive X7 USB connectivity is the recommended option, but connectivity via the controller port might be fine for simple use cases.**
+**Whilst connectivity via the controller port might be fine for simple use cases, the controller port's relatively slow speed makes it unsuitable for playback of busy MIDI sequences. EverDrive X7 USB connectivity is the recommended option for these cases.**
 
 ### Software Requirements
 
