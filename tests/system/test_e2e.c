@@ -148,7 +148,7 @@ static void test_general_midi_reset_sysex_stops_all_notes(void** state)
     print_message("Sending reset\n");
     const u8 sysExGeneralMidiResetSequence[]
         = { 0xF0, 0x7E, 0x7F, 0x09, 0x01, 0xF7 };
-    for (int i = 0; i < sizeof(sysExGeneralMidiResetSequence); i++) {
+    for (u16 i = 0; i < sizeof(sysExGeneralMidiResetSequence); i++) {
         stub_usb_receive_byte(sysExGeneralMidiResetSequence[i]);
     }
 
@@ -169,7 +169,7 @@ static void remapChannel(u8 midiChannel, u8 deviceChannel)
     u8 sysExRemapSequence[] = { SYSEX_START, SYSEX_EXTENDED_MANU_ID_SECTION,
         SYSEX_UNUSED_EUROPEAN_SECTION, SYSEX_UNUSED_MANU_ID,
         SYSEX_REMAP_COMMAND_ID, midiChannel, deviceChannel, SYSEX_END };
-    for (int i = 0; i < sizeof(sysExRemapSequence); i++) {
+    for (u16 i = 0; i < sizeof(sysExRemapSequence); i++) {
         stub_usb_receive_byte(sysExRemapSequence[i]);
     }
 }
@@ -215,11 +215,11 @@ static void test_pong_received_after_ping_sent()
         SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
         SYSEX_UNUSED_MANU_ID, SYSEX_PONG_COMMAND_ID, SYSEX_END };
 
-    for (int i = 0; i < sizeof(sysExPingSequence); i++) {
+    for (u16 i = 0; i < sizeof(sysExPingSequence); i++) {
         stub_usb_receive_byte(sysExPingSequence[i]);
     }
 
-    for (int i = 0; i < sizeof(sysExPongSequence); i++) {
+    for (u16 i = 0; i < sizeof(sysExPongSequence); i++) {
         expect_usb_sent_byte(sysExPongSequence[i]);
     }
 

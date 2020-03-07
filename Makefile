@@ -30,7 +30,7 @@ INCS = -I. \
 	-I$(GENDEV)/sgdk/res \
 	-Isrc \
 	-Ires
-CCFLAGS = -Wall -std=c11 -Werror \
+CCFLAGS = -Wall -Wextra -std=c11 -Werror \
 	-fno-builtin -DBUILD='"$(BUILD)"' \
 	-m68000 -O3 -c -fomit-frame-pointer -g
 Z80FLAGS = -vb2

@@ -23,6 +23,8 @@ CFLAGS=$(INCLUDE_DIRS) \
 	-Wall \
 	-std=c11 \
 	-Werror \
+	-Wextra \
+	-Wno-unused-parameter \
 	-Wno-builtin-declaration-mismatch \
 	-Wno-unused-function
 

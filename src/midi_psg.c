@@ -153,6 +153,8 @@ void midi_psg_program(u8 chan, u8 program)
 
 void midi_psg_pan(u8 chan, u8 pan)
 {
+    (void)chan;
+    (void)pan;
 }
 
 static void incrementEnvelopeStep(MidiPsgChannel* chan)

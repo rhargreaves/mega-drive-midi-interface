@@ -1,5 +1,4 @@
 #include "envelopes.h"
-#include "midi.h"
 #include <types.h>
 
 static const u8 ENVELOPE_0[] = { EEF_LOOP_START, 0x00, EEF_END };

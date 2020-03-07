@@ -672,13 +672,11 @@ static void setFmChanParameter(u8 devChan, u8 controller, u8 value)
         synth_operatorSsgEg(
             devChan, controller - CC_GENMDM_SSG_EG_OP1, RANGE(value, 16));
         break;
+    case CC_GENMDM_GLOBAL_LFO_ENABLE:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-    case CC_GENMDM_GLOBAL_LFO_ENABLE:
         synth_enableLfo(RANGE(value, 2));
         break;
-        if (isIgnoringNonGeneralMidiCCs())
-            break;
     case CC_GENMDM_GLOBAL_LFO_FREQUENCY:
         if (isIgnoringNonGeneralMidiCCs())
             break;

@@ -12,7 +12,7 @@ extern void __real_log_info(const char* fmt, ...);
 extern void __real_log_warn(const char* fmt, ...);
 extern Log* __real_log_dequeue(void);
 
-static int test_log_setup(void** state)
+static int test_log_setup(UNUSED void** state)
 {
     __real_log_init();
 

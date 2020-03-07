@@ -10,7 +10,7 @@
 
 void __real_scheduler_init(void);
 
-static int test_scheduler_setup(void** state)
+static int test_scheduler_setup(UNUSED void** state)
 {
     __real_scheduler_init();
 

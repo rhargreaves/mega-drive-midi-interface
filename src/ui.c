@@ -49,7 +49,7 @@ static void printLoad(void);
 static u16 loadPercent(void);
 static void updateKeyOnOff(void);
 static void drawText(const char* text, u16 x, u16 y);
-static void printChanActivity(u16 busy, u16 maxChannels, u16 x);
+static void printChanActivity(u16 busy);
 static void printBaudRate(void);
 static void printCommMode(void);
 static void printCommBuffer(void);
@@ -218,7 +218,7 @@ static void updateKeyOnOff(void)
     static u16 lastBusy = 0;
     u16 busy = synth_busy() | (psg_busy() << 6);
     if (busy != lastBusy) {
-        printChanActivity(busy, MAX_FM_CHANS + MAX_PSG_CHANS, ACTIVITY_FM_X);
+        printChanActivity(busy);
         lastBusy = busy;
     }
 }
@@ -251,9 +251,9 @@ static void populateMappings(u8* midiChans)
     }
 }
 
-static void printChanActivity(u16 busy, u16 maxChannels, u16 x)
+static void printChanActivity(u16 busy)
 {
-    for (u8 chan = 0; chan < maxChannels; chan++) {
+    for (u8 chan = 0; chan < MAX_FM_CHANS + MAX_PSG_CHANS; chan++) {
         SPR_setFrame(activitySprites[chan], ((busy >> chan) & 1) ? 1 : 0);
     }
     SPR_update();
