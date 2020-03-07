@@ -4,7 +4,7 @@
 #define MIN_PSG_CHAN 6
 #define MAX_PSG_CHAN 9
 
-void midi_psg_init(void);
+void midi_psg_init(const u8** defaultEnvelopes);
 void midi_psg_noteOn(u8 chan, u8 pitch, u8 velocity);
 void midi_psg_noteOff(u8 chan, u8 pitch);
 void midi_psg_allNotesOff(u8 chan);

@@ -1,4 +1,5 @@
 #include "test_midi.h"
+#include "envelopes.h"
 #include "wraps.h"
 
 int test_midi_setup(UNUSED void** state)
@@ -33,7 +34,7 @@ int test_midi_setup(UNUSED void** state)
 
     wraps_disable_logging_checks();
     wraps_disable_checks();
-    midi_init(M_BANK_0, P_BANK_0);
+    midi_init(M_BANK_0, P_BANK_0, ENVELOPES);
     wraps_enable_checks();
     return 0;
 }

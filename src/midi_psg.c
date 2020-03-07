@@ -25,6 +25,8 @@ static const u8 ATTENUATIONS[] = { 15, 14, 14, 14, 13, 13, 13, 13, 12, 12, 12,
 
 typedef struct MidiPsgChannel MidiPsgChannel;
 
+static const u8** envelopes;
+
 struct MidiPsgChannel {
     u8 chanNum;
     u8 key;
@@ -38,17 +40,14 @@ struct MidiPsgChannel {
 };
 
 static MidiPsgChannel psgChannels[MAX_PSG_CHANS];
+
 static u16 freqForMidiKey(u8 midiKey);
 static MidiPsgChannel* psgChannel(u8 psgChan);
+static void initEnvelope(MidiPsgChannel* psgChan);
 
-static void initEnvelope(MidiPsgChannel* psgChan)
+void midi_psg_init(const u8** defaultEnvelopes)
 {
-    psgChan->envelopeStep = ENVELOPES[psgChan->envelope];
-    psgChan->envelopeLoopStart = NULL;
-}
-
-void midi_psg_init(void)
-{
+    envelopes = defaultEnvelopes;
     for (u8 chan = 0; chan < MAX_PSG_CHANS; chan++) {
         MidiPsgChannel* psgChan = psgChannel(chan);
         psgChan->chanNum = chan;
@@ -58,6 +57,12 @@ void midi_psg_init(void)
         psgChan->envelope = 0;
         initEnvelope(psgChan);
     }
+}
+
+static void initEnvelope(MidiPsgChannel* psgChan)
+{
+    psgChan->envelopeStep = envelopes[psgChan->envelope];
+    psgChan->envelopeLoopStart = NULL;
 }
 
 static u8 effectiveAttenuation(MidiPsgChannel* psgChan)

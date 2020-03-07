@@ -115,7 +115,8 @@ struct DeviceChannel {
 };
 
 void midi_init(const FmChannel** defaultPresets,
-    const PercussionPreset** defaultPercussionPresets);
+    const PercussionPreset** defaultPercussionPresets,
+    const u8** defaultEnvelopes);
 void midi_noteOn(u8 chan, u8 pitch, u8 velocity);
 void midi_noteOff(u8 chan, u8 pitch);
 void midi_pitchBend(u8 chan, u16 bend);

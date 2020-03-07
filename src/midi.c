@@ -92,13 +92,14 @@ static void resetAllState(void)
 }
 
 void midi_init(const FmChannel** defaultPresets,
-    const PercussionPreset** defaultPercussionPresets)
+    const PercussionPreset** defaultPercussionPresets,
+    const u8** defaultEnvelopes)
 {
     dynamicMode = false;
     disableNonGeneralMidiCCs = false;
     stickToDeviceType = false;
     resetAllState();
-    midi_psg_init();
+    midi_psg_init(defaultEnvelopes);
     midi_fm_init(defaultPresets, defaultPercussionPresets);
 }
 

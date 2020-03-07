@@ -4,6 +4,7 @@
 
 #include "asserts.h"
 #include "comm.h"
+#include "envelopes.h"
 #include "midi.h"
 #include "midi_receiver.h"
 #include "presets.h"
@@ -21,7 +22,7 @@ static int test_e2e_setup(void** state)
     comm_resetCounts();
     comm_init();
     wraps_disable_checks();
-    midi_init(M_BANK_0, P_BANK_0);
+    midi_init(M_BANK_0, P_BANK_0, ENVELOPES);
     wraps_enable_checks();
     return 0;
 }
