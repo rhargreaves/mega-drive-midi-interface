@@ -6,6 +6,7 @@
 
 #define EEF_END 0xFF
 #define EEF_LOOP_START 0xFE
+#define EEF_LOOP_END 0xFD
 
 void midi_psg_init(const u8** defaultEnvelopes);
 void midi_psg_noteOn(u8 chan, u8 pitch, u8 velocity);

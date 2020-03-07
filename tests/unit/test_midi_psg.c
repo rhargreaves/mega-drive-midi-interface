@@ -292,3 +292,64 @@ static void test_midi_psg_envelope_with_end_flag_sends_note_off(
     __real_midi_psg_tick();
     __real_midi_psg_tick();
 }
+
+static void
+test_midi_psg_envelope_with_loop_end_continues_playing_after_note_off(
+    UNUSED void** state)
+{
+    // EEF_LOOP_START, 0x00, EEF_LOOP_END, 0x05, EEF_END
+
+    u8 chan = MIN_PSG_CHAN;
+    u8 expectedPsgChan = 0;
+    u8 pitch = 60;
+
+    __real_midi_program(chan, 6);
+
+    expect_value(__wrap_psg_frequency, channel, expectedPsgChan);
+    expect_value(__wrap_psg_frequency, freq, 262);
+    expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
+    __real_midi_noteOn(chan, pitch, MAX_MIDI_VOLUME);
+
+    __real_midi_noteOff(chan, pitch);
+
+    expect_psg_attenuation(expectedPsgChan, 0x05);
+    __real_midi_psg_tick();
+
+    expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_SILENCE);
+    __real_midi_psg_tick();
+}
+
+static void
+test_midi_psg_envelope_with_loop_end_resets_release_note_after_note_silenced(
+    UNUSED void** state)
+{
+    // EEF_LOOP_START, 0x00, EEF_LOOP_END, 0x05, EEF_END
+
+    u8 chan = MIN_PSG_CHAN;
+    u8 expectedPsgChan = 0;
+    u8 pitch = 60;
+
+    __real_midi_program(chan, 6);
+
+    expect_value(__wrap_psg_frequency, channel, expectedPsgChan);
+    expect_value(__wrap_psg_frequency, freq, 262);
+    expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
+    __real_midi_noteOn(chan, pitch, MAX_MIDI_VOLUME);
+
+    __real_midi_noteOff(chan, pitch);
+
+    expect_psg_attenuation(expectedPsgChan, 0x05);
+    __real_midi_psg_tick();
+
+    expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_SILENCE);
+    __real_midi_psg_tick();
+
+    // Play again
+    expect_value(__wrap_psg_frequency, channel, expectedPsgChan);
+    expect_value(__wrap_psg_frequency, freq, 262);
+    expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
+    __real_midi_noteOn(chan, pitch, MAX_MIDI_VOLUME);
+
+    expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
+    __real_midi_psg_tick();
+}

@@ -1,7 +1,7 @@
 #include "envelopes.h"
 #include <types.h>
 
-static const u8 ENVELOPE_0[] = { EEF_LOOP_START, 0x00, EEF_END };
+static const u8 ENVELOPE_0[] = { 0x00, EEF_LOOP_START, 0x00, EEF_END };
 
 const u8* ENVELOPES[MIDI_PROGRAMS] = { ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,
     ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0, ENVELOPE_0,

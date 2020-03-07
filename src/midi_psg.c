@@ -37,6 +37,7 @@ struct MidiPsgChannel {
     u8 envelope;
     const u8* envelopeStep;
     const u8* envelopeLoopStart;
+    bool noteReleased;
 };
 
 static MidiPsgChannel psgChannels[MAX_PSG_CHANS];
@@ -55,6 +56,7 @@ void midi_psg_init(const u8** defaultEnvelopes)
         psgChan->volume = MAX_MIDI_VOLUME;
         psgChan->velocity = MAX_MIDI_VOLUME;
         psgChan->envelope = 0;
+        psgChan->noteReleased = false;
         initEnvelope(psgChan);
     }
 }
@@ -81,6 +83,7 @@ static void noteOff(MidiPsgChannel* psgChan)
 {
     psg_attenuation(psgChan->chanNum, PSG_ATTENUATION_SILENCE);
     psgChan->noteOn = false;
+    psgChan->noteReleased = false;
 }
 
 static void applyEnvelopeStep(MidiPsgChannel* psgChan)
@@ -89,8 +92,15 @@ static void applyEnvelopeStep(MidiPsgChannel* psgChan)
         psgChan->envelopeStep++;
         psgChan->envelopeLoopStart = psgChan->envelopeStep;
     }
+    if (*psgChan->envelopeStep == EEF_LOOP_END
+        && psgChan->envelopeLoopStart != NULL) {
+        psgChan->envelopeStep++;
+        if (!psgChan->noteReleased) {
+            psgChan->envelopeStep = psgChan->envelopeLoopStart;
+        }
+    }
     if (*psgChan->envelopeStep == EEF_END) {
-        if (psgChan->envelopeLoopStart != NULL) {
+        if (psgChan->envelopeLoopStart != NULL && !psgChan->noteReleased) {
             psgChan->envelopeStep = psgChan->envelopeLoopStart;
         } else {
             noteOff(psgChan);
@@ -109,6 +119,7 @@ void midi_psg_noteOn(u8 chan, u8 key, u8 velocity)
     psg_frequency(chan, freqForMidiKey(key));
     psgChan->velocity = velocity;
     initEnvelope(psgChan);
+    psgChan->noteReleased = false;
     applyEnvelopeStep(psgChan);
     psgChan->key = key;
     psgChan->noteOn = true;
@@ -118,7 +129,11 @@ void midi_psg_noteOff(u8 chan, u8 pitch)
 {
     MidiPsgChannel* psgChan = psgChannel(chan);
     if (psgChan->noteOn && psgChan->key == pitch) {
-        noteOff(psgChan);
+        if (psgChan->envelopeLoopStart != NULL) {
+            psgChan->noteReleased = true;
+        } else {
+            noteOff(psgChan);
+        }
     }
 }
 
