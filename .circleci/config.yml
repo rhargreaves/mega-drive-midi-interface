@@ -38,11 +38,12 @@ workflows:
   version: 2
   build_and_release:
     jobs:
-      - build
-      - hold:
-          type: approval
-          requires:
-            - build
+      - build:
       - publish-github-release:
           requires:
-            - hold
+            - build
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^\d+\.\d+\.\d+$/
