@@ -25,3 +25,9 @@ void expect_synth_volume(u8 channel, u8 volume);
         expect_value(__wrap_psg_frequency, channel, chan);                     \
         expect_value(__wrap_psg_frequency, freq, frequency);                   \
     }
+
+#define expect_any_psg_frequency()                                             \
+    {                                                                          \
+        expect_any(__wrap_psg_frequency, channel);                             \
+        expect_any(__wrap_psg_frequency, freq);                                \
+    }
