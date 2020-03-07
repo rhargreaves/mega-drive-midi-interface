@@ -508,18 +508,24 @@ static void test_midi_dynamic_prefers_psg_for_square_wave_instruments(
 
     for (u8 i = 0; i < LENGTH_OF(SQUARE_WAVE_MIDI_PROGRAMS); i++) {
         u8 program = SQUARE_WAVE_MIDI_PROGRAMS[i];
+
+        print_message("Program: %d\n", program);
         __real_midi_program(MIDI_CHANNEL, program);
 
-        expect_value(__wrap_psg_frequency, channel, PSG_CHANNEL);
-        expect_any(__wrap_psg_frequency, freq);
+        if (i == 0) {
+            expect_value(__wrap_psg_frequency, channel, PSG_CHANNEL);
+            expect_any(__wrap_psg_frequency, freq);
+        }
         expect_value(__wrap_psg_attenuation, channel, PSG_CHANNEL);
         expect_any(__wrap_psg_attenuation, attenuation);
 
+        print_message("Note on: %d\n", program);
         __real_midi_noteOn(MIDI_CHANNEL, A_SHARP, MAX_MIDI_VOLUME);
 
         expect_value(__wrap_psg_attenuation, channel, PSG_CHANNEL);
         expect_any(__wrap_psg_attenuation, attenuation);
 
+        print_message("Note off: %d\n", program);
         __real_midi_noteOff(MIDI_CHANNEL, A_SHARP);
     }
 }

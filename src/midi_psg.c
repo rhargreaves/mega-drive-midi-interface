@@ -38,6 +38,7 @@ struct MidiPsgChannel {
     const u8* envelopeStep;
     const u8* envelopeLoopStart;
     bool noteReleased;
+    u16 freq;
 };
 
 static MidiPsgChannel psgChannels[MAX_PSG_CHANS];
@@ -57,6 +58,7 @@ void midi_psg_init(const u8** defaultEnvelopes)
         psgChan->velocity = MAX_MIDI_VOLUME;
         psgChan->envelope = 0;
         psgChan->noteReleased = false;
+        psgChan->freq = 0;
         initEnvelope(psgChan);
     }
 }
@@ -72,7 +74,7 @@ static u8 effectiveAttenuation(MidiPsgChannel* psgChan)
     u8 att
         = ATTENUATIONS[(psgChan->volume * psgChan->velocity) / MAX_MIDI_VOLUME];
     u8 invAtt = MAX_ATTENUATION - att;
-    u8 envAtt = *psgChan->envelopeStep;
+    u8 envAtt = *psgChan->envelopeStep & 0x0F;
     u8 invEnvAtt = MAX_ATTENUATION - envAtt;
     u8 invEffectiveAtt = (invAtt * invEnvAtt) / MAX_ATTENUATION;
     u8 effectiveAtt = MAX_ATTENUATION - invEffectiveAtt;
@@ -84,6 +86,21 @@ static void noteOff(MidiPsgChannel* psgChan)
     psg_attenuation(psgChan->chanNum, PSG_ATTENUATION_SILENCE);
     psgChan->noteOn = false;
     psgChan->noteReleased = false;
+}
+
+static u16 effectiveFrequency(MidiPsgChannel* psgChan)
+{
+    u8 semitoneShift = *psgChan->envelopeStep >> 4;
+    u16 freq = freqForMidiKey(psgChan->key + semitoneShift);
+    return freq;
+}
+
+static void applyFrequency(MidiPsgChannel* psgChan, u16 newFreq)
+{
+    if (newFreq != psgChan->freq) {
+        psg_frequency(psgChan->chanNum, newFreq);
+        psgChan->freq = newFreq;
+    }
 }
 
 static void applyEnvelopeStep(MidiPsgChannel* psgChan)
@@ -107,6 +124,7 @@ static void applyEnvelopeStep(MidiPsgChannel* psgChan)
             return;
         }
     }
+    applyFrequency(psgChan, effectiveFrequency(psgChan));
     psg_attenuation(psgChan->chanNum, effectiveAttenuation(psgChan));
 }
 
@@ -116,12 +134,12 @@ void midi_psg_noteOn(u8 chan, u8 key, u8 velocity)
         return;
     }
     MidiPsgChannel* psgChan = psgChannel(chan);
-    psg_frequency(chan, freqForMidiKey(key));
+    psgChan->noteReleased = false;
+    psgChan->key = key;
+    applyFrequency(psgChan, freqForMidiKey(key));
     psgChan->velocity = velocity;
     initEnvelope(psgChan);
-    psgChan->noteReleased = false;
     applyEnvelopeStep(psgChan);
-    psgChan->key = key;
     psgChan->noteOn = true;
 }
 
@@ -157,7 +175,7 @@ void midi_psg_pitchBend(u8 chan, u16 bend)
     u16 freq = freqForMidiKey(psgChan->key);
     s16 bendRelative = bend - 0x2000;
     freq = freq + (bendRelative / 100);
-    psg_frequency(chan, freq);
+    applyFrequency(psgChan, freq);
 }
 
 void midi_psg_program(u8 chan, u8 program)
