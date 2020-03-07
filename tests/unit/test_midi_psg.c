@@ -12,10 +12,8 @@ static void test_midi_triggers_psg_note_on(UNUSED void** state)
             u8 expectedMidiKey = midiKeys[i];
             u8 expectedPsgChan = chan - MIN_PSG_CHAN;
 
-            expect_value(__wrap_psg_frequency, channel, expectedPsgChan);
-            expect_value(__wrap_psg_frequency, freq, expectedFrequency);
-            expect_value(__wrap_psg_attenuation, channel, expectedPsgChan);
-            expect_value(__wrap_psg_attenuation, attenuation, 0);
+            expect_psg_frequency(expectedPsgChan, expectedFrequency);
+            expect_psg_attenuation(expectedPsgChan, 0);
 
             __real_midi_noteOn(chan, expectedMidiKey, 127);
         }
