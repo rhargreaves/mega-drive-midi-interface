@@ -101,19 +101,19 @@ static const u16 PITCH_SHIFT_TABLE[PITCH_SHIFTS] = {
 
 static u16 effectiveFrequency(MidiPsgChannel* psgChan)
 {
+    const u8 DIVISOR = 20;
     u8 shift = *psgChan->envelopeStep >> 4;
     u16 freq = freqForMidiKey(psgChan->key);
-    if (shift == 0) {
-        return freq;
-    } else if (shift < 0x08) {
+    if (shift > 0 && shift < 0x08) {
         u16 increments = PITCH_SHIFT_TABLE[shift - 1];
         u16 nextFreq = freqForMidiKey(psgChan->key + 1);
-        return freq + ((nextFreq - freq) / 10) * increments;
-    } else {
+        freq = freq + ((nextFreq - freq) / DIVISOR) * increments;
+    } else if (shift >= 0x08) {
         u16 decrements = PITCH_SHIFT_TABLE[shift - 0x07 - 1];
         u16 prevFreq = freqForMidiKey(psgChan->key - 1);
-        return freq - ((freq - prevFreq) / 10) * decrements;
+        freq = freq - ((freq - prevFreq) / DIVISOR) * decrements;
     }
+    return freq;
 }
 
 static void applyFrequency(MidiPsgChannel* psgChan, u16 newFreq)

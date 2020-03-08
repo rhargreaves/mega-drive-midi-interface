@@ -340,10 +340,10 @@ static void test_midi_shifts_semitone_in_psg_envelope(UNUSED void** state)
     u8 chan = MIN_PSG_CHAN;
     u8 expectedPsgChan = 0;
 
-    const u16 expectedInitialFreq = 262;
+    const u16 expectedInitialFreq = 0x749;
     const u16 expectedShiftedFreq[SHIFTS]
-        = { /* Up */ 263, 264, 266, 272, 287, 312, 382,
-              /* Down */ 261, 260, 258, 252, 237, 212, 142 };
+        = { /* Up */ 0x74e, 0x753, 0x75d, 0x77b, 0x7c6, 0x843, 0x9a1,
+              /* Down */ 0x744, 0x73f, 0x735, 0x717, 0x6cc, 0x64f, 0x4f1 };
 
     for (u8 i = 0; i < SHIFTS; i++) {
         u8 envelopeStep = (i + 1) * 0x10;
@@ -355,7 +355,7 @@ static void test_midi_shifts_semitone_in_psg_envelope(UNUSED void** state)
 
         expect_psg_frequency(expectedPsgChan, expectedInitialFreq);
         expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
-        __real_midi_noteOn(chan, 60, MAX_MIDI_VOLUME);
+        __real_midi_noteOn(chan, A_SHARP, MAX_MIDI_VOLUME);
 
         expect_psg_frequency(expectedPsgChan, expectedShiftedFreq[i]);
         expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
