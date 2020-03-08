@@ -385,3 +385,22 @@ static void test_midi_pitch_shift_handles_upper_limit_psg_envelope(
     expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
     __real_midi_psg_tick();
 }
+
+static void test_midi_pitch_shift_handles_lower_limit_psg_envelope(
+    UNUSED void** state)
+{
+    const u8 chan = MIN_PSG_CHAN;
+    const u8 expectedPsgChan = 0;
+    const u8 minPitch = 45;
+    const u16 expectedInitialFreq = 0x6e;
+    const u8 envelope[] = { EEF_LOOP_START, 0x00, 0x80, EEF_END };
+    const u8* envelopes[] = { envelope };
+    midi_psg_init(envelopes);
+
+    expect_psg_frequency(expectedPsgChan, expectedInitialFreq);
+    expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
+    __real_midi_noteOn(chan, minPitch, MAX_MIDI_VOLUME);
+
+    expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
+    __real_midi_psg_tick();
+}

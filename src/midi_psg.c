@@ -7,6 +7,7 @@
 #define MIN_PSG_CHAN 6
 #define MAX_PSG_CHAN 9
 #define MIN_MIDI_KEY 45
+#define MAX_MIDI_KEY 127
 #define PITCH_SHIFTS 7
 #define NUM_FREQUENCIES (128 - MIN_MIDI_KEY)
 
@@ -232,10 +233,11 @@ void midi_psg_tick(void)
 
 static u16 freqForMidiKey(u8 midiKey)
 {
-    u8 index = midiKey - MIN_MIDI_KEY;
-    const u8 MAX_INDEX = NUM_FREQUENCIES - 1;
-    if (index > MAX_INDEX) {
-        return FREQUENCIES[MAX_INDEX];
+    if (midiKey < MIN_MIDI_KEY) {
+        return FREQUENCIES[0];
+    }
+    if (midiKey > MAX_MIDI_KEY) {
+        return FREQUENCIES[NUM_FREQUENCIES - 1];
     }
     return FREQUENCIES[midiKey - MIN_MIDI_KEY];
 }
