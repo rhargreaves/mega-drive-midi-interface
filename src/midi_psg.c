@@ -130,8 +130,15 @@ static u16 effectiveFrequency(MidiPsgChannel* psgChan)
 {
     u16 freq = envelopeFrequency(psgChan);
     if (psgChan->pitchBend != DEFAULT_MIDI_PITCH_BEND) {
-        s16 bendRelative = psgChan->pitchBend - 0x2000;
-        freq = freq + (bendRelative / 100);
+        if (psgChan->pitchBend < DEFAULT_MIDI_PITCH_BEND) {
+            u16 prevFreq = freqForMidiKey(psgChan->key - 1);
+            u16 diff = freq - prevFreq;
+            u16 bend = DEFAULT_MIDI_PITCH_BEND - psgChan->pitchBend;
+            freq = freq - (u32)((diff * bend) / DEFAULT_MIDI_PITCH_BEND);
+        } else {
+            s16 bendRelative = psgChan->pitchBend - 0x2000;
+            freq = freq + (bendRelative / 100);
+        }
     }
     return freq;
 }
