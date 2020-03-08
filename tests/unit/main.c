@@ -78,6 +78,7 @@ int main(void)
         midi_test(
             test_midi_psg_envelope_with_loop_end_resets_release_note_after_note_silenced),
         midi_test(test_midi_shifts_semitone_in_psg_envelope),
+        midi_test(test_midi_pitch_shift_handles_upper_limit_psg_envelope),
         midi_test(test_midi_channel_volume_sets_volume),
         midi_test(test_midi_pan_sets_synth_stereo_mode_right),
         midi_test(test_midi_pan_sets_synth_stereo_mode_left),
