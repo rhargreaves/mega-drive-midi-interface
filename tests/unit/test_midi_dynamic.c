@@ -576,8 +576,6 @@ test_midi_dynamic_sticks_to_assigned_psg_device_type_for_midi_channels(
 
     expect_value(__wrap_psg_frequency, channel, 0);
     expect_any(__wrap_psg_frequency, freq);
-    expect_value(__wrap_psg_attenuation, channel, 0);
-    expect_any(__wrap_psg_attenuation, attenuation);
 
     __real_midi_noteOn(MIDI_CHANNEL, B, 127);
 }
