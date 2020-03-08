@@ -126,25 +126,29 @@ static u16 envelopeFrequency(MidiPsgChannel* psgChan)
     }
 }
 
+static u16 pitchBentFrequency(MidiPsgChannel* psgChan, u16 baseFreq)
+{
+    if (psgChan->pitchBend == DEFAULT_MIDI_PITCH_BEND) {
+        return baseFreq;
+    } else if (psgChan->pitchBend < MIDI_PITCH_BEND_CENTRE) {
+        u16 prevFreq = freqForMidiKey(
+            psgChan->key - GENERAL_MIDI_PITCH_BEND_SEMITONE_RANGE);
+        u16 diff = baseFreq - prevFreq;
+        u16 bend = MIDI_PITCH_BEND_CENTRE - psgChan->pitchBend;
+        return baseFreq - (u32)((diff * bend) / MIDI_PITCH_BEND_CENTRE);
+    } else {
+        u16 nextFreq = freqForMidiKey(
+            psgChan->key + GENERAL_MIDI_PITCH_BEND_SEMITONE_RANGE);
+        u16 diff = nextFreq - baseFreq;
+        u16 bend = psgChan->pitchBend - MIDI_PITCH_BEND_CENTRE;
+        return baseFreq + (u32)((diff * bend) / MIDI_PITCH_BEND_CENTRE);
+    }
+}
+
 static u16 effectiveFrequency(MidiPsgChannel* psgChan)
 {
-    u16 freq = envelopeFrequency(psgChan);
-    if (psgChan->pitchBend != DEFAULT_MIDI_PITCH_BEND) {
-        if (psgChan->pitchBend < MIDI_PITCH_BEND_CENTRE) {
-            u16 prevFreq = freqForMidiKey(
-                psgChan->key - GENERAL_MIDI_PITCH_BEND_SEMITONE_RANGE);
-            u16 diff = freq - prevFreq;
-            u16 bend = MIDI_PITCH_BEND_CENTRE - psgChan->pitchBend;
-            freq = freq - (u32)((diff * bend) / MIDI_PITCH_BEND_CENTRE);
-        } else {
-            u16 nextFreq = freqForMidiKey(
-                psgChan->key + GENERAL_MIDI_PITCH_BEND_SEMITONE_RANGE);
-            u16 diff = nextFreq - freq;
-            u16 bend = psgChan->pitchBend - MIDI_PITCH_BEND_CENTRE;
-            freq = freq + (u32)((diff * bend) / MIDI_PITCH_BEND_CENTRE);
-        }
-    }
-    return freq;
+    u16 baseFreq = envelopeFrequency(psgChan);
+    return pitchBentFrequency(psgChan, baseFreq);
 }
 
 static void applyFrequency(MidiPsgChannel* psgChan, u16 newFreq)
