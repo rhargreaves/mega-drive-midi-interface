@@ -200,11 +200,10 @@ void midi_psg_noteOn(u8 chan, u8 key, u8 velocity)
     MidiPsgChannel* psgChan = psgChannel(chan);
     psgChan->noteReleased = false;
     psgChan->key = key;
-    applyFrequency(psgChan, freqForMidiKey(key));
     psgChan->velocity = velocity;
+    psgChan->noteOn = true;
     initEnvelope(psgChan);
     applyEnvelopeStep(psgChan);
-    psgChan->noteOn = true;
 }
 
 void midi_psg_noteOff(u8 chan, u8 pitch)

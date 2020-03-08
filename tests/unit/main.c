@@ -72,7 +72,6 @@ int main(void)
         midi_test(test_midi_plays_advanced_psg_envelope),
         midi_test(test_midi_loops_psg_envelope),
         midi_test(test_midi_psg_envelope_with_only_end_flag_is_silent),
-        midi_test(test_midi_psg_envelope_with_end_flag_sends_note_off),
         midi_test(
             test_midi_psg_envelope_with_loop_end_continues_playing_after_note_off),
         midi_test(

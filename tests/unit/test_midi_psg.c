@@ -270,26 +270,9 @@ static void test_midi_psg_envelope_with_only_end_flag_is_silent(
     UNUSED void** state)
 {
     u8 chan = MIN_PSG_CHAN;
-    u8 expectedPsgChan = 0;
 
     __real_midi_program(chan, 5);
-
-    expect_psg_frequency(expectedPsgChan, 262);
     __real_midi_noteOn(chan, 60, MAX_MIDI_VOLUME);
-    __real_midi_psg_tick();
-}
-
-static void test_midi_psg_envelope_with_end_flag_sends_note_off(
-    UNUSED void** state)
-{
-    u8 chan = MIN_PSG_CHAN;
-    u8 expectedPsgChan = 0;
-
-    __real_midi_program(chan, 5);
-
-    expect_psg_frequency(expectedPsgChan, 262);
-    __real_midi_noteOn(chan, 60, MAX_MIDI_VOLUME);
-
     __real_midi_psg_tick();
     __real_midi_psg_tick();
 }
