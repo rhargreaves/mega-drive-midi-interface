@@ -126,15 +126,18 @@ static u16 envelopeFrequency(MidiPsgChannel* psgChan)
     }
 }
 
+#define GENERAL_MIDI_PITCH_BEND_SEMITONE_RANGE 2
+
 static u16 effectiveFrequency(MidiPsgChannel* psgChan)
 {
     u16 freq = envelopeFrequency(psgChan);
     if (psgChan->pitchBend != DEFAULT_MIDI_PITCH_BEND) {
-        if (psgChan->pitchBend < DEFAULT_MIDI_PITCH_BEND) {
-            u16 prevFreq = freqForMidiKey(psgChan->key - 1);
+        if (psgChan->pitchBend < MIDI_PITCH_BEND_CENTRE) {
+            u16 prevFreq = freqForMidiKey(
+                psgChan->key - GENERAL_MIDI_PITCH_BEND_SEMITONE_RANGE);
             u16 diff = freq - prevFreq;
-            u16 bend = DEFAULT_MIDI_PITCH_BEND - psgChan->pitchBend;
-            freq = freq - (u32)((diff * bend) / DEFAULT_MIDI_PITCH_BEND);
+            u16 bend = MIDI_PITCH_BEND_CENTRE - psgChan->pitchBend;
+            freq = freq - (u32)((diff * bend) / MIDI_PITCH_BEND_CENTRE);
         } else {
             s16 bendRelative = psgChan->pitchBend - 0x2000;
             freq = freq + (bendRelative / 100);

@@ -168,7 +168,7 @@ static void test_midi_sets_psg_pitch_bend(UNUSED void** state)
         expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
         __real_midi_noteOn(chan, 60, 127);
 
-        expect_psg_frequency(expectedPsgChan, 247);
+        expect_psg_frequency(expectedPsgChan, 0xe9);
         __real_midi_pitchBend(chan, 0);
     }
 }
@@ -183,7 +183,7 @@ static void test_midi_psg_pitch_bend_persists_after_tick(UNUSED void** state)
         expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
         __real_midi_noteOn(chan, 60, 127);
 
-        expect_psg_frequency(expectedPsgChan, 249);
+        expect_psg_frequency(expectedPsgChan, 0xed);
         __real_midi_pitchBend(chan, 1000);
 
         __real_midi_psg_tick();
