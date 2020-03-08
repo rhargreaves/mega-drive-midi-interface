@@ -93,6 +93,7 @@ static void noteOff(MidiPsgChannel* psgChan)
     psgChan->noteReleased = false;
 }
 
+static const u16 KEY_SHIFT_TABLE[PITCH_SHIFTS] = { 1, 1, 1, 1, 1, 2, 5 };
 static const u16 PITCH_SHIFT_TABLE[PITCH_SHIFTS] = { 1, 2, 4, 10, 20, 40, 100 };
 
 static u16 effectiveFrequency(MidiPsgChannel* psgChan)
@@ -100,16 +101,25 @@ static u16 effectiveFrequency(MidiPsgChannel* psgChan)
     const u8 DIVISOR = 20;
     u8 shift = *psgChan->envelopeStep >> 4;
     u16 freq = freqForMidiKey(psgChan->key);
-    if (shift > 0 && shift < 0x08) {
-        u16 increments = PITCH_SHIFT_TABLE[shift - 1];
-        u16 nextFreq = freqForMidiKey(psgChan->key + 1);
-        freq = freq + ((nextFreq - freq) / DIVISOR) * increments;
-    } else if (shift >= 0x08) {
-        u16 decrements = PITCH_SHIFT_TABLE[shift - 0x07 - 1];
-        u16 prevFreq = freqForMidiKey(psgChan->key - 1);
-        freq = freq - ((freq - prevFreq) / DIVISOR) * decrements;
+    if (shift == 0) {
+        return freq;
     }
-    return freq;
+    u8 shiftIndex = shift - 1;
+    if (shift < 0x5) {
+        u16 nextFreq = freqForMidiKey(psgChan->key + 1);
+        return freq
+            + ((nextFreq - freq) / DIVISOR) * PITCH_SHIFT_TABLE[shiftIndex];
+    } else if (shift < 0x8) {
+        return freqForMidiKey(psgChan->key + KEY_SHIFT_TABLE[shiftIndex]);
+    } else if (shift < 0xC) {
+        u16 prevFreq = freqForMidiKey(psgChan->key - 1);
+        return freq
+            - ((freq - prevFreq) / DIVISOR)
+            * PITCH_SHIFT_TABLE[shiftIndex - 0x07];
+    } else {
+        return freqForMidiKey(
+            psgChan->key - KEY_SHIFT_TABLE[shiftIndex - 0x07]);
+    }
 }
 
 static void applyFrequency(MidiPsgChannel* psgChan, u16 newFreq)
