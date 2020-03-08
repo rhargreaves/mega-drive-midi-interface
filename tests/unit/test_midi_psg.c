@@ -158,7 +158,7 @@ static void test_midi_channel_volume_sets_psg_attenuation_2(UNUSED void** state)
     __real_midi_noteOn(MIN_PSG_CHAN, 45, 127);
 }
 
-static void test_midi_sets_psg_pitch_bend(UNUSED void** state)
+static void test_midi_sets_psg_pitch_bend_down(UNUSED void** state)
 {
     for (int chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN; chan++) {
         u8 expectedPsgChan = chan - MIN_PSG_CHAN;
@@ -168,8 +168,23 @@ static void test_midi_sets_psg_pitch_bend(UNUSED void** state)
         expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
         __real_midi_noteOn(chan, 60, 127);
 
-        expect_psg_frequency(expectedPsgChan, 0xe9);
+        expect_psg_frequency(expectedPsgChan, 233);
         __real_midi_pitchBend(chan, 0);
+    }
+}
+
+static void test_midi_sets_psg_pitch_bend_up(UNUSED void** state)
+{
+    for (int chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN; chan++) {
+        u8 expectedPsgChan = chan - MIN_PSG_CHAN;
+        print_message("PSG Chan %d\n", expectedPsgChan);
+
+        expect_psg_frequency(expectedPsgChan, 262);
+        expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
+        __real_midi_noteOn(chan, 60, 127);
+
+        expect_psg_frequency(expectedPsgChan, 294);
+        __real_midi_pitchBend(chan, 0x4000);
     }
 }
 
