@@ -34,6 +34,7 @@ struct MidiPsgChannel {
     u8 chanNum;
     u8 key;
     u8 attenuation;
+    u16 freq;
     bool noteOn;
     u8 volume;
     u8 velocity;
@@ -41,7 +42,6 @@ struct MidiPsgChannel {
     const u8* envelopeStep;
     const u8* envelopeLoopStart;
     bool noteReleased;
-    u16 freq;
 };
 
 static MidiPsgChannel psgChannels[MAX_PSG_CHANS];
@@ -93,15 +93,7 @@ static void noteOff(MidiPsgChannel* psgChan)
     psgChan->noteReleased = false;
 }
 
-static const u16 PITCH_SHIFT_TABLE[PITCH_SHIFTS] = {
-    1,
-    2,
-    4,
-    10,
-    25,
-    50,
-    120,
-};
+static const u16 PITCH_SHIFT_TABLE[PITCH_SHIFTS] = { 1, 2, 4, 10, 20, 40, 100 };
 
 static u16 effectiveFrequency(MidiPsgChannel* psgChan)
 {
