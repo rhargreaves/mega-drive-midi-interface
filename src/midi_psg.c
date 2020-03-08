@@ -7,6 +7,7 @@
 #define MIN_PSG_CHAN 6
 #define MAX_PSG_CHAN 9
 #define MIN_MIDI_KEY 45
+#define PITCH_SHIFTS 7
 
 static const u16 FREQUENCIES[] = { 110, 117, 123, 131, 139, 147, 156, 165, 175,
     185, 196, 208, 220, 233, 247, 262, 277, 294, 311, 330, 349, 370, 392, 415,
@@ -88,11 +89,31 @@ static void noteOff(MidiPsgChannel* psgChan)
     psgChan->noteReleased = false;
 }
 
+static const u16 PITCH_SHIFT_TABLE[PITCH_SHIFTS] = {
+    1,
+    2,
+    4,
+    10,
+    25,
+    50,
+    120,
+};
+
 static u16 effectiveFrequency(MidiPsgChannel* psgChan)
 {
-    u8 semitoneShift = *psgChan->envelopeStep >> 4;
-    u16 freq = freqForMidiKey(psgChan->key + semitoneShift);
-    return freq;
+    u8 shift = *psgChan->envelopeStep >> 4;
+    u16 freq = freqForMidiKey(psgChan->key);
+    if (shift == 0) {
+        return freq;
+    } else if (shift < 0x08) {
+        u16 increments = PITCH_SHIFT_TABLE[shift - 1];
+        u16 nextFreq = freqForMidiKey(psgChan->key + 1);
+        return freq + ((nextFreq - freq) / 10) * increments;
+    } else {
+        u16 decrements = PITCH_SHIFT_TABLE[shift - 0x07 - 1];
+        u16 prevFreq = freqForMidiKey(psgChan->key - 1);
+        return freq - ((freq - prevFreq) / 10) * decrements;
+    }
 }
 
 static void applyFrequency(MidiPsgChannel* psgChan, u16 newFreq)

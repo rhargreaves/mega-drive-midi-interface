@@ -20,10 +20,10 @@ void expect_synth_volume(u8 channel, u8 volume);
         expect_value(__wrap_psg_attenuation, attenuation, attenu);             \
     }
 
-#define expect_psg_frequency(chan, frequency)                                  \
+#define expect_psg_frequency(c, f)                                             \
     {                                                                          \
-        expect_value(__wrap_psg_frequency, channel, chan);                     \
-        expect_value(__wrap_psg_frequency, freq, frequency);                   \
+        expect_value(__wrap_psg_frequency, channel, c);                        \
+        expect_value(__wrap_psg_frequency, freq, f);                           \
     }
 
 #define expect_any_psg_frequency()                                             \

@@ -333,22 +333,36 @@ test_midi_psg_envelope_with_loop_end_resets_release_note_after_note_silenced(
     __real_midi_psg_tick();
 }
 
+#define SHIFTS 14
+
 static void test_midi_shifts_semitone_in_psg_envelope(UNUSED void** state)
 {
     u8 chan = MIN_PSG_CHAN;
     u8 expectedPsgChan = 0;
 
-    __real_midi_program(chan, 7);
+    const u16 expectedInitialFreq = 262;
+    const u16 expectedShiftedFreq[SHIFTS]
+        = { /* Up */ 263, 264, 266, 272, 287, 312, 382,
+              /* Down */ 261, 260, 258, 252, 237, 212, 142 };
 
-    expect_psg_frequency(expectedPsgChan, 262);
-    expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
-    __real_midi_noteOn(chan, 60, MAX_MIDI_VOLUME);
+    for (u8 i = 0; i < SHIFTS; i++) {
+        u8 envelopeStep = (i + 1) * 0x10;
+        const u8 envelope[] = { EEF_LOOP_START, 0x00, envelopeStep, EEF_END };
+        const u8* envelopes[] = { envelope };
 
-    expect_psg_frequency(expectedPsgChan, 277);
-    expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
-    __real_midi_psg_tick();
+        print_message("Shift: %d\n", i);
+        midi_psg_init(envelopes);
 
-    expect_psg_frequency(expectedPsgChan, 262);
-    expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
-    __real_midi_psg_tick();
+        expect_psg_frequency(expectedPsgChan, expectedInitialFreq);
+        expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
+        __real_midi_noteOn(chan, 60, MAX_MIDI_VOLUME);
+
+        expect_psg_frequency(expectedPsgChan, expectedShiftedFreq[i]);
+        expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
+        __real_midi_psg_tick();
+
+        expect_psg_frequency(expectedPsgChan, expectedInitialFreq);
+        expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
+        __real_midi_psg_tick();
+    }
 }
