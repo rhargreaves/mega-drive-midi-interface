@@ -71,6 +71,7 @@ static void initDeviceChannel(u8 devChan)
     chan->noteOn = false;
     chan->midiChannel = devChan;
     chan->pitch = 0;
+    chan->pitchBend = DEFAULT_MIDI_PITCH_BEND;
     updateDeviceChannelFromAssociatedMidiChannel(chan);
 }
 
@@ -95,12 +96,12 @@ void midi_init(const FmChannel** defaultPresets,
     const PercussionPreset** defaultPercussionPresets,
     const u8** defaultEnvelopes)
 {
+    midi_psg_init(defaultEnvelopes);
+    midi_fm_init(defaultPresets, defaultPercussionPresets);
     dynamicMode = false;
     disableNonGeneralMidiCCs = false;
     stickToDeviceType = false;
     resetAllState();
-    midi_psg_init(defaultEnvelopes);
-    midi_fm_init(defaultPresets, defaultPercussionPresets);
 }
 
 static DeviceChannel* findChannelPlayingNote(u8 midiChannel, u8 pitch)

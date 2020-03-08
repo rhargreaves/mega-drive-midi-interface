@@ -161,8 +161,8 @@ static void test_midi_channel_volume_sets_psg_attenuation_2(UNUSED void** state)
 static void test_midi_sets_psg_pitch_bend(UNUSED void** state)
 {
     for (int chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN; chan++) {
-
         u8 expectedPsgChan = chan - MIN_PSG_CHAN;
+        print_message("PSG Chan %d\n", expectedPsgChan);
 
         expect_value(__wrap_psg_frequency, channel, expectedPsgChan);
         expect_value(__wrap_psg_frequency, freq, 262);
@@ -175,6 +175,28 @@ static void test_midi_sets_psg_pitch_bend(UNUSED void** state)
         expect_value(__wrap_psg_frequency, freq, 191);
 
         __real_midi_pitchBend(chan, 1000);
+    }
+}
+
+static void test_midi_psg_pitch_bend_persists_after_tick(UNUSED void** state)
+{
+    for (int chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN; chan++) {
+        u8 expectedPsgChan = chan - MIN_PSG_CHAN;
+        print_message("PSG Chan %d\n", expectedPsgChan);
+
+        expect_value(__wrap_psg_frequency, channel, expectedPsgChan);
+        expect_value(__wrap_psg_frequency, freq, 262);
+        expect_value(__wrap_psg_attenuation, channel, expectedPsgChan);
+        expect_value(__wrap_psg_attenuation, attenuation, 0);
+
+        __real_midi_noteOn(chan, 60, 127);
+
+        expect_value(__wrap_psg_frequency, channel, expectedPsgChan);
+        expect_value(__wrap_psg_frequency, freq, 191);
+
+        __real_midi_pitchBend(chan, 1000);
+
+        __real_midi_psg_tick();
     }
 }
 

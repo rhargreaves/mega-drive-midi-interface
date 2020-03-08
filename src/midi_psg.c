@@ -42,6 +42,7 @@ struct MidiPsgChannel {
     const u8* envelopeStep;
     const u8* envelopeLoopStart;
     bool noteReleased;
+    u16 pitchBend;
 };
 
 static MidiPsgChannel psgChannels[MAX_PSG_CHANS];
@@ -50,6 +51,8 @@ static u16 freqForMidiKey(u8 midiKey);
 static MidiPsgChannel* psgChannel(u8 psgChan);
 static void initEnvelope(MidiPsgChannel* psgChan);
 static void applyAttenuation(MidiPsgChannel* psgChan, u8 newAtt);
+static u16 envelopeFrequency(MidiPsgChannel* psgChan);
+static u16 effectiveFrequency(MidiPsgChannel* psgChan);
 
 void midi_psg_init(const u8** defaultEnvelopes)
 {
@@ -64,6 +67,7 @@ void midi_psg_init(const u8** defaultEnvelopes)
         psgChan->envelope = 0;
         psgChan->noteReleased = false;
         psgChan->freq = 0;
+        psgChan->pitchBend = DEFAULT_MIDI_PITCH_BEND;
         initEnvelope(psgChan);
     }
 }
@@ -96,7 +100,7 @@ static void noteOff(MidiPsgChannel* psgChan)
 static const u16 KEY_SHIFT_TABLE[PITCH_SHIFTS] = { 1, 1, 1, 1, 1, 2, 5 };
 static const u16 PITCH_SHIFT_TABLE[PITCH_SHIFTS] = { 1, 2, 4, 10, 20, 40, 100 };
 
-static u16 effectiveFrequency(MidiPsgChannel* psgChan)
+static u16 envelopeFrequency(MidiPsgChannel* psgChan)
 {
     const u8 DIVISOR = 20;
     u8 shift = *psgChan->envelopeStep >> 4;
@@ -120,6 +124,16 @@ static u16 effectiveFrequency(MidiPsgChannel* psgChan)
         return freqForMidiKey(
             psgChan->key - KEY_SHIFT_TABLE[shiftIndex - 0x07]);
     }
+}
+
+static u16 effectiveFrequency(MidiPsgChannel* psgChan)
+{
+    u16 freq = envelopeFrequency(psgChan);
+    if (psgChan->pitchBend != DEFAULT_MIDI_PITCH_BEND) {
+        s16 bendRelative = psgChan->pitchBend - 0x2000;
+        freq = freq + (bendRelative / 100);
+    }
+    return freq;
 }
 
 static void applyFrequency(MidiPsgChannel* psgChan, u16 newFreq)
@@ -207,10 +221,8 @@ void midi_psg_channelVolume(u8 chan, u8 volume)
 void midi_psg_pitchBend(u8 chan, u16 bend)
 {
     MidiPsgChannel* psgChan = psgChannel(chan);
-    u16 freq = freqForMidiKey(psgChan->key);
-    s16 bendRelative = bend - 0x2000;
-    freq = freq + (bendRelative / 100);
-    applyFrequency(psgChan, freq);
+    psgChan->pitchBend = bend;
+    applyFrequency(psgChan, effectiveFrequency(psgChan));
 }
 
 void midi_psg_program(u8 chan, u8 program)
