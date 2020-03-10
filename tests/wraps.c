@@ -321,6 +321,11 @@ void __wrap_midi_psg_tick(void)
     function_called();
 }
 
+void __wrap_midi_psg_loadEnvelope(u8* eef)
+{
+    check_expected_ptr(eef);
+}
+
 void __wrap_fm_writeReg(u16 part, u8 reg, u8 data)
 {
     check_expected(part);

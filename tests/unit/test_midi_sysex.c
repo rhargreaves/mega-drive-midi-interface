@@ -185,3 +185,17 @@ static void test_midi_sysex_disables_fm_parameter_CCs(UNUSED void** state)
         __real_midi_cc(0, cc, 1);
     }
 }
+
+static void test_midi_sysex_loads_psg_envelope(UNUSED void** state)
+{
+    const u8 sequence[] = { SYSEX_EXTENDED_MANU_ID_SECTION,
+        SYSEX_UNUSED_EUROPEAN_SECTION, SYSEX_UNUSED_MANU_ID,
+        SYSEX_LOAD_PSG_ENVELOPE_COMMAND_ID, 0x01, 0x01 };
+
+    const u8 eef[] = { 0x11, EEF_END };
+    const u8 eefLength = sizeof(eef) / sizeof(u8);
+
+    expect_memory(__wrap_midi_psg_loadEnvelope, eef, eef, eefLength);
+
+    __real_midi_sysex(sequence, sizeof(sequence));
+}

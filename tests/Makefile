@@ -79,6 +79,7 @@ MOCKS=midi_process \
 	midi_dynamicMode \
 	midi_channelMappings \
 	midi_psg_tick \
+	midi_psg_loadEnvelope \
 	log_init \
 	log_info \
 	log_warn \

@@ -269,6 +269,11 @@ void midi_psg_tick(void)
     }
 }
 
+void midi_psg_loadEnvelope(u8* eef)
+{
+    (void)eef;
+}
+
 static u16 freqForMidiKey(u8 midiKey)
 {
     if (midiKey < MIN_MIDI_KEY) {

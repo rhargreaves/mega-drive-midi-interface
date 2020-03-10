@@ -47,6 +47,7 @@ void __wrap_psg_noteOn(u8 channel, u16 freq);
 void __wrap_psg_noteOff(u8 channel);
 void __wrap_psg_attenuation(u8 channel, u8 attenuation);
 void __wrap_psg_frequency(u8 channel, u16 freq);
+
 void __wrap_midi_noteOff(u8 chan, u8 pitch);
 void __wrap_midi_noteOn(u8 chan, u8 pitch, u8 velocity);
 void __wrap_midi_channelVolume(u8 chan, u8 volume);
@@ -59,6 +60,7 @@ void __wrap_midi_sysex(u8* data, u16 length);
 bool __wrap_midi_dynamicMode(void);
 DeviceChannel* __wrap_midi_channelMappings(void);
 void __wrap_midi_psg_tick(void);
+void __wrap_midi_psg_loadEnvelope(u8* eef);
 void __wrap_ui_fm_setMidiChannelParametersVisibility(u8 chan, bool show);
 void __wrap_ui_update(void);
 void __wrap_YM2612_writeReg(const u16 part, const u8 reg, const u8 data);

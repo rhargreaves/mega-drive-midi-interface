@@ -464,6 +464,17 @@ static void setStickToDeviceType(bool enable)
     stickToDeviceType = enable;
 }
 
+static void loadPsgEnvelope(const u8* data, u16 length)
+{
+    u8 buffer[256];
+    u16 eefStepIndex = 0;
+    for (u16 i = 4; i < length; i += 2) {
+        buffer[eefStepIndex++] = (data[i] << 4) | data[i + 1];
+    }
+    buffer[eefStepIndex] = EEF_END;
+    midi_psg_loadEnvelope(buffer);
+}
+
 void midi_sysex(const u8* data, u16 length)
 {
     const u8 SYSEX_REMAP_COMMAND_ID = 0x00;
@@ -471,6 +482,7 @@ void midi_sysex(const u8* data, u16 length)
     const u8 SYSEX_DYNAMIC_COMMAND_ID = 0x03;
     const u8 SYSEX_NON_GENERAL_MIDI_CCS_COMMAND_ID = 0x04;
     const u8 SYSEX_STICK_TO_DEVICE_TYPE_COMMAND_ID = 0x05;
+    const u8 SYSEX_LOAD_PSG_ENVELOPE_COMMAND_ID = 0x06;
 
     const u8 GENERAL_MIDI_RESET_SEQUENCE[] = { 0x7E, 0x7F, 0x09, 0x01 };
 
@@ -494,6 +506,10 @@ void midi_sysex(const u8* data, u16 length)
         = { SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
               SYSEX_UNUSED_MANU_ID, SYSEX_STICK_TO_DEVICE_TYPE_COMMAND_ID };
 
+    const u8 LOAD_PSG_ENVELOPE_SEQUENCE[]
+        = { SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
+              SYSEX_UNUSED_MANU_ID, SYSEX_LOAD_PSG_ENVELOPE_COMMAND_ID };
+
     if (sysex_valid(data, length, GENERAL_MIDI_RESET_SEQUENCE,
             LENGTH_OF(GENERAL_MIDI_RESET_SEQUENCE), 0)) {
         generalMidiReset();
@@ -512,6 +528,11 @@ void midi_sysex(const u8* data, u16 length)
     } else if (sysex_valid(data, length, STICK_TO_DEVICE_TYPE_SEQUENCE,
                    LENGTH_OF(STICK_TO_DEVICE_TYPE_SEQUENCE), 1)) {
         setStickToDeviceType((bool)data[4]);
+
+    } else if (memcmp(data, LOAD_PSG_ENVELOPE_SEQUENCE,
+                   LENGTH_OF(LOAD_PSG_ENVELOPE_SEQUENCE))
+        == 0) {
+        loadPsgEnvelope(data, length);
     }
 }
 

@@ -17,3 +17,4 @@ void midi_psg_pitchBend(u8 chan, u16 bend);
 void midi_psg_program(u8 chan, u8 program);
 void midi_psg_pan(u8 chan, u8 pan);
 void midi_psg_tick(void);
+void midi_psg_loadEnvelope(u8* eef);

@@ -225,3 +225,36 @@ static void test_pong_received_after_ping_sent()
 
     midi_receiver_read();
 }
+
+static void test_loads_psg_envelope()
+{
+    skip();
+    const u8 SYSEX_LOAD_PSG_ENVELOPE_COMMAND_ID = 0x06;
+
+    const u8 sysExPingSequence[]
+        = { SYSEX_START, SYSEX_EXTENDED_MANU_ID_SECTION,
+              SYSEX_UNUSED_EUROPEAN_SECTION, SYSEX_UNUSED_MANU_ID,
+              SYSEX_LOAD_PSG_ENVELOPE_COMMAND_ID, 0x01, 0x01, SYSEX_END };
+
+    for (u16 i = 0; i < sizeof(sysExPingSequence); i++) {
+        stub_usb_receive_byte(sysExPingSequence[i]);
+    }
+
+    midi_receiver_read();
+
+    const u8 psgMidiChannel1 = 6;
+    const u8 noteOnStatus = 0x90 + psgMidiChannel1;
+    const u8 noteOnKey = 60;
+    const u8 noteOnVelocity = 127;
+
+    stub_usb_receive_byte(noteOnStatus);
+    stub_usb_receive_byte(noteOnKey);
+    stub_usb_receive_byte(noteOnVelocity);
+
+    expect_value(__wrap_PSG_setFrequency, channel, 0);
+    expect_value(__wrap_PSG_setFrequency, value, 0x107);
+    expect_value(__wrap_PSG_setEnvelope, channel, 0);
+    expect_value(__wrap_PSG_setEnvelope, value, 1);
+
+    midi_receiver_read();
+}
