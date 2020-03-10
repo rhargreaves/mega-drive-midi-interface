@@ -396,3 +396,17 @@ static void test_midi_pitch_shift_handles_lower_limit_psg_envelope(
 
     __real_midi_psg_tick();
 }
+
+static void test_midi_loads_psg_envelope(UNUSED void** state)
+{
+    u8 chan = MIN_PSG_CHAN;
+
+    const u8 eef[] = { 0x66, EEF_END };
+
+    __real_midi_psg_loadEnvelope(eef);
+
+    expect_psg_frequency(0, 0x126);
+    expect_psg_attenuation(0, 6);
+
+    __real_midi_noteOn(chan, 60, 127);
+}

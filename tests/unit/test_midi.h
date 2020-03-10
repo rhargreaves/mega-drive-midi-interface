@@ -38,6 +38,7 @@ extern void __real_midi_sysex(const u8* data, u16 length);
 extern bool __real_midi_dynamicMode(void);
 extern DeviceChannel* __real_midi_channelMappings(void);
 extern void __real_midi_psg_tick(void);
+extern void __real_midi_psg_loadEnvelope(const u8* eef);
 
 int test_midi_setup(UNUSED void** state);
 void test_midi_polyphonic_mode_returns_state(UNUSED void** state);

@@ -89,6 +89,7 @@ int main(void)
         midi_test(test_midi_sets_psg_pitch_bend_down),
         midi_test(test_midi_sets_psg_pitch_bend_up),
         midi_test(test_midi_psg_pitch_bend_persists_after_tick),
+        midi_test(test_midi_loads_psg_envelope),
         midi_test(test_midi_polyphonic_mode_returns_state),
         midi_test(test_midi_polyphonic_mode_uses_multiple_fm_channels),
         midi_test(

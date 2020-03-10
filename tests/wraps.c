@@ -321,7 +321,7 @@ void __wrap_midi_psg_tick(void)
     function_called();
 }
 
-void __wrap_midi_psg_loadEnvelope(u8* eef)
+void __wrap_midi_psg_loadEnvelope(const u8* eef)
 {
     check_expected_ptr(eef);
 }

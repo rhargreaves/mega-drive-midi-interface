@@ -2,6 +2,7 @@
 #include "envelopes.h"
 #include "midi.h"
 #include "psg_chip.h"
+#include <memory.h>
 #include <stdbool.h>
 
 #define MIN_PSG_CHAN 6
@@ -27,6 +28,9 @@ static const u8 ATTENUATIONS[] = { 15, 14, 14, 14, 13, 13, 13, 13, 12, 12, 12,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 typedef struct MidiPsgChannel MidiPsgChannel;
+
+static u8 userDefinedEnvelope[256];
+static u8* userDefinedEnvelopePtr;
 
 static const u8** envelopes;
 
@@ -56,6 +60,7 @@ static u16 effectiveFrequency(MidiPsgChannel* psgChan);
 
 void midi_psg_init(const u8** defaultEnvelopes)
 {
+    userDefinedEnvelopePtr = NULL;
     envelopes = defaultEnvelopes;
     for (u8 chan = 0; chan < MAX_PSG_CHANS; chan++) {
         MidiPsgChannel* psgChan = psgChannel(chan);
@@ -74,7 +79,9 @@ void midi_psg_init(const u8** defaultEnvelopes)
 
 static void initEnvelope(MidiPsgChannel* psgChan)
 {
-    psgChan->envelopeStep = envelopes[psgChan->envelope];
+    psgChan->envelopeStep = userDefinedEnvelopePtr != NULL
+        ? userDefinedEnvelopePtr
+        : envelopes[psgChan->envelope];
     psgChan->envelopeLoopStart = NULL;
 }
 
@@ -269,9 +276,14 @@ void midi_psg_tick(void)
     }
 }
 
-void midi_psg_loadEnvelope(u8* eef)
+void midi_psg_loadEnvelope(const u8* eef)
 {
-    (void)eef;
+    u16 i = 0;
+    while (*eef != EEF_END) {
+        userDefinedEnvelope[i++] = *eef;
+        eef++;
+    };
+    userDefinedEnvelopePtr = userDefinedEnvelope;
 }
 
 static u16 freqForMidiKey(u8 midiKey)

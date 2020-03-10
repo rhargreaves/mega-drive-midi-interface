@@ -228,13 +228,12 @@ static void test_pong_received_after_ping_sent()
 
 static void test_loads_psg_envelope()
 {
-    skip();
     const u8 SYSEX_LOAD_PSG_ENVELOPE_COMMAND_ID = 0x06;
 
     const u8 sysExPingSequence[]
         = { SYSEX_START, SYSEX_EXTENDED_MANU_ID_SECTION,
               SYSEX_UNUSED_EUROPEAN_SECTION, SYSEX_UNUSED_MANU_ID,
-              SYSEX_LOAD_PSG_ENVELOPE_COMMAND_ID, 0x01, 0x01, SYSEX_END };
+              SYSEX_LOAD_PSG_ENVELOPE_COMMAND_ID, 0x06, 0x06, SYSEX_END };
 
     for (u16 i = 0; i < sizeof(sysExPingSequence); i++) {
         stub_usb_receive_byte(sysExPingSequence[i]);
@@ -252,9 +251,9 @@ static void test_loads_psg_envelope()
     stub_usb_receive_byte(noteOnVelocity);
 
     expect_value(__wrap_PSG_setFrequency, channel, 0);
-    expect_value(__wrap_PSG_setFrequency, value, 0x107);
+    expect_value(__wrap_PSG_setFrequency, value, 0x126);
     expect_value(__wrap_PSG_setEnvelope, channel, 0);
-    expect_value(__wrap_PSG_setEnvelope, value, 1);
+    expect_value(__wrap_PSG_setEnvelope, value, 6);
 
     midi_receiver_read();
 }
