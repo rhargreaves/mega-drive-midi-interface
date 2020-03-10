@@ -113,7 +113,7 @@ You can also [re-configure the MIDI mappings](#system-exclusive) via SysEx
 
 - Note On/Off
 - Pitch Bend
-- Program Change (FM only: selects preset)
+- Program Change (selects FM preset or PSG envelope)
 - Universal SysEx Messages
 
 ### Common MIDI CCs
@@ -190,8 +190,8 @@ Releases are tested for performance using the [Mega MIDI Ping Pong](https://gith
 
 ## Stretch Goals
 
-- Support for MIDI messages to be received via the controller ports (in serial mode) as an alternative to the EverDrive X7.
 - Support for loading & playback of PCM samples.
+- Support for loading & saving of FM/PSG presets via SD card or SysEx.
 
 ## Contributions
 
