@@ -409,4 +409,8 @@ static void test_midi_loads_psg_envelope(UNUSED void** state)
     expect_psg_attenuation(0, 6);
 
     __real_midi_noteOn(chan, 60, 127);
+
+    expect_psg_attenuation(0, PSG_ATTENUATION_SILENCE);
+
+    __real_midi_psg_tick();
 }

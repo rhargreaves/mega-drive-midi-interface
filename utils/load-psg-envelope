@@ -1,0 +1,2 @@
+#!/bin/bash
+sendmidi dev "IAC Driver IAC Bus 2" hex syx 00 22 77 06 0F 0E 00 00 05 05 0F 0D

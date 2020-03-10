@@ -473,6 +473,7 @@ static void loadPsgEnvelope(const u8* data, u16 length)
     }
     buffer[eefStepIndex] = EEF_END;
     midi_psg_loadEnvelope(buffer);
+    log_info("Loaded User Defined Envelope", 0, 0, 0);
 }
 
 void midi_sysex(const u8* data, u16 length)

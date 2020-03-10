@@ -279,8 +279,11 @@ void midi_psg_tick(void)
 void midi_psg_loadEnvelope(const u8* eef)
 {
     u16 i = 0;
-    while (*eef != EEF_END) {
+    for (;;) {
         userDefinedEnvelope[i++] = *eef;
+        if (*eef == EEF_END) {
+            break;
+        }
         eef++;
     };
     userDefinedEnvelopePtr = userDefinedEnvelope;
