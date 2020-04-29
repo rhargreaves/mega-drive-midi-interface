@@ -4,15 +4,15 @@ Control the Yamaha YM2612 and PSG chips of the SEGA Mega Drive via MIDI.
 
 ## Features
 
+- On-screen per-channel activity indicators & log
 - Built-in FM presets for General MIDI compatibility
 - Built-in PSG envelopes based on the [EEF](<https://github.com/rhargreaves/mega-drive-midi-interface/wiki/PSG-Envelopes>) format
 - Supports MIDI 1.0 CCs & events (e.g. panning, volume, pitch bending)
-- Polythonic support via FM channel pooling
+- Polyphony via dynamic FM channel mapping
 - Connectivity via:
-  - Mega Everdrive's X7 USB port
-  - [Custom-built USB cable connected to a controller port](https://github.com/rhargreaves/mega-drive-serial-port#hardware).
-- Fine-grained control of YM2612 registers via [GenMDM-style CCs](https://catskullelectronics.com/public/genMDM.pdf)
-- Optionally outputs FM parameter values to the screen for a specific MIDI channel (see CC 83)
+  - [Mega EverDrive X7's](https://krikzz.com/store/home/33-mega-everdrive-x7.html) USB port
+  - [Controller port via custom USB serial cable](https://github.com/rhargreaves/mega-drive-serial-port#hardware).
+- Control of YM2612 registers via [GenMDM-style CCs](https://catskullelectronics.com/public/genMDM.pdf)
 
 <p align="center">
     <img src="https://github.com/rhargreaves/mega-drive-midi-interface/raw/master/docs/screenshot.jpg" width="600" />
@@ -26,13 +26,13 @@ Head over to the [Wiki](https://github.com/rhargreaves/mega-drive-midi-interface
 
 Unit & system tests are compiled and ran as x86 binaries using CMocka. Mega Drive interfaces are mocked.
 
-Docker:
+### Docker:
 
 ```sh
 ./docker-make
 ```
 
-Linux (requires `cmake` & [gendev](https://github.com/kubilus1/gendev)):
+### Linux (with `cmake` & [gendev](https://github.com/kubilus1/gendev)):
 
 ```sh
 make
