@@ -65,47 +65,7 @@ make
 
 Head over to the [Wiki](https://github.com/rhargreaves/mega-drive-midi-interface/wiki/MIDI-Message-Reference) for a detailed list of MIDI messages that can be sent to the interface.
 
-## Channels
-
-### Static Mapping
-
-By default, MIDI channels are assigned in a static, one-to-one arrangement to FM or PSG channels as follows:
-
-| Channels | Assignment                  |
-| -------- | --------------------------- |
-| 1 - 6    | YM2612 FM Channels 1 - 6    |
-| 7 - 9    | PSG Square Wave Tones 1 - 3 |
-| 10       | PSG Noise Channel           |
-
-You can [re-configure the MIDI mappings](#system-exclusive) by sending the appropriate SysEx message.
-
-### Dynamic Mapping
-
-When dynamic mapping mode is enabled (SysEx `00 22 77 03 01`), MIDI channel note-on/off events are dynamically routed to free FM and PSG channels. That is, MIDI channels no-longer map directly onto device channels but are virtualised and note-on/off events and MIDI program data is set on the next available channel. This mode is best suited for playback of General MIDI files and makes full use of available YM2612/PSG capacity.
-
-The following rules are used to determine which device channel receives the MIDI event:
-
-1. FM channels 1 - 6 and PSG channels 1 - 3 (device channels) are included in the pool of available channels.
-   The first available channel is assigned the first MIDI note on event. Future events are sent to this channel.
-2. On subsequent events, if the note is already playing on that channel, the next available device channel is used.
-3. The following MIDI parameters are automatically set on any mapped device channels:
-   - Program
-   - Volume
-   - Pan
-   
-### Polyphonic Mode
-
-When polyphonic mode is enabled (CC 80), dynamic mapping mode is enabled and MIDI channel 1 is mapped to FM channels 1-6. This allows for polyphony within a single MIDI channel. In addition, any FM parameter change made will be sent to all FM channels. If all channels are busy, the note on event is dropped.
-
 ## Features
-
-### FM Presets
-
-Sending a MIDI program change (0xC) message will select a pre-defined FM preset.
-The full list of presets available are defined in
-[`presets.h`](https://github.com/rhargreaves/mega-drive-midi-interface/blob/master/src/presets.h). They are based on [Wohlstand's XG bank from libOPNMIDI](https://github.com/Wohlstand/libOPNMIDI/blob/master/fm_banks/xg.wopn). The interface defaults all FM channels to instrument 0 (Grand Piano) on start-up.
-
-If MIDI channel 10 is mapped to an FM channel, the interface will make use of a separate bank of percussion instruments. An an example, to map MIDI channel 10 to FM channel 6, use the SysEx sequence `00 22 77 00 09 05`. Note that by default MIDI channel 10 is set to the PSG noise channel.
 
 ### Show FM Channel Parameters on UI
 
