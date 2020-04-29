@@ -61,7 +61,9 @@ Linux (requires `cmake` & [gendev](https://github.com/kubilus1/gendev)):
 make
 ```
 
-## FM Presets
+## Features
+
+### FM Presets
 
 Sending a MIDI program change (0xC) message will select a pre-defined FM preset.
 The full list of presets available are defined in
@@ -69,7 +71,7 @@ The full list of presets available are defined in
 
 If MIDI channel 10 is mapped to an FM channel, the interface will make use of a separate bank of percussion instruments. An an example, to map MIDI channel 10 to FM channel 6, use the SysEx sequence `00 22 77 00 09 05`. Note that by default MIDI channel 10 is set to the PSG noise channel.
 
-## Dynamic Mapping Mode
+### Dynamic Mapping Mode
 
 When dynamic mapping mode is enabled (SysEx `00 22 77 03 01`), MIDI channel note-on/off events are dynamically routed to free FM and PSG channels. That is, MIDI channels no-longer map directly onto device channels but are virtualised and note-on/off events and MIDI program data is set on the next available channel. This mode is best suited for playback of General MIDI files and makes full use of available YM2612/PSG capacity.
 
@@ -83,7 +85,7 @@ The following rules are used to determine which device channel receives the MIDI
    - Volume
    - Pan
 
-## Show FM Channel Parameters on UI
+### Show FM Channel Parameters on UI
 
 You can use CC 83 to show the current FM parameters for the specific channel:
 
@@ -91,13 +93,11 @@ You can use CC 83 to show the current FM parameters for the specific channel:
     <img src="https://github.com/rhargreaves/mega-drive-midi-interface/raw/master/docs/chan_paras.jpg" width="600" />
 </p>
 
-### Polyphonic Mode
+## Reference
 
-When polyphonic mode is enabled (CC 80), dynamic mapping mode is enabled and MIDI channel 1 is mapped to FM channels 1-6. This allows for polyphony within a single MIDI channel. In addition, any FM parameter change made will be sent to all FM channels. If all channels are busy, the note on event is dropped.
+Head over to the [Wiki](https://github.com/rhargreaves/mega-drive-midi-interface/wiki/MIDI-Message-Reference) for a detailed list of MIDI messages that can be sent to the interface.
 
-## MIDI Message Reference
-
-### Channel Mappings
+## Channel Mappings
 
 By default, MIDI channels are assigned in a static, one-to-one arrangement to FM or PSG channels as follows:
 
@@ -109,79 +109,9 @@ By default, MIDI channels are assigned in a static, one-to-one arrangement to FM
 
 You can also [re-configure the MIDI mappings](#system-exclusive) via SysEx
 
-### Events
+### Polyphonic Mode
 
-- Note On/Off
-- Pitch Bend
-- Program Change (selects FM preset or PSG envelope)
-- Universal SysEx Messages
-
-### Common MIDI CCs
-
-These are supported across FM and PSG channels:
-
-| CC  | Description           | Effect                                                                 | Values                                             |
-| --- | --------------------- | ---------------------------------------------------------------------- | -------------------------------------------------- |
-| 7   | Channel Volume        | Output Operator Total Level (FM),<br/>Attenuation (PSG)                | 0 - 127: [Logarithmic](src/midi.c#L24)             |
-| 10  | Panning               | Stereo                                                                 | 0 - 31: Left<br>32 - 95: Centre<br>96 - 127: Right |
-| 120 | All Sounds Off        | Same as CC 123                                                         | Any                                                |
-| 121 | Reset All Controllers | Reset MIDI parameters and dynamic channel mappings (dynamic mode only) | Any                                                |
-| 123 | All Notes Off         | Key Off (FM),<br/>Max. Attenuation (PSG)                               | Any                                                |
-
-### FM Parameters
-
-These only apply to channels mapped to FM channels:
-
-#### Global
-
-| Description       | CC  | Range\* |
-| ----------------- | --- | ------- |
-| LFO Enable        | 74  | 2       |
-| LFO Frequency     | 1   | 8       |
-| Polyphonic Mode\* | 80  | 2       |
-
-_Range determines how the possible 128 MIDI values are divided to give the respective YM2612 register value, using the formula `_midiValue / (128 / range) = registerValue` (e.g. MIDI value of 32, with a range of 8 translates into to a YM2612 register value of 2)_
-
-#### Per Channel
-
-| Parameter                                                                                                            | CC  | Range |
-| -------------------------------------------------------------------------------------------------------------------- | --- | ----- |
-| Algorithm ([reference](https://github.com/rhargreaves/mega-drive-midi-interface/wiki/FM-Algorithm-Operator-Routing)) | 14  | 8     |
-| Feedback                                                                                                             | 15  | 8     |
-| Frequency Modulation Level (FMS)                                                                                     | 75  | 8     |
-| Amplitude Modulation Level (AMS)                                                                                     | 76  | 4     |
-| Stereo                                                                                                               | 77  | 4     |
-| Show Parameters on UI                                                                                                | 83  | 2     |
-
-#### Per Channel & Operator
-
-| Parameter                    | Op 1<br/>CC | Op 2<br/>CC | Op 3<br/>CC | Op 4<br/>CC | Range |
-| ---------------------------- | ----------- | ----------- | ----------- | ----------- | ----- |
-| Total Level (TL)             | 16          | 17          | 18          | 19          | 128   |
-| Multiple (MUL)               | 20          | 21          | 22          | 23          | 16    |
-| Detune (DT1)                 | 24          | 25          | 26          | 27          | 8     |
-| Rate Scaling (RS)            | 39          | 40          | 41          | 42          | 4     |
-| Attack Rate (AR)             | 43          | 44          | 45          | 46          | 32    |
-| First Decay Rate (D1R)       | 47          | 48          | 49          | 50          | 32    |
-| Second Decay Rate (D2R)      | 51          | 52          | 53          | 54          | 16    |
-| Secondary Amplitude (D1L/SL) | 55          | 56          | 57          | 58          | 16    |
-| Release Rate (RR)            | 59          | 60          | 61          | 62          | 16    |
-| Amplitude Modulation (AM)    | 70          | 71          | 72          | 73          | 2     |
-| SSG-EG                       | 90          | 91          | 92          | 93          | 16    |
-
-## Configuration & Advanced Operations
-
-The interface is configurable by sending specific System Exclusive messages to the Mega Drive. There are also a number of advanced operations which have a specific effect when received. A list of all possible SysEx messages are given below:
-
-| Name                            | SysEx Sequence      | Description                                                                                                                                                                                        |
-| ------------------------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| General MIDI Reset              | `7E 7F 09 01`       | Force all notes off on all channels and resets all MIDI channel mappings.                                                                                                                          |
-| Remap MIDI Channel              | `00 22 77 00 xx yy` | Remap MIDI channel _xx_ to device channel _yy_<br/>_xx_ = MIDI channel (0-15), unassigned (127)<br/>_yy_ = FM (0-5), PSG (6-9), unassigned (127)                                                   |
-| Ping                            | `00 22 77 01`       | Interface responds with a _pong_ SysEx reply (`00 22 77 02`). Intended for use in measuring MIDI round-trip latency.                                                                               |
-| Dynamic Channelling Mode        | `00 22 77 03 xx`    | Dynamically assigns MIDI channels to idle FM/PSG channels to allow for maximum polyphony and variation in instrumentation.<br/>_xx_ = Enable (01) / Disable (00)                                   |
-| Non-General MIDI CCs            | `00 22 77 04 xx`    | Respond to non-General MIDI CCs.<br/>_xx_ = Enable (01) / Disable (00)                                                                                                                             |
-| Polyphony Sticks to Device Type | `00 22 77 05 xx`    | MIDI channel polyphony will stick to originally assigned device type (FM or PSG). Enable for consistent voicing, but disable to allow for maximum polyphony.<br/>_xx_ = Enable (01) / Disable (00) |
-| Load User Defined PSG Envelope  | `00 22 77 06 ...`   | [Loads a custom PSG envelope](https://github.com/rhargreaves/mega-drive-midi-interface/wiki/PSG-Envelopes#loading-user-defined-envelopes)                                                          |
+When polyphonic mode is enabled (CC 80), dynamic mapping mode is enabled and MIDI channel 1 is mapped to FM channels 1-6. This allows for polyphony within a single MIDI channel. In addition, any FM parameter change made will be sent to all FM channels. If all channels are busy, the note on event is dropped.
 
 ## Performance
 
