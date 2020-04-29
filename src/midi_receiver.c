@@ -31,7 +31,7 @@ static void pitchBend(u8 status);
 static void systemMessage(u8 status);
 static void setUnknownStatus(u8 status);
 static void program(u8 status);
-static u16 read_14bit_value(void);
+static u16 read14bitValue(void);
 static void readSysEx(void);
 
 void midi_receiver_init(void)
@@ -115,7 +115,7 @@ static void noteOff(u8 status)
 static void pitchBend(u8 status)
 {
     u8 chan = STATUS_LOWER(status);
-    u16 bend = read_14bit_value();
+    u16 bend = read14bitValue();
     midi_pitchBend(chan, bend);
 }
 
@@ -126,7 +126,7 @@ static void program(u8 status)
     midi_program(chan, program);
 }
 
-static u16 read_14bit_value(void)
+static u16 read14bitValue(void)
 {
     u16 lower = comm_read();
     u16 upper = comm_read();
@@ -138,7 +138,7 @@ static void systemMessage(u8 status)
     u8 type = STATUS_LOWER(status);
     switch (type) {
     case SYSTEM_SONG_POSITION:
-        read_14bit_value();
+        read14bitValue();
         break;
     case SYSTEM_CLOCK:
     case SYSTEM_START:
