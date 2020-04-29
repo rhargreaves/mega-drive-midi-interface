@@ -14,41 +14,13 @@ Control the Yamaha YM2612 and PSG chips of the SEGA Mega Drive via MIDI.
 - Fine-grained control of YM2612 registers via [GenMDM-style CCs](https://catskullelectronics.com/public/genMDM.pdf)
 - Optionally outputs FM parameter values to the screen for a specific MIDI channel (see CC 83)
 
-### Reference
-
-Head over to the [Wiki](https://github.com/rhargreaves/mega-drive-midi-interface/wiki/) for detailed reference on the interface's feature set.
-
-
 <p align="center">
     <img src="https://github.com/rhargreaves/mega-drive-midi-interface/raw/master/docs/screenshot.jpg" width="600" />
 </p>
 
 ## Getting Started
 
-### Hardware Requirements
-
-- SEGA Mega Drive/Genesis Console
-
-Either:
-
-- [Mega EverDrive X7 cart](https://krikzz.com/store/home/33-mega-everdrive-v2.html)
-- USB cable for connecting your PC to the EverDrive X7.
-
-Or:
-
-- Generic flash cart for loading the ROM
-- USB serial cable for connectivity into Controller Port 2, [based on these specifications](https://github.com/rhargreaves/mega-drive-serial-port#hardware)
-
-**Whilst connectivity via the controller port might be fine for simple use cases, the controller port's relatively slow speed makes it unsuitable for playback of busy MIDI sequences. EverDrive X7 USB connectivity is the recommended option for these cases.**
-
-### Software Requirements
-
-- MIDI to serial port virtual device, e.g. [Hairless MIDI<->Serial Bridge](http://projectgus.github.io/hairless-midiserial/)
-- Optional: MIDI loop device (so software running on the same PC as the USB connection can use the MIDI interface). In macOS this is possible via the use of a ["IAC Device Bus" creatable from the Audio MIDI Setup utility](https://help.ableton.com/hc/en-us/articles/209774225-Using-virtual-MIDI-buses).
-
-### Download
-
-You can download pre-built ROMs from [releases](https://github.com/rhargreaves/mega-drive-midi-interface/releases).
+Check out the [Wiki](https://github.com/rhargreaves/mega-drive-midi-interface/wiki/Getting-Started) to get started.
 
 ## Build & Test
 
@@ -65,12 +37,6 @@ Linux (requires `cmake` & [gendev](https://github.com/kubilus1/gendev)):
 ```sh
 make
 ```
-
-## Performance
-
-Releases are tested for performance using the [Mega MIDI Ping Pong](https://github.com/rhargreaves/mega-midi-ping-pong) tool which makes use of the "Ping" SysEx message to measure round-trip time.
-
-[Test results](https://github.com/rhargreaves/mega-midi-ping-pong#results)
 
 ## Stretch Goals
 
