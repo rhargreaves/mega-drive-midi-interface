@@ -38,11 +38,6 @@ Unit & system tests are compiled and ran as x86 binaries using CMocka. Mega Driv
 make
 ```
 
-## Stretch Goals
-
-- Support for loading & playback of PCM samples.
-- Support for loading & saving of FM/PSG presets via SD card or SysEx.
-
 ## Contributions
 
 Pull requests are welcome, as are donations!
