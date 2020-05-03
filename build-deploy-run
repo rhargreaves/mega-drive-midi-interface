@@ -1,0 +1,9 @@
+#!/bin/bash
+set +euo pipefail
+
+./docker-make clean all
+./utils/run-everdrive bin/out.bin
+hairless-midiserial -w -c -d \
+	-s /dev/cu.usbserial-A105J2JO \
+	-o "IAC Driver IAC Bus 1" \
+	-i "IAC Driver IAC Bus 2"
