@@ -1,3 +1,5 @@
+// Based on neologix's code from http://gendev.spritesmind.net/forum/viewtopic.php?f=24&t=1882
+
 util = require("util");
 
 NTSC_CPU_HZ = 7670454;
@@ -75,10 +77,24 @@ var systems = [
 ];
 
 systems.forEach((sys) => {
-  console.log("\n" + sys.name + " timings\n");
+  console.log("\n" + sys.name + " YM2612 frequency table\n");
   for (var note = 0; note <= 106; note++) {
     hz = MIDI_noteToHz(note);
     f = YM_hzToFnum(hz, 1, 4, sys.hz);
+    console.log({
+      note,
+      hz,
+      fnum: f.fnum,
+      block: f.block > 0 ? f.block - 1 : f.block,
+    });
+  }
+});
+
+systems.forEach((sys) => {
+  console.log("\n" + sys.name + " PSG frequency table\n");
+  for (var note = 0; note <= 106; note++) {
+    hz = MIDI_noteToHz(note);
+    f = SN_hzToFnum(sys.hz, hz);
     console.log({
       note,
       hz,
