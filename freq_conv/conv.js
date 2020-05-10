@@ -94,7 +94,7 @@ systems.forEach((sys) => {
 
 systems.forEach((sys) => {
   console.log("\n" + sys.name + " PSG frequency table\n");
-  for (var note = 0; note <= 106; note++) {
+  for (var note = 45; note <= 127; note++) {
     hz = MIDI_noteToHz(note);
     f = SN_hzToFnum(sys.psgHz, hz);
     console.log({
@@ -103,4 +103,12 @@ systems.forEach((sys) => {
       f,
     });
   }
+
+  console.log("static const u16 TONES[NUM_FREQUENCIES] = {");
+  for (var note = 45; note <= 127; note++) {
+    hz = MIDI_noteToHz(note);
+    f = SN_hzToFnum(sys.psgHz, hz);
+    console.log(f + ", ");
+  }
+  console.log("};");
 });

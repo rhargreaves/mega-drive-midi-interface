@@ -1,8 +1,8 @@
 
 build:
-	@docker build -t freq_conv .
+	@docker build -qt freq_conv .
 
 run: build
-	@docker run -it freq_conv
+	@docker run -i freq_conv
 
 .PHONY: build run
