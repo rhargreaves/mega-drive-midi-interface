@@ -2,8 +2,10 @@
 
 util = require("util");
 
-NTSC_CPU_HZ = 7670454;
-PAL_CPU_HZ = 7600489;
+NTSC_YM2612_HZ = 7670454;
+PAL_YM2612_HZ = 7600489;
+NTSC_PSG_HZ = 3579545;
+PAL_PSG_HZ = 3546895;
 
 function MIDI_noteToHz(n) {
   return 440 * Math.pow(2, (n - 69) / 12);
@@ -33,7 +35,7 @@ function SN_hzToFnum(clock, hz) {
 function YM_fnumToHz(fn, b) {
   // defaults to NTSC clock value, 6 channels, 24 as the divisor
   var rs = 1,
-    clock = NTSC_CPU_HZ,
+    clock = NTSC_YM2612_HZ,
     ch = 6,
     fm = 24;
   if (arguments.length > 5) fm = arguments[5];
@@ -48,7 +50,7 @@ function YM_fnumToHz(fn, b) {
 function YM_hzToFnum(hz) {
   var dp = 4,
     rs = 1,
-    clock = NTSC_CPU_HZ,
+    clock = NTSC_YM2612_HZ,
     ch = 6,
     fm = 24;
   if (arguments.length > 5) fm = arguments[5];
@@ -72,15 +74,15 @@ function YM_hzToFnum(hz) {
 }
 
 var systems = [
-  { name: "PAL", hz: PAL_CPU_HZ },
-  { name: "NTSC", hz: NTSC_CPU_HZ },
+  { name: "PAL", ym2612Hz: PAL_YM2612_HZ, psgHz: PAL_PSG_HZ },
+  { name: "NTSC", ym2612Hz: NTSC_YM2612_HZ, psgHz: NTSC_PSG_HZ },
 ];
 
 systems.forEach((sys) => {
   console.log("\n" + sys.name + " YM2612 frequency table\n");
   for (var note = 0; note <= 106; note++) {
     hz = MIDI_noteToHz(note);
-    f = YM_hzToFnum(hz, 1, 4, sys.hz);
+    f = YM_hzToFnum(hz, 1, 4, sys.ym2612Hz);
     console.log({
       note,
       hz,
@@ -94,12 +96,11 @@ systems.forEach((sys) => {
   console.log("\n" + sys.name + " PSG frequency table\n");
   for (var note = 0; note <= 106; note++) {
     hz = MIDI_noteToHz(note);
-    f = SN_hzToFnum(sys.hz, hz);
+    f = SN_hzToFnum(sys.psgHz, hz);
     console.log({
       note,
       hz,
-      fnum: f.fnum,
-      block: f.block > 0 ? f.block - 1 : f.block,
+      f,
     });
   }
 });
