@@ -1,3 +1,8 @@
+util = require("util");
+
+NTSC_CPU_HZ = 7670454;
+PAL_CPU_HZ = 7600489;
+
 function MIDI_noteToHz(n) {
   return 440 * Math.pow(2, (n - 69) / 12);
 }
@@ -24,9 +29,9 @@ function SN_hzToFnum(clock, hz) {
 }
 
 function YM_fnumToHz(fn, b) {
-  // defaults to 7670448 NTSC clock value, 6 channels, 24 as the divisor
+  // defaults to NTSC clock value, 6 channels, 24 as the divisor
   var rs = 1,
-    clock = 7670448,
+    clock = NTSC_CPU_HZ,
     ch = 6,
     fm = 24;
   if (arguments.length > 5) fm = arguments[5];
@@ -41,7 +46,7 @@ function YM_fnumToHz(fn, b) {
 function YM_hzToFnum(hz) {
   var dp = 4,
     rs = 1,
-    clock = 7670448,
+    clock = NTSC_CPU_HZ,
     ch = 6,
     fm = 24;
   if (arguments.length > 5) fm = arguments[5];
@@ -64,4 +69,21 @@ function YM_hzToFnum(hz) {
   return { fnum: fn | 0, block: b };
 }
 
-console.log(MIDI_noteToHz(69));
+var systems = [
+  { name: "PAL", hz: PAL_CPU_HZ },
+  { name: "NTSC", hz: NTSC_CPU_HZ },
+];
+
+systems.forEach((sys) => {
+  console.log("\n" + sys.name + " timings\n");
+  for (var note = 0; note <= 106; note++) {
+    hz = MIDI_noteToHz(note);
+    f = YM_hzToFnum(hz, 1, 4, sys.hz);
+    console.log({
+      note,
+      hz,
+      fnum: f.fnum,
+      block: f.block > 0 ? f.block - 1 : f.block,
+    });
+  }
+});
