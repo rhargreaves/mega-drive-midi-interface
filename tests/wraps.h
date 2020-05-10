@@ -46,8 +46,6 @@ void __wrap_fm_writeReg(u16 part, u8 reg, u8 data);
 void __wrap_psg_noteOn(u8 channel, u16 freq);
 void __wrap_psg_noteOff(u8 channel);
 void __wrap_psg_attenuation(u8 channel, u8 attenuation);
-void __wrap_psg_frequency(u8 channel, u16 freq);
-
 void __wrap_midi_noteOff(u8 chan, u8 pitch);
 void __wrap_midi_noteOn(u8 chan, u8 pitch, u8 velocity);
 void __wrap_midi_channelVolume(u8 chan, u8 volume);
@@ -69,7 +67,7 @@ void __wrap_SYS_setVIntCallback(_voidCallback* CB);
 void __wrap_VDP_setTextPalette(u16 palette);
 void __wrap_VDP_clearText(u16 x, u16 y, u16 w);
 void __wrap_PSG_setEnvelope(u8 channel, u8 value);
-void __wrap_PSG_setFrequency(u8 channel, u16 value);
+void __wrap_PSG_setTone(u8 channel, u16 value);
 Sprite* __wrap_SPR_addSprite(
     const SpriteDefinition* spriteDef, s16 x, s16 y, u16 attribut);
 void __wrap_SPR_update();

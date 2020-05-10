@@ -20,14 +20,20 @@ void expect_synth_volume(u8 channel, u8 volume);
         expect_value(__wrap_psg_attenuation, attenuation, attenu);             \
     }
 
-#define expect_psg_frequency(c, f)                                             \
+#define expect_psg_tone(c, t)                                                  \
     {                                                                          \
-        expect_value(__wrap_psg_frequency, channel, c);                        \
-        expect_value(__wrap_psg_frequency, freq, f);                           \
+        expect_value(__wrap_PSG_setTone, channel, c);                          \
+        expect_value(__wrap_PSG_setTone, value, t);                            \
     }
 
-#define expect_any_psg_frequency()                                             \
+#define expect_any_psg_tone()                                                  \
     {                                                                          \
-        expect_any(__wrap_psg_frequency, channel);                             \
-        expect_any(__wrap_psg_frequency, freq);                                \
+        expect_any(__wrap_PSG_setTone, channel);                               \
+        expect_any(__wrap_PSG_setTone, value);                                 \
+    }
+
+#define expect_any_psg_tone_on_channel(c)                                      \
+    {                                                                          \
+        expect_value(__wrap_PSG_setTone, channel, c);                          \
+        expect_any(__wrap_PSG_setTone, value);                                 \
     }

@@ -181,7 +181,6 @@ int main(void)
         synth_test(test_synth_calls_callback_when_lfo_enable_changes),
 
         cmocka_unit_test(test_psg_chip_sets_attenuation),
-        cmocka_unit_test(test_psg_chip_sets_frequency),
         cmocka_unit_test(test_psg_sets_busy_indicators),
 
         comm_test(test_comm_reads_from_serial_when_ready),

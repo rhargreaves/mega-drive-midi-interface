@@ -93,8 +93,8 @@ static void test_psg_audible_if_note_on_event_triggered(void** state)
     stub_usb_receive_byte(noteOnKey);
     stub_usb_receive_byte(noteOnVelocity);
 
-    expect_any(__wrap_PSG_setFrequency, channel);
-    expect_any(__wrap_PSG_setFrequency, value);
+    expect_any(__wrap_PSG_setTone, channel);
+    expect_any(__wrap_PSG_setTone, value);
     expect_any(__wrap_PSG_setEnvelope, channel);
     expect_any(__wrap_PSG_setEnvelope, value);
 
@@ -138,8 +138,8 @@ static void test_general_midi_reset_sysex_stops_all_notes(void** state)
     stub_usb_receive_byte(noteOnKey);
     stub_usb_receive_byte(noteOnVelocity);
 
-    expect_value(__wrap_PSG_setFrequency, channel, 0);
-    expect_any(__wrap_PSG_setFrequency, value);
+    expect_value(__wrap_PSG_setTone, channel, 0);
+    expect_any(__wrap_PSG_setTone, value);
     expect_value(__wrap_PSG_setEnvelope, channel, 0);
     expect_value(__wrap_PSG_setEnvelope, value, 0);
 
@@ -194,8 +194,8 @@ static void test_remap_midi_channel_1_to_psg_channel_1()
     stub_usb_receive_byte(noteOnKey);
     stub_usb_receive_byte(noteOnVelocity);
 
-    expect_value(__wrap_PSG_setFrequency, channel, 0);
-    expect_any(__wrap_PSG_setFrequency, value);
+    expect_value(__wrap_PSG_setTone, channel, 0);
+    expect_any(__wrap_PSG_setTone, value);
     expect_value(__wrap_PSG_setEnvelope, channel, 0);
     expect_value(__wrap_PSG_setEnvelope, value, 0);
 
@@ -250,8 +250,8 @@ static void test_loads_psg_envelope()
     stub_usb_receive_byte(noteOnKey);
     stub_usb_receive_byte(noteOnVelocity);
 
-    expect_value(__wrap_PSG_setFrequency, channel, 0);
-    expect_value(__wrap_PSG_setFrequency, value, 0x126);
+    expect_value(__wrap_PSG_setTone, channel, 0);
+    expect_value(__wrap_PSG_setTone, value, 0x17c);
     expect_value(__wrap_PSG_setEnvelope, channel, 0);
     expect_value(__wrap_PSG_setEnvelope, value, 6);
 

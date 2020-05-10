@@ -356,14 +356,6 @@ void __wrap_psg_attenuation(u8 channel, u8 attenuation)
     check_expected(attenuation);
 }
 
-void __wrap_psg_frequency(u8 channel, u16 freq)
-{
-    if (disableChecks)
-        return;
-    check_expected(channel);
-    check_expected(freq);
-}
-
 void __wrap_ui_fm_setMidiChannelParametersVisibility(u8 chan, bool show)
 {
     check_expected(chan);
@@ -416,6 +408,14 @@ void __wrap_PSG_setEnvelope(u8 channel, u8 value)
 }
 
 void __wrap_PSG_setFrequency(u8 channel, u16 value)
+{
+    if (disableChecks)
+        return;
+    check_expected(channel);
+    check_expected(value);
+}
+
+void __wrap_PSG_setTone(u8 channel, u16 value)
 {
     if (disableChecks)
         return;
