@@ -41,7 +41,6 @@ typedef struct MidiPsgChannel MidiPsgChannel;
 
 static u8 userDefinedEnvelope[256];
 static u8* userDefinedEnvelopePtr;
-
 static const u8** envelopes;
 
 struct MidiPsgChannel {
@@ -86,11 +85,6 @@ void midi_psg_init(const u8** defaultEnvelopes)
         psgChan->pitchBend = DEFAULT_MIDI_PITCH_BEND;
         initEnvelope(psgChan);
     }
-}
-
-u8 psg_busy(void)
-{
-    return audible;
 }
 
 static void initEnvelope(MidiPsgChannel* psgChan)
@@ -329,4 +323,9 @@ static u16 toneForMidiKey(u8 midiKey)
 static MidiPsgChannel* psgChannel(u8 chan)
 {
     return &psgChannels[chan];
+}
+
+u8 midi_psg_busy(void)
+{
+    return audible;
 }
