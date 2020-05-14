@@ -26,6 +26,22 @@ static void test_midi_triggers_psg_note_on(UNUSED void** state)
     }
 }
 
+static void test_midi_uses_PAL_tones_if_system_is_in_that_region(
+    UNUSED void** state)
+{
+    u8 chan = MIN_PSG_CHAN;
+    u8 expectedPsgChan = chan - MIN_PSG_CHAN;
+
+    const u16 TONE_PAL_C4 = 423;
+
+    wraps_region_setIsPal(true);
+
+    expect_psg_tone(expectedPsgChan, TONE_PAL_C4);
+    expect_psg_attenuation(expectedPsgChan, 0);
+
+    __real_midi_noteOn(chan, MIDI_PITCH_C4_, MAX_MIDI_VOLUME);
+}
+
 static void test_midi_triggers_psg_note_on_with_velocity(UNUSED void** state)
 {
     u8 chan = MIN_PSG_CHAN;

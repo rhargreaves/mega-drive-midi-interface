@@ -581,3 +581,14 @@ Log* __wrap_log_dequeue(void)
 void __wrap_VDP_clearTextArea(u16 x, u16 y, u16 w, u16 h)
 {
 }
+
+static bool regionIsPal = false;
+bool __wrap_region_isPal(void)
+{
+    return regionIsPal;
+}
+
+void wraps_region_setIsPal(bool isPal)
+{
+    regionIsPal = isPal;
+}

@@ -57,6 +57,7 @@ int main(void)
         midi_test(
             test_midi_triggers_synth_note_off_when_note_on_has_zero_velocity),
         midi_test(test_midi_triggers_psg_note_on),
+        midi_test(test_midi_uses_PAL_tones_if_system_is_in_that_region),
         midi_test(test_midi_triggers_psg_note_on_with_velocity),
         midi_test(
             test_midi_triggers_psg_note_on_with_velocity_and_channel_volume),
