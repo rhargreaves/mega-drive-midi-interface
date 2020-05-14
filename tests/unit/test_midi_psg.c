@@ -432,6 +432,6 @@ static void test_midi_psg_sets_busy_indicators(UNUSED void** state)
         __real_midi_noteOff(chan + MIN_PSG_CHAN, MIDI_PITCH_C4_);
     }
 
-    u8 busy = psg_busy();
+    u8 busy = midi_psg_busy();
     assert_int_equal(busy, 0b1010);
 }

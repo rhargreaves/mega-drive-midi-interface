@@ -215,7 +215,7 @@ static void printCommBuffer(void)
 static void updateKeyOnOff(void)
 {
     static u16 lastBusy = 0;
-    u16 busy = synth_busy() | (psg_busy() << 6);
+    u16 busy = synth_busy() | (midi_psg_busy() << 6);
     if (busy != lastBusy) {
         printChanActivity(busy);
         lastBusy = busy;
