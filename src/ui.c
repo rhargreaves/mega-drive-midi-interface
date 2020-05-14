@@ -6,7 +6,6 @@
 #include "memcmp.h"
 #include "midi.h"
 #include "midi_receiver.h"
-#include "psg_chip.h"
 #include "serial.h"
 #include "synth.h"
 #include "ui_fm.h"

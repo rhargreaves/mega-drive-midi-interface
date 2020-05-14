@@ -47,9 +47,7 @@ static void test_midi_dynamic_uses_all_channels(UNUSED void** state)
     for (u16 i = DEV_CHAN_MIN_PSG; i <= DEV_CHAN_MAX_PSG - 1; i++) {
         u8 psgChan = i - DEV_CHAN_MIN_PSG;
         expect_any_psg_tone_on_channel(psgChan);
-        expect_value(__wrap_psg_attenuation, channel, psgChan);
-        expect_value(__wrap_psg_attenuation, attenuation, 0);
-
+        expect_psg_attenuation(psgChan, 0);
         __real_midi_noteOn(0, pitch, 127);
     }
 }
@@ -453,10 +451,9 @@ static void test_midi_dynamic_sysex_remaps_midi_channel(UNUSED void** state)
     __real_midi_sysex(sequence, sizeof(sequence));
 
     expect_any_psg_tone_on_channel(0);
-    expect_value(__wrap_psg_attenuation, channel, 0);
-    expect_any(__wrap_psg_attenuation, attenuation);
+    expect_psg_attenuation(0, PSG_ATTENUATION_LOUDEST);
 
-    __real_midi_noteOn(MIDI_CHANNEL, 60, 127);
+    __real_midi_noteOn(MIDI_CHANNEL, 60, MAX_MIDI_VOLUME);
 }
 
 static void test_midi_dynamic_sysex_removes_mapping_of_midi_channel(
@@ -474,8 +471,7 @@ static void test_midi_dynamic_sysex_removes_mapping_of_midi_channel(
     __real_midi_sysex(sequence, sizeof(sequence));
 
     expect_any_psg_tone_on_channel(0);
-    expect_value(__wrap_psg_attenuation, channel, 0);
-    expect_any(__wrap_psg_attenuation, attenuation);
+    expect_psg_attenuation(0, PSG_ATTENUATION_LOUDEST);
 
     print_message("Playing note\n");
     __real_midi_noteOn(MIDI_CHANNEL, 60, 127);
@@ -512,15 +508,12 @@ static void test_midi_dynamic_prefers_psg_for_square_wave_instruments(
         if (i == 0) {
             expect_any_psg_tone_on_channel(0);
         }
-        expect_value(__wrap_psg_attenuation, channel, PSG_CHANNEL);
-        expect_any(__wrap_psg_attenuation, attenuation);
+        expect_psg_attenuation(PSG_CHANNEL, PSG_ATTENUATION_LOUDEST);
 
         print_message("Note on: %d\n", program);
         __real_midi_noteOn(MIDI_CHANNEL, MIDI_PITCH_A_SHARP, MAX_MIDI_VOLUME);
 
-        expect_value(__wrap_psg_attenuation, channel, PSG_CHANNEL);
-        expect_any(__wrap_psg_attenuation, attenuation);
-
+        expect_psg_attenuation(PSG_CHANNEL, PSG_ATTENUATION_SILENCE);
         print_message("Note off: %d\n", program);
         __real_midi_noteOff(MIDI_CHANNEL, MIDI_PITCH_A_SHARP);
     }
@@ -563,13 +556,10 @@ test_midi_dynamic_sticks_to_assigned_psg_device_type_for_midi_channels(
     for (u8 chan = DEV_CHAN_MIN_PSG; chan <= DEV_CHAN_MAX_TONE_PSG; chan++) {
         u8 psgChannel = chan - DEV_CHAN_MIN_PSG;
         expect_any_psg_tone_on_channel(psgChannel);
-        expect_value(__wrap_psg_attenuation, channel, psgChannel);
-        expect_any(__wrap_psg_attenuation, attenuation);
-
+        expect_psg_attenuation(psgChannel, PSG_ATTENUATION_LOUDEST);
         __real_midi_noteOn(MIDI_CHANNEL, MIDI_PITCH_A_SHARP, MAX_MIDI_VOLUME);
     }
 
     expect_any_psg_tone_on_channel(0);
-
     __real_midi_noteOn(MIDI_CHANNEL, MIDI_PITCH_B, 127);
 }

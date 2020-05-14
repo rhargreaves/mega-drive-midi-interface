@@ -64,7 +64,6 @@ MOCKS=midi_process \
 	synth_channelParameters \
 	synth_globalParameters \
 	fm_writeReg \
-	psg_attenuation \
 	midi_noteOff \
 	midi_noteOn \
 	midi_pitchBend \
@@ -93,7 +92,6 @@ MD_MOCKS=SYS_setVIntCallback \
 	VDP_setBackgroundColor \
 	VDP_setPaletteColor \
 	PSG_setEnvelope \
-	PSG_setFrequency \
 	PSG_setTone \
 	SPR_addSprite \
 	SPR_update \

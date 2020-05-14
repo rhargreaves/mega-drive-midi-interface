@@ -7,7 +7,6 @@
 #include "midi.h"
 #include "midi_fm.h"
 #include "midi_psg.h"
-#include "psg_chip.h"
 #include "synth.h"
 #include "unused.h"
 #include "wraps.h"

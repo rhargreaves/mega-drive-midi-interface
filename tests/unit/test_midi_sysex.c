@@ -21,9 +21,7 @@ static void test_midi_sysex_sends_all_notes_off(UNUSED void** state)
 
     for (u8 chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN; chan++) {
         expect_any_psg_tone();
-        expect_any(__wrap_psg_attenuation, channel);
-        expect_any(__wrap_psg_attenuation, attenuation);
-
+        expect_any_psg_attenuation();
         __real_midi_noteOn(chan, 60, 127);
     }
 
@@ -33,14 +31,11 @@ static void test_midi_sysex_sends_all_notes_off(UNUSED void** state)
     expect_value(__wrap_synth_noteOff, channel, 3);
     expect_value(__wrap_synth_noteOff, channel, 4);
     expect_value(__wrap_synth_noteOff, channel, 5);
-    expect_value(__wrap_psg_attenuation, channel, 0);
-    expect_value(__wrap_psg_attenuation, attenuation, PSG_ATTENUATION_SILENCE);
-    expect_value(__wrap_psg_attenuation, channel, 1);
-    expect_value(__wrap_psg_attenuation, attenuation, PSG_ATTENUATION_SILENCE);
-    expect_value(__wrap_psg_attenuation, channel, 2);
-    expect_value(__wrap_psg_attenuation, attenuation, PSG_ATTENUATION_SILENCE);
-    expect_value(__wrap_psg_attenuation, channel, 3);
-    expect_value(__wrap_psg_attenuation, attenuation, PSG_ATTENUATION_SILENCE);
+
+    expect_psg_attenuation(0, PSG_ATTENUATION_SILENCE);
+    expect_psg_attenuation(1, PSG_ATTENUATION_SILENCE);
+    expect_psg_attenuation(2, PSG_ATTENUATION_SILENCE);
+    expect_psg_attenuation(3, PSG_ATTENUATION_SILENCE);
 
     __real_midi_sysex(
         sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
@@ -90,10 +85,9 @@ static void test_midi_sysex_remaps_midi_channel_to_psg(UNUSED void** state)
     remapChannel(MIDI_CHAN_1, PSG_TONE_1);
 
     expect_any_psg_tone_on_channel(0);
-    expect_value(__wrap_psg_attenuation, channel, 0);
-    expect_any(__wrap_psg_attenuation, attenuation);
+    expect_psg_attenuation(0, PSG_ATTENUATION_LOUDEST);
 
-    __real_midi_noteOn(0, MIDI_PITCH_A_SHARP, 127);
+    __real_midi_noteOn(0, MIDI_PITCH_A_SHARP, MAX_MIDI_VOLUME);
 }
 
 static void test_midi_sysex_remaps_midi_channel_to_fm(UNUSED void** state)

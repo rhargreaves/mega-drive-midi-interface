@@ -29,14 +29,11 @@ static void test_midi_set_overflow_flag_on_polyphony_breach(UNUSED void** state)
         expect_synth_pitch(chan, 6, 1164);
         expect_synth_volume_any();
         expect_value(__wrap_synth_noteOn, channel, chan);
-
         __real_midi_noteOn(chan, MIDI_PITCH_A_SHARP, 127);
     }
     for (int chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN - 1; chan++) {
         expect_psg_tone(chan - MIN_PSG_CHAN, 0x3b);
-        expect_value(__wrap_psg_attenuation, channel, chan - MIN_PSG_CHAN);
-        expect_value(__wrap_psg_attenuation, attenuation, 0);
-
+        expect_psg_attenuation(chan - MIN_PSG_CHAN, 0);
         __real_midi_noteOn(chan, MIDI_PITCH_A_SHARP, 127);
     }
 

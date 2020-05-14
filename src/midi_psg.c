@@ -1,11 +1,13 @@
 #include "midi_psg.h"
+#include "bits.h"
 #include "envelopes.h"
 #include "midi.h"
 #include "psg.h"
-#include "psg_chip.h"
 #include "region.h"
 #include <memory.h>
+#include <psg.h>
 #include <stdbool.h>
+#include <types.h>
 
 #define MIN_PSG_CHAN 6
 #define MAX_PSG_CHAN 9
@@ -57,6 +59,7 @@ struct MidiPsgChannel {
     u16 pitchBend;
 };
 
+static u8 audible;
 static MidiPsgChannel psgChannels[MAX_PSG_CHANS];
 
 static u16 toneForMidiKey(u8 midiKey);
@@ -83,6 +86,11 @@ void midi_psg_init(const u8** defaultEnvelopes)
         psgChan->pitchBend = DEFAULT_MIDI_PITCH_BEND;
         initEnvelope(psgChan);
     }
+}
+
+u8 psg_busy(void)
+{
+    return audible;
 }
 
 static void initEnvelope(MidiPsgChannel* psgChan)
@@ -181,7 +189,12 @@ static void applyTone(MidiPsgChannel* psgChan, u16 newFreq)
 static void applyAttenuation(MidiPsgChannel* psgChan, u8 newAtt)
 {
     if (newAtt != psgChan->attenuation) {
-        psg_attenuation(psgChan->chanNum, newAtt);
+        PSG_setEnvelope(psgChan->chanNum, newAtt);
+        if (newAtt == PSG_ATTENUATION_SILENCE) {
+            CLEAR_BIT(audible, psgChan->chanNum);
+        } else {
+            SET_BIT(audible, psgChan->chanNum);
+        }
         psgChan->attenuation = newAtt;
     }
 }

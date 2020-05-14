@@ -6,7 +6,6 @@
 #include "midi_fm.h"
 #include "midi_psg.h"
 #include "midi_sender.h"
-#include "psg_chip.h"
 #include "synth.h"
 #include "ui_fm.h"
 #include <stdbool.h>

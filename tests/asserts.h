@@ -14,16 +14,22 @@ void expect_synth_pitch(u8 channel, u8 octave, u16 freqNumber);
 void expect_synth_volume_any(void);
 void expect_synth_volume(u8 channel, u8 volume);
 
-#define expect_psg_attenuation(chan, attenu)                                   \
+#define expect_psg_attenuation(chan, v)                                        \
     {                                                                          \
-        expect_value(__wrap_psg_attenuation, channel, chan);                   \
-        expect_value(__wrap_psg_attenuation, attenuation, attenu);             \
+        expect_value(__wrap_PSG_setEnvelope, channel, chan);                   \
+        expect_value(__wrap_PSG_setEnvelope, value, v);                        \
     }
 
 #define expect_psg_tone(c, t)                                                  \
     {                                                                          \
         expect_value(__wrap_PSG_setTone, channel, c);                          \
         expect_value(__wrap_PSG_setTone, value, t);                            \
+    }
+
+#define expect_any_psg_attenuation()                                           \
+    {                                                                          \
+        expect_any(__wrap_PSG_setEnvelope, channel);                           \
+        expect_any(__wrap_PSG_setEnvelope, value);                             \
     }
 
 #define expect_any_psg_tone()                                                  \

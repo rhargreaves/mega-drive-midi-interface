@@ -11,7 +11,6 @@
 #include "test_midi_psg.c"
 #include "test_midi_receiver.c"
 #include "test_midi_sysex.c"
-#include "test_psg_chip.c"
 #include "test_scheduler.c"
 #include "test_synth.c"
 #include <cmocka.h>
@@ -181,7 +180,6 @@ int main(void)
         synth_test(test_synth_calls_callback_when_lfo_freq_changes),
         synth_test(test_synth_calls_callback_when_lfo_enable_changes),
 
-        cmocka_unit_test(test_psg_chip_sets_attenuation),
         cmocka_unit_test(test_psg_sets_busy_indicators),
 
         comm_test(test_comm_reads_from_serial_when_ready),
