@@ -404,36 +404,31 @@ static void test_midi_pitch_shift_handles_lower_limit_psg_envelope(
 
 static void test_midi_loads_psg_envelope(UNUSED void** state)
 {
-    u8 chan = MIN_PSG_CHAN;
-
+    const u8 chan = MIN_PSG_CHAN;
     const u8 eef[] = { 0x66, EEF_END };
 
     __real_midi_psg_loadEnvelope(eef);
 
     expect_psg_tone(0, 0x17c);
     expect_psg_attenuation(0, 6);
-
     __real_midi_noteOn(chan, MIDI_PITCH_C4_, 127);
 
     expect_psg_attenuation(0, PSG_ATTENUATION_SILENCE);
-
     __real_midi_psg_tick();
 }
 
-static void test_psg_sets_busy_indicators(UNUSED void** state)
+static void test_midi_psg_sets_busy_indicators(UNUSED void** state)
 {
     for (u8 chan = 0; chan < MAX_PSG_CHANS; chan++) {
         print_message("Chan %d\n", chan);
         expect_psg_tone(chan, TONE_C4);
         expect_psg_attenuation(chan, PSG_ATTENUATION_LOUDEST);
-
         __real_midi_noteOn(
             chan + MIN_PSG_CHAN, MIDI_PITCH_C4_, MAX_MIDI_VOLUME);
     }
 
     for (u8 chan = 0; chan < MAX_PSG_CHANS; chan += 2) {
         expect_psg_attenuation(chan, PSG_ATTENUATION_SILENCE);
-
         __real_midi_noteOff(chan + MIN_PSG_CHAN, MIDI_PITCH_C4_);
     }
 

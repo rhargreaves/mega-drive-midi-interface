@@ -79,6 +79,7 @@ int main(void)
         midi_test(test_midi_shifts_semitone_in_psg_envelope),
         midi_test(test_midi_pitch_shift_handles_upper_limit_psg_envelope),
         midi_test(test_midi_pitch_shift_handles_lower_limit_psg_envelope),
+        midi_test(test_midi_psg_sets_busy_indicators),
         midi_test(test_midi_channel_volume_sets_volume),
         midi_test(test_midi_pan_sets_synth_stereo_mode_right),
         midi_test(test_midi_pan_sets_synth_stereo_mode_left),
@@ -179,8 +180,6 @@ int main(void)
         synth_test(test_synth_calls_callback_when_parameter_changes),
         synth_test(test_synth_calls_callback_when_lfo_freq_changes),
         synth_test(test_synth_calls_callback_when_lfo_enable_changes),
-
-        cmocka_unit_test(test_psg_sets_busy_indicators),
 
         comm_test(test_comm_reads_from_serial_when_ready),
         comm_test(test_comm_reads_when_ready),
