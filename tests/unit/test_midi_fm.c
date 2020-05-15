@@ -58,7 +58,7 @@ static void test_midi_triggers_synth_note_on_boundary_values(
     UNUSED void** state)
 {
     const u8 keys[] = { 11, 106 };
-    const u16 expectedFrequencies[] = { 617, 1164 };
+    const u16 expectedFrequencies[] = { 617, SYNTH_AS };
     const u8 expectedOctaves[] = { 0, 7 };
 
     for (int index = 0; index < 2; index++) {
@@ -122,7 +122,7 @@ static void test_midi_triggers_synth_note_off_when_note_on_has_zero_velocity(
 
 static void test_midi_triggers_synth_note_on_2(UNUSED void** state)
 {
-    expect_synth_pitch(0, 6, 1164);
+    expect_synth_pitch(0, 6, SYNTH_AS);
     expect_synth_volume_any();
     expect_value(__wrap_synth_noteOn, channel, 0);
 
