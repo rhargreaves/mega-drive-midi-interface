@@ -18,14 +18,14 @@
 #define MIDI_PITCH_AS6 94
 #define MIDI_PITCH_B6 95
 
-#define TONE_AS4 479
-#define TONE_C4 427
-#define TONE_CS4 403
-#define TONE_DS4 380
-#define TONE_A2 1016
+#define TONE_NTSC_AS4 479
+#define TONE_NTSC_C4 427
+#define TONE_NTSC_CS4 403
+#define TONE_NTSC_DS4 380
+#define TONE_NTSC_A2 1016
 
-#define SYNTH_C 653
-#define SYNTH_AS 1164
+#define SYNTH_NTSC_C 653
+#define SYNTH_NTSC_AS 1164
 #define SYNTH_PAL_C 649
 
 #define SYSEX_EXTENDED_MANU_ID_SECTION 0x00
