@@ -8,7 +8,7 @@ static void test_midi_triggers_synth_note_on(UNUSED void** state)
         expect_synth_volume_any();
         expect_value(__wrap_synth_noteOn, channel, chan);
 
-        __real_midi_noteOn(chan, 60, 127);
+        __real_midi_noteOn(chan, 60, MAX_MIDI_VOLUME);
     }
 }
 
@@ -19,7 +19,7 @@ static void test_midi_triggers_synth_note_on_with_velocity(UNUSED void** state)
         expect_synth_volume(chan, 63);
         expect_value(__wrap_synth_noteOn, channel, chan);
 
-        __real_midi_noteOn(chan, 60, 63);
+        __real_midi_noteOn(chan, 60, MAX_MIDI_VOLUME / 2);
     }
 }
 
