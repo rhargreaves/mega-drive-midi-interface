@@ -17,7 +17,7 @@ static void test_midi_triggers_psg_note_on(UNUSED void** state)
             }
             expect_psg_tone(expectedPsgChan, expectedFrequency);
 
-            __real_midi_noteOn(chan, expectedMidiKey, 127);
+            __real_midi_noteOn(chan, expectedMidiKey, MAX_MIDI_VOLUME);
         }
     }
 }
@@ -88,7 +88,7 @@ static void test_midi_triggers_psg_note_off(UNUSED void** state)
         expect_any_psg_tone();
         expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
 
-        __real_midi_noteOn(chan, midiKey, 127);
+        __real_midi_noteOn(chan, midiKey, MAX_MIDI_VOLUME);
 
         expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_SILENCE);
 
@@ -101,7 +101,7 @@ static void test_midi_drops_psg_key_below_45(UNUSED void** state)
     for (u8 chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN; chan++) {
 
         u8 expectedMidiKey = 44;
-        __real_midi_noteOn(chan, expectedMidiKey, 127);
+        __real_midi_noteOn(chan, expectedMidiKey, MAX_MIDI_VOLUME);
     }
 }
 
@@ -115,7 +115,7 @@ test_midi_triggers_psg_note_off_and_volume_change_does_not_cause_psg_channel_to_
 
         expect_any_psg_tone();
         expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
-        __real_midi_noteOn(chan, midiKey, 127);
+        __real_midi_noteOn(chan, midiKey, MAX_MIDI_VOLUME);
 
         expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_SILENCE);
         __real_midi_noteOff(chan, midiKey);
@@ -131,10 +131,10 @@ static void test_midi_psg_note_off_only_triggered_if_specific_note_is_on(
 
     expect_psg_attenuation(0, PSG_ATTENUATION_LOUDEST);
     expect_psg_tone(0, TONE_C4);
-    __real_midi_noteOn(chan, MIDI_PITCH_C4, 127);
+    __real_midi_noteOn(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
     expect_psg_tone(0, TONE_CS4);
-    __real_midi_noteOn(chan, MIDI_PITCH_CS4, 127);
+    __real_midi_noteOn(chan, MIDI_PITCH_CS4, MAX_MIDI_VOLUME);
 
     __real_midi_noteOff(chan, MIDI_PITCH_C4);
 }
@@ -146,17 +146,17 @@ static void test_midi_channel_volume_sets_psg_attenuation(UNUSED void** state)
     expect_psg_tone(0, 1016);
     expect_psg_attenuation(0, 1);
 
-    __real_midi_noteOn(MIN_PSG_CHAN, MIDI_PITCH_A2, 127);
+    __real_midi_noteOn(MIN_PSG_CHAN, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
 }
 
 static void test_midi_channel_volume_sets_psg_attenuation_2(UNUSED void** state)
 {
-    __real_midi_cc(MIN_PSG_CHAN, CC_VOLUME, 127);
+    __real_midi_cc(MIN_PSG_CHAN, CC_VOLUME, MAX_MIDI_VOLUME);
 
     expect_psg_tone(0, 1016);
     expect_psg_attenuation(0, 0);
 
-    __real_midi_noteOn(MIN_PSG_CHAN, MIDI_PITCH_A2, 127);
+    __real_midi_noteOn(MIN_PSG_CHAN, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
 }
 
 static void test_midi_sets_psg_pitch_bend_down(UNUSED void** state)
@@ -167,7 +167,7 @@ static void test_midi_sets_psg_pitch_bend_down(UNUSED void** state)
 
         expect_psg_tone(expectedPsgChan, TONE_C4);
         expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
-        __real_midi_noteOn(chan, MIDI_PITCH_C4, 127);
+        __real_midi_noteOn(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
         expect_psg_tone(expectedPsgChan, 0x1df);
         __real_midi_pitchBend(chan, 0);
@@ -182,7 +182,7 @@ static void test_midi_sets_psg_pitch_bend_up(UNUSED void** state)
 
         expect_psg_tone(expectedPsgChan, TONE_C4);
         expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
-        __real_midi_noteOn(chan, MIDI_PITCH_C4, 127);
+        __real_midi_noteOn(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
         expect_psg_tone(expectedPsgChan, 0x17c);
         __real_midi_pitchBend(chan, 0x4000);
@@ -197,7 +197,7 @@ static void test_midi_psg_pitch_bend_persists_after_tick(UNUSED void** state)
 
         expect_psg_tone(expectedPsgChan, TONE_C4);
         expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
-        __real_midi_noteOn(chan, MIDI_PITCH_C4, 127);
+        __real_midi_noteOn(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
         expect_psg_tone(expectedPsgChan, 0x1d8);
         __real_midi_pitchBend(chan, 1000);
@@ -407,7 +407,7 @@ static void test_midi_loads_psg_envelope(UNUSED void** state)
 
     expect_psg_tone(0, 0x17c);
     expect_psg_attenuation(0, 6);
-    __real_midi_noteOn(chan, MIDI_PITCH_C4, 127);
+    __real_midi_noteOn(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
     expect_psg_attenuation(0, PSG_ATTENUATION_SILENCE);
     __real_midi_psg_tick();
