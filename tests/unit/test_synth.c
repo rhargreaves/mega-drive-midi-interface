@@ -4,6 +4,7 @@
 
 #include "asserts.h"
 #include "synth.h"
+#include "test_midi.h"
 #include "unused.h"
 #include <cmocka.h>
 #include <stdbool.h>
