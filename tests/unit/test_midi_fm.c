@@ -8,7 +8,7 @@ static void test_midi_triggers_synth_note_on(UNUSED void** state)
         expect_synth_volume_any();
         expect_value(__wrap_synth_noteOn, channel, chan);
 
-        __real_midi_noteOn(chan, 60, MAX_MIDI_VOLUME);
+        __real_midi_noteOn(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
     }
 }
 
@@ -19,7 +19,7 @@ static void test_midi_triggers_synth_note_on_with_velocity(UNUSED void** state)
         expect_synth_volume(chan, 63);
         expect_value(__wrap_synth_noteOn, channel, chan);
 
-        __real_midi_noteOn(chan, 60, MAX_MIDI_VOLUME / 2);
+        __real_midi_noteOn(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME / 2);
     }
 }
 
@@ -33,7 +33,7 @@ static void test_midi_triggers_synth_note_on_with_velocity_and_channel_volume(
         expect_synth_pitch(chan, 4, 653);
         expect_synth_volume(chan, MAX_MIDI_VOLUME / 4);
         expect_value(__wrap_synth_noteOn, channel, chan);
-        __real_midi_noteOn(chan, 60, MAX_MIDI_VOLUME / 2);
+        __real_midi_noteOn(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME / 2);
     }
 }
 
@@ -45,7 +45,7 @@ static void test_midi_changing_volume_during_note_on_respects_velocity(
         expect_synth_volume(chan, MAX_MIDI_VOLUME / 2);
         expect_value(__wrap_synth_noteOn, channel, chan);
 
-        __real_midi_noteOn(chan, 60, MAX_MIDI_VOLUME / 2);
+        __real_midi_noteOn(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME / 2);
 
         expect_value(__wrap_synth_volume, channel, chan);
         expect_value(__wrap_synth_volume, volume, MAX_MIDI_VOLUME / 4);
@@ -93,12 +93,12 @@ static void test_midi_triggers_synth_note_off(UNUSED void** state)
         expect_synth_volume_any();
         expect_value(__wrap_synth_noteOn, channel, chan);
 
-        __real_midi_noteOn(chan, 60, MAX_MIDI_VOLUME);
+        __real_midi_noteOn(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
         print_message("Chan %d Note Off\n", chan);
         expect_value(__wrap_synth_noteOff, channel, chan);
 
-        __real_midi_noteOff(chan, 60);
+        __real_midi_noteOff(chan, MIDI_PITCH_C4);
     }
 }
 
@@ -111,12 +111,12 @@ static void test_midi_triggers_synth_note_off_when_note_on_has_zero_velocity(
         expect_synth_volume_any();
         expect_value(__wrap_synth_noteOn, channel, chan);
 
-        __real_midi_noteOn(chan, 60, MAX_MIDI_VOLUME);
+        __real_midi_noteOn(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
         print_message("Chan %d Note Off\n", chan);
         expect_value(__wrap_synth_noteOff, channel, chan);
 
-        __real_midi_noteOn(chan, 60, 0);
+        __real_midi_noteOn(chan, MIDI_PITCH_C4, 0);
     }
 }
 
