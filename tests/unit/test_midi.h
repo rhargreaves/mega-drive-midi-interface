@@ -12,11 +12,11 @@
 #include "wraps.h"
 #include <cmocka.h>
 
-#define MIDI_PITCH_A2_ 45
-#define MIDI_PITCH_A_SHARP 94
-#define MIDI_PITCH_B 95
-#define MIDI_PITCH_C4_ 60
-#define MIDI_PITCH_CSHARP4_ 61
+#define MIDI_PITCH_A2 45
+#define MIDI_PITCH_C4 60
+#define MIDI_PITCH_CS4 61
+#define MIDI_PITCH_AS6 94
+#define MIDI_PITCH_B6 95
 
 #define SYSEX_EXTENDED_MANU_ID_SECTION 0x00
 #define SYSEX_UNUSED_EUROPEAN_SECTION 0x22

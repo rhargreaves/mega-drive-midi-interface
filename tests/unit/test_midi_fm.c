@@ -126,7 +126,7 @@ static void test_midi_triggers_synth_note_on_2(UNUSED void** state)
     expect_synth_volume_any();
     expect_value(__wrap_synth_noteOn, channel, 0);
 
-    __real_midi_noteOn(0, MIDI_PITCH_A_SHARP, 127);
+    __real_midi_noteOn(0, MIDI_PITCH_AS6, 127);
 }
 
 static void test_midi_channel_volume_sets_volume(UNUSED void** state)
