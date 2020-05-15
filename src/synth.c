@@ -267,9 +267,20 @@ static void writeChannelReg(u8 channel, u8 baseReg, u8 data)
     YM2612_writeReg(channel > 2 ? 1 : 0, baseReg + (channel % 3), data);
 }
 
+static u8 regOperatorIndex(u8 op)
+{
+    if (op == 1)
+        return 2;
+    else if (op == 2)
+        return 1;
+    else {
+        return op;
+    }
+}
+
 static void writeOperatorReg(u8 channel, u8 op, u8 baseReg, u8 data)
 {
-    writeChannelReg(channel, baseReg + (op * 4), data);
+    writeChannelReg(channel, baseReg + (regOperatorIndex(op) * 4), data);
 }
 
 static u8 keyOnOffRegOffset(u8 channel)

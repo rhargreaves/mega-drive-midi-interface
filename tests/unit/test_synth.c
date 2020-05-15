@@ -320,8 +320,8 @@ static void test_synth_sets_preset(UNUSED void** state)
 
     const FmChannel M_BANK_0_INST_7_CLAVINET = { 1, 7, 3, 0, 0, 0, 0,
         { { 1, 1, 31, 2, 0, 1, 0, 1, 6, 28, 0 },
-            { 1, 5, 31, 3, 0, 1, 0, 0, 2, 30, 0 },
             { 1, 3, 31, 2, 0, 0, 0, 1, 7, 33, 0 },
+            { 1, 5, 31, 3, 0, 1, 0, 0, 2, 30, 0 },
             { 1, 7, 31, 0, 6, 0, 4, 6, 7, 6, 0 } } };
 
     expect_ym2612_write_channel_any_data(chan, 0xB0);
@@ -333,13 +333,6 @@ static void test_synth_sets_preset(UNUSED void** state)
     expect_ym2612_write_channel_any_data(chan, 0x80);
     expect_ym2612_write_channel_any_data(chan, 0x40);
     expect_ym2612_write_channel_any_data(chan, 0x90);
-    expect_ym2612_write_channel_any_data(chan, 0x34);
-    expect_ym2612_write_channel_any_data(chan, 0x54);
-    expect_ym2612_write_channel_any_data(chan, 0x64);
-    expect_ym2612_write_channel_any_data(chan, 0x74);
-    expect_ym2612_write_channel_any_data(chan, 0x84);
-    expect_ym2612_write_channel_any_data(chan, 0x44);
-    expect_ym2612_write_channel_any_data(chan, 0x94);
     expect_ym2612_write_channel_any_data(chan, 0x38);
     expect_ym2612_write_channel_any_data(chan, 0x58);
     expect_ym2612_write_channel_any_data(chan, 0x68);
@@ -347,6 +340,13 @@ static void test_synth_sets_preset(UNUSED void** state)
     expect_ym2612_write_channel_any_data(chan, 0x88);
     expect_ym2612_write_channel_any_data(chan, 0x48);
     expect_ym2612_write_channel_any_data(chan, 0x98);
+    expect_ym2612_write_channel_any_data(chan, 0x34);
+    expect_ym2612_write_channel_any_data(chan, 0x54);
+    expect_ym2612_write_channel_any_data(chan, 0x64);
+    expect_ym2612_write_channel_any_data(chan, 0x74);
+    expect_ym2612_write_channel_any_data(chan, 0x84);
+    expect_ym2612_write_channel_any_data(chan, 0x44);
+    expect_ym2612_write_channel_any_data(chan, 0x94);
     expect_ym2612_write_channel_any_data(chan, 0x3C);
     expect_ym2612_write_channel_any_data(chan, 0x5C);
     expect_ym2612_write_channel_any_data(chan, 0x6C);
