@@ -4,7 +4,7 @@ static void test_midi_triggers_synth_note_on(UNUSED void** state)
 {
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         print_message("Chan %d\n", chan);
-        expect_synth_pitch(chan, 4, 653);
+        expect_synth_pitch(chan, 4, SYNTH_C);
         expect_synth_volume_any();
         expect_value(__wrap_synth_noteOn, channel, chan);
 
@@ -15,7 +15,7 @@ static void test_midi_triggers_synth_note_on(UNUSED void** state)
 static void test_midi_triggers_synth_note_on_with_velocity(UNUSED void** state)
 {
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
-        expect_synth_pitch(chan, 4, 653);
+        expect_synth_pitch(chan, 4, SYNTH_C);
         expect_synth_volume(chan, 63);
         expect_value(__wrap_synth_noteOn, channel, chan);
 
@@ -30,7 +30,7 @@ static void test_midi_triggers_synth_note_on_with_velocity_and_channel_volume(
         expect_synth_volume(chan, MAX_MIDI_VOLUME / 2);
         __real_midi_cc(chan, CC_VOLUME, MAX_MIDI_VOLUME / 2);
 
-        expect_synth_pitch(chan, 4, 653);
+        expect_synth_pitch(chan, 4, SYNTH_C);
         expect_synth_volume(chan, MAX_MIDI_VOLUME / 4);
         expect_value(__wrap_synth_noteOn, channel, chan);
         __real_midi_noteOn(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME / 2);
@@ -41,7 +41,7 @@ static void test_midi_changing_volume_during_note_on_respects_velocity(
     UNUSED void** state)
 {
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
-        expect_synth_pitch(chan, 4, 653);
+        expect_synth_pitch(chan, 4, SYNTH_C);
         expect_synth_volume(chan, MAX_MIDI_VOLUME / 2);
         expect_value(__wrap_synth_noteOn, channel, chan);
 
@@ -89,7 +89,7 @@ static void test_midi_triggers_synth_note_off(UNUSED void** state)
 {
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         print_message("Chan %d Note On\n", chan);
-        expect_synth_pitch(chan, 4, 653);
+        expect_synth_pitch(chan, 4, SYNTH_C);
         expect_synth_volume_any();
         expect_value(__wrap_synth_noteOn, channel, chan);
 
@@ -107,7 +107,7 @@ static void test_midi_triggers_synth_note_off_when_note_on_has_zero_velocity(
 {
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         print_message("Chan %d Note On\n", chan);
-        expect_synth_pitch(chan, 4, 653);
+        expect_synth_pitch(chan, 4, SYNTH_C);
         expect_synth_volume_any();
         expect_value(__wrap_synth_noteOn, channel, chan);
 
@@ -453,7 +453,7 @@ static void test_midi_sets_fm_preset(UNUSED void** state)
 static void test_midi_sets_synth_pitch_bend(UNUSED void** state)
 {
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
-        expect_synth_pitch(chan, 4, 653);
+        expect_synth_pitch(chan, 4, SYNTH_C);
         expect_synth_volume_any();
         expect_value(__wrap_synth_noteOn, channel, chan);
         __real_midi_noteOn(chan, 60, MAX_MIDI_VOLUME);
