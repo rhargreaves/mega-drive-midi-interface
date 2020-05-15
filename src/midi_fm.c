@@ -89,7 +89,7 @@ void midi_fm_pitchBend(u8 chan, u16 bend)
 {
     MidiFmChannel* fmChan = &fmChannels[chan];
     u16 freq = freqNumber(fmChan->pitch);
-    s16 bendRelative = bend - 0x2000;
+    s16 bendRelative = bend - MIDI_PITCH_BEND_CENTRE;
     freq = freq + (bendRelative / 75);
     synth_pitch(chan, octave(fmChan->pitch), freq);
 }
