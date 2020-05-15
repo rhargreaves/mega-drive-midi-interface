@@ -143,7 +143,7 @@ static void test_midi_channel_volume_sets_psg_attenuation(UNUSED void** state)
 {
     __real_midi_cc(MIN_PSG_CHAN, CC_VOLUME, 96);
 
-    expect_psg_tone(0, 1016);
+    expect_psg_tone(0, TONE_A2);
     expect_psg_attenuation(0, 1);
 
     __real_midi_noteOn(MIN_PSG_CHAN, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
@@ -153,7 +153,7 @@ static void test_midi_channel_volume_sets_psg_attenuation_2(UNUSED void** state)
 {
     __real_midi_cc(MIN_PSG_CHAN, CC_VOLUME, MAX_MIDI_VOLUME);
 
-    expect_psg_tone(0, 1016);
+    expect_psg_tone(0, TONE_A2);
     expect_psg_attenuation(0, 0);
 
     __real_midi_noteOn(MIN_PSG_CHAN, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
@@ -169,7 +169,7 @@ static void test_midi_sets_psg_pitch_bend_down(UNUSED void** state)
         expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
         __real_midi_noteOn(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
-        expect_psg_tone(expectedPsgChan, 0x1df);
+        expect_psg_tone(expectedPsgChan, TONE_AS4);
         __real_midi_pitchBend(chan, 0);
     }
 }
@@ -184,7 +184,7 @@ static void test_midi_sets_psg_pitch_bend_up(UNUSED void** state)
         expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
         __real_midi_noteOn(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
-        expect_psg_tone(expectedPsgChan, 0x17c);
+        expect_psg_tone(expectedPsgChan, TONE_DS4);
         __real_midi_pitchBend(chan, 0x4000);
     }
 }
