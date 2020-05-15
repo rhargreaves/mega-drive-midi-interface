@@ -12,6 +12,20 @@ static void test_midi_triggers_synth_note_on(UNUSED void** state)
     }
 }
 
+static void test_midi_uses_PAL_frequencies_for_region(UNUSED void** state)
+{
+    wraps_region_setIsPal(true);
+
+    for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
+        print_message("Chan %d\n", chan);
+        expect_synth_pitch(chan, 4, SYNTH_PAL_C);
+        expect_synth_volume_any();
+        expect_value(__wrap_synth_noteOn, channel, chan);
+
+        __real_midi_noteOn(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
+    }
+}
+
 static void test_midi_triggers_synth_note_on_with_velocity(UNUSED void** state)
 {
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {

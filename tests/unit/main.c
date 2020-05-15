@@ -47,6 +47,7 @@ int main(void)
 
         midi_test(test_midi_triggers_synth_note_on),
         midi_test(test_midi_triggers_synth_note_on_with_velocity),
+        midi_test(test_midi_uses_PAL_frequencies_for_region),
         midi_test(
             test_midi_triggers_synth_note_on_with_velocity_and_channel_volume),
         midi_test(test_midi_triggers_synth_note_on_boundary_values),

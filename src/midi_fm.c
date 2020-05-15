@@ -1,14 +1,21 @@
 #include "midi_fm.h"
 #include "midi.h"
+#include "region.h"
 #include "synth.h"
 
 static const u8 MIN_MIDI_PITCH = 11;
 static const u8 MAX_MIDI_PITCH = 106;
 static const u8 SEMITONES = 12;
-static const u16 FREQ_NUMBERS[] = {
+static const u16 FREQS_NTSC[] = {
     617, // B
     653, 692, 733, 777, 823, 872, 924, 979, 1037, 1099,
     1164 // A#
+};
+
+static const u16 FREQS_PAL[] = {
+    613, // B
+    649, 688, 729, 772, 818, 867, 918, 973, 1031, 1092,
+    1157 // A#
 };
 
 typedef struct MidiFmChannel MidiFmChannel;
@@ -131,7 +138,8 @@ static u8 octave(u8 pitch)
 
 static u16 freqNumber(u8 pitch)
 {
-    return FREQ_NUMBERS[((u8)(pitch - MIN_MIDI_PITCH)) % SEMITONES];
+    const u16* freqs = region_isPal() ? FREQS_PAL : FREQS_NTSC;
+    return freqs[((u8)(pitch - MIN_MIDI_PITCH)) % SEMITONES];
 }
 
 static u8 pitchIsOutOfRange(u8 pitch)
