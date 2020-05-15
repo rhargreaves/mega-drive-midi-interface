@@ -1,9 +1,5 @@
 #include "test_midi.h"
 
-static const u16 TONE_C4 = 427;
-static const u16 TONE_CSHARP4 = 403;
-static const u16 TONE_A2 = 1016;
-
 static void test_midi_triggers_psg_note_on(UNUSED void** state)
 {
     const u8 midiKeys[] = { 45, 69, 108 };
@@ -137,7 +133,7 @@ static void test_midi_psg_note_off_only_triggered_if_specific_note_is_on(
     expect_psg_tone(0, TONE_C4);
     __real_midi_noteOn(chan, MIDI_PITCH_C4, 127);
 
-    expect_psg_tone(0, TONE_CSHARP4);
+    expect_psg_tone(0, TONE_CS4);
     __real_midi_noteOn(chan, MIDI_PITCH_CS4, 127);
 
     __real_midi_noteOff(chan, MIDI_PITCH_C4);

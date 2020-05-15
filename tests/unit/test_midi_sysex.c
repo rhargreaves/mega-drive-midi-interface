@@ -87,7 +87,7 @@ static void test_midi_sysex_remaps_midi_channel_to_psg(UNUSED void** state)
     expect_any_psg_tone_on_channel(0);
     expect_psg_attenuation(0, PSG_ATTENUATION_LOUDEST);
 
-    __real_midi_noteOn(0, MIDI_PITCH_A_SHARP, MAX_MIDI_VOLUME);
+    __real_midi_noteOn(0, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
 }
 
 static void test_midi_sysex_remaps_midi_channel_to_fm(UNUSED void** state)
