@@ -29,6 +29,10 @@ static const VTable FM_VTable = { midi_fm_noteOn, midi_fm_noteOff,
     midi_fm_channelVolume, midi_fm_pitchBend, midi_fm_program,
     midi_fm_allNotesOff, midi_fm_pan };
 
+typedef enum DeviceSelect DeviceSelect;
+
+enum DeviceSelect { Auto, FM, PSG_Tone, PSG_Noise };
+
 typedef struct MidiChannel MidiChannel;
 
 struct MidiChannel {
@@ -36,6 +40,7 @@ struct MidiChannel {
     u8 program;
     u8 pan;
     u16 pitchBend;
+    DeviceSelect deviceSelect;
 };
 
 static MidiChannel midiChannels[MIDI_CHANNELS];
@@ -59,6 +64,7 @@ static void initMidiChannel(u8 midiChan)
     chan->pan = DEFAULT_MIDI_PAN;
     chan->volume = MAX_MIDI_VOLUME;
     chan->pitchBend = DEFAULT_MIDI_PITCH_BEND;
+    chan->deviceSelect = Auto;
 }
 
 static void initDeviceChannel(u8 devChan)
@@ -133,9 +139,10 @@ static bool isChannelSuitable(DeviceChannel* chan, u8 incomingMidiChan)
         && !isPsgAndIncomingChanIsPercussive(chan, incomingMidiChan);
 }
 
-static DeviceChannel* findFreeMidiAssignedChannel(u8 incomingMidiChan)
+static DeviceChannel* findFreeMidiAssignedChannel(
+    u8 incomingMidiChan, u8 devChanMin, u8 devChanMax)
 {
-    for (u16 i = 0; i < DEV_CHANS; i++) {
+    for (u16 i = devChanMin; i <= devChanMax; i++) {
         DeviceChannel* chan = &deviceChannels[i];
         if (chan->midiChannel == incomingMidiChan) {
             if (isChannelSuitable(chan, incomingMidiChan)) {
@@ -176,10 +183,11 @@ static DeviceChannel* findAnyFreeChannel(u8 incomingMidiChan)
     return NULL;
 }
 
-static DeviceChannel* findDeviceSpecificChannel(u8 incomingMidiChan)
+static DeviceChannel* findDeviceSpecificChannel(
+    u8 incomingMidiChan, u8 minDevChan, u8 maxDevChan)
 {
-    u8 minChan = 0;
-    u8 maxChan = DEV_CHAN_MAX_TONE_PSG;
+    u8 minChan = minDevChan;
+    u8 maxChan = maxDevChan;
     if (stickToDeviceType) {
         DeviceChannel* assignedChan
             = deviceChannelByMidiChannel(incomingMidiChan);
@@ -209,7 +217,18 @@ static DeviceChannel* findDeviceSpecificChannel(u8 incomingMidiChan)
 
 static DeviceChannel* findFreeChannel(u8 incomingMidiChan)
 {
-    DeviceChannel* chan = findFreeMidiAssignedChannel(incomingMidiChan);
+    u8 minDevChan;
+    u8 maxDevChan;
+    MidiChannel* midiChannel = &midiChannels[incomingMidiChan];
+    if (midiChannel->deviceSelect == Auto) {
+        minDevChan = DEV_CHAN_MIN_FM;
+        maxDevChan = DEV_CHAN_MAX_PSG;
+    } else {
+        minDevChan = DEV_CHAN_MIN_PSG;
+        maxDevChan = DEV_CHAN_MAX_TONE_PSG;
+    }
+    DeviceChannel* chan
+        = findFreeMidiAssignedChannel(incomingMidiChan, minDevChan, maxDevChan);
     if (chan != NULL) {
         return chan;
     }
@@ -217,7 +236,7 @@ static DeviceChannel* findFreeChannel(u8 incomingMidiChan)
     if (chan != NULL) {
         return chan;
     }
-    chan = findDeviceSpecificChannel(incomingMidiChan);
+    chan = findDeviceSpecificChannel(incomingMidiChan, minDevChan, maxDevChan);
     if (chan != NULL) {
         return chan;
     }
@@ -280,6 +299,12 @@ static void updateProgram(MidiChannel* midiChannel, DeviceChannel* devChan)
         devChan->ops->program(devChan->number, midiChannel->program);
         devChan->program = midiChannel->program;
     }
+}
+
+static void channelDeviceSelect(u8 midiChan, DeviceSelect deviceSelect)
+{
+    MidiChannel* midiChannel = &midiChannels[midiChan];
+    midiChannel->deviceSelect = deviceSelect;
 }
 
 static DeviceChannel* deviceChannelByMidiChannel(u8 midiChannel)
@@ -759,6 +784,11 @@ void midi_cc(u8 chan, u8 controller, u8 value)
         if (isIgnoringNonGeneralMidiCCs())
             break;
         ui_fm_setMidiChannelParametersVisibility(chan, RANGE(value, 2));
+        break;
+    case CC_DEVICE_SELECT:
+        if (isIgnoringNonGeneralMidiCCs())
+            break;
+        channelDeviceSelect(chan, RANGE(value, 4));
         break;
     default:
         fmParameterCC(chan, controller, value);

@@ -567,3 +567,17 @@ test_midi_dynamic_sticks_to_assigned_psg_device_type_for_midi_channels(
     expect_any_psg_tone_on_channel(0);
     __real_midi_noteOn(MIDI_CHANNEL, MIDI_PITCH_B6, MAX_MIDI_VOLUME);
 }
+
+static void test_midi_assign_channel_to_psg_device(UNUSED void** state)
+{
+    const u8 MIDI_CHANNEL = 0;
+    const u8 PSG_CHANNEL = 0;
+    const u8 MIDI_CC_DEVICE_SELECT = 32;
+
+    __real_midi_cc(MIDI_CHANNEL, 86, MIDI_CC_DEVICE_SELECT);
+
+    expect_any_psg_tone_on_channel(PSG_CHANNEL);
+    expect_psg_attenuation(PSG_CHANNEL, PSG_ATTENUATION_LOUDEST);
+
+    __real_midi_noteOn(MIDI_CHANNEL, 60, MAX_MIDI_VOLUME);
+}

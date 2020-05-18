@@ -202,6 +202,41 @@ static void test_remap_midi_channel_1_to_psg_channel_1()
     midi_receiver_read();
 }
 
+static void test_set_device_for_midi_channel_1_to_psg()
+{
+    const u8 noteOnStatus = 0x90;
+    const u8 ccStatus = 0xB0;
+    const u8 ccPolyphonic = 80;
+    const u8 ccPolyphonicOnValue = 0x7F;
+    const u8 ccDeviceSelect = 86;
+    const u8 ccDevicePsgValue = 32;
+    const u8 noteOnKey = 48;
+    const u8 noteOnVelocity = 127;
+
+    stub_usb_receive_byte(ccStatus);
+    stub_usb_receive_byte(ccPolyphonic);
+    stub_usb_receive_byte(ccPolyphonicOnValue);
+
+    midi_receiver_read();
+
+    stub_usb_receive_byte(ccStatus);
+    stub_usb_receive_byte(ccDeviceSelect);
+    stub_usb_receive_byte(ccDevicePsgValue);
+
+    midi_receiver_read();
+
+    stub_usb_receive_byte(noteOnStatus);
+    stub_usb_receive_byte(noteOnKey);
+    stub_usb_receive_byte(noteOnVelocity);
+
+    expect_value(__wrap_PSG_setTone, channel, 0);
+    expect_any(__wrap_PSG_setTone, value);
+    expect_value(__wrap_PSG_setEnvelope, channel, 0);
+    expect_value(__wrap_PSG_setEnvelope, value, 0);
+
+    midi_receiver_read();
+}
+
 static void test_pong_received_after_ping_sent()
 {
     const u8 SYSEX_PING_COMMAND_ID = 0x01;

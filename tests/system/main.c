@@ -17,6 +17,7 @@ int main(void)
         e2e_test(test_psg_audible_if_note_on_event_triggered),
         e2e_test(test_general_midi_reset_sysex_stops_all_notes),
         e2e_test(test_remap_midi_channel_1_to_psg_channel_1),
+        e2e_test(test_set_device_for_midi_channel_1_to_psg),
         e2e_test(test_pong_received_after_ping_sent),
         e2e_test(test_loads_psg_envelope)
     };
