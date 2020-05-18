@@ -223,6 +223,9 @@ static DeviceChannel* findFreeChannel(u8 incomingMidiChan)
     if (midiChannel->deviceSelect == Auto) {
         minDevChan = DEV_CHAN_MIN_FM;
         maxDevChan = DEV_CHAN_MAX_PSG;
+    } else if (midiChannel->deviceSelect == FM) {
+        minDevChan = DEV_CHAN_MIN_FM;
+        maxDevChan = DEV_CHAN_MAX_FM;
     } else {
         minDevChan = DEV_CHAN_MIN_PSG;
         maxDevChan = DEV_CHAN_MAX_TONE_PSG;

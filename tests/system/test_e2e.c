@@ -209,7 +209,7 @@ static void test_set_device_for_midi_channel_1_to_psg()
     const u8 ccPolyphonic = 80;
     const u8 ccPolyphonicOnValue = 0x7F;
     const u8 ccDeviceSelect = 86;
-    const u8 ccDevicePsgValue = 32;
+    const u8 ccDevicePsgValue = 64;
     const u8 noteOnKey = 48;
     const u8 noteOnVelocity = 127;
 

@@ -222,6 +222,7 @@ int main(void)
         dynamic_midi_test(
             test_midi_dynamic_sticks_to_assigned_psg_device_type_for_midi_channels),
         dynamic_midi_test(test_midi_assign_channel_to_psg_device),
+        dynamic_midi_test(test_midi_assign_channel_to_fm_device_only),
 
         log_test(test_log_info_writes_to_log_buffer),
         log_test(test_log_warn_writes_to_log_buffer),

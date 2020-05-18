@@ -572,12 +572,34 @@ static void test_midi_assign_channel_to_psg_device(UNUSED void** state)
 {
     const u8 MIDI_CHANNEL = 0;
     const u8 PSG_CHANNEL = 0;
-    const u8 MIDI_CC_DEVICE_SELECT = 32;
+    const u8 DEVICE_SELECT_PSG_TONE = 64;
 
-    __real_midi_cc(MIDI_CHANNEL, 86, MIDI_CC_DEVICE_SELECT);
+    __real_midi_cc(MIDI_CHANNEL, 86, DEVICE_SELECT_PSG_TONE);
 
     expect_any_psg_tone_on_channel(PSG_CHANNEL);
     expect_psg_attenuation(PSG_CHANNEL, PSG_ATTENUATION_LOUDEST);
 
+    __real_midi_noteOn(MIDI_CHANNEL, 60, MAX_MIDI_VOLUME);
+}
+
+static void test_midi_assign_channel_to_fm_device_only(UNUSED void** state)
+{
+    const u8 MIDI_CHANNEL = 0;
+    const u8 DEVICE_SELECT_FM = 32;
+
+    __real_midi_cc(MIDI_CHANNEL, 86, DEVICE_SELECT_FM);
+
+    for (u8 chan = DEV_CHAN_MIN_FM; chan <= DEV_CHAN_MAX_FM; chan++) {
+        print_message("Device Channel: %d\n", chan);
+        expect_synth_pitch_any();
+        expect_synth_volume_any();
+        expect_value(__wrap_synth_noteOn, channel, chan);
+
+        __real_midi_noteOn(MIDI_CHANNEL, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
+    }
+
+    expect_synth_pitch_any();
+    expect_synth_volume_any();
+    expect_value(__wrap_synth_noteOn, channel, 0);
     __real_midi_noteOn(MIDI_CHANNEL, 60, MAX_MIDI_VOLUME);
 }
