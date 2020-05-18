@@ -203,7 +203,7 @@ static DeviceChannel* findDeviceSpecificChannel(
     }
     for (u16 i = minChan; i <= maxChan; i++) {
         DeviceChannel* chan = &deviceChannels[i];
-        if (chan->midiChannel == incomingMidiChan && !isPsgNoise(chan)
+        if (chan->midiChannel == incomingMidiChan
             && !isPsgAndIncomingChanIsPercussive(chan, incomingMidiChan)) {
             return chan;
         }
@@ -211,24 +211,30 @@ static DeviceChannel* findDeviceSpecificChannel(
     return NULL;
 }
 
+static void setDeviceMinMaxChans(
+    u8 incomingMidiChan, u8* minDevChan, u8* maxDevChan)
+{
+    MidiChannel* midiChannel = &midiChannels[incomingMidiChan];
+    if (midiChannel->deviceSelect == Auto) {
+        *minDevChan = DEV_CHAN_MIN_FM;
+        *maxDevChan = DEV_CHAN_MAX_TONE_PSG;
+    } else if (midiChannel->deviceSelect == FM) {
+        *minDevChan = DEV_CHAN_MIN_FM;
+        *maxDevChan = DEV_CHAN_MAX_FM;
+    } else if (midiChannel->deviceSelect == PSG_Tone) {
+        *minDevChan = DEV_CHAN_MIN_PSG;
+        *maxDevChan = DEV_CHAN_MAX_TONE_PSG;
+    } else {
+        *minDevChan = DEV_CHAN_PSG_NOISE;
+        *maxDevChan = DEV_CHAN_PSG_NOISE;
+    }
+}
+
 static DeviceChannel* findFreeChannel(u8 incomingMidiChan)
 {
     u8 minDevChan;
     u8 maxDevChan;
-    MidiChannel* midiChannel = &midiChannels[incomingMidiChan];
-    if (midiChannel->deviceSelect == Auto) {
-        minDevChan = DEV_CHAN_MIN_FM;
-        maxDevChan = DEV_CHAN_MAX_TONE_PSG;
-    } else if (midiChannel->deviceSelect == FM) {
-        minDevChan = DEV_CHAN_MIN_FM;
-        maxDevChan = DEV_CHAN_MAX_FM;
-    } else if (midiChannel->deviceSelect == PSG_Tone) {
-        minDevChan = DEV_CHAN_MIN_PSG;
-        maxDevChan = DEV_CHAN_MAX_TONE_PSG;
-    } else {
-        minDevChan = DEV_CHAN_PSG_NOISE;
-        maxDevChan = DEV_CHAN_PSG_NOISE;
-    }
+    setDeviceMinMaxChans(incomingMidiChan, &minDevChan, &maxDevChan);
     DeviceChannel* chan
         = findFreeMidiAssignedChannel(incomingMidiChan, minDevChan, maxDevChan);
     if (chan != NULL) {
