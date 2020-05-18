@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-./docker-make clean all
+./docker-make
 ./utils/run-everdrive bin/out.bin
 hairless-midiserial -w -c -d \
 	-s /dev/cu.usbserial-A105J2JO \
