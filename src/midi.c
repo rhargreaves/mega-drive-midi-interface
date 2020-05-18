@@ -121,11 +121,6 @@ static DeviceChannel* findChannelPlayingNote(u8 midiChannel, u8 pitch)
     return NULL;
 }
 
-static bool isPsgNoise(DeviceChannel* chan)
-{
-    return chan->ops == &PSG_VTable && chan->number == DEV_CHAN_PSG_NOISE;
-}
-
 static bool isPsgAndIncomingChanIsPercussive(
     DeviceChannel* chan, u8 incomingChan)
 {
@@ -135,7 +130,7 @@ static bool isPsgAndIncomingChanIsPercussive(
 
 static bool isChannelSuitable(DeviceChannel* chan, u8 incomingMidiChan)
 {
-    return !chan->noteOn && !isPsgNoise(chan)
+    return !chan->noteOn
         && !isPsgAndIncomingChanIsPercussive(chan, incomingMidiChan);
 }
 
@@ -161,7 +156,7 @@ static DeviceChannel* findFreePsgChannelForSquareWaveVoices(u8 incomingMidiChan)
     for (u16 p = 0; p < LENGTH_OF(SQUARE_WAVE_MIDI_PROGRAMS); p++) {
         u8 program = SQUARE_WAVE_MIDI_PROGRAMS[p];
         if (midiChan->program == program) {
-            for (u16 i = DEV_CHAN_MIN_PSG; i < DEV_CHANS; i++) {
+            for (u16 i = DEV_CHAN_MIN_PSG; i < DEV_CHAN_MAX_TONE_PSG; i++) {
                 DeviceChannel* chan = &deviceChannels[i];
                 if (isChannelSuitable(chan, incomingMidiChan)) {
                     return chan;
@@ -172,9 +167,10 @@ static DeviceChannel* findFreePsgChannelForSquareWaveVoices(u8 incomingMidiChan)
     return NULL;
 }
 
-static DeviceChannel* findAnyFreeChannel(u8 incomingMidiChan)
+static DeviceChannel* findAnyFreeChannel(
+    u8 incomingMidiChan, u8 minDevChan, u8 maxDevChan)
 {
-    for (u16 i = 0; i < DEV_CHANS; i++) {
+    for (u16 i = minDevChan; i < maxDevChan; i++) {
         DeviceChannel* chan = &deviceChannels[i];
         if (isChannelSuitable(chan, incomingMidiChan)) {
             return chan;
@@ -222,13 +218,16 @@ static DeviceChannel* findFreeChannel(u8 incomingMidiChan)
     MidiChannel* midiChannel = &midiChannels[incomingMidiChan];
     if (midiChannel->deviceSelect == Auto) {
         minDevChan = DEV_CHAN_MIN_FM;
-        maxDevChan = DEV_CHAN_MAX_PSG;
+        maxDevChan = DEV_CHAN_MAX_TONE_PSG;
     } else if (midiChannel->deviceSelect == FM) {
         minDevChan = DEV_CHAN_MIN_FM;
         maxDevChan = DEV_CHAN_MAX_FM;
-    } else {
+    } else if (midiChannel->deviceSelect == PSG_Tone) {
         minDevChan = DEV_CHAN_MIN_PSG;
         maxDevChan = DEV_CHAN_MAX_TONE_PSG;
+    } else {
+        minDevChan = DEV_CHAN_PSG_NOISE;
+        maxDevChan = DEV_CHAN_PSG_NOISE;
     }
     DeviceChannel* chan
         = findFreeMidiAssignedChannel(incomingMidiChan, minDevChan, maxDevChan);
@@ -243,7 +242,7 @@ static DeviceChannel* findFreeChannel(u8 incomingMidiChan)
     if (chan != NULL) {
         return chan;
     }
-    chan = findAnyFreeChannel(incomingMidiChan);
+    chan = findAnyFreeChannel(incomingMidiChan, minDevChan, maxDevChan);
     if (chan != NULL) {
         return chan;
     }

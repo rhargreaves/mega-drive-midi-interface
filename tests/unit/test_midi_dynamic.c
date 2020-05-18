@@ -603,3 +603,17 @@ static void test_midi_assign_channel_to_fm_device_only(UNUSED void** state)
     expect_value(__wrap_synth_noteOn, channel, 0);
     __real_midi_noteOn(MIDI_CHANNEL, 60, MAX_MIDI_VOLUME);
 }
+
+static void test_midi_assign_channel_to_psg_noise(UNUSED void** state)
+{
+    const u8 MIDI_CHANNEL = 0;
+    const u8 PSG_NOISE_CHANNEL = 3;
+    const u8 DEVICE_SELECT_PSG_NOISE = 96;
+
+    __real_midi_cc(MIDI_CHANNEL, 86, DEVICE_SELECT_PSG_NOISE);
+
+    expect_any_psg_tone_on_channel(PSG_NOISE_CHANNEL);
+    expect_psg_attenuation(PSG_NOISE_CHANNEL, PSG_ATTENUATION_LOUDEST);
+
+    __real_midi_noteOn(MIDI_CHANNEL, 60, MAX_MIDI_VOLUME);
+}

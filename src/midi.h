@@ -14,7 +14,7 @@
 
 #define MAX_MIDI_CHANS 9
 #define MIDI_CHANNELS 16
-#define DEV_CHAN_PSG_NOISE 3
+#define PSG_NOISE_CHAN 3
 #define GENERAL_MIDI_PERCUSSION_CHANNEL 9
 
 #define DEV_CHANS 10
@@ -22,6 +22,7 @@
 #define DEV_CHAN_MAX_FM 5
 #define DEV_CHAN_MIN_PSG 6
 #define DEV_CHAN_MAX_TONE_PSG 8
+#define DEV_CHAN_PSG_NOISE 9
 #define DEV_CHAN_MAX_PSG 9
 
 #define CC_VOLUME 7
