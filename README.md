@@ -10,7 +10,7 @@ Control the Yamaha YM2612 and PSG of the Sega Mega Drive via MIDI.
 - Supports MIDI 1.0 CCs & events (e.g. panning, volume, pitch bending)
 - Polyphony via dynamic FM channel mapping
 - Connectivity via:
-  - [Mega EverDrive X7's](https://krikzz.com/store/home/33-mega-everdrive-x7.html) USB port
+  - [Mega EverDrive X7's](https://krikzz.com/store/home/33-mega-everdrive-x7.html) USB port ([Mega EverDrive PRO currently unsupported](https://github.com/rhargreaves/mega-drive-midi-interface/issues/22))
   - [Controller port via custom USB serial cable](https://github.com/rhargreaves/mega-drive-serial-port#hardware).
 - Control of YM2612 registers via [GenMDM-style CCs](https://catskullelectronics.com/public/genMDM.pdf)
 
