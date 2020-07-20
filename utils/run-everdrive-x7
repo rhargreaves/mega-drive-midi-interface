@@ -1,0 +1,3 @@
+#!/bin/bash
+SERIAL_PORT=/dev/cu.usbserial-A105J2JO
+megaedx7-run -runMode ssf -serialPort $SERIAL_PORT "$@"
