@@ -1,9 +1,10 @@
 #!/bin/bash
 set -euo pipefail
-SERIAL_PORT=/dev/cu.usbmodem00000000001A1
+#SERIAL_PORT=/dev/cu.usbmodem00000000001A1
+SERIAL_PORT=/dev/cu.usbserial-A105J2JO
 
 ./docker-make
-./utils/run-everdrive-pro bin/out.bin
+./utils/run-everdrive-x7 bin/out.bin
 hairless-midiserial -w -c -d \
 	-s $SERIAL_PORT \
 	-o "IAC Driver IAC Bus 1" \
