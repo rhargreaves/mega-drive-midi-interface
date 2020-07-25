@@ -1,5 +1,6 @@
 #include "comm.h"
 #include "comm_everdrive.h"
+#include "comm_everdrive_pro.h"
 #include "comm_serial.h"
 #include <stdbool.h>
 
@@ -9,7 +10,7 @@ static u16 reads = 0;
 static const u16 MAX_COMM_IDLE = 0x28F;
 static const u16 MAX_COMM_BUSY = 0x28F;
 
-#define COMM_TYPES 2
+#define COMM_TYPES 3
 
 static bool countsInBounds(void);
 
@@ -27,12 +28,16 @@ static const CommVTable Everdrive_VTable
     = { comm_everdrive_init, comm_everdrive_readReady, comm_everdrive_read,
           comm_everdrive_writeReady, comm_everdrive_write };
 
+static const CommVTable EverdrivePro_VTable = { comm_everdrive_pro_init,
+    comm_everdrive_pro_readReady, comm_everdrive_pro_read,
+    comm_everdrive_pro_writeReady, comm_everdrive_pro_write };
+
 static const CommVTable Serial_VTable
     = { comm_serial_init, comm_serial_readReady, comm_serial_read,
           comm_serial_writeReady, comm_serial_write };
 
 static const CommVTable* commTypes[COMM_TYPES]
-    = { &Everdrive_VTable, &Serial_VTable };
+    = { &Everdrive_VTable, &EverdrivePro_VTable, &Serial_VTable };
 
 static const CommVTable* activeCommType = NULL;
 
@@ -106,6 +111,8 @@ CommMode comm_mode(void)
 {
     if (activeCommType == &Everdrive_VTable) {
         return Everdrive;
+    } else if (activeCommType == &EverdrivePro_VTable) {
+        return EverdrivePro;
     } else if (activeCommType == &Serial_VTable) {
         return Serial;
     } else {

@@ -1,6 +1,7 @@
 #include "ui.h"
 #include "buffer.h"
 #include "comm.h"
+#include "comm_everdrive_pro.h"
 #include "comm_serial.h"
 #include "log.h"
 #include "memcmp.h"
@@ -270,7 +271,8 @@ static void printCommMode(void)
     if (commInited) {
         return;
     }
-    const char* MODES_TEXT[] = { "Waiting", "ED USB ", "Serial ", "Unknown" };
+    const char* MODES_TEXT[]
+        = { "Waiting", "X7 USB ", "PRO USB", "Serial ", "Unknown" };
     u16 index;
     switch (comm_mode()) {
     case Discovery:
@@ -280,14 +282,18 @@ static void printCommMode(void)
         index = 1;
         commInited = true;
         break;
-    case Serial:
+    case EverdrivePro:
         index = 2;
+        commInited = true;
+        break;
+    case Serial:
+        index = 3;
         commInited = true;
         commSerial = true;
         printBaudRate();
         break;
     default:
-        index = 3;
+        index = 4;
         break;
     }
     drawText(MODES_TEXT[index], 10, MAX_EFFECTIVE_Y);

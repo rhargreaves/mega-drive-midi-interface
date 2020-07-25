@@ -91,11 +91,19 @@ u8 __wrap_comm_serial_readReady(void);
 u8 __wrap_comm_serial_read(void);
 u8 __wrap_comm_serial_writeReady(void);
 void __wrap_comm_serial_write(u8 data);
+
 void __wrap_comm_everdrive_init(void);
 u8 __wrap_comm_everdrive_readReady(void);
 u8 __wrap_comm_everdrive_read(void);
 u8 __wrap_comm_everdrive_writeReady(void);
 void __wrap_comm_everdrive_write(u8 data);
+
+void __wrap_comm_everdrive_pro_init(void);
+u8 __wrap_comm_everdrive_pro_readReady(void);
+u8 __wrap_comm_everdrive_pro_read(void);
+u8 __wrap_comm_everdrive_pro_writeReady(void);
+void __wrap_comm_everdrive_pro_write(u8 data);
+
 u16 __wrap_SYS_getCPULoad();
 u32 __wrap_getFPS();
 void __wrap_log_init(void);

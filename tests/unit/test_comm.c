@@ -35,6 +35,7 @@ static void switch_comm_type_to_everdrive(void)
 static void test_comm_reads_from_serial_when_ready(UNUSED void** state)
 {
     will_return(__wrap_comm_everdrive_readReady, 0);
+    will_return(__wrap_comm_everdrive_pro_readReady, 0);
     will_return(__wrap_comm_serial_readReady, 1);
     will_return(__wrap_comm_serial_read, 50);
 
@@ -46,6 +47,7 @@ static void test_comm_reads_from_serial_when_ready(UNUSED void** state)
 static void test_comm_reads_when_ready(UNUSED void** state)
 {
     will_return(__wrap_comm_everdrive_readReady, 0);
+    will_return(__wrap_comm_everdrive_pro_readReady, 0);
     will_return(__wrap_comm_serial_readReady, 0);
     will_return(__wrap_comm_everdrive_readReady, 1);
     will_return(__wrap_comm_everdrive_read, 50);
