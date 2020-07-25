@@ -16,7 +16,7 @@ static u8 buffer[BUFFER_SIZE];
 
 static bool pro_present(void)
 {
-    return (REG_SYS_STAT & STAT_PRO_PRESENT) == STAT_PRO_PRESENT;
+    return REG_SYS_STAT & STAT_PRO_PRESENT;
 }
 
 static u8 bi_fifo_busy(void)

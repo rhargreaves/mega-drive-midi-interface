@@ -5,7 +5,3 @@ u8 comm_everdrive_pro_readReady(void);
 u8 comm_everdrive_pro_read(void);
 u8 comm_everdrive_pro_writeReady(void);
 void comm_everdrive_pro_write(u8 data);
-
-u8 get_REG_FIFO_STAT(void);
-u8 get_REG_SYS_STAT(void);
-u8 get_REG_TIMER(void);
