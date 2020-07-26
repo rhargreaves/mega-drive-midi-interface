@@ -1,4 +1,5 @@
 #include "comm_everdrive.h"
+#include "everdrive_led.h"
 
 #define SSF_REG16(reg) *((volatile u16*)(0xA13000 + reg))
 #define REG_USB 226
@@ -13,6 +14,7 @@ u8 comm_everdrive_readReady(void)
 
 u8 comm_everdrive_read(void)
 {
+    everdrive_led_blink();
     return SSF_REG16(REG_USB);
 }
 
