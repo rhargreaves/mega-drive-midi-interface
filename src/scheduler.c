@@ -1,4 +1,5 @@
 #include "scheduler.h"
+#include "comm_everdrive_pro.h"
 #include "midi_psg.h"
 #include "ui.h"
 #include <types.h>
@@ -21,6 +22,7 @@ static void onFrame(void)
 {
     midi_psg_tick();
     ui_update();
+    comm_everdrive_pro_tick();
 }
 
 void scheduler_doEvents(void)

@@ -5,3 +5,4 @@ u8 comm_everdrive_pro_readReady(void);
 u8 comm_everdrive_pro_read(void);
 u8 comm_everdrive_pro_writeReady(void);
 void comm_everdrive_pro_write(u8 data);
+void comm_everdrive_pro_tick(void);
