@@ -7,4 +7,5 @@ SERIAL_PORT=/dev/cu.usbmodem00000000001A1
 hairless-midiserial -w -c -d \
 	-s $SERIAL_PORT \
 	-o "IAC Driver IAC Bus 1" \
-	-i "IAC Driver IAC Bus 2"
+	-i "IAC Driver IAC Bus 2" \
+	-p

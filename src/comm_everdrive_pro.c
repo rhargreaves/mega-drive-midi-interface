@@ -1,6 +1,8 @@
 #include "comm_everdrive_pro.h"
 #include <stdbool.h>
 
+#define CMD_USB_WR 0x22
+
 #define REG_FIFO_DATA *((vu16*)0xA130D0) // fifo data register
 #define REG_FIFO_STAT                                                          \
     *((vu16*)0xA130D2) // fifo status register. shows if fifo can be readed.
@@ -48,6 +50,34 @@ static void bi_fifo_rd(void* data, u16 len)
     }
 }
 
+static void bi_fifo_wr(void* data, u16 len)
+{
+    u8* data8 = data;
+
+    while (len--) {
+        REG_FIFO_DATA = *data8++;
+    }
+}
+
+static void bi_cmd_tx(u8 cmd)
+{
+    u8 buff[4];
+
+    buff[0] = '+';
+    buff[1] = '+' ^ 0xff;
+    buff[2] = cmd;
+    buff[3] = cmd ^ 0xff;
+
+    bi_fifo_wr(buff, sizeof(buff));
+}
+
+static void bi_cmd_usb_wr(void* data, u16 len)
+{
+    bi_cmd_tx(CMD_USB_WR);
+    bi_fifo_wr(&len, 2);
+    bi_fifo_wr(data, len);
+}
+
 u8 comm_everdrive_pro_readReady(void)
 {
     if (!pro_present()) {
@@ -65,11 +95,12 @@ u8 comm_everdrive_pro_read(void)
 
 u8 comm_everdrive_pro_writeReady(void)
 {
-    return 0;
+    return TRUE;
 }
 
 void comm_everdrive_pro_write(u8 data)
 {
+    bi_cmd_usb_wr(&data, 1);
     (void)data;
 }
 

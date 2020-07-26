@@ -1,0 +1,2 @@
+#!/bin/bash
+sendmidi dev "IAC Driver IAC Bus 2" ch $1 cc 86 64
