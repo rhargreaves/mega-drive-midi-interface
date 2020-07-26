@@ -12,10 +12,6 @@
 #define FIFO_RXF_MSK 0x7FF
 #define STAT_PRO_PRESENT 0xA0
 
-#define BUFFER_SIZE 1
-
-static u8 buffer[BUFFER_SIZE];
-
 static bool pro_present(void)
 {
     return REG_SYS_STAT & STAT_PRO_PRESENT;
@@ -89,8 +85,9 @@ u8 comm_everdrive_pro_readReady(void)
 
 u8 comm_everdrive_pro_read(void)
 {
-    bi_fifo_rd(buffer, 1);
-    return buffer[0];
+    u8 data;
+    bi_fifo_rd(&data, 1);
+    return data;
 }
 
 u8 comm_everdrive_pro_writeReady(void)
@@ -106,5 +103,4 @@ void comm_everdrive_pro_write(u8 data)
 
 void comm_everdrive_pro_init(void)
 {
-    buffer[0] = 0;
 }
