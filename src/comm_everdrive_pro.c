@@ -1,4 +1,5 @@
 #include "comm_everdrive_pro.h"
+#include "everdrive_led.h"
 #include <stdbool.h>
 
 #define CMD_USB_WR 0x22
@@ -7,29 +8,10 @@
 #define REG_FIFO_STAT                                                          \
     *((vu16*)0xA130D2) // fifo status register. shows if fifo can be readed.
 #define REG_SYS_STAT *((vu16*)0xA130D4)
-#define REG_CTRL *((vu16*)0xA130F0)
 
 #define FIFO_CPU_RXF 0x8000 // fifo flags. system cpu can read
 #define FIFO_RXF_MSK 0x7FF
 #define STAT_PRO_PRESENT 0xA0
-
-#define CTRL_LED_ON 0x1000
-#define CTRL_LED_OFF 0x0000
-#define CTRL_UNPROTECT 0x8000
-
-static bool ledOn = false;
-
-static void led_on(void)
-{
-    REG_CTRL = CTRL_LED_ON | CTRL_UNPROTECT;
-    ledOn = true;
-}
-
-static void led_off(void)
-{
-    REG_CTRL = CTRL_LED_OFF | CTRL_UNPROTECT;
-    ledOn = false;
-}
 
 static bool pro_present(void)
 {
@@ -77,12 +59,10 @@ static void bi_fifo_wr(void* data, u16 len)
 static void bi_cmd_tx(u8 cmd)
 {
     u8 buff[4];
-
     buff[0] = '+';
     buff[1] = '+' ^ 0xff;
     buff[2] = cmd;
     buff[3] = cmd ^ 0xff;
-
     bi_fifo_wr(buff, sizeof(buff));
 }
 
@@ -104,9 +84,8 @@ u8 comm_everdrive_pro_readReady(void)
 
 u8 comm_everdrive_pro_read(void)
 {
-    if (!ledOn) {
-        led_on();
-    }
+    everdrive_led_blink();
+
     u8 data;
     bi_fifo_rd(&data, 1);
     return data;
@@ -125,11 +104,4 @@ void comm_everdrive_pro_write(u8 data)
 
 void comm_everdrive_pro_init(void)
 {
-}
-
-void comm_everdrive_pro_tick(void)
-{
-    if (ledOn) {
-        led_off();
-    }
 }
