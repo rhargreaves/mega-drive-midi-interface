@@ -1,4 +1,5 @@
 #include "rtpmidi.h"
+#include "comm_megawifi.h"
 
 static bool isLongHeader(u8* commandSection)
 {
@@ -35,11 +36,6 @@ static void emitMidiEvent(u8 status, u8** cursor)
 
 #define MIDI_SYSEX_START 0xF0
 #define MIDI_SYSEX_END 0xF7
-
-void midi_emit(u8 data)
-{
-    (void)data;
-}
 
 void processSysEx(u8** cursor)
 {

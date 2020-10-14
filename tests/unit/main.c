@@ -23,6 +23,7 @@
 #define comm_test(test) cmocka_unit_test_setup(test, test_comm_setup)
 #define log_test(test) cmocka_unit_test_setup(test, test_log_setup)
 #define scheduler_test(test) cmocka_unit_test_setup(test, test_scheduler_setup)
+#define applemidi_test(test) cmocka_unit_test_setup(test, test_applemidi_setup)
 
 int main(void)
 {
@@ -234,7 +235,23 @@ int main(void)
             test_log_returns_null_when_no_more_logs_are_available_to_be_dequeued),
 
         scheduler_test(test_scheduler_nothing_called_on_vsync),
-        scheduler_test(test_scheduler_processes_frame_events_once_after_vsync)
+        scheduler_test(test_scheduler_processes_frame_events_once_after_vsync),
+
+        applemidi_test(
+            test_applemidi_parses_rtpmidi_packet_with_single_midi_event),
+        applemidi_test(
+            test_applemidi_parses_rtpmidi_packet_with_single_midi_event_long_header),
+        applemidi_test(
+            test_applemidi_parses_rtpmidi_packet_with_single_2_byte_midi_event),
+        applemidi_test(
+            test_applemidi_parses_rtpmidi_packet_with_two_midi_events),
+        applemidi_test(
+            test_applemidi_parses_rtpmidi_packet_with_multiple_midi_events),
+        applemidi_test(
+            test_applemidi_parses_rtpmidi_packet_with_multiple_different_midi_events),
+        applemidi_test(
+            test_applemidi_parses_rtpmidi_packet_with_multiple_2_byte_midi_events),
+        applemidi_test(test_applemidi_parses_rtpmidi_packet_with_sysex)
 
     };
 
