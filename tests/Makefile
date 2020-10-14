@@ -14,6 +14,7 @@ INCLUDE_DIRS+=-I$(SGDK)/res
 INCLUDE_DIRS+=-I.
 INCLUDE_DIRS+=-I../res
 INCLUDE_DIRS+=-I../src
+INCLUDE_DIRS+=-I../src/mw
 INCLUDE_DIRS+=-I$(CMOCKA_DIR)/include
 
 CFLAGS=$(INCLUDE_DIRS) \
@@ -24,6 +25,7 @@ CFLAGS=$(INCLUDE_DIRS) \
 	-std=c11 \
 	-Werror \
 	-Wextra \
+	-Wno-char-subscripts \
 	-Wno-unused-parameter \
 	-Wno-builtin-declaration-mismatch \
 	-Wno-unused-function
@@ -82,7 +84,10 @@ MOCKS=midi_process \
 	log_dequeue \
 	ui_fm_setMidiChannelParametersVisibility \
 	ui_update \
-	scheduler_init
+	scheduler_init \
+	midi_emit \
+	mediator_recv_event \
+	mediator_send_packet
 
 MD_MOCKS=SYS_setVIntCallback \
 	VDP_setTextPalette \
@@ -125,7 +130,8 @@ MD_MOCKS=SYS_setVIntCallback \
 	SYS_getCPULoad \
 	getFPS \
 	VDP_clearTextArea \
-	region_isPal
+	region_isPal \
+	SYS_die
 
 LDFLAGS=-ggdb -ffreestanding -lcmocka -L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src
 LDFLAGS+=$(foreach MOCK,$(MD_MOCKS),-Wl,--wrap=$(MOCK))
@@ -133,7 +139,8 @@ LDFLAGS+=$(foreach MOCK,$(MD_MOCKS),-Wl,--wrap=$(MOCK))
 SYSTEM_TEST_LDFLAGS=$(LDFLAGS)
 UNIT_TEST_LDFLAGS=$(LDFLAGS) $(foreach MOCK,$(MOCKS),-Wl,--wrap=$(MOCK))
 
-SRC=$(shell find ../src/* -type f -name '*.c' ! -name '*main.c*' -printf '%f\n')
+SRC=$(shell find ../src/* -maxdepth 0 -type f -name '*.c' ! -name '*main.c*' -printf '%f\n')
+SRC+=$(shell find ../src/mw/* -maxdepth 0 -type f -name '*.c' ! -name '*main.c*' -printf 'mw/%f\n')
 COMMON_TEST_SRC=$(shell find * -maxdepth 0 -type f -name '*.c' -print)
 UNIT_TEST_SRC=$(shell find ./unit/* -maxdepth 0 -type f -name '*.c' -print)
 SYSTEM_TEST_SRC=$(shell find ./system/* -maxdepth 0 -type f -name '*.c' -print)
@@ -165,6 +172,7 @@ $(SRC_OBJ): | $(OBJ_DIR) $(CMOCKA_DIR)
 
 $(OBJ_DIR):
 	mkdir -p $@
+	mkdir -p $@/mw
 	mkdir -p $@/unit
 	mkdir -p $@/system
 

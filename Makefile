@@ -27,6 +27,7 @@ INCS = -I. \
 	-I$(GENDEV)/m86k-elf/include \
 	-I$(GENDEV)/sgdk/res \
 	-Isrc \
+	-Isrc/mw \
 	-Ires
 CCFLAGS = -Wall -Wextra -std=c11 -Werror \
 	-fno-builtin -DBUILD='"$(BUILD)"' \
@@ -38,7 +39,9 @@ LIBS = -L$(GENDEV)/m68k-elf/lib \
 	-L$(GENDEV)/sgdk/lib -lmd -lnosys \
 	--wrap=SYS_enableInts \
 	--wrap=SYS_disableInts
-LINKFLAGS = -T $(GENDEV)/sgdk/md.ld -nostdlib
+
+LINKFLAGS = -T mw.ld -nostdlib
+#LINKFLAGS = -T $(GENDEV)/sgdk/md.ld -nostdlib
 ARCHIVES = $(GENDEV)/sgdk/$(LIB)/libmd.a
 ARCHIVES += $(GENDEV)/$(LIB)/gcc/m68k-elf/$(GCC_VER)/libgcc.a
 
@@ -47,12 +50,15 @@ BOOT_RESOURCES=
 
 BOOTSS=$(wildcard boot/*.s)
 BOOTSS+=$(wildcard src/boot/*.s)
+NEWLIBSS=$(wildcard newlib/*.s)
 BOOT_RESOURCES+=$(BOOTSS:.s=.o)
+NEWLIB_RESOURCES+=$(NEWLIBSS:.s=.o)
 RESS=$(wildcard res/*.res)
 RESS+=$(wildcard *.res)
 RESOURCES+=$(RESS:.res=.o)
 
 CS=$(wildcard src/*.c)
+CS+=$(wildcard src/*/*.c)
 SS=$(wildcard src/*.s)
 S80S=$(wildcard src/*.s80)
 CS+=$(wildcard *.c)
@@ -69,6 +75,9 @@ all: test bin/out.bin
 boot/sega.o: boot/rom_head.bin
 	$(AS) $(ASFLAGS) boot/sega.s -o $@
 
+newlib/setjmp.o:
+	$(AS) $(ASFLAGS) newlib/setjmp.s -o $@
+
 bin/%.bin: %.elf
 	mkdir -p bin
 	$(OBJC) -O binary $< temp.bin
@@ -77,8 +86,8 @@ bin/%.bin: %.elf
 	rm temp.bin
 	echo $(BUILD) > bin/version.txt
 
-%.elf: $(OBJS) $(BOOT_RESOURCES)
-	$(LD) -o $@ $(LINKFLAGS) $(BOOT_RESOURCES) $(ARCHIVES) $(OBJS) $(LIBS)
+%.elf: $(OBJS) $(BOOT_RESOURCES) $(NEWLIB_RESOURCES)
+	$(LD) -o $@ $(LINKFLAGS) $(BOOT_RESOURCES) $(NEWLIB_RESOURCES) $(ARCHIVES) $(OBJS) $(LIBS)
 
 %.o80: %.s80
 	$(ASMZ80) $(Z80FLAGS) -o $@ $<

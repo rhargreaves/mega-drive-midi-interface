@@ -1,9 +1,11 @@
 #pragma once
+
 #include <midi.h>
 #include <sprite_eng.h>
 #include <types.h>
 
 #include "log.h"
+//#include "mediator.h"
 #include "synth.h"
 
 void wraps_disable_checks(void);
@@ -113,3 +115,8 @@ Log* __wrap_log_dequeue(void);
 void __wrap_VDP_clearTextArea(u16 x, u16 y, u16 w, u16 h);
 bool __wrap_region_isPal(void);
 void wraps_region_setIsPal(bool isPal);
+
+// void __wrap_midi_emit(u8 midiByte);
+// mw_err __wrap_mediator_recv_event(void);
+// mw_err __wrap_mediator_send_packet(u8 ch, char* data, u16 len);
+// void __wrap_SYS_die(char* err);
