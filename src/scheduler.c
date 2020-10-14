@@ -2,6 +2,7 @@
 #include "everdrive_led.h"
 #include "midi_psg.h"
 #include "ui.h"
+#include <stdint.h>
 #include <types.h>
 
 static u16 previousFrame;

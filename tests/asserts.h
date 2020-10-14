@@ -1,4 +1,8 @@
+#pragma once
+#include <stdint.h>
 #include <types.h>
+
+#include <cmocka.h>
 
 void expect_usb_sent_byte(u8 value);
 void stub_usb_receive_byte(u8 value);
@@ -42,4 +46,9 @@ void expect_synth_volume(u8 channel, u8 volume);
     {                                                                          \
         expect_value(__wrap_PSG_setTone, channel, c);                          \
         expect_any(__wrap_PSG_setTone, value);                                 \
+    }
+
+#define expect_midi_emit(mb)                                                   \
+    {                                                                          \
+        expect_value(__wrap_midi_emit, midiByte, mb);                          \
     }

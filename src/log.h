@@ -1,4 +1,5 @@
 #pragma once
+#include <stdint.h>
 #include <types.h>
 
 #define MSG_MAX_LEN 40

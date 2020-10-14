@@ -1,4 +1,5 @@
 #pragma once
+#include <stdint.h>
 #include <types.h>
 
 #define MAX_FM_OPERATORS 4

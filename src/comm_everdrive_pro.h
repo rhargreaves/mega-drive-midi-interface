@@ -1,3 +1,5 @@
+#pragma once
+#include <stdint.h>
 #include <types.h>
 
 void comm_everdrive_pro_init(void);

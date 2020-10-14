@@ -2,6 +2,7 @@
 #include <stdarg.h>
 #include <stddef.h>
 
+#include "test_applemidi.c"
 #include "test_comm.c"
 #include "test_log.c"
 #include "test_midi.h"
