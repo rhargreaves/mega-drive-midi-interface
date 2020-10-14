@@ -30,8 +30,12 @@ INCS = -I. \
 	-Isrc/mw \
 	-Ires
 CCFLAGS = -Wall -Wextra -std=c11 -Werror \
-	-fno-builtin -DBUILD='"$(BUILD)"' \
+	-fno-builtin \
+	-DBUILD='"$(BUILD)"' \
 	-m68000 -O3 -c -fomit-frame-pointer -g
+ifeq ($(ROM_TYPE), MEGAWIFI)
+	CCFLAGS += -DMEGAWIFI
+endif
 Z80FLAGS = -vb2
 ASFLAGS = -m68000 --register-prefix-optional
 LIBS = -L$(GENDEV)/m68k-elf/lib \
