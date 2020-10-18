@@ -46,6 +46,7 @@ const Global* __wrap_synth_globalParameters();
 bool __wrap_comm_readReady(void);
 u8 __wrap_comm_read(void);
 void __wrap_comm_write(u8 data);
+void __wrap_comm_megawifi_init(void);
 void __wrap_fm_writeReg(u16 part, u8 reg, u8 data);
 void __wrap_psg_noteOn(u8 channel, u16 freq);
 void __wrap_psg_noteOff(u8 channel);
