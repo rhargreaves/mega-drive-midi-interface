@@ -13,5 +13,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build the Docker image
-        run: mkdir bin
-        run: CMOCKA_MESSAGE_OUTPUT=xml CMOCKA_XML_FILE=../bin/cmocka.xml ./docker-make all
+        run: |
+          mkdir bin
+          CMOCKA_MESSAGE_OUTPUT=xml CMOCKA_XML_FILE=../bin/cmocka.xml ./docker-make all
