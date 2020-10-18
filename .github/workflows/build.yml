@@ -15,7 +15,7 @@ jobs:
       - name: Build the Docker image
         env:
           CMOCKA_MESSAGE_OUTPUT: xml
-          CMOCKA_XML_FILE: ../bin/cmocka.xml
+          CMOCKA_XML_FILE: ../bin/TEST-cmocka.xml
         run: |
           mkdir bin
           ./docker-make all
