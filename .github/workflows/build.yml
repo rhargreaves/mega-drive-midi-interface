@@ -1,5 +1,9 @@
 name: Build
-on: push
+on:
+  push: master
+  create:
+    tags:
+      - v*
 jobs:
   build:
     runs-on: ubuntu-latest
