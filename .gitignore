@@ -8,3 +8,4 @@ out/
 .idea/
 .vscode/ipch/
 *.swp
+res/*.s
