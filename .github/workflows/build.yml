@@ -19,7 +19,7 @@ jobs:
           ./docker-make all
           mv bin/out.bin bin/out_standard.bin
           rm -f boot/rom_head.o boot/rom_head.bin bin/out.bin
-          ./docker-make ROM_TYPE=MEGAWIFI
+          ./docker-make ROM_TYPE=MEGAWIFI bin/out.bin
           mv bin/out.bin bin/out_megawifi.bin
       - name: Report test results
         uses: ashley-taylor/junit-report-annotations-action@1.3
