@@ -28,6 +28,13 @@ Head over to the [Wiki](https://github.com/rhargreaves/mega-drive-midi-interface
 
 Unit & system tests are compiled and ran as x86 binaries using CMocka. Mega Drive interfaces are mocked.
 
+There are two flavours of ROM:
+
+- The standard build is intended for use in EverDrives or any generic flash ROM cart.
+- The MegaWiFi build is intended for use with the BlastEm emulator or MegaWiFi hardware.
+
+The key difference between the two builds is the console header. The standard build has `SEGA SSF` as the console string in the ROM header which will instruct an EverDrive to expose its SSF API to the ROM as required for USB communication. The MegaWiFi build has `SEGA MEGAWIFI` which will instruct BlastEm and the MegaWiFi Hardware to expose the MegaWiFi APIs to the ROM.
+
 ### Docker:
 
 Build EverDrive / Generic Flash ROM:
