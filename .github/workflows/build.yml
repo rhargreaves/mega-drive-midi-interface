@@ -18,12 +18,14 @@ jobs:
         run: |
           mkdir bin
           ./docker-make all
-          export VERSION=$(cat ./bin/version.txt)
       - name: Report test results
         uses: ashley-taylor/junit-report-annotations-action@1.3
         if: always()
         with:
           access-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Get version
+        id: get_version
+        run: echo ::set-output name=VERSION::$(cat ./bin/version.txt)
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -43,6 +45,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./bin/mega-drive-midi-interface-${{ env.VERSION }}.bin
-          asset_name: mega-drive-midi-interface-${{ env.VERSION }}.bin
+          asset_path: ./bin/mega-drive-midi-interface-${{ steps.get_version.outputs.VERSION }}.bin
+          asset_name: mega-drive-midi-interface-${{ steps.get_version.outputs.VERSION }}.bin
           asset_content_type: application/octet-stream
