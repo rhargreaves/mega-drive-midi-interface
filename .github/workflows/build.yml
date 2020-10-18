@@ -19,7 +19,8 @@ jobs:
         run: |
           mkdir bin
           ./docker-make all
-      - uses: ashley-taylor/junit-report-annotations-action@1.3
+      - name: Report test results
+        uses: ashley-taylor/junit-report-annotations-action@1.3
           if: always()
           with:
             access-token: ${{ secrets.GITHUB_TOKEN }}
