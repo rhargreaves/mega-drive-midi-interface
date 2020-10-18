@@ -1,0 +1,17 @@
+name: Build
+
+on:
+  push:
+    branches: [$default-branch]
+  pull_request:
+    branches: [$default-branch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build the Docker image
+        run: mkdir bin
+        run: CMOCKA_MESSAGE_OUTPUT=xml CMOCKA_XML_FILE=../bin/cmocka.xml ./docker-make all
