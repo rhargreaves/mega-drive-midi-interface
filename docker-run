@@ -1,6 +1,11 @@
 #!/bin/bash -e
 IMAGE_NAME=mega-drive-midi-interface
 docker build -t $IMAGE_NAME .
+if [ -t 1 ] ; then
+    TTY_PARAM=-t
+else
+    TTY_PARAM=
+fi
 docker run \
     --cap-add=SYS_PTRACE \
     --privileged \
@@ -11,6 +16,7 @@ docker run \
     --rm \
     -v $(pwd):/app \
     -w /app \
-    -it \
+    -i \
+    $TTY_PARAM \
     $IMAGE_NAME \
     "$@"
