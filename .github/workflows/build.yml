@@ -38,6 +38,7 @@ jobs:
           prerelease: false
       - name: Upload Release Asset
         id: upload_release_asset
+        if: success()
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
