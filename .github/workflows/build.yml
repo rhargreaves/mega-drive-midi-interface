@@ -13,6 +13,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build the Docker image
+        env:
+            CMOCKA_MESSAGE_OUTPUT: xml
+            CMOCKA_XML_FILE: ../bin/cmocka.xml
         run: |
           mkdir bin
-          CMOCKA_MESSAGE_OUTPUT=xml CMOCKA_XML_FILE=../bin/cmocka.xml ./docker-make all
+          ./docker-make all
+      - uses: ashley-taylor/junit-report-annotations-action@1.3
+          if: always()
+          with:
+            access-token: ${{ secrets.GITHUB_TOKEN }}
