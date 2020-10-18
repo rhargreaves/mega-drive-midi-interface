@@ -4,6 +4,7 @@
 
 #include "test_applemidi.c"
 #include "test_comm.c"
+#include "test_comm_megawifi.c"
 #include "test_log.c"
 #include "test_midi.h"
 #include "test_midi_dynamic.c"
@@ -21,6 +22,8 @@
     cmocka_unit_test_setup(test, test_dynamic_midi_setup)
 #define synth_test(test) cmocka_unit_test_setup(test, test_synth_setup)
 #define comm_test(test) cmocka_unit_test_setup(test, test_comm_setup)
+#define comm_megawifi_test(test)                                               \
+    cmocka_unit_test_setup(test, test_comm_megawifi_setup)
 #define log_test(test) cmocka_unit_test_setup(test, test_log_setup)
 #define scheduler_test(test) cmocka_unit_test_setup(test, test_scheduler_setup)
 #define applemidi_test(test) cmocka_unit_test_setup(test, test_applemidi_setup)
@@ -191,6 +194,8 @@ int main(void)
         comm_test(test_comm_busy_count_is_correct),
         comm_test(test_comm_clamps_idle_count),
         comm_test(test_comm_clamps_busy_count),
+
+        comm_megawifi_test(test_comm_megawifi_initialises),
 
         dynamic_midi_test(test_midi_dynamic_uses_all_channels),
         dynamic_midi_test(

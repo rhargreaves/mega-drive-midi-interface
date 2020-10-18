@@ -243,6 +243,10 @@ void __wrap_comm_resetCounts(void)
 {
 }
 
+void __wrap_comm_megawifi_init(void)
+{
+}
+
 void __wrap_midi_noteOff(u8 chan, u8 pitch)
 {
     check_expected(chan);

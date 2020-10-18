@@ -86,6 +86,7 @@ MOCKS=midi_process \
 	ui_update \
 	scheduler_init \
 	midi_emit \
+	comm_megawifi_init \
 	mediator_recv_event \
 	mediator_send_packet
 
