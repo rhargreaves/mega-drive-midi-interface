@@ -1,6 +1,7 @@
 #include "comm.h"
 #include "comm_everdrive.h"
 #include "comm_everdrive_pro.h"
+#include "comm_megawifi.h"
 #include "comm_serial.h"
 #include <stdbool.h>
 
@@ -9,8 +10,6 @@ static u16 reads = 0;
 
 static const u16 MAX_COMM_IDLE = 0x28F;
 static const u16 MAX_COMM_BUSY = 0x28F;
-
-#define COMM_TYPES 3
 
 static bool countsInBounds(void);
 
@@ -36,16 +35,19 @@ static const CommVTable Serial_VTable
     = { comm_serial_init, comm_serial_readReady, comm_serial_read,
           comm_serial_writeReady, comm_serial_write };
 
-static const CommVTable* commTypes[COMM_TYPES]
-    = { &Everdrive_VTable, &EverdrivePro_VTable, &Serial_VTable };
+static const CommVTable Megawifi_VTable
+    = { comm_megawifi_init, comm_megawifi_readReady, comm_megawifi_read,
+          comm_megawifi_writeReady, comm_megawifi_write };
+
+#define COMM_TYPES 4
+static const CommVTable* commTypes[COMM_TYPES] = { &Everdrive_VTable,
+    &EverdrivePro_VTable, &Serial_VTable, &Megawifi_VTable };
 
 static const CommVTable* activeCommType = NULL;
 
 void comm_init(void)
 {
-    for (u16 i = 0; i < COMM_TYPES; i++) {
-        commTypes[i]->init();
-    }
+    for (u16 i = 0; i < COMM_TYPES; i++) { commTypes[i]->init(); }
     activeCommType = NULL;
 }
 
