@@ -39,10 +39,10 @@ static void test_comm_megawifi_initialises(UNUSED void** state)
     mock_mw_detect(3, 1);
     will_return(__wrap_mw_detect, MW_ERR_NONE);
 
-    expect_any(__wrap_log_info, fmt);
+    expect_memory(__wrap_log_info, fmt, "Found MegaWiFi %d.%d", 21);
     expect_any(__wrap_log_info, val1);
     expect_any(__wrap_log_info, val2);
-    expect_any(__wrap_log_info, val3);
+    expect_value(__wrap_log_info, val3, 0);
 
     __real_comm_megawifi_init();
 }
