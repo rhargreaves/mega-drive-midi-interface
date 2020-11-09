@@ -713,3 +713,18 @@ mw_err __wrap_mw_ap_assoc_wait(int tout_frames)
     check_expected(tout_frames);
     return mock_type(mw_err);
 }
+
+static struct mw_ip_cfg mock_mw_ip_cfg = {};
+
+void mock_ip_cfg(u32 ip_addr)
+{
+    mock_mw_ip_cfg.addr.addr = ip_addr;
+}
+
+mw_err __wrap_mw_ip_current(struct mw_ip_cfg** ip)
+{
+    (*ip) = &mock_mw_ip_cfg;
+    if (disableChecks)
+        return MW_ERR_NONE;
+    return mock_type(mw_err);
+}

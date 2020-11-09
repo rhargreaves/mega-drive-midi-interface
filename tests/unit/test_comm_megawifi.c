@@ -56,5 +56,9 @@ static void test_comm_megawifi_initialises(UNUSED void** state)
     will_return(__wrap_mw_ap_assoc_wait, MW_ERR_NONE);
     expect_log_info("Done!");
 
+    mock_ip_cfg(ip_str_to_uint32("127.1.2.3"));
+    will_return(__wrap_mw_ip_current, MW_ERR_NONE);
+    expect_log_info("IP: 127.1.2.3");
+
     __real_comm_megawifi_init();
 }

@@ -4,6 +4,7 @@
 #include "mw/megawifi.h"
 #include "mw/mpool.h"
 #include "mw/util.h"
+#include "string.h"
 
 #include <stdbool.h>
 
@@ -47,8 +48,22 @@ static mw_err associate_ap(void)
         return err;
     }
     log_info("Done!", 0, 0, 0);
-
     return MW_ERR_NONE;
+}
+
+static mw_err display_ip_addr(void)
+{
+    struct mw_ip_cfg* ip_cfg;
+    mw_err err = mw_ip_current(&ip_cfg);
+    if (err != MW_ERR_NONE) {
+        return err;
+    }
+    char ip_str[16] = {};
+    uint32_to_ip_str(ip_cfg->addr.addr, ip_str);
+    char text[22];
+    sprintf(text, "IP: %s", ip_str);
+    log_info(text, 0, 0, 0);
+    return err;
 }
 
 bool detect_mw(void)
@@ -75,6 +90,7 @@ void comm_megawifi_init(void)
         return;
     }
     associate_ap();
+    display_ip_addr();
 }
 
 u8 comm_megawifi_readReady(void)
