@@ -19,28 +19,6 @@ void midi_emit(u8 data)
     (void)data;
 }
 
-/// MegaWiFi initialization
-// static void megawifi_init_cb(struct loop_timer* t)
-// {
-//     UNUSED_PARAM(t);
-//     //  uint8_t ver_major = 0, ver_minor = 0;
-//     //char* variant = NULL;
-//     //enum mw_err err;
-//     // char line[] = "MegaWiFi version X.Y";
-
-//     // Try detecting the module
-//     // err = mw_detect(&ver_major, &ver_minor, &variant);
-//     // if (MW_ERR_NONE != err) {
-//     //     // Megawifi not found
-//     // } else {
-//     //     // Megawifi found
-
-//     //     // Configuration complete, run test function next frame
-//     //     // t->timer_cb = udp_test;
-//     //     // loop_timer_start(t, 1);
-//     // }
-// }
-
 #define MW_MAX_LOOP_FUNCS 2
 #define MW_MAX_LOOP_TIMERS 4
 
@@ -57,22 +35,46 @@ static void mw_process_loop_init(void)
     loop_func_add(&loop_func);
 }
 
-void comm_megawifi_init(void)
+static mw_err associate_ap(void)
 {
-    mp_init(0);
-    mw_process_loop_init();
-    mw_init(cmd_buf, MW_BUFLEN);
+    log_info("Associating to AP...", 0, 0, 0);
+    mw_err err = mw_ap_assoc(0);
+    if (err != MW_ERR_NONE) {
+        return err;
+    }
+    err = mw_ap_assoc_wait(MS_TO_FRAMES(2000));
+    if (err != MW_ERR_NONE) {
+        return err;
+    }
+    log_info("Done!", 0, 0, 0);
 
+    return MW_ERR_NONE;
+}
+
+bool detect_mw(void)
+{
     u8 ver_major = 0, ver_minor = 0;
     char* variant = NULL;
     mw_err err = mw_detect(&ver_major, &ver_minor, &variant);
     if (MW_ERR_NONE != err) {
         // Megawifi not found
         log_warn("MegaWiFi not found (err %d)", err, 0, 0);
-        return;
+        return false;
     }
     log_info("Found MegaWiFi %d.%d", ver_major, ver_minor, 0);
-    mw_detected = true;
+    return true;
+}
+
+void comm_megawifi_init(void)
+{
+    mp_init(0);
+    mw_process_loop_init();
+    mw_init(cmd_buf, MW_BUFLEN);
+    mw_detected = detect_mw();
+    if (!mw_detected) {
+        return;
+    }
+    associate_ap();
 }
 
 u8 comm_megawifi_readReady(void)

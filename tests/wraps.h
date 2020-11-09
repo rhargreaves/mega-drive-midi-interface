@@ -133,3 +133,5 @@ void mock_mw_detect(u8 major, u8 minor);
 
 int __wrap_loop_init(uint8_t max_func, uint8_t max_timer);
 int __wrap_loop_func_add(struct loop_func* func);
+mw_err __wrap_mw_ap_assoc(uint8_t slot);
+mw_err __wrap_mw_ap_assoc_wait(int tout_frames);

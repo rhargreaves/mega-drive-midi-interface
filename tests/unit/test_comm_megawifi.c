@@ -23,6 +23,14 @@ static int test_comm_megawifi_setup(UNUSED void** state)
     return 0;
 }
 
+#define expect_log_info(f)                                                     \
+    {                                                                          \
+        expect_memory(__wrap_log_info, fmt, f, sizeof(f));                     \
+        expect_any(__wrap_log_info, val1);                                     \
+        expect_any(__wrap_log_info, val2);                                     \
+        expect_any(__wrap_log_info, val3);                                     \
+    }
+
 static void test_comm_megawifi_initialises(UNUSED void** state)
 {
     expect_any(__wrap_mw_init, cmd_buf);
@@ -38,11 +46,15 @@ static void test_comm_megawifi_initialises(UNUSED void** state)
 
     mock_mw_detect(3, 1);
     will_return(__wrap_mw_detect, MW_ERR_NONE);
+    expect_log_info("Found MegaWiFi %d.%d");
 
-    expect_memory(__wrap_log_info, fmt, "Found MegaWiFi %d.%d", 21);
-    expect_any(__wrap_log_info, val1);
-    expect_any(__wrap_log_info, val2);
-    expect_value(__wrap_log_info, val3, 0);
+    expect_log_info("Associating to AP...");
+    expect_value(__wrap_mw_ap_assoc, slot, 0);
+    will_return(__wrap_mw_ap_assoc, MW_ERR_NONE);
+
+    expect_any(__wrap_mw_ap_assoc_wait, tout_frames);
+    will_return(__wrap_mw_ap_assoc_wait, MW_ERR_NONE);
+    expect_log_info("Done!");
 
     __real_comm_megawifi_init();
 }

@@ -697,3 +697,19 @@ int __wrap_loop_func_add(struct loop_func* func)
     check_expected(func);
     return mock_type(mw_err);
 }
+
+mw_err __wrap_mw_ap_assoc(uint8_t slot)
+{
+    if (disableChecks)
+        return MW_ERR_NONE;
+    check_expected(slot);
+    return mock_type(mw_err);
+}
+
+mw_err __wrap_mw_ap_assoc_wait(int tout_frames)
+{
+    if (disableChecks)
+        return MW_ERR_NONE;
+    check_expected(tout_frames);
+    return mock_type(mw_err);
+}

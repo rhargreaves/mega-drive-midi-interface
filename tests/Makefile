@@ -137,7 +137,9 @@ MD_MOCKS=SYS_setVIntCallback \
 	mw_process \
 	mw_detect \
 	loop_init \
-	loop_func_add
+	loop_func_add \
+	mw_ap_assoc \
+	mw_ap_assoc_wait
 
 LDFLAGS=-ggdb -ffreestanding -lcmocka -L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src
 LDFLAGS+=$(foreach MOCK,$(MD_MOCKS),-Wl,--wrap=$(MOCK))
