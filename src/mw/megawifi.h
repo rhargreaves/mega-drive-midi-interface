@@ -64,6 +64,8 @@ enum mw_err {
     MW_ERR_RECV ///< Error receiving data
 };
 
+typedef enum mw_err mw_err;
+
 /// Supported HTTP methods
 enum mw_http_method {
     MW_HTTP_METHOD_GET = 0, ///< HTTP GET Method

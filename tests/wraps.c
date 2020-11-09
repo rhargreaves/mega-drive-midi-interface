@@ -662,3 +662,38 @@ void __wrap_mw_process(void)
         return;
     function_called();
 }
+
+static u8 mock_ver_major;
+static u8 mock_ver_minor;
+
+void mock_mw_detect(u8 major, u8 minor)
+{
+    mock_ver_major = major;
+    mock_ver_minor = minor;
+}
+
+mw_err __wrap_mw_detect(uint8_t* major, uint8_t* minor, char** variant)
+{
+    if (disableChecks)
+        return MW_ERR_NONE;
+    *major = mock_ver_major;
+    *minor = mock_ver_minor;
+    return mock_type(mw_err);
+}
+
+int __wrap_loop_init(uint8_t max_func, uint8_t max_timer)
+{
+    if (disableChecks)
+        return MW_ERR_NONE;
+    check_expected(max_func);
+    check_expected(max_timer);
+    return mock_type(mw_err);
+}
+
+int __wrap_loop_func_add(struct loop_func* func)
+{
+    if (disableChecks)
+        return MW_ERR_NONE;
+    check_expected(func);
+    return mock_type(mw_err);
+}
