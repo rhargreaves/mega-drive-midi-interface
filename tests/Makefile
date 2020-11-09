@@ -132,7 +132,9 @@ MD_MOCKS=SYS_setVIntCallback \
 	getFPS \
 	VDP_clearTextArea \
 	region_isPal \
-	SYS_die
+	SYS_die \
+	mw_init \
+	mw_process
 
 LDFLAGS=-ggdb -ffreestanding -lcmocka -L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src
 LDFLAGS+=$(foreach MOCK,$(MD_MOCKS),-Wl,--wrap=$(MOCK))

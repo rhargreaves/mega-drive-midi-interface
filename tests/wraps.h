@@ -123,3 +123,6 @@ void __wrap_midi_emit(u8 midiByte);
 mw_err __wrap_mediator_recv_event(void);
 mw_err __wrap_mediator_send_packet(u8 ch, char* data, u16 len);
 void __wrap_SYS_die(char* err);
+
+int __wrap_mw_init(char* cmd_buf, uint16_t buf_len);
+void __wrap_mw_process(void);

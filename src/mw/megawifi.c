@@ -96,6 +96,11 @@ int mw_init(char* cmd_buf, uint16_t buf_len)
     return MW_ERR_NONE;
 }
 
+void mw_process(void)
+{
+    lsd_process();
+}
+
 static void cmd_send_cb(enum lsd_status err, void* ctx)
 {
     UNUSED_PARAM(ctx);

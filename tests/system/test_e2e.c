@@ -19,9 +19,9 @@ static const u8 SYSEX_END = 0xF7;
 
 static int test_e2e_setup(void** state)
 {
+    wraps_disable_checks();
     comm_resetCounts();
     comm_init();
-    wraps_disable_checks();
     midi_init(M_BANK_0, P_BANK_0, ENVELOPES);
     wraps_enable_checks();
     return 0;

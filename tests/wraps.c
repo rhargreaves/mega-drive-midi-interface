@@ -646,3 +646,19 @@ void __wrap_SYS_die(char* err)
 {
     print_error("%s", err);
 }
+
+int __wrap_mw_init(char* cmd_buf, uint16_t buf_len)
+{
+    if (disableChecks)
+        return MW_ERR_NONE;
+    check_expected(cmd_buf);
+    check_expected(buf_len);
+    return mock_type(int);
+}
+
+void __wrap_mw_process(void)
+{
+    if (disableChecks)
+        return;
+    function_called();
+}

@@ -8,7 +8,7 @@
 #define MW_BUFLEN 1460
 
 /// Command buffer
-//static char cmd_buf[MW_BUFLEN];
+static char cmd_buf[MW_BUFLEN];
 
 void midi_emit(u8 data)
 {
@@ -40,8 +40,8 @@ void midi_emit(u8 data)
 void comm_megawifi_init(void)
 {
     mp_init(0);
-    //mw_init(cmd_buf, MW_BUFLEN);
-    // mw_process();
+    mw_init(cmd_buf, MW_BUFLEN);
+    mw_process();
 }
 
 u8 comm_megawifi_readReady(void)

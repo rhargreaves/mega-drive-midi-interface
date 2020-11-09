@@ -147,10 +147,7 @@ int mw_init(char* cmd_buf, uint16_t buf_len);
  * \warning No data will be sent/received if this function is not frequently
  * invoked.
  ****************************************************************************/
-static inline void mw_process(void)
-{
-    lsd_process();
-}
+void mw_process(void);
 
 /************************************************************************/ /**
  * \brief Sets the callback function to be run when network data is received
