@@ -32,7 +32,7 @@ static int test_comm_megawifi_setup(UNUSED void** state)
         expect_any(__wrap_log_info, val3);                                     \
     }
 
-#define expect_udp_port_open(c, d_port, s_port)                                \
+#define expect_udp_port_open(c, d_port, s_port, log_text)                      \
     {                                                                          \
         expect_value(__wrap_mw_udp_set, ch, c);                                \
         expect_memory(__wrap_mw_udp_set, dst_addr, "127.0.0.1", 10);           \
@@ -44,7 +44,7 @@ static int test_comm_megawifi_setup(UNUSED void** state)
         expect_value(                                                          \
             __wrap_mw_sock_conn_wait, tout_frames, MS_TO_FRAMES(1000));        \
         will_return(__wrap_mw_sock_conn_wait, MW_ERR_NONE);                    \
-        expect_log_info("UDP Port Open: %d");                                  \
+        expect_log_info(log_text);                                             \
     }
 
 static void test_comm_megawifi_initialises(UNUSED void** state)
@@ -76,8 +76,10 @@ static void test_comm_megawifi_initialises(UNUSED void** state)
     will_return(__wrap_mw_ip_current, MW_ERR_NONE);
     expect_log_info("IP: 127.1.2.3");
 
-    expect_udp_port_open(CH_CONTROL_PORT, "5004", "5006");
-    expect_udp_port_open(CH_MIDI_PORT, "5005", "5007");
+    expect_udp_port_open(
+        CH_CONTROL_PORT, "5004", "5006", "AppleMIDI: Control UDP Port: 5004");
+    expect_udp_port_open(
+        CH_MIDI_PORT, "5005", "5007", "AppleMIDI: MIDI UDP Port: 5005");
 
     __real_comm_megawifi_init();
 }

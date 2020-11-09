@@ -81,7 +81,7 @@ bool detect_mw(void)
     return true;
 }
 
-static void open_udp_port(u8 ch, u16 dst_port, u16 src_port)
+static void open_udp_port(u8 ch, u16 dst_port, u16 src_port, const char* name)
 {
     char dst_port_str[6];
     sprintf(dst_port_str, "%d", dst_port);
@@ -95,7 +95,9 @@ static void open_udp_port(u8 ch, u16 dst_port, u16 src_port)
     if (err != MW_ERR_NONE) {
         return;
     }
-    log_info("UDP Port Open: %d", dst_port, 0, 0);
+    char text[50];
+    sprintf(text, "AppleMIDI: %s UDP Port: %d", name, dst_port);
+    log_info(text, 0, 0, 0);
 }
 
 void comm_megawifi_init(void)
@@ -109,8 +111,8 @@ void comm_megawifi_init(void)
     }
     associate_ap();
     display_ip_addr();
-    open_udp_port(CH_CONTROL_PORT, 5004, 5006);
-    open_udp_port(CH_MIDI_PORT, 5005, 5007);
+    open_udp_port(CH_CONTROL_PORT, 5004, 5006, "Control");
+    open_udp_port(CH_MIDI_PORT, 5005, 5007, "MIDI");
 }
 
 u8 comm_megawifi_readReady(void)
