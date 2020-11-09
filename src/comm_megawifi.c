@@ -81,17 +81,21 @@ bool detect_mw(void)
     return true;
 }
 
-static void open_udp_port(void)
+static void open_udp_port(u8 ch, u16 dst_port, u16 src_port)
 {
-    mw_err err = mw_udp_set(CH_CONTROL_PORT, "127.0.0.1", "5004", "5006");
+    char dst_port_str[6];
+    sprintf(dst_port_str, "%d", dst_port);
+    char src_port_str[6];
+    sprintf(src_port_str, "%d", src_port);
+    mw_err err = mw_udp_set(ch, "127.0.0.1", dst_port_str, src_port_str);
     if (err != MW_ERR_NONE) {
         return;
     }
-    err = mw_sock_conn_wait(CH_CONTROL_PORT, MS_TO_FRAMES(1000));
+    err = mw_sock_conn_wait(ch, MS_TO_FRAMES(1000));
     if (err != MW_ERR_NONE) {
         return;
     }
-    log_info("UDP Port Open: %d", 5004, 0, 0);
+    log_info("UDP Port Open: %d", dst_port, 0, 0);
 }
 
 void comm_megawifi_init(void)
@@ -105,7 +109,8 @@ void comm_megawifi_init(void)
     }
     associate_ap();
     display_ip_addr();
-    open_udp_port();
+    open_udp_port(CH_CONTROL_PORT, 5004, 5006);
+    open_udp_port(CH_MIDI_PORT, 5005, 5007);
 }
 
 u8 comm_megawifi_readReady(void)
