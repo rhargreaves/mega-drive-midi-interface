@@ -2,6 +2,7 @@
 #include <stdarg.h>
 #include <stddef.h>
 
+#include "applemidi.h"
 #include "comm_megawifi.h"
 #include "mw/loop.h"
 #include "mw/megawifi.h"
@@ -59,6 +60,12 @@ static void test_comm_megawifi_initialises(UNUSED void** state)
     mock_ip_cfg(ip_str_to_uint32("127.1.2.3"));
     will_return(__wrap_mw_ip_current, MW_ERR_NONE);
     expect_log_info("IP: 127.1.2.3");
+
+    expect_value(__wrap_mw_udp_set, ch, CH_CONTROL_PORT);
+    expect_memory(__wrap_mw_udp_set, dst_addr, "127.0.0.1", 10);
+    expect_memory(__wrap_mw_udp_set, dst_port, "5004", 5);
+    expect_memory(__wrap_mw_udp_set, src_port, "5006", 5);
+    will_return(__wrap_mw_udp_set, MW_ERR_NONE);
 
     __real_comm_megawifi_init();
 }

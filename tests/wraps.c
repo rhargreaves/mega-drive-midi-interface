@@ -728,3 +728,15 @@ mw_err __wrap_mw_ip_current(struct mw_ip_cfg** ip)
         return MW_ERR_NONE;
     return mock_type(mw_err);
 }
+
+mw_err __wrap_mw_udp_set(uint8_t ch, const char* dst_addr, const char* dst_port,
+    const char* src_port)
+{
+    if (disableChecks)
+        return MW_ERR_NONE;
+    check_expected(ch);
+    check_expected(dst_addr);
+    check_expected(dst_port);
+    check_expected(src_port);
+    return mock_type(mw_err);
+}

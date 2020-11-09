@@ -1,4 +1,5 @@
 #include "comm_megawifi.h"
+#include "applemidi.h"
 #include "log.h"
 #include "mw/loop.h"
 #include "mw/megawifi.h"
@@ -80,6 +81,11 @@ bool detect_mw(void)
     return true;
 }
 
+static void open_udp_port(void)
+{
+    mw_udp_set(CH_CONTROL_PORT, "127.0.0.1", "5004", "5006");
+}
+
 void comm_megawifi_init(void)
 {
     mp_init(0);
@@ -91,6 +97,7 @@ void comm_megawifi_init(void)
     }
     associate_ap();
     display_ip_addr();
+    open_udp_port();
 }
 
 u8 comm_megawifi_readReady(void)

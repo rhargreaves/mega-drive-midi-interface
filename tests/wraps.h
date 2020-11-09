@@ -137,3 +137,5 @@ mw_err __wrap_mw_ap_assoc(uint8_t slot);
 mw_err __wrap_mw_ap_assoc_wait(int tout_frames);
 mw_err __wrap_mw_ip_current(struct mw_ip_cfg** ip);
 void mock_ip_cfg(u32 ip_addr);
+mw_err __wrap_mw_udp_set(uint8_t ch, const char* dst_addr, const char* dst_port,
+    const char* src_port);
