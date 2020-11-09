@@ -83,7 +83,15 @@ bool detect_mw(void)
 
 static void open_udp_port(void)
 {
-    mw_udp_set(CH_CONTROL_PORT, "127.0.0.1", "5004", "5006");
+    mw_err err = mw_udp_set(CH_CONTROL_PORT, "127.0.0.1", "5004", "5006");
+    if (err != MW_ERR_NONE) {
+        return;
+    }
+    err = mw_sock_conn_wait(CH_CONTROL_PORT, MS_TO_FRAMES(1000));
+    if (err != MW_ERR_NONE) {
+        return;
+    }
+    log_info("UDP Port Open: %d", 5004, 0, 0);
 }
 
 void comm_megawifi_init(void)

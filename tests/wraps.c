@@ -740,3 +740,12 @@ mw_err __wrap_mw_udp_set(uint8_t ch, const char* dst_addr, const char* dst_port,
     check_expected(src_port);
     return mock_type(mw_err);
 }
+
+mw_err __wrap_mw_sock_conn_wait(uint8_t ch, int tout_frames)
+{
+    if (disableChecks)
+        return MW_ERR_NONE;
+    check_expected(ch);
+    check_expected(tout_frames);
+    return mock_type(mw_err);
+}

@@ -67,5 +67,10 @@ static void test_comm_megawifi_initialises(UNUSED void** state)
     expect_memory(__wrap_mw_udp_set, src_port, "5006", 5);
     will_return(__wrap_mw_udp_set, MW_ERR_NONE);
 
+    expect_value(__wrap_mw_sock_conn_wait, ch, CH_CONTROL_PORT);
+    expect_value(__wrap_mw_sock_conn_wait, tout_frames, MS_TO_FRAMES(1000));
+    will_return(__wrap_mw_sock_conn_wait, MW_ERR_NONE);
+    expect_log_info("UDP Port Open: %d");
+
     __real_comm_megawifi_init();
 }

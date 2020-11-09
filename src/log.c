@@ -44,7 +44,7 @@ static void incrementWriteHead(void)
     count++;
 }
 
-static void log(LogLevel level, const char* fmt, u8 val1, u8 val2, u8 val3)
+static void log(LogLevel level, const char* fmt, u16 val1, u16 val2, u16 val3)
 {
     Log* log = &logs[writeHead];
     incrementWriteHead();
@@ -53,12 +53,12 @@ static void log(LogLevel level, const char* fmt, u8 val1, u8 val2, u8 val3)
     log->msgLen = MSG_MAX_LEN;
 }
 
-void log_info(const char* fmt, u8 val1, u8 val2, u8 val3)
+void log_info(const char* fmt, u16 val1, u16 val2, u16 val3)
 {
     log(Info, fmt, val1, val2, val3);
 }
 
-void log_warn(const char* fmt, u8 val1, u8 val2, u8 val3)
+void log_warn(const char* fmt, u16 val1, u16 val2, u16 val3)
 {
     log(Warn, fmt, val1, val2, val3);
 }
