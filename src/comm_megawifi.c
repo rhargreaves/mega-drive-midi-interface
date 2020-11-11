@@ -38,7 +38,7 @@ static void mw_process_loop_init(void)
 
 static mw_err associate_ap(void)
 {
-    log_info("Associating to AP...", 0, 0, 0);
+    log_info("Associating to AP...");
     mw_err err = mw_ap_assoc(0);
     if (err != MW_ERR_NONE) {
         return err;
@@ -47,7 +47,7 @@ static mw_err associate_ap(void)
     if (err != MW_ERR_NONE) {
         return err;
     }
-    log_info("Done!", 0, 0, 0);
+    log_info("Done!");
     return MW_ERR_NONE;
 }
 
@@ -73,10 +73,10 @@ bool detect_mw(void)
     mw_err err = mw_detect(&ver_major, &ver_minor, &variant);
     if (MW_ERR_NONE != err) {
         // Megawifi not found
-        log_warn("MegaWiFi not found (err %d)", err, 0, 0);
+        log_warn("MegaWiFi not found (err %d)", err);
         return false;
     }
-    log_info("Found MegaWiFi %d.%d", ver_major, ver_minor, 0);
+    log_info("Found MegaWiFi %d.%d", ver_major, ver_minor);
     return true;
 }
 

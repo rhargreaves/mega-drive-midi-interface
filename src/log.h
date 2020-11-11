@@ -17,6 +17,6 @@ struct Log {
 };
 
 void log_init(void);
-void log_info(const char* fmt, ...);
-void log_warn(const char* fmt, ...);
+void log_info(const char* fmt, ...) __attribute__((format(printf, 1, 2)));
+void log_warn(const char* fmt, ...) __attribute__((format(printf, 1, 2)));
 Log* log_dequeue(void);

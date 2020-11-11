@@ -82,17 +82,13 @@ static void initDeviceChannel(u8 devChan)
 
 static void initAllDeviceChannels(void)
 {
-    for (u16 i = 0; i < DEV_CHANS; i++) {
-        initDeviceChannel(i);
-    }
+    for (u16 i = 0; i < DEV_CHANS; i++) { initDeviceChannel(i); }
 }
 
 static void resetAllState(void)
 {
     memset(&lastUnknownControlChange, 0, sizeof(ControlChange));
-    for (u8 i = 0; i < MIDI_CHANNELS; i++) {
-        initMidiChannel(i);
-    }
+    for (u8 i = 0; i < MIDI_CHANNELS; i++) { initMidiChannel(i); }
     initAllDeviceChannels();
     setDynamicMode(dynamicMode);
 }
@@ -354,7 +350,7 @@ void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
     }
     DeviceChannel* devChan = findSuitableDeviceChannel(chan);
     if (devChan == NULL) {
-        log_warn("Ch %d: Dropped note %d", chan + 1, pitch, 0);
+        log_warn("Ch %d: Dropped note %d", chan + 1, pitch);
         return;
     }
     devChan->midiChannel = chan;
@@ -505,7 +501,7 @@ static void loadPsgEnvelope(const u8* data, u16 length)
     }
     buffer[eefStepIndex] = EEF_END;
     midi_psg_loadEnvelope(buffer);
-    log_info("Loaded User Defined Envelope", 0, 0, 0);
+    log_info("Loaded User Defined Envelope");
 }
 
 void midi_sysex(const u8* data, u16 length)
@@ -600,9 +596,7 @@ void midi_remapChannel(u8 midiChan, u8 devChan)
 
 static void generalMidiReset(void)
 {
-    for (u8 chan = 0; chan < MIDI_CHANNELS; chan++) {
-        allNotesOff(chan);
-    }
+    for (u8 chan = 0; chan < MIDI_CHANNELS; chan++) { allNotesOff(chan); }
     resetAllState();
 }
 

@@ -216,7 +216,7 @@ static void printCommBuffer(void)
     }
     u16 bufferAvailable = buffer_available();
     if (bufferAvailable < 32) {
-        log_warn("Serial port buffer has %d bytes left", bufferAvailable, 0, 0);
+        log_warn("Serial port buffer has %d bytes left", bufferAvailable);
     }
 }
 
@@ -340,7 +340,7 @@ static void checkLastError(void)
     static u8 lastStatus = 0;
     u8 unknownStatus = midi_receiver_lastUnknownStatus();
     if (unknownStatus != lastStatus && unknownStatus != 0) {
-        log_warn("Unknown Status %02X", unknownStatus, 0, 0);
+        log_warn("Unknown Status %02X", unknownStatus);
         lastStatus = unknownStatus;
     }
 
@@ -348,7 +348,7 @@ static void checkLastError(void)
     ControlChange* cc = midi_lastUnknownCC();
     if ((cc->controller != lastCc.controller || cc->value != lastCc.value)
         && (cc->controller != 0 || cc->value != 0)) {
-        log_warn("Unknown CC %02X Value %02X", cc->controller, cc->value, 0);
+        log_warn("Unknown CC %02X Value %02X", cc->controller, cc->value);
         lastCc.controller = cc->controller;
         lastCc.value = cc->value;
     }
