@@ -1,10 +1,6 @@
-#include <setjmp.h>
-#include <stdarg.h>
-#include <stddef.h>
+#include "cmocka_inc.h"
 
 #include "comm.h"
-#include "unused.h"
-#include <cmocka.h>
 
 static const u16 MAX_COMM_IDLE = 0x28F;
 static const u16 MAX_COMM_BUSY = 0x28F;

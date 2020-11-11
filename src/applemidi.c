@@ -1,8 +1,8 @@
 #include "applemidi.h"
 #include "mediator.h"
 #include "rtpmidi.h"
+#include "vstring.h"
 
-#include <genesis.h>
 #include <stdbool.h>
 
 static mw_err unpackInvitation(
@@ -94,12 +94,12 @@ static mw_err processInvitation(u8 ch, char* buffer, u16 length)
         return err;
     }
     char text[100];
-    sprintf(text, "Invite recv'd on UDP ch %d:", ch);
-    VDP_drawText(text, 1, 2 + ch);
+    v_sprintf(text, "Invite recv'd on UDP ch %d:", ch);
+    //  VDP_drawText(text, 1, 2 + ch);
 
     sendInviteResponse(ch, &packet);
-    sprintf(text, "Ack'd");
-    VDP_drawText(text, 28, 2 + ch);
+    v_sprintf(text, "Ack'd");
+    // VDP_drawText(text, 28, 2 + ch);
 
     return MW_ERR_NONE;
 }
@@ -124,8 +124,8 @@ static mw_err processTimestampSync(char* buffer, u16 length)
         }
 
         char text[32];
-        sprintf(text, "Timestamp Syncs: %d", timestampSyncCount++);
-        VDP_drawText(text, 1, 5);
+        v_sprintf(text, "Timestamp Syncs: %d", timestampSyncCount++);
+        // VDP_drawText(text, 1, 5);
     }
 
     return MW_ERR_NONE;
@@ -173,8 +173,8 @@ mw_err applemidi_processSessionMidiPacket(char* buffer, u16 length)
             return processTimestampSync(buffer, length);
         } else {
             char text[100];
-            sprintf(text, "Unknown event %s", command);
-            VDP_drawText(text, 1, 14);
+            v_sprintf(text, "Unknown event %s", command);
+            //   VDP_drawText(text, 1, 14);
         }
     } else {
         return rtpmidi_processRtpMidiPacket(buffer, length);

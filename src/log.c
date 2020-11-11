@@ -1,7 +1,7 @@
 #include "log.h"
+#include "vstring.h"
 #include <memory.h>
 #include <stdbool.h>
-#include <string.h>
 
 #define MAX_LOG_ENTRIES 10
 
@@ -44,23 +44,29 @@ static void incrementWriteHead(void)
     count++;
 }
 
-static void log(LogLevel level, const char* fmt, u16 val1, u16 val2, u16 val3)
+static void log(LogLevel level, const char* fmt, va_list args)
 {
     Log* log = &logs[writeHead];
     incrementWriteHead();
-    sprintf(log->msg, fmt, val1, val2, val3);
+    v_vsprintf(log->msg, fmt, args);
     log->level = level;
     log->msgLen = MSG_MAX_LEN;
 }
 
-void log_info(const char* fmt, u16 val1, u16 val2, u16 val3)
+void log_info(const char* fmt, ...)
 {
-    log(Info, fmt, val1, val2, val3);
+    va_list args;
+    va_start(args, fmt);
+    log(Info, fmt, args);
+    va_end(args);
 }
 
-void log_warn(const char* fmt, u16 val1, u16 val2, u16 val3)
+void log_warn(const char* fmt, ...)
 {
-    log(Warn, fmt, val1, val2, val3);
+    va_list args;
+    va_start(args, fmt);
+    log(Warn, fmt, args);
+    va_end(args);
 }
 
 Log* log_dequeue(void)

@@ -1,10 +1,4 @@
-#include <setjmp.h>
-#include <stdarg.h>
-#include <stddef.h>
-
 #include "test_midi.h"
-#include <cmocka.h>
-#include <stdio.h>
 
 static void remapChannel(u8 midiChannel, u8 deviceChannel)
 {
@@ -198,9 +192,6 @@ static void test_midi_sysex_loads_psg_envelope(UNUSED void** state)
     expect_memory(__wrap_midi_psg_loadEnvelope, eef, eef, eefLength);
 
     expect_memory(__wrap_log_info, fmt, "Loaded User Defined Envelope", 29);
-    expect_any(__wrap_log_info, val1);
-    expect_any(__wrap_log_info, val2);
-    expect_any(__wrap_log_info, val3);
 
     __real_midi_sysex(sequence, sizeof(sequence));
 }

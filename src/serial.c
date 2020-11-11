@@ -1,5 +1,4 @@
 #include "serial.h"
-#include <sys.h>
 
 #define VDP_MODE_REG_3 0xB
 #define VDP_IE2 0x08

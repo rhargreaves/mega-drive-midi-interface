@@ -18,7 +18,7 @@
 #include "loop.h"
 #include "megawifi.h"
 #include "util.h"
-#include <string.h>
+#include <vstring.h>
 
 #define MW_COMMAND_TOUT MS_TO_FRAMES(MW_COMMAND_TOUT_MS)
 #define MW_CONNECT_TOUT MS_TO_FRAMES(MW_CONNECT_TOUT_MS)
@@ -184,7 +184,7 @@ static enum mw_err string_based_cmd(
         return MW_ERR_NOT_READY;
     }
 
-    if (!payload || !(len = strlen(payload))) {
+    if (!payload || !(len = v_strlen(payload))) {
         return MW_ERR_PARAM;
     }
 
@@ -376,9 +376,9 @@ enum mw_err mw_ap_cfg_set(
     d.cmd->ap_cfg.phy_type = phy_type;
     // Note: *NOT* NULL terminated strings are allowed on cmd.ap_cfg.ssid
     // and cmd.ap_cfg.pass
-    memcpy(d.cmd->ap_cfg.ssid, ssid, strnlen(ssid, MW_SSID_MAXLEN));
+    memcpy(d.cmd->ap_cfg.ssid, ssid, v_strnlen(ssid, MW_SSID_MAXLEN));
     if (pass) {
-        memcpy(d.cmd->ap_cfg.pass, pass, strnlen(pass, MW_PASS_MAXLEN));
+        memcpy(d.cmd->ap_cfg.pass, pass, v_strnlen(pass, MW_PASS_MAXLEN));
     }
 
     err = mw_command(MW_COMMAND_TOUT);
@@ -666,17 +666,17 @@ static int fill_addr(const char* dst_addr, const char* dst_port,
     // Zero structure data
     memset(in_addr, 0, sizeof(struct mw_msg_in_addr));
     in_addr->dst_addr[0] = '\0';
-    strcpy(in_addr->dst_port, dst_port);
+    v_strcpy(in_addr->dst_port, dst_port);
     if (src_port) {
-        strcpy(in_addr->src_port, src_port);
+        v_strcpy(in_addr->src_port, src_port);
     }
     if (dst_addr && dst_port) {
-        strcpy(in_addr->dst_addr, dst_addr);
-        strcpy(in_addr->dst_port, dst_port);
+        v_strcpy(in_addr->dst_addr, dst_addr);
+        v_strcpy(in_addr->dst_port, dst_port);
     }
 
     // Length is the length of both ports, the channel and the address.
-    return 6 + 6 + 1 + strlen(in_addr->dst_addr) + 1;
+    return 6 + 6 + 1 + v_strlen(in_addr->dst_addr) + 1;
 }
 
 enum mw_err mw_tcp_connect(uint8_t ch, const char* dst_addr,
@@ -889,11 +889,11 @@ enum mw_err mw_sntp_cfg_set(const char* tz_str, const char* server[3])
     }
 
     d.cmd->cmd = MW_CMD_SNTP_CFG;
-    offset = 1 + strlen(tz_str);
+    offset = 1 + v_strlen(tz_str);
     memcpy(d.cmd->data, tz_str, offset);
 
     for (int i = 0; i < 3 && server[i] && *server[i]; i++) {
-        len = 1 + strlen(server[i]);
+        len = 1 + v_strlen(server[i]);
         memcpy(&d.cmd->data[offset], server[i], len);
         offset += len;
     }
@@ -914,7 +914,7 @@ static int tokens_get(const char* in, char* token[], int token_max)
 
     token[0] = (char*)in;
     for (i = 0; i < (token_max - 1) && *token[i]; i++) {
-        len = strlen(token[i]);
+        len = v_strlen(token[i]);
         token[i + 1] = token[i] + len + 1;
     }
 
@@ -1180,8 +1180,8 @@ enum mw_err mw_http_header_add(const char* key, const char* value)
         return MW_ERR_NOT_READY;
     }
 
-    if (!key || !value || !(key_len = strlen(key))
-        || !(value_len = strlen(value))) {
+    if (!key || !value || !(key_len = v_strlen(key))
+        || !(value_len = v_strlen(value))) {
         return MW_ERR_PARAM;
     }
 
@@ -1536,7 +1536,7 @@ enum mw_err mw_fw_upgrade(const char* name)
     }
 
     d.cmd->cmd = MW_CMD_UPGRADE_PERFORM;
-    d.cmd->data_len = strlen(name) + 1;
+    d.cmd->data_len = v_strlen(name) + 1;
     memcpy(d.cmd->data, name, d.cmd->data_len);
     err = mw_command(MW_UPGRADE_TOUT);
     if (err) {

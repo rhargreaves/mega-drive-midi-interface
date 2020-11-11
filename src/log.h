@@ -1,6 +1,6 @@
 #pragma once
-#include <stdint.h>
 #include <types.h>
+#include "vstring.h"
 
 #define MSG_MAX_LEN 40
 
@@ -17,6 +17,6 @@ struct Log {
 };
 
 void log_init(void);
-void log_info(const char* fmt, u16 val1, u16 val2, u16 val3);
-void log_warn(const char* fmt, u16 val1, u16 val2, u16 val3);
+void log_info(const char* fmt, ...);
+void log_warn(const char* fmt, ...);
 Log* log_dequeue(void);

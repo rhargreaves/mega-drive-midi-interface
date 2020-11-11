@@ -1,14 +1,7 @@
-#include <setjmp.h>
-#include <stdarg.h>
-#include <stddef.h>
+#include "cmocka_inc.h"
 
-#include "asserts.h"
 #include "midi.h"
 #include "midi_receiver.h"
-#include "unused.h"
-#include "wraps.h"
-#include <cmocka.h>
-#include <types.h>
 
 #define STATUS_CC 0xB0
 #define STATUS_PITCH_BEND 0xE0

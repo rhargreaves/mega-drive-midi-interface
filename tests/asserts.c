@@ -1,11 +1,6 @@
-#include <setjmp.h>
-#include <stdarg.h>
-#include <stddef.h>
+#include "cmocka_inc.h"
 
-#include "asserts.h"
 #include "comm.h"
-#include "wraps.h"
-#include <cmocka.h>
 
 #define REG_PART(chan) chan < 3 ? 0 : 1
 #define REG_OFFSET(chan) chan % 3

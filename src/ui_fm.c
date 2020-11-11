@@ -1,10 +1,17 @@
 #include "ui_fm.h"
 #include "midi.h"
 #include "synth.h"
-#include "ui.h"
-#include <genesis.h>
-
+#include <vdp.h>
+#include <sys.h>
+#include "vdp_bg.h"
+#include "vdp_dma.h"
+#include "vdp_spr.h"
+#include "vdp_tile.h"
+#include "vdp_pal.h"
+#include <sprite_eng.h>
 #include "sprite.h"
+#include "vstring.h"
+#include "ui.h"
 
 #define UNKNOWN_FM_CHANNEL 0xFF
 
@@ -169,14 +176,14 @@ static const char* fmsText(u8 fms)
 static const char* chanNumber(u8 chan)
 {
     static char buffer[3];
-    sprintf(buffer, "%-2d", chan + 1);
+    v_sprintf(buffer, "%-2d", chan + 1);
     return buffer;
 }
 
 static const char* formatNum(u8 value)
 {
     static char buffer[3];
-    sprintf(buffer, "%d", value);
+    v_sprintf(buffer, "%d", value);
     return buffer;
 }
 
@@ -199,7 +206,7 @@ static void updateOpValue(
 
     if (*last != *current || forceRefresh) {
         char buffer[4];
-        sprintf(buffer, "%3d", *current);
+        v_sprintf(buffer, "%3d", *current);
         ui_drawText(buffer, OP_VALUE_X + (op * OP_VALUE_GAP), BASE_Y + line);
         *last = *current;
     }

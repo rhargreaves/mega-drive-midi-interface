@@ -1,16 +1,10 @@
 #pragma once
-#include <setjmp.h>
-#include <stdarg.h>
-#include <stddef.h>
+#include "cmocka_inc.h"
 
-#include "asserts.h"
 #include "midi.h"
 #include "midi_fm.h"
 #include "midi_psg.h"
 #include "synth.h"
-#include "unused.h"
-#include "wraps.h"
-#include <cmocka.h>
 
 #define MIDI_PITCH_A2 45
 #define MIDI_PITCH_C4 60

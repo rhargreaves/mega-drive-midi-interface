@@ -3,7 +3,7 @@
 
 #include <memory.h>
 
-#include <string.h>
+#include <vstring.h>
 
 #include "mpool.h"
 

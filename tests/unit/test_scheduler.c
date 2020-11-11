@@ -1,10 +1,4 @@
-#include <setjmp.h>
-#include <stdarg.h>
-#include <stddef.h>
-
-#include "unused.h"
-#include <cmocka.h>
-#include <stdio.h>
+#include "cmocka_inc.h"
 
 #include "scheduler.h"
 

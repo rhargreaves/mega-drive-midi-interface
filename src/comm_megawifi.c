@@ -5,8 +5,7 @@
 #include "mw/megawifi.h"
 #include "mw/mpool.h"
 #include "mw/util.h"
-#include "string.h"
-
+#include "vstring.h"
 #include <stdbool.h>
 
 /// Length of the wflash buffer
@@ -62,7 +61,7 @@ static mw_err display_ip_addr(void)
     char ip_str[16] = {};
     uint32_to_ip_str(ip_cfg->addr.addr, ip_str);
     char text[22];
-    sprintf(text, "IP: %s", ip_str);
+    v_sprintf(text, "IP: %s", ip_str);
     log_info(text, 0, 0, 0);
     return err;
 }
@@ -84,9 +83,9 @@ bool detect_mw(void)
 static void open_udp_port(u8 ch, u16 dst_port, u16 src_port, const char* name)
 {
     char dst_port_str[6];
-    sprintf(dst_port_str, "%d", dst_port);
+    v_sprintf(dst_port_str, "%d", dst_port);
     char src_port_str[6];
-    sprintf(src_port_str, "%d", src_port);
+    v_sprintf(src_port_str, "%d", src_port);
     mw_err err = mw_udp_set(ch, "127.0.0.1", dst_port_str, src_port_str);
     if (err != MW_ERR_NONE) {
         return;
@@ -95,9 +94,7 @@ static void open_udp_port(u8 ch, u16 dst_port, u16 src_port, const char* name)
     if (err != MW_ERR_NONE) {
         return;
     }
-    char text[50];
-    sprintf(text, "AppleMIDI: %s UDP Port: %d", name, dst_port);
-    log_info(text, 0, 0, 0);
+    log_info("AppleMIDI: %s UDP Port: %d", name, dst_port);
 }
 
 void comm_megawifi_init(void)

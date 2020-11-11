@@ -1,7 +1,6 @@
 #pragma once
 #include <stdint.h>
 #include <types.h>
-
 #include <stdbool.h>
 
 #ifndef BUILD

@@ -2,7 +2,7 @@
 #include "util.h"
 
 #include <memory.h>
-#include <string.h>
+#include <vstring.h>
 
 const char* str_is_uint8(const char* str)
 {
@@ -277,7 +277,7 @@ uint16_t concat_strings(
         if (!str[i]) {
             return 0;
         }
-        str_len = strlen(str[i]) + 1;
+        str_len = v_strlen(str[i]) + 1;
         if ((pos + str_len) > max_len) {
             return 0;
         }
@@ -298,8 +298,8 @@ uint16_t concat_kv_pairs(const char** key, const char** value,
         if (!key[i] || !value[i]) {
             return 0;
         }
-        key_len = strlen(key[i]) + 1;
-        value_len = strlen(value[i]) + 1;
+        key_len = v_strlen(key[i]) + 1;
+        value_len = v_strlen(value[i]) + 1;
         if ((pos + key_len + value_len) > max_len) {
             return 0;
         }

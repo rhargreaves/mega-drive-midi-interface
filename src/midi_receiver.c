@@ -3,7 +3,7 @@
 #include "midi.h"
 #include "scheduler.h"
 #include "synth.h"
-#include <string.h>
+#include <vstring.h>
 
 #define STATUS_LOWER(status) (status & 0x0F)
 #define STATUS_UPPER(status) (status >> 4)
@@ -42,9 +42,7 @@ void midi_receiver_init(void)
 void midi_receiver_perpectual_read(void)
 {
     while (TRUE) {
-        while (comm_readReady()) {
-            midi_receiver_read();
-        }
+        while (comm_readReady()) { midi_receiver_read(); }
         scheduler_doEvents();
     }
 }

@@ -20,7 +20,7 @@
 #include "lsd.h"
 #include "util.h"
 
-#include <string.h>
+#include <vstring.h>
 
 /// Uart used for LSD
 #define LSD_UART 0

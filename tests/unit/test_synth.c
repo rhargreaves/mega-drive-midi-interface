@@ -1,14 +1,8 @@
-#include <setjmp.h>
-#include <stdarg.h>
-#include <stddef.h>
+#include "cmocka_inc.h"
 
-#include "asserts.h"
 #include "synth.h"
 #include "test_midi.h"
-#include "unused.h"
-#include <cmocka.h>
 #include <stdbool.h>
-#include <types.h>
 
 extern void __real_synth_init(const FmChannel* defaultPreset);
 extern void __real_synth_noteOn(u8 channel);

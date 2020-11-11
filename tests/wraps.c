@@ -1,10 +1,6 @@
-#include <setjmp.h>
-#include <stdarg.h>
-#include <stddef.h>
+#include "cmocka_inc.h"
 
 #include "synth.h"
-#include "wraps.h"
-#include <cmocka.h>
 
 #include <stdbool.h>
 
@@ -581,26 +577,20 @@ void __wrap_log_init(void)
 {
 }
 
-void __wrap_log_info(const char* fmt, u8 val1, u8 val2, u8 val3)
+void __wrap_log_info(const char* fmt, ...)
 {
     if (!loggingChecks) {
         return;
     }
     check_expected(fmt);
-    check_expected(val1);
-    check_expected(val2);
-    check_expected(val3);
 }
 
-void __wrap_log_warn(const char* fmt, u8 val1, u8 val2, u8 val3)
+void __wrap_log_warn(const char* fmt, ...)
 {
     if (!loggingChecks) {
         return;
     }
     check_expected(fmt);
-    check_expected(val1);
-    check_expected(val2);
-    check_expected(val3);
 }
 
 Log* __wrap_log_dequeue(void)

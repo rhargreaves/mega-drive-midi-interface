@@ -1,6 +1,4 @@
-#include <setjmp.h>
-#include <stdarg.h>
-#include <stddef.h>
+#include "cmocka_inc.h"
 
 #include "test_applemidi.c"
 #include "test_comm.c"
@@ -15,7 +13,7 @@
 #include "test_midi_sysex.c"
 #include "test_scheduler.c"
 #include "test_synth.c"
-#include <cmocka.h>
+#include "test_vstring.c"
 
 #define midi_test(test) cmocka_unit_test_setup(test, test_midi_setup)
 #define dynamic_midi_test(test)                                                \
@@ -256,7 +254,9 @@ int main(void)
             test_applemidi_parses_rtpmidi_packet_with_multiple_different_midi_events),
         applemidi_test(
             test_applemidi_parses_rtpmidi_packet_with_multiple_2_byte_midi_events),
-        applemidi_test(test_applemidi_parses_rtpmidi_packet_with_sysex)
+        applemidi_test(test_applemidi_parses_rtpmidi_packet_with_sysex),
+
+        cmocka_unit_test(test_vstring_handles_variable_argument_list_correctly)
 
     };
 

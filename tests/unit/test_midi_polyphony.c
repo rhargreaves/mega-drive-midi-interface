@@ -38,9 +38,6 @@ static void test_midi_set_overflow_flag_on_polyphony_breach(UNUSED void** state)
     }
 
     expect_any(__wrap_log_warn, fmt);
-    expect_any(__wrap_log_warn, val1);
-    expect_any(__wrap_log_warn, val2);
-    expect_any(__wrap_log_warn, val3);
     __real_midi_noteOn(DEV_CHAN_MAX_PSG + 1, MIDI_PITCH_AS6, 127);
 }
 

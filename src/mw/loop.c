@@ -12,7 +12,7 @@
 #include "loop.h"
 #include "mpool.h"
 #include <setjmp.h>
-#include <string.h>
+#include <vstring.h>
 
 /// VDP Control port address
 #define VDP_CTRL_PORT_ADDR 0xC00004

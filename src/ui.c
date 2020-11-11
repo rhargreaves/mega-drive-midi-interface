@@ -10,8 +10,15 @@
 #include "serial.h"
 #include "synth.h"
 #include "ui_fm.h"
-#include <genesis.h>
-
+#include <vdp.h>
+#include <sys.h>
+#include "vdp_bg.h"
+#include "vdp_dma.h"
+#include "vdp_spr.h"
+#include "vdp_tile.h"
+#include "vdp_pal.h"
+#include "memory.h"
+#include <sprite_eng.h>
 #include "sprite.h"
 
 #define MAX_EFFECTIVE_X (MAX_X - MARGIN_X - MARGIN_X)
@@ -237,7 +244,7 @@ static void printMappingsIfDirty(u8* midiChans)
     memcpy(lastMidiChans, midiChans, sizeof(u8) * DEV_CHANS);
 
     char text[38];
-    sprintf(text, "%2d %2d %2d %2d %2d %2d %2d %2d %2d %2d", midiChans[0],
+    v_sprintf(text, "%2d %2d %2d %2d %2d %2d %2d %2d %2d %2d", midiChans[0],
         midiChans[1], midiChans[2], midiChans[3], midiChans[4], midiChans[5],
         midiChans[6], midiChans[7], midiChans[8], midiChans[9]);
     drawText(text, 5, MIDI_Y);
@@ -262,7 +269,7 @@ static void printChanActivity(u16 busy)
 static void printBaudRate(void)
 {
     char baudRateText[9];
-    sprintf(baudRateText, "%dbps", comm_serial_baudRate());
+    v_sprintf(baudRateText, "%dbps", comm_serial_baudRate());
     drawText(baudRateText, 17, MAX_EFFECTIVE_Y);
 }
 
@@ -306,7 +313,7 @@ static void printLoad(void)
         / (FRAMES_BEFORE_UPDATE_LOAD / FRAMES_BEFORE_UPDATE_LOAD_PERCENT);
     loadPercentSum = 0;
     VDP_setTextPalette(percent > 70 ? PAL1 : PAL0);
-    sprintf(loadText, "Load %i%c  ", percent, '%');
+    v_sprintf(loadText, "Load %i%c  ", percent, '%');
     comm_resetCounts();
     drawText(loadText, 0, MAX_EFFECTIVE_Y);
     VDP_setTextPalette(PAL0);
