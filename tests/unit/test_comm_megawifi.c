@@ -52,19 +52,19 @@ static void test_comm_megawifi_initialises(UNUSED void** state)
 
     mock_mw_detect(3, 1);
     will_return(__wrap_mw_detect, MW_ERR_NONE);
-    expect_log_info("Found MegaWiFi %d.%d");
+    expect_log_info("MegaWiFi: Found v%d.%d");
 
-    expect_log_info("Associating to AP...");
+    expect_log_info("MegaWiFi: Connecting AP");
     expect_value(__wrap_mw_ap_assoc, slot, 0);
     will_return(__wrap_mw_ap_assoc, MW_ERR_NONE);
 
     expect_any(__wrap_mw_ap_assoc_wait, tout_frames);
     will_return(__wrap_mw_ap_assoc_wait, MW_ERR_NONE);
-    expect_log_info("Done!");
+    expect_log_info("MegaWiFi: Connected.");
 
     mock_ip_cfg(ip_str_to_uint32("127.1.2.3"));
     will_return(__wrap_mw_ip_current, MW_ERR_NONE);
-    expect_log_info("IP: 127.1.2.3");
+    expect_log_info("MegaWiFi: IP: %s");
 
     expect_udp_port_open(CH_CONTROL_PORT, "5004", "5006");
     expect_udp_port_open(CH_MIDI_PORT, "5005", "5007");

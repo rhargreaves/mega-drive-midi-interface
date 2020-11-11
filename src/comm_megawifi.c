@@ -38,16 +38,16 @@ static void mw_process_loop_init(void)
 
 static mw_err associate_ap(void)
 {
-    log_info("Associating to AP...");
+    log_info("MegaWiFi: Connecting AP");
     mw_err err = mw_ap_assoc(0);
     if (err != MW_ERR_NONE) {
         return err;
     }
-    err = mw_ap_assoc_wait(MS_TO_FRAMES(2000));
+    err = mw_ap_assoc_wait(MS_TO_FRAMES(20000));
     if (err != MW_ERR_NONE) {
         return err;
     }
-    log_info("Done!");
+    log_info("MegaWiFi: Connected.");
     return MW_ERR_NONE;
 }
 
@@ -60,9 +60,7 @@ static mw_err display_ip_addr(void)
     }
     char ip_str[16] = {};
     uint32_to_ip_str(ip_cfg->addr.addr, ip_str);
-    char text[22];
-    v_sprintf(text, "IP: %s", ip_str);
-    log_info(text, 0, 0, 0);
+    log_info("MegaWiFi: IP: %s", ip_str);
     return err;
 }
 
@@ -72,11 +70,10 @@ bool detect_mw(void)
     char* variant = NULL;
     mw_err err = mw_detect(&ver_major, &ver_minor, &variant);
     if (MW_ERR_NONE != err) {
-        // Megawifi not found
-        log_warn("MegaWiFi not found (err %d)", err);
+        log_warn("MegaWiFi: Not found");
         return false;
     }
-    log_info("Found MegaWiFi %d.%d", ver_major, ver_minor);
+    log_info("MegaWiFi: Found v%d.%d", ver_major, ver_minor);
     return true;
 }
 
