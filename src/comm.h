@@ -6,7 +6,7 @@
 
 typedef enum CommMode CommMode;
 
-enum CommMode { Discovery, Everdrive, EverdrivePro, Serial };
+enum CommMode { Discovery, Everdrive, EverdrivePro, Serial, MegaWiFi };
 
 void comm_init(void);
 void comm_write(u8 data);

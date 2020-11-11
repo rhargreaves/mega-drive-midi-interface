@@ -279,7 +279,7 @@ static void printCommMode(void)
         return;
     }
     const char* MODES_TEXT[]
-        = { "Waiting", "X7 USB ", "PRO USB", "Serial ", "Unknown" };
+        = { "Waiting", "X7 USB ", "PRO USB", "Serial ", "MegaWiFi", "Unknown" };
     u16 index;
     switch (comm_mode()) {
     case Discovery:
@@ -299,8 +299,12 @@ static void printCommMode(void)
         commSerial = true;
         printBaudRate();
         break;
-    default:
+    case MegaWiFi:
         index = 4;
+        commInited = true;
+        break;
+    default:
+        index = 5;
         break;
     }
     drawText(MODES_TEXT[index], 10, MAX_EFFECTIVE_Y);
