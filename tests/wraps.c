@@ -744,3 +744,8 @@ void __wrap_midi_receiver_readIfCommReady(void)
 {
     function_called();
 }
+
+void __wrap_scheduler_tick(void)
+{
+    function_called();
+}

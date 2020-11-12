@@ -85,6 +85,7 @@ MOCKS=midi_process \
 	ui_fm_setMidiChannelParametersVisibility \
 	ui_update \
 	scheduler_init \
+	scheduler_tick \
 	midi_emit \
 	comm_megawifi_init \
 	mediator_recv_event \

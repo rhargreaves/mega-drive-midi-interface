@@ -3,6 +3,7 @@
 #include "scheduler.h"
 
 void __real_scheduler_init(void);
+void __real_scheduler_tick(void);
 
 static int test_scheduler_setup(UNUSED void** state)
 {
@@ -19,17 +20,20 @@ static void test_scheduler_nothing_called_on_vsync(UNUSED void** state)
 static void test_scheduler_processes_frame_events_once_after_vsync(
     UNUSED void** state)
 {
-    expect_function_call(__wrap_midi_psg_tick);
-    expect_function_call(__wrap_ui_update);
+    expect_function_call(__wrap_midi_receiver_readIfCommReady);
+    __real_scheduler_tick();
 
     scheduler_vsync();
-    scheduler_doEvents();
-    scheduler_doEvents();
+
+    expect_function_call(__wrap_midi_receiver_readIfCommReady);
+    expect_function_call(__wrap_midi_psg_tick);
+    expect_function_call(__wrap_ui_update);
+    __real_scheduler_tick();
 }
 
-static void test_scheduler_runs_midi_receiver(UNUSED void** state)
+static void test_scheduler_tick_runs_midi_receiver(UNUSED void** state)
 {
     expect_function_call(__wrap_midi_receiver_readIfCommReady);
 
-    scheduler_runOnce();
+    __real_scheduler_tick();
 }

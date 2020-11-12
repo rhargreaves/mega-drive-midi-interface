@@ -27,20 +27,21 @@ static void onFrame(void)
     everdrive_led_tick();
 }
 
-void scheduler_doEvents(void)
+static void onTick(void)
 {
+    midi_receiver_readIfCommReady();
+}
+
+void scheduler_tick(void)
+{
+    onTick();
     if (frame != previousFrame) {
         onFrame();
         previousFrame = frame;
     }
 }
 
-void scheduler_runOnce(void)
-{
-    midi_receiver_readIfCommReady();
-}
-
 void scheduler_run(void)
 {
-    while (TRUE) { scheduler_runOnce(); }
+    while (TRUE) { scheduler_tick(); }
 }

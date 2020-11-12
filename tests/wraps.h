@@ -142,3 +142,4 @@ mw_err __wrap_mw_udp_set(uint8_t ch, const char* dst_addr, const char* dst_port,
 mw_err __wrap_mw_sock_conn_wait(uint8_t ch, int tout_frames);
 
 void __wrap_midi_receiver_readIfCommReady(void);
+void __wrap_scheduler_tick(void);

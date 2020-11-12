@@ -39,14 +39,6 @@ void midi_receiver_init(void)
     lastUnknownStatus = 0;
 }
 
-void midi_receiver_perpectual_read(void)
-{
-    while (TRUE) {
-        midi_receiver_readIfCommReady();
-        scheduler_doEvents();
-    }
-}
-
 void midi_receiver_readIfCommReady(void)
 {
     while (comm_readReady()) { midi_receiver_read(); }

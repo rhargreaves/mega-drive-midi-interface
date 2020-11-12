@@ -21,5 +21,5 @@ int main()
     ui_init();
     SYS_setVIntAligned(false);
     SYS_setVIntCallback(scheduler_vsync);
-    midi_receiver_perpectual_read();
+    scheduler_run();
 }
