@@ -382,7 +382,7 @@ void __wrap_VDP_drawText(const char* str, u16 x, u16 y)
 {
 }
 
-void __wrap_SYS_setVIntCallback(_voidCallback* CB)
+void __wrap_SYS_setVIntCallback(VoidCallback* CB)
 {
 }
 
@@ -527,7 +527,7 @@ u8 __wrap_VDP_getReg(u16 reg)
     return 0;
 }
 
-void __wrap_SYS_setExtIntCallback(_voidCallback* CB)
+void __wrap_SYS_setExtIntCallback(VoidCallback* CB)
 {
 }
 

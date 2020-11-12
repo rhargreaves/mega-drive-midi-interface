@@ -29,7 +29,9 @@ INCS = -I. \
 	-Isrc \
 	-Isrc/mw \
 	-Ires
-CCFLAGS = -Wall -Wextra -std=c11 -Werror \
+CCFLAGS = -Wall \
+	-Wextra \
+	-std=c11 -Werror \
 	-fno-builtin \
 	-DBUILD='"$(BUILD)"' \
 	-m68000 -O3 -c -fomit-frame-pointer -g
@@ -45,7 +47,6 @@ LIBS = -L$(GENDEV)/m68k-elf/lib \
 	--wrap=SYS_disableInts
 
 LINKFLAGS = -T mw.ld -nostdlib
-#LINKFLAGS = -T $(GENDEV)/sgdk/md.ld -nostdlib
 ARCHIVES = $(GENDEV)/sgdk/$(LIB)/libmd.a
 ARCHIVES += $(GENDEV)/$(LIB)/gcc/m68k-elf/$(GCC_VER)/libgcc.a
 

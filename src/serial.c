@@ -4,7 +4,7 @@
 #define VDP_IE2 0x08
 #define INT_MASK_LEVEL_ENABLE_ALL 1
 
-static _voidCallback* readReadyCallback;
+static VoidCallback* readReadyCallback;
 
 static void extIntCallback(void)
 {
@@ -44,7 +44,7 @@ u8 serial_receive(void)
     return *pb;
 }
 
-void serial_setReadyToReceiveCallback(_voidCallback* cb)
+void serial_setReadyToReceiveCallback(VoidCallback* cb)
 {
     readReadyCallback = cb;
 }

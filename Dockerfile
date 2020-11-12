@@ -1,4 +1,4 @@
-FROM rhargreaves/gendev:circle-16
+FROM rhargreaves/gendev:circle-17
 RUN apt-get -y update && \
 	apt-get -y install \
 	build-essential \

@@ -26,7 +26,7 @@
 #define SCTRL_RINT 0x8
 
 void serial_init(u8 sctrlFlags);
-void serial_setReadyToReceiveCallback(_voidCallback* cb);
+void serial_setReadyToReceiveCallback(VoidCallback* cb);
 bool serial_readyToReceive(void);
 u8 serial_receive(void);
 u8 serial_sctrl(void);

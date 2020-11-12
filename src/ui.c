@@ -86,7 +86,6 @@ void ui_init(void)
     printCommMode();
     printMappings();
     printDynamicModeStatus(midi_dynamicMode());
-
     SYS_disableInts();
     SPR_init();
 
@@ -101,7 +100,6 @@ void ui_init(void)
 
     SPR_update();
     SYS_enableInts();
-
     ui_fm_init();
 }
 

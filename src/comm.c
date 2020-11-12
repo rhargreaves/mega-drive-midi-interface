@@ -39,9 +39,10 @@ static const CommVTable Megawifi_VTable
     = { comm_megawifi_init, comm_megawifi_readReady, comm_megawifi_read,
           comm_megawifi_writeReady, comm_megawifi_write };
 
-#define COMM_TYPES 4
-static const CommVTable* commTypes[COMM_TYPES] = { &Everdrive_VTable,
+static const CommVTable* commTypes[] = { &Everdrive_VTable,
     &EverdrivePro_VTable, &Serial_VTable, &Megawifi_VTable };
+
+#define COMM_TYPES (sizeof(commTypes) / sizeof(CommVTable*))
 
 static const CommVTable* activeCommType = NULL;
 

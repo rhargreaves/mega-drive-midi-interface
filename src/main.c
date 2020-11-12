@@ -7,9 +7,12 @@
 #include "scheduler.h"
 #include "sys.h"
 #include "ui.h"
+#include <vdp.h>
+#include <dma.h>
 
 int main()
 {
+    DMA_init();
     scheduler_init();
     log_init();
     comm_init();
