@@ -35,7 +35,12 @@ void scheduler_doEvents(void)
     }
 }
 
-void scheduler_run(void)
+void scheduler_runOnce(void)
 {
     midi_receiver_readIfCommReady();
+}
+
+void scheduler_run(void)
+{
+    while (TRUE) { scheduler_runOnce(); }
 }

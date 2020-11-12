@@ -31,5 +31,5 @@ static void test_scheduler_runs_midi_receiver(UNUSED void** state)
 {
     expect_function_call(__wrap_midi_receiver_readIfCommReady);
 
-    scheduler_run();
+    scheduler_runOnce();
 }
