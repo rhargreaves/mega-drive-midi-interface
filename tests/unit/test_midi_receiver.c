@@ -14,6 +14,8 @@
 #define STATUS_SYSEX_START 0xF0
 #define SYSEX_END 0xF7
 
+void midi_receiver_read(void);
+
 static void test_midi_receiver_read_passes_note_on_to_midi_processor(
     UNUSED void** state)
 {

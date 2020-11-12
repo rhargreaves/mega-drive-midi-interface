@@ -26,3 +26,10 @@ static void test_scheduler_processes_frame_events_once_after_vsync(
     scheduler_doEvents();
     scheduler_doEvents();
 }
+
+static void test_scheduler_runs_midi_receiver(UNUSED void** state)
+{
+    expect_function_call(__wrap_midi_receiver_readIfCommReady);
+
+    scheduler_run();
+}

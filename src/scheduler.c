@@ -2,6 +2,7 @@
 #include "everdrive_led.h"
 #include "midi_psg.h"
 #include "ui.h"
+#include "midi_receiver.h"
 #include <stdint.h>
 #include <types.h>
 
@@ -32,4 +33,9 @@ void scheduler_doEvents(void)
         onFrame();
         previousFrame = frame;
     }
+}
+
+void scheduler_run(void)
+{
+    midi_receiver_readIfCommReady();
 }

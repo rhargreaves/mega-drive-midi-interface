@@ -88,7 +88,8 @@ MOCKS=midi_process \
 	midi_emit \
 	comm_megawifi_init \
 	mediator_recv_event \
-	mediator_send_packet
+	mediator_send_packet \
+	midi_receiver_readIfCommReady
 
 MD_MOCKS=SYS_setVIntCallback \
 	VDP_setTextPalette \
