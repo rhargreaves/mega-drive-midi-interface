@@ -20,12 +20,13 @@
 #include "memory.h"
 #include <sprite_eng.h>
 #include "sprite.h"
+#include <tools.h>
 
 #define MAX_EFFECTIVE_X (MAX_X - MARGIN_X - MARGIN_X)
 #define MAX_EFFECTIVE_Y (MAX_Y - MARGIN_Y - MARGIN_Y)
 #define MAX_ERROR_X 30
 #define ERROR_Y (MAX_EFFECTIVE_Y - 2)
-#define LOG_Y 22
+
 #define RIGHTED_TEXT_X(text) (MAX_EFFECTIVE_X - (sizeof(text) - 1) + 1)
 #define CENTRED_TEXT_X(text) ((MAX_EFFECTIVE_X - (sizeof(text) - 1)) / 2)
 #define CHAN_X_GAP 3
@@ -34,6 +35,10 @@
 #define CHAN_Y 2
 #define MIDI_Y CHAN_Y + 2
 #define ACTIVITY_Y MIDI_Y + 2
+#define WINDOW_Y (ACTIVITY_Y + 3)
+#define WINDOW_H 15
+#define WINDOW_W 38
+#define LOG_Y WINDOW_Y
 
 #define PALETTE_INDEX(pal, index) ((pal * 16) + index)
 #define FONT_COLOUR_INDEX 15
@@ -72,14 +77,42 @@ static bool commSerial = false;
 
 static Sprite* activitySprites[DEV_CHANS];
 
+static void paintBackground(void)
+{
+    // clang-format off
+    const u32 tile[8]=
+    {
+        0xEEEEEEEE,
+        0xEEEEEEEE,
+        0xEEEEEEEE,
+        0xEEEEEEEE,
+        0xEEEEEEEE,
+        0xEEEEEEEE,
+        0xEEEEEEEE,
+        0xEEEEEEEE
+    };
+    // clang-format on
+    const u16 TILE_BG = 1;
+    VDP_loadTileData(tile, TILE_BG, 1, DMA);
+    VDP_fillTileMapRect(BG_B, TILE_ATTR_FULL(PAL1, 0, FALSE, FALSE, TILE_BG),
+        MARGIN_X, WINDOW_Y + 1, 38, WINDOW_H - 5);
+    VDP_fillTileMapRect(BG_B, TILE_ATTR_FULL(PAL1, 0, FALSE, FALSE, TILE_BG),
+        MARGIN_X, WINDOW_Y + 6, 38, WINDOW_H - 5);
+}
+
 void ui_init(void)
 {
+    VDP_setHilightShadow(FALSE);
+    ui_fm_init();
     VDP_setBackgroundColor(BG_COLOUR_INDEX);
-    VDP_setPaletteColor(BG_COLOUR_INDEX, RGB24_TO_VDPCOLOR(0x202020));
+    VDP_setPaletteColor(BG_COLOUR_INDEX, RGB24_TO_VDPCOLOR(0x404040));
+    VDP_setPaletteColor(PALETTE_INDEX(PAL1, 0xE), RGB24_TO_VDPCOLOR(0x202020));
     VDP_setPaletteColor(
         PALETTE_INDEX(PAL1, FONT_COLOUR_INDEX), RGB24_TO_VDPCOLOR(0xFFFF00));
     VDP_setPaletteColor(
         PALETTE_INDEX(PAL3, FONT_COLOUR_INDEX), RGB24_TO_VDPCOLOR(0x808080));
+
+    paintBackground();
     printHeader();
     printChannels();
     printLoad();
@@ -93,14 +126,15 @@ void ui_init(void)
         Sprite* sprite = SPR_addSprite(&activity,
             fix32ToInt(FIX32(((i * CHAN_X_GAP) + 7) * 8)),
             fix32ToInt(FIX32((ACTIVITY_Y + 1) * 8)),
-            TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+            TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
         SPR_setVisibility(sprite, VISIBLE);
         activitySprites[i] = sprite;
     }
 
     SPR_update();
     SYS_enableInts();
-    ui_fm_init();
+
+    ui_fm_setMidiChannelParametersVisibility(0, TRUE);
 }
 
 static void printMappings(void)
@@ -113,7 +147,7 @@ static void printMappings(void)
 static void printLog(void)
 {
     static u8 logLine = 0;
-    const u8 maxLines = 3;
+    const u8 maxLines = WINDOW_H;
 
     Log* log = log_dequeue();
     if (log == NULL) {
