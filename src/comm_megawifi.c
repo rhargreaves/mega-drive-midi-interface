@@ -7,6 +7,7 @@
 #include "mw/util.h"
 #include "vstring.h"
 #include <stdbool.h>
+#include "settings.h"
 
 /// Length of the wflash buffer
 #define MW_BUFLEN 1460
@@ -70,7 +71,9 @@ bool detect_mw(void)
     char* variant = NULL;
     mw_err err = mw_detect(&ver_major, &ver_minor, &variant);
     if (MW_ERR_NONE != err) {
-        log_warn("MegaWiFi: Not found");
+        if (settings_isMegaWiFiRom()) {
+            log_warn("MegaWiFi: Not found");
+        }
         return false;
     }
     log_info("MegaWiFi: Found v%d.%d", ver_major, ver_minor);
