@@ -35,7 +35,7 @@
 #define MIDI_Y CHAN_Y + 2
 #define ACTIVITY_Y MIDI_Y + 2
 #define LOG_Y ACTIVITY_Y + 3
-#define MAX_LOG_LINES 12
+#define MAX_LOG_LINES 14
 
 #define PALETTE_INDEX(pal, index) ((pal * 16) + index)
 #define FONT_COLOUR_INDEX 15
