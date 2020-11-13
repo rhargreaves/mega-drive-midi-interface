@@ -217,7 +217,7 @@ static void drawText(const char* text, u16 x, u16 y)
 
 static void printHeader(void)
 {
-    drawText(HEADER, 4, 0);
+    drawText(HEADER, 5, 0);
     drawText(BUILD, RIGHTED_TEXT_X(BUILD), 0);
 }
 
