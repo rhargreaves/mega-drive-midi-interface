@@ -1,3 +1,3 @@
 #!/bin/bash
-. ./set-var
+. $(dirname $0)/set-var
 sendmidi dev "$MDMI_MIDI_PORT" hex syx 7E 7F 09 01
