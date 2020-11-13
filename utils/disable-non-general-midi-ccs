@@ -1,2 +1,3 @@
 #!/bin/bash
-sendmidi dev "IAC Driver IAC Bus 2" hex syx 00 22 77 04 00
+. $(dirname $0)/set-var
+sendmidi dev "$MDMI_MIDI_PORT" hex syx 00 22 77 04 00

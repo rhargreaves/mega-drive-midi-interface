@@ -15,3 +15,5 @@
 void ui_init(void);
 void ui_update(void);
 void ui_drawText(const char* text, u16 x, u16 y);
+void ui_showLogs(void);
+void ui_hideLogs(void);

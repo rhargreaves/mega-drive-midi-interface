@@ -35,6 +35,7 @@
 #define MIDI_Y CHAN_Y + 2
 #define ACTIVITY_Y MIDI_Y + 2
 #define LOG_Y ACTIVITY_Y + 3
+#define MAX_LOG_LINES 12
 
 #define PALETTE_INDEX(pal, index) ((pal * 16) + index)
 #define FONT_COLOUR_INDEX 15
@@ -111,19 +112,29 @@ static void printMappings(void)
     printMappingsIfDirty(midiChans);
 }
 
+static bool showLogs = true;
+static u8 logCurrentY = 0;
+
+static void clearLogArea(void)
+{
+    VDP_clearTextArea(
+        MARGIN_X, LOG_Y + MARGIN_Y, MAX_EFFECTIVE_X, MAX_LOG_LINES);
+    logCurrentY = 0;
+}
+
 static void printLog(void)
 {
-    static u8 logLine = 0;
-    const u8 maxLines = 12;
+    if (!showLogs) {
+        return;
+    }
 
     Log* log = log_dequeue();
     if (log == NULL) {
         return;
     }
-    if (logLine >= maxLines) {
-        VDP_clearTextArea(
-            MARGIN_X, LOG_Y + MARGIN_Y, MAX_EFFECTIVE_X, maxLines);
-        logLine = 0;
+    if (logCurrentY >= MAX_LOG_LINES) {
+        clearLogArea();
+        logCurrentY = 0;
     }
     switch (log->level) {
     case Warn:
@@ -133,9 +144,20 @@ static void printLog(void)
         VDP_setTextPalette(PAL2);
         break;
     }
-    drawText(log->msg, 0, LOG_Y + logLine);
+    drawText(log->msg, 0, LOG_Y + logCurrentY);
     VDP_setTextPalette(PAL0);
-    logLine++;
+    logCurrentY++;
+}
+
+void ui_showLogs(void)
+{
+    showLogs = true;
+}
+
+void ui_hideLogs(void)
+{
+    clearLogArea();
+    showLogs = false;
 }
 
 void ui_update(void)
