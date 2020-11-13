@@ -20,6 +20,8 @@
 #include "memory.h"
 #include <sprite_eng.h>
 #include "sprite.h"
+#include "scheduler.h"
+#include "settings.h"
 
 #define MAX_EFFECTIVE_X (MAX_X - MARGIN_X - MARGIN_X)
 #define MAX_EFFECTIVE_Y (MAX_Y - MARGIN_Y - MARGIN_Y)
@@ -160,6 +162,13 @@ void ui_hideLogs(void)
     showLogs = false;
 }
 
+static void debugPrintTicks(void)
+{
+    char t[6];
+    v_sprintf(t, "%-5u", scheduler_ticks());
+    drawText(t, 0, 1);
+}
+
 void ui_update(void)
 {
     updateKeyOnOff();
@@ -171,6 +180,11 @@ void ui_update(void)
         printCommMode();
         printCommBuffer();
         printLog();
+#if DEBUG_TICKS
+        debugPrintTicks();
+#else
+        (void)debugPrintTicks;
+#endif
     }
 
     static u8 loadCalculationFrame = 0;

@@ -38,6 +38,12 @@ CCFLAGS = -Wall \
 ifeq ($(ROM_TYPE), MEGAWIFI)
 	CCFLAGS += -DMEGAWIFI
 endif
+ifeq ($(DEBUG_INFO), 1)
+	CCFLAGS += \
+		-Wno-unused-function \
+		-DDEBUG_EVENTS \
+		-DDEBUG_TICKS
+endif
 Z80FLAGS = -vb2
 ASFLAGS = -m68000 --register-prefix-optional
 LIBS = -L$(GENDEV)/m68k-elf/lib \

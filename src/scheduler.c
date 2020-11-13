@@ -9,11 +9,13 @@
 
 static u16 previousFrame;
 static volatile u16 frame;
+static u16 ticks;
 
 void scheduler_init(void)
 {
     previousFrame = 0;
     frame = 0;
+    ticks = 0;
 }
 
 void scheduler_vsync(void)
@@ -28,8 +30,14 @@ static void onFrame(void)
     everdrive_led_tick();
 }
 
+u16 scheduler_ticks(void)
+{
+    return ticks;
+}
+
 static void onTick(void)
 {
+    ticks++;
     comm_megawifi_tick();
     midi_receiver_readIfCommReady();
 }

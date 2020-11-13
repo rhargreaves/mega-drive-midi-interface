@@ -4,6 +4,7 @@
 #include "scheduler.h"
 #include "synth.h"
 #include <vstring.h>
+#include "ui.h"
 
 #define STATUS_LOWER(status) (status & 0x0F)
 #define STATUS_UPPER(status) (status >> 4)
@@ -44,6 +45,19 @@ void midi_receiver_readIfCommReady(void)
     while (comm_readReady()) { midi_receiver_read(); }
 }
 
+static void debugPrintEvent(u8 status, u8 data1, u8 data2)
+{
+#if DEBUG_EVENTS
+    char t[30];
+    v_sprintf(t, "S:%02X D1:%02X D2:%02X ", status, data1, data2);
+    ui_drawText(t, 7, 1);
+#else
+    (void)status;
+    (void)data1;
+    (void)data2;
+#endif
+}
+
 void midi_receiver_read(void)
 {
     u8 status = comm_read();
@@ -80,6 +94,7 @@ u8 midi_receiver_lastUnknownStatus(void)
 
 static void setUnknownStatus(u8 status)
 {
+    debugPrintEvent(status, 0, 0);
     lastUnknownStatus = status;
 }
 
@@ -88,6 +103,7 @@ static void controlChange(u8 status)
     u8 chan = STATUS_LOWER(status);
     u8 controller = comm_read();
     u8 value = comm_read();
+    debugPrintEvent(status, controller, value);
     midi_cc(chan, controller, value);
 }
 
@@ -96,6 +112,7 @@ static void noteOn(u8 status)
     u8 chan = STATUS_LOWER(status);
     u8 pitch = comm_read();
     u8 velocity = comm_read();
+    debugPrintEvent(status, pitch, velocity);
     midi_noteOn(chan, pitch, velocity);
 }
 
@@ -104,6 +121,7 @@ static void noteOff(u8 status)
     u8 chan = STATUS_LOWER(status);
     u8 pitch = comm_read();
     comm_read();
+    debugPrintEvent(status, pitch, 0);
     midi_noteOff(chan, pitch);
 }
 
@@ -111,6 +129,7 @@ static void pitchBend(u8 status)
 {
     u8 chan = STATUS_LOWER(status);
     u16 bend = read14bitValue();
+    debugPrintEvent(status, (u8)bend, 0);
     midi_pitchBend(chan, bend);
 }
 
@@ -118,6 +137,7 @@ static void program(u8 status)
 {
     u8 chan = STATUS_LOWER(status);
     u8 program = comm_read();
+    debugPrintEvent(status, program, 0);
     midi_program(chan, program);
 }
 
@@ -131,6 +151,7 @@ static u16 read14bitValue(void)
 static void systemMessage(u8 status)
 {
     u8 type = STATUS_LOWER(status);
+    debugPrintEvent(status, 0, 0);
     switch (type) {
     case SYSTEM_SONG_POSITION:
         read14bitValue();
