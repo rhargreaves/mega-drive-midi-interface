@@ -1,15 +1,12 @@
 #pragma once
 #include <stdint.h>
-
-#include "mediator.h"
 #include <midi.h>
 #include <sprite_eng.h>
-
 #include <types.h>
-
 #include "log.h"
 #include "mw/loop.h"
 #include "synth.h"
+#include "megawifi.h"
 
 void wraps_disable_checks(void);
 void wraps_enable_checks(void);
@@ -120,7 +117,7 @@ void __wrap_VDP_clearTextArea(u16 x, u16 y, u16 w, u16 h);
 bool __wrap_region_isPal(void);
 void wraps_region_setIsPal(bool isPal);
 
-void __wrap_midi_emit(u8 midiByte);
+void __wrap_comm_megawifi_midiEmitCallback(u8 midiByte);
 mw_err __wrap_mediator_recv_event(void);
 mw_err __wrap_mediator_send_packet(u8 ch, char* data, u16 len);
 void __wrap_SYS_die(char* err);
@@ -143,3 +140,4 @@ mw_err __wrap_mw_sock_conn_wait(uint8_t ch, int tout_frames);
 
 void __wrap_midi_receiver_readIfCommReady(void);
 void __wrap_scheduler_tick(void);
+void __wrap_comm_megawifi_tick(void);

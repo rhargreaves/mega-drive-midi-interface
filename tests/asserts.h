@@ -50,5 +50,5 @@ void expect_synth_volume(u8 channel, u8 volume);
 
 #define expect_midi_emit(mb)                                                   \
     {                                                                          \
-        expect_value(__wrap_midi_emit, midiByte, mb);                          \
+        expect_value(__wrap_comm_megawifi_midiEmitCallback, midiByte, mb);     \
     }

@@ -1,5 +1,4 @@
 #include "cmocka_inc.h"
-
 #include "applemidi.h"
 #include "comm_megawifi.h"
 #include "mw/loop.h"
@@ -11,7 +10,6 @@ extern void __real_comm_megawifi_init(void);
 
 static int test_comm_megawifi_setup(UNUSED void** state)
 {
-    //  __real_comm_megawifi_init();
     log_init();
     wraps_enable_logging_checks();
     return 0;
@@ -37,7 +35,7 @@ static int test_comm_megawifi_setup(UNUSED void** state)
         expect_log_info("AppleMIDI: %s UDP Port: %d");                         \
     }
 
-static void test_comm_megawifi_initialises(UNUSED void** state)
+static void expect_mw_init(void)
 {
     expect_any(__wrap_mw_init, cmd_buf);
     expect_any(__wrap_mw_init, buf_len);
@@ -49,11 +47,17 @@ static void test_comm_megawifi_initialises(UNUSED void** state)
 
     expect_any(__wrap_loop_func_add, func);
     will_return(__wrap_loop_func_add, MW_ERR_NONE);
+}
 
+static void expect_mw_detect(void)
+{
     mock_mw_detect(3, 1);
     will_return(__wrap_mw_detect, MW_ERR_NONE);
     expect_log_info("MegaWiFi: Found v%d.%d");
+}
 
+static void expect_ap_connection(void)
+{
     expect_log_info("MegaWiFi: Connecting AP");
     expect_value(__wrap_mw_ap_assoc, slot, 0);
     will_return(__wrap_mw_ap_assoc, MW_ERR_NONE);
@@ -61,13 +65,33 @@ static void test_comm_megawifi_initialises(UNUSED void** state)
     expect_any(__wrap_mw_ap_assoc_wait, tout_frames);
     will_return(__wrap_mw_ap_assoc_wait, MW_ERR_NONE);
     expect_log_info("MegaWiFi: Connected.");
+}
 
+static void expect_ip_log(void)
+{
     mock_ip_cfg(ip_str_to_uint32("127.1.2.3"));
     will_return(__wrap_mw_ip_current, MW_ERR_NONE);
     expect_log_info("MegaWiFi: IP: %s");
+}
 
+static void megawifi_init(void)
+{
+    expect_mw_init();
+    expect_mw_detect();
+    expect_ap_connection();
+    expect_ip_log();
     expect_udp_port_open(CH_CONTROL_PORT, "5004", "5006");
     expect_udp_port_open(CH_MIDI_PORT, "5005", "5007");
 
     __real_comm_megawifi_init();
+}
+
+static void test_comm_megawifi_initialises(UNUSED void** state)
+{
+    megawifi_init();
+}
+
+static void test_comm_megawifi_reads_midi_message(UNUSED void** state)
+{
+    megawifi_init();
 }

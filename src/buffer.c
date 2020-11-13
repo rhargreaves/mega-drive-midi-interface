@@ -1,6 +1,6 @@
 #include <genesis.h>
 
-#define BUFFER_SIZE 128
+#define BUFFER_SIZE 512
 
 static u16 readHead = 0;
 static volatile u16 writeHead = 0;

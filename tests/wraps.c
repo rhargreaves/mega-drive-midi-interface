@@ -613,7 +613,7 @@ void wraps_region_setIsPal(bool isPal)
     regionIsPal = isPal;
 }
 
-void __wrap_midi_emit(u8 midiByte)
+void __wrap_comm_megawifi_midiEmitCallback(u8 midiByte)
 {
     check_expected(midiByte);
 }
@@ -746,6 +746,11 @@ void __wrap_midi_receiver_readIfCommReady(void)
 }
 
 void __wrap_scheduler_tick(void)
+{
+    function_called();
+}
+
+void __wrap_comm_megawifi_tick(void)
 {
     function_called();
 }

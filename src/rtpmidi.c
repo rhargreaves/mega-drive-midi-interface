@@ -27,9 +27,9 @@ static u8 bytesToEmit(u8 status)
 
 static void emitMidiEvent(u8 status, u8** cursor)
 {
-    midi_emit(status);
+    comm_megawifi_midiEmitCallback(status);
     for (u8 i = 0; i < bytesToEmit(status); i++) {
-        midi_emit(**cursor);
+        comm_megawifi_midiEmitCallback(**cursor);
         (*cursor)++;
     };
 }
@@ -40,10 +40,10 @@ static void emitMidiEvent(u8 status, u8** cursor)
 void processSysEx(u8** cursor)
 {
     do {
-        midi_emit(**cursor);
+        comm_megawifi_midiEmitCallback(**cursor);
         (*cursor)++;
     } while (**cursor != MIDI_SYSEX_END);
-    midi_emit(**cursor);
+    comm_megawifi_midiEmitCallback(**cursor);
 }
 
 mw_err rtpmidi_processRtpMidiPacket(char* buffer, u16 length)

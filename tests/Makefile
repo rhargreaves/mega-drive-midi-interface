@@ -86,10 +86,9 @@ MOCKS=midi_process \
 	ui_update \
 	scheduler_init \
 	scheduler_tick \
-	midi_emit \
+	comm_megawifi_midiEmitCallback \
 	comm_megawifi_init \
-	mediator_recv_event \
-	mediator_send_packet \
+	comm_megawifi_tick \
 	midi_receiver_readIfCommReady
 
 MD_MOCKS=SYS_setVIntCallback \

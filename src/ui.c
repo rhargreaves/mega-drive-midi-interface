@@ -25,7 +25,7 @@
 #define MAX_EFFECTIVE_Y (MAX_Y - MARGIN_Y - MARGIN_Y)
 #define MAX_ERROR_X 30
 #define ERROR_Y (MAX_EFFECTIVE_Y - 2)
-#define LOG_Y 22
+
 #define RIGHTED_TEXT_X(text) (MAX_EFFECTIVE_X - (sizeof(text) - 1) + 1)
 #define CENTRED_TEXT_X(text) ((MAX_EFFECTIVE_X - (sizeof(text) - 1)) / 2)
 #define CHAN_X_GAP 3
@@ -34,6 +34,7 @@
 #define CHAN_Y 2
 #define MIDI_Y CHAN_Y + 2
 #define ACTIVITY_Y MIDI_Y + 2
+#define LOG_Y ACTIVITY_Y + 3
 
 #define PALETTE_INDEX(pal, index) ((pal * 16) + index)
 #define FONT_COLOUR_INDEX 15
@@ -113,7 +114,7 @@ static void printMappings(void)
 static void printLog(void)
 {
     static u8 logLine = 0;
-    const u8 maxLines = 3;
+    const u8 maxLines = 12;
 
     Log* log = log_dequeue();
     if (log == NULL) {

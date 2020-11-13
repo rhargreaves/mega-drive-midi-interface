@@ -1,9 +1,26 @@
 #include "applemidi.h"
-#include "mediator.h"
 #include "rtpmidi.h"
 #include "vstring.h"
-
+#include "log.h"
 #include <stdbool.h>
+#include "comm_megawifi.h"
+
+static mw_err unpackInvitation(
+    char* buffer, u16 length, AppleMidiExchangePacket* invite);
+static void sendInviteResponse(u8 ch, AppleMidiExchangePacket* invite);
+
+static mw_err processInvitation(u8 ch, char* buffer, u16 length)
+{
+    AppleMidiExchangePacket packet;
+    mw_err err = unpackInvitation(buffer, length, &packet);
+    if (err != MW_ERR_NONE) {
+        return err;
+    }
+    log_info("AppleMIDI: Invite recv on UDP ch %d", ch);
+    sendInviteResponse(ch, &packet);
+    log_info("AppleMIDI: Invite ack");
+    return MW_ERR_NONE;
+}
 
 static mw_err unpackInvitation(
     char* buffer, u16 length, AppleMidiExchangePacket* invite)
@@ -39,12 +56,13 @@ static void packInvitationResponse(u32 initToken, char* buffer, u16* length)
     }
 }
 
+static char inviteSendBuffer[UDP_PKT_BUFFER_LEN];
+
 static void sendInviteResponse(u8 ch, AppleMidiExchangePacket* invite)
 {
-    char buffer[UDP_PKT_BUFFER_LEN];
     u16 length;
-    packInvitationResponse(invite->initToken, buffer, &length);
-    mediator_send(ch, buffer, length);
+    packInvitationResponse(invite->initToken, inviteSendBuffer, &length);
+    comm_megawifi_send(ch, inviteSendBuffer, length);
 }
 
 static mw_err unpackTimestampSync(
@@ -74,37 +92,14 @@ static void packTimestampSync(
     }
 }
 
-static mw_err sendTimestampSync(AppleMidiTimeSyncPacket* timeSyncPacket)
+char timestampSyncSendBuffer[TIMESYNC_PKT_LEN];
+
+static void sendTimestampSync(AppleMidiTimeSyncPacket* timeSyncPacket)
 {
-    char buffer[TIMESYNC_PKT_LEN];
     u16 length;
-    packTimestampSync(timeSyncPacket, buffer, &length);
-    mw_err err = mw_send_sync(CH_MIDI_PORT, buffer, length, 0);
-    if (err != MW_ERR_NONE) {
-        return err;
-    }
-    return MW_ERR_NONE;
+    packTimestampSync(timeSyncPacket, timestampSyncSendBuffer, &length);
+    comm_megawifi_send(CH_MIDI_PORT, timestampSyncSendBuffer, length);
 }
-
-static mw_err processInvitation(u8 ch, char* buffer, u16 length)
-{
-    AppleMidiExchangePacket packet;
-    mw_err err = unpackInvitation(buffer, length, &packet);
-    if (err != MW_ERR_NONE) {
-        return err;
-    }
-    char text[100];
-    v_sprintf(text, "Invite recv'd on UDP ch %d:", ch);
-    //  VDP_drawText(text, 1, 2 + ch);
-
-    sendInviteResponse(ch, &packet);
-    v_sprintf(text, "Ack'd");
-    // VDP_drawText(text, 28, 2 + ch);
-
-    return MW_ERR_NONE;
-}
-
-static u16 timestampSyncCount = 0;
 
 static mw_err processTimestampSync(char* buffer, u16 length)
 {
@@ -118,14 +113,8 @@ static mw_err processTimestampSync(char* buffer, u16 length)
         packet.timestamp2Hi = 0;
         packet.timestamp2Lo = 0;
         packet.senderSSRC = MEGADRIVE_SSRC;
-        err = sendTimestampSync(&packet);
-        if (err != MW_ERR_NONE) {
-            return err;
-        }
-
-        char text[32];
-        v_sprintf(text, "Timestamp Syncs: %d", timestampSyncCount++);
-        // VDP_drawText(text, 1, 5);
+        log_info("AppleMIDI: Timestamp Sync");
+        sendTimestampSync(&packet);
     }
 
     return MW_ERR_NONE;
@@ -136,7 +125,7 @@ static bool hasAppleMidiSignature(char* buffer, u16 length)
     if (length < 2) {
         return false;
     }
-    return *((u16*)buffer) == APPLE_MIDI_SIGNATURE;
+    return (u8)buffer[0] == 0xFF && (u8)buffer[1] == 0xFF;
 }
 
 static bool isInvitationCommand(char* command)
@@ -154,7 +143,6 @@ mw_err applemidi_processSessionControlPacket(char* buffer, u16 length)
     if (!hasAppleMidiSignature(buffer, length)) {
         return ERR_INVALID_APPLE_MIDI_SIGNATURE;
     }
-
     char* command = &buffer[2];
     if (isInvitationCommand(command)) {
         return processInvitation(CH_CONTROL_PORT, buffer, length);
@@ -174,7 +162,6 @@ mw_err applemidi_processSessionMidiPacket(char* buffer, u16 length)
         } else {
             char text[100];
             v_sprintf(text, "Unknown event %s", command);
-            //   VDP_drawText(text, 1, 14);
         }
     } else {
         return rtpmidi_processRtpMidiPacket(buffer, length);

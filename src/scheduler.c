@@ -3,6 +3,7 @@
 #include "midi_psg.h"
 #include "ui.h"
 #include "midi_receiver.h"
+#include "comm_megawifi.h"
 #include <stdint.h>
 #include <types.h>
 
@@ -29,6 +30,7 @@ static void onFrame(void)
 
 static void onTick(void)
 {
+    comm_megawifi_tick();
     midi_receiver_readIfCommReady();
 }
 

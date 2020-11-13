@@ -2,6 +2,8 @@
 #include "buffer.h"
 #include "serial.h"
 
+static bool recvData = false;
+
 u16 comm_serial_baudRate(void)
 {
     switch (serial_sctrl() & 0xC0) {
@@ -19,6 +21,7 @@ u16 comm_serial_baudRate(void)
 static void updateBuffer(void)
 {
     while (serial_readyToReceive()) {
+        recvData = true;
         buffer_write(serial_receive());
     }
 }
@@ -30,9 +33,7 @@ static void recvReadyCallback(void)
 
 static void flushRRDY(void)
 {
-    while (serial_readyToReceive()) {
-        serial_receive();
-    }
+    while (serial_readyToReceive()) { serial_receive(); }
 }
 
 void comm_serial_init(void)
@@ -44,6 +45,8 @@ void comm_serial_init(void)
 
 u8 comm_serial_readReady(void)
 {
+    if (!recvData)
+        return false;
     return buffer_canRead();
 }
 
