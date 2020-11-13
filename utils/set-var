@@ -1,0 +1,5 @@
+#!/bin/bash
+if [ -z "$MDMI_MIDI_PORT" ]; then
+	MDMI_MIDI_PORT=MegaDriveLink
+fi
+
