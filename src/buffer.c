@@ -1,6 +1,4 @@
-#include <genesis.h>
-
-#define BUFFER_SIZE 2048
+#include "buffer.h"
 
 static u16 readHead = 0;
 static volatile u16 writeHead = 0;

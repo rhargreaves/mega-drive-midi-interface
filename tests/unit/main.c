@@ -1,5 +1,4 @@
 #include "cmocka_inc.h"
-
 #include "test_applemidi.c"
 #include "test_comm.c"
 #include "test_comm_megawifi.c"
@@ -14,6 +13,7 @@
 #include "test_scheduler.c"
 #include "test_synth.c"
 #include "test_vstring.c"
+#include "test_buffer.c"
 
 #define midi_test(test) cmocka_unit_test_setup(test, test_midi_setup)
 #define dynamic_midi_test(test)                                                \
@@ -25,6 +25,7 @@
 #define log_test(test) cmocka_unit_test_setup(test, test_log_setup)
 #define scheduler_test(test) cmocka_unit_test_setup(test, test_scheduler_setup)
 #define applemidi_test(test) cmocka_unit_test_setup(test, test_applemidi_setup)
+#define buffer_test(test) cmocka_unit_test_setup(test, test_buffer_setup)
 
 int main(void)
 {
@@ -269,8 +270,10 @@ int main(void)
             test_applemidi_parses_rtpmidi_packet_with_sysex_with_0xF7_at_end),
         applemidi_test(test_applemidi_does_not_read_beyond_length),
 
-        cmocka_unit_test(test_vstring_handles_variable_argument_list_correctly)
+        cmocka_unit_test(test_vstring_handles_variable_argument_list_correctly),
 
+        buffer_test(test_buffer_reads_and_writes_single_byte),
+        buffer_test(test_buffer_reads_and_writes_circularly_over_capacity)
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
