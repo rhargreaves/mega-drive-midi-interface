@@ -590,6 +590,7 @@ void __wrap_log_warn(const char* fmt, ...)
     if (!loggingChecks) {
         return;
     }
+    print_message("log_warn: %s", fmt);
     check_expected(fmt);
 }
 
@@ -761,4 +762,29 @@ void __wrap_comm_megawifi_send(u8 ch, char* data, u16 len)
     check_expected(ch);
     check_expected(data);
     check_expected(len);
+}
+
+enum lsd_status __wrap_lsd_recv(
+    char* buf, int16_t len, void* ctx, lsd_recv_cb recv_cb)
+{
+    if (disableChecks)
+        return 0;
+    check_expected(buf);
+    check_expected(len);
+    check_expected(ctx);
+    check_expected(recv_cb);
+    return mock_type(enum lsd_status);
+}
+
+enum lsd_status __wrap_lsd_send(
+    uint8_t ch, const char* data, int16_t len, void* ctx, lsd_send_cb send_cb)
+{
+    if (disableChecks)
+        return 0;
+    check_expected(ch);
+    check_expected(data);
+    check_expected(len);
+    check_expected(ctx);
+    check_expected(send_cb);
+    return mock_type(enum lsd_status);
 }

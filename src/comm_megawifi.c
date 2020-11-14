@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include "settings.h"
 #include "buffer.h"
+#include "memory.h"
 
 /// Length of the wflash buffer
 #define MW_BUFLEN 1460
@@ -18,8 +19,21 @@ static char cmd_buf[MW_BUFLEN];
 static bool mw_detected = false;
 static bool recvData = false;
 
+#define MAX_UDP_DATA_LENGTH 1460
+
+static char recvBuffer[MAX_UDP_DATA_LENGTH];
+static char sendBuffer[MAX_UDP_DATA_LENGTH];
+
+#define REUSE_PAYLOAD_HEADER_LEN 6
+
+static bool awaitingRecv = false;
+static bool awaitingSend = false;
+
 #define MW_MAX_LOOP_FUNCS 2
 #define MW_MAX_LOOP_TIMERS 4
+
+static void recv_complete_cb(
+    enum lsd_status stat, uint8_t ch, char* data, uint16_t len, void* ctx);
 
 static void mw_process_loop_cb(struct loop_func* f)
 {
@@ -34,7 +48,7 @@ static void mw_process_loop_init(void)
     loop_func_add(&loop_func);
 }
 
-static mw_err associate_ap(void)
+static mw_err associateAp(void)
 {
     log_info("MegaWiFi: Connecting AP");
     mw_err err = mw_ap_assoc(0);
@@ -49,7 +63,7 @@ static mw_err associate_ap(void)
     return MW_ERR_NONE;
 }
 
-static mw_err display_ip_addr(void)
+static mw_err displayLocalIp(void)
 {
     struct mw_ip_cfg* ip_cfg;
     mw_err err = mw_ip_current(&ip_cfg);
@@ -77,21 +91,23 @@ bool detect_mw(void)
     return true;
 }
 
-static void open_udp_port(u8 ch, u16 dst_port, u16 src_port, const char* name)
+static void listenOnUdpPort(u8 ch, u16 src_port, const char* name)
 {
-    char dst_port_str[6];
-    v_sprintf(dst_port_str, "%d", dst_port);
+    struct mw_reuse_payload* pkt = (struct mw_reuse_payload* const)recvBuffer;
+
     char src_port_str[6];
     v_sprintf(src_port_str, "%d", src_port);
-    mw_err err = mw_udp_set(ch, "127.0.0.1", dst_port_str, src_port_str);
+    mw_err err = mw_udp_set(ch, NULL, NULL, src_port_str);
     if (err != MW_ERR_NONE) {
         return;
     }
-    err = mw_sock_conn_wait(ch, MS_TO_FRAMES(1000));
-    if (err != MW_ERR_NONE) {
+    enum lsd_status stat
+        = mw_udp_reuse_recv(pkt, MW_BUFLEN, NULL, recv_complete_cb);
+    if (stat < 0) {
+        log_warn("MW: mw_udp_reuse_recv() = %d", stat);
         return;
     }
-    log_info("AppleMIDI: %s UDP Port: %d", name, dst_port);
+    log_info("AppleMIDI: %s UDP Port: %d", name, src_port);
 }
 
 void comm_megawifi_init(void)
@@ -103,10 +119,10 @@ void comm_megawifi_init(void)
     if (!mw_detected) {
         return;
     }
-    associate_ap();
-    display_ip_addr();
-    open_udp_port(CH_CONTROL_PORT, 5004, 5006, "Control");
-    open_udp_port(CH_MIDI_PORT, 5005, 5007, "MIDI");
+    associateAp();
+    displayLocalIp();
+    listenOnUdpPort(CH_CONTROL_PORT, 5006, "Control");
+    listenOnUdpPort(CH_MIDI_PORT, 5007, "MIDI");
 }
 
 u8 comm_megawifi_readReady(void)
@@ -131,14 +147,7 @@ void comm_megawifi_write(u8 data)
     (void)data;
 }
 
-#define MAX_UDP_DATA_LENGTH 1460
-
-static char recvBuffer[MAX_UDP_DATA_LENGTH];
-
-static bool awaitingRecv = false;
-static bool awaitingSend = false;
-
-static void process_udp_data(u8 ch, char* buffer, u16 length)
+static void processUdpData(u8 ch, char* buffer, u16 length)
 {
     UNUSED_PARAM(buffer);
     mw_err err = MW_ERR_NONE;
@@ -151,19 +160,36 @@ static void process_udp_data(u8 ch, char* buffer, u16 length)
         break;
     }
     if (err != MW_ERR_NONE) {
-        log_warn("MegaWiFi: process_udp_data() = %d", err);
+        log_warn("MegaWiFi: processUdpData() = %d", err);
     }
 }
+
+static u32 remoteIp = 0;
+static u16 remoteControlPort = 0;
+static u16 remoteMidiPort = 0;
 
 static void recv_complete_cb(
     enum lsd_status stat, uint8_t ch, char* data, uint16_t len, void* ctx)
 {
     UNUSED_PARAM(ctx);
+    struct mw_reuse_payload* udp = (struct mw_reuse_payload*)data;
 
     if (LSD_STAT_COMPLETE == stat) {
-        process_udp_data(ch, data, len);
+        remoteIp = udp->remote_ip;
+        if (ch == CH_CONTROL_PORT) {
+            remoteControlPort = udp->remote_port;
+        } else if (ch == CH_MIDI_PORT) {
+            remoteMidiPort = udp->remote_port;
+        }
+        processUdpData(ch, udp->payload, len);
     } else {
         log_warn("MegaWiFi: recv_complete_cb() = %d", stat);
+    }
+
+    enum lsd_status r_stat
+        = mw_udp_reuse_recv(udp, MW_BUFLEN, NULL, recv_complete_cb);
+    if (r_stat < 0) {
+        log_warn("MegaWiFi: mw_udp_reuse_recv() = %d", r_stat);
     }
     awaitingRecv = false;
 }
@@ -202,15 +228,6 @@ void comm_megawifi_tick(void)
         return;
     }
     sendReceiverFeedback();
-
-    awaitingRecv = true;
-    enum lsd_status stat
-        = mw_recv(recvBuffer, MAX_UDP_DATA_LENGTH, NULL, recv_complete_cb);
-    if (stat < 0) {
-        log_warn("MegaWiFi: mw_recv() = %d", stat);
-        awaitingRecv = false;
-        return;
-    }
 }
 
 void comm_megawifi_midiEmitCallback(u8 data)
@@ -236,10 +253,21 @@ void send_complete_cb(enum lsd_status stat, void* ctx)
 
 void comm_megawifi_send(u8 ch, char* data, u16 len)
 {
+    struct mw_reuse_payload* udp = (struct mw_reuse_payload*)sendBuffer;
+    udp->remote_ip = remoteIp;
+    udp->remote_port
+        = ch == CH_CONTROL_PORT ? remoteControlPort : remoteMidiPort;
+    memcpy(udp->payload, data, len);
+
+    // char ip_buf[16];
+    // uint32_to_ip_str(remoteIp, ip_buf);
+    // log_info("MW: Send IP=%s:%d L=%d C=%d", ip_buf, udp->remote_port, len, ch);
+
     awaitingSend = true;
-    enum lsd_status stat = mw_send(ch, data, len, NULL, send_complete_cb);
+    enum lsd_status stat = mw_udp_reuse_send(
+        ch, udp, len + REUSE_PAYLOAD_HEADER_LEN, NULL, send_complete_cb);
     if (stat < 0) {
-        log_warn("MegaWiFi: mw_send() = %d", stat);
+        log_warn("MegaWiFi: mw_udp_reuse_send() = %d", stat);
         awaitingSend = false;
         return;
     }

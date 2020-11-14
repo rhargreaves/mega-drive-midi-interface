@@ -68,7 +68,7 @@ static void sendInviteResponse(u8 ch, AppleMidiExchangePacket* invite)
 static mw_err unpackTimestampSync(
     char* buffer, u16 length, AppleMidiTimeSyncPacket* timeSyncPacket)
 {
-    if (length != TIMESYNC_PKT_LEN) {
+    if (length < TIMESYNC_PKT_LEN) {
         return ERR_INVALID_TIMESYNC_PKT_LENGTH;
     }
     u8 index = 0;

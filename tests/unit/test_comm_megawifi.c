@@ -16,20 +16,21 @@ static int test_comm_megawifi_setup(UNUSED void** state)
     return 0;
 }
 
-#define expect_udp_port_open(c, d_port, s_port)                                \
-    {                                                                          \
+#define expect_udp_port_open(c, s_port)                                        \
+    do {                                                                       \
         expect_value(__wrap_mw_udp_set, ch, c);                                \
-        expect_memory(__wrap_mw_udp_set, dst_addr, "127.0.0.1", 10);           \
-        expect_memory(__wrap_mw_udp_set, dst_port, d_port, sizeof(d_port));    \
+        expect_value(__wrap_mw_udp_set, dst_addr, NULL);                       \
+        expect_value(__wrap_mw_udp_set, dst_port, NULL);                       \
         expect_memory(__wrap_mw_udp_set, src_port, s_port, sizeof(s_port));    \
         will_return(__wrap_mw_udp_set, MW_ERR_NONE);                           \
-                                                                               \
-        expect_value(__wrap_mw_sock_conn_wait, ch, c);                         \
-        expect_value(                                                          \
-            __wrap_mw_sock_conn_wait, tout_frames, MS_TO_FRAMES(1000));        \
-        will_return(__wrap_mw_sock_conn_wait, MW_ERR_NONE);                    \
         expect_log_info("AppleMIDI: %s UDP Port: %d");                         \
-    }
+                                                                               \
+        expect_any(__wrap_lsd_recv, buf);                                      \
+        expect_any(__wrap_lsd_recv, len);                                      \
+        expect_any(__wrap_lsd_recv, ctx);                                      \
+        expect_any(__wrap_lsd_recv, recv_cb);                                  \
+        will_return(__wrap_lsd_recv, LSD_STAT_COMPLETE);                       \
+    } while (0)
 
 static void expect_mw_init(void)
 {
@@ -76,8 +77,8 @@ static void megawifi_init(void)
     expect_mw_detect();
     expect_ap_connection();
     expect_ip_log();
-    expect_udp_port_open(CH_CONTROL_PORT, "5004", "5006");
-    expect_udp_port_open(CH_MIDI_PORT, "5005", "5007");
+    expect_udp_port_open(CH_CONTROL_PORT, "5006");
+    expect_udp_port_open(CH_MIDI_PORT, "5007");
 
     __real_comm_megawifi_init();
 }

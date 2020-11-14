@@ -144,3 +144,8 @@ void __wrap_midi_receiver_readIfCommReady(void);
 void __wrap_scheduler_tick(void);
 void __wrap_comm_megawifi_tick(void);
 void __wrap_comm_megawifi_send(u8 ch, char* data, u16 len);
+
+enum lsd_status __wrap_lsd_recv(
+    char* buf, int16_t len, void* ctx, lsd_recv_cb recv_cb);
+enum lsd_status __wrap_lsd_send(
+    uint8_t ch, const char* data, int16_t len, void* ctx, lsd_send_cb send_cb);
