@@ -23,11 +23,12 @@
 
 #define APPLE_MIDI_SIGNATURE 0xFFFF
 
+#define PACK_BIG_ENDIAN                                                        \
+    __attribute__((packed, scalar_storage_order("big-endian")))
+
 typedef enum mw_err mw_err;
 
-#pragma pack(push, 1)
-
-union AppleMidiTimeSyncPacket {
+union PACK_BIG_ENDIAN AppleMidiTimeSyncPacket {
     u8 byte[TIMESYNC_PKT_LEN];
     struct {
         u16 signature;
@@ -46,7 +47,7 @@ union AppleMidiTimeSyncPacket {
 
 typedef union AppleMidiTimeSyncPacket AppleMidiTimeSyncPacket;
 
-union AppleMidiExchangePacket {
+union PACK_BIG_ENDIAN AppleMidiExchangePacket {
     u8 byte[EXCHANGE_PACKET_LEN];
     struct {
         u16 signature;
@@ -60,8 +61,7 @@ union AppleMidiExchangePacket {
 
 typedef union AppleMidiExchangePacket AppleMidiExchangePacket;
 
-#pragma pack(pop)
-
 mw_err applemidi_processSessionControlPacket(char* buffer, u16 length);
 mw_err applemidi_processSessionMidiPacket(char* buffer, u16 length);
 u16 applemidi_lastSequenceNumber(void);
+mw_err applemidi_sendReceiverFeedback(void);

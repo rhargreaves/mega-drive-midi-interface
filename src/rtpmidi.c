@@ -51,7 +51,7 @@ void processSysEx(u8** cursor)
 
 static u16 sequenceNumber(char* buffer)
 {
-    return (buffer[2] << 8) + buffer[3];
+    return ((u8)buffer[2] << 8) + (u8)buffer[3];
 }
 
 mw_err rtpmidi_processRtpMidiPacket(char* buffer, u16 length, u16* lastSeqNum)

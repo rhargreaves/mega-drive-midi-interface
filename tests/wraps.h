@@ -141,3 +141,4 @@ mw_err __wrap_mw_sock_conn_wait(uint8_t ch, int tout_frames);
 void __wrap_midi_receiver_readIfCommReady(void);
 void __wrap_scheduler_tick(void);
 void __wrap_comm_megawifi_tick(void);
+void __wrap_comm_megawifi_send(u8 ch, char* data, u16 len);

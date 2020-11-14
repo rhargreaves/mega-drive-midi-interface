@@ -1,5 +1,4 @@
 #include "cmocka_inc.h"
-
 #include "applemidi.h"
 
 static int test_applemidi_setup(UNUSED void** state)
@@ -341,4 +340,33 @@ static void test_applemidi_sets_last_sequence_number(UNUSED void** state)
 
     u16 seqNum = applemidi_lastSequenceNumber();
     assert_int_equal(seqNum, 0x8c24);
+}
+
+static void test_applemidi_sends_receiver_feedback(UNUSED void** state)
+{
+    char rtp_packet[1024] = { /* V P X CC M PT */ 0x80, 0x61,
+        /* sequence number */ 0x00, 0x01,
+        /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1,
+        0x08, /* MIDI command section */ 0xC0, 0x03, 0x90, 0x48, 0x6f };
+
+    size_t len = sizeof(rtp_packet);
+
+    expect_midi_emit(0x90);
+    expect_midi_emit(0x48);
+    expect_midi_emit(0x6f);
+
+    mw_err err = applemidi_processSessionMidiPacket(rtp_packet, len);
+    assert_int_equal(err, MW_ERR_NONE);
+
+    const u8 receiverFeedbackPacket[] = { 0xff, 0xff, 'R', 'S',
+        /* SSRC */ 0x9E, 0x91, 0x51, 0x50, /* sequence number */
+        0x00, 0x01, 0x00, 0x00 };
+    expect_value(__wrap_comm_megawifi_send, ch, CH_CONTROL_PORT);
+    expect_memory(__wrap_comm_megawifi_send, data, receiverFeedbackPacket,
+        sizeof(receiverFeedbackPacket));
+    expect_value(
+        __wrap_comm_megawifi_send, len, sizeof(receiverFeedbackPacket));
+
+    err = applemidi_sendReceiverFeedback();
+    assert_int_equal(err, MW_ERR_NONE);
 }

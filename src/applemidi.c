@@ -4,6 +4,7 @@
 #include "log.h"
 #include <stdbool.h>
 #include "comm_megawifi.h"
+#include "memory.h"
 
 static mw_err unpackInvitation(
     char* buffer, u16 length, AppleMidiExchangePacket* invite);
@@ -16,9 +17,8 @@ static mw_err processInvitation(u8 ch, char* buffer, u16 length)
     if (err != MW_ERR_NONE) {
         return err;
     }
-    log_info("AppleMIDI: Invite recv on UDP ch %d", ch);
+    log_info("AppleMIDI: Session invite on UDP ch %d", ch);
     sendInviteResponse(ch, &packet);
-    log_info("AppleMIDI: Invite ack");
     return MW_ERR_NONE;
 }
 
@@ -175,4 +175,20 @@ mw_err applemidi_processSessionMidiPacket(char* buffer, u16 length)
 u16 applemidi_lastSequenceNumber(void)
 {
     return lastSeqNum;
+}
+
+#define RECEIVER_FEEDBACK_PACKET_LENGTH 12
+
+char rsBuffer[RECEIVER_FEEDBACK_PACKET_LENGTH];
+
+mw_err applemidi_sendReceiverFeedback(void)
+{
+    char receiverFeedbackPacket[RECEIVER_FEEDBACK_PACKET_LENGTH]
+        = { 0xFF, 0xFF, 'R', 'S', (u8)(MEGADRIVE_SSRC >> 24),
+              (u8)(MEGADRIVE_SSRC >> 16), (u8)(MEGADRIVE_SSRC >> 8),
+              (u8)MEGADRIVE_SSRC, (u8)(lastSeqNum >> 8), (u8)lastSeqNum, 0, 0 };
+
+    memcpy(rsBuffer, receiverFeedbackPacket, RECEIVER_FEEDBACK_PACKET_LENGTH);
+    comm_megawifi_send(CH_CONTROL_PORT, rsBuffer, sizeof(rsBuffer));
+    return MW_ERR_NONE;
 }

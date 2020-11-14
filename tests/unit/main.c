@@ -262,6 +262,7 @@ int main(void)
         applemidi_test(test_applemidi_processes_multiple_sysex_segments),
         applemidi_test(test_applemidi_processes_ccs),
         applemidi_test(test_applemidi_sets_last_sequence_number),
+        applemidi_test(test_applemidi_sends_receiver_feedback),
 
         cmocka_unit_test(test_vstring_handles_variable_argument_list_correctly)
 

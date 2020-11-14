@@ -168,6 +168,8 @@ static void recv_complete_cb(
     awaitingRecv = false;
 }
 
+static u16 lastSeqNum = 0;
+
 void comm_megawifi_tick(void)
 {
     if (!mw_detected)
@@ -176,6 +178,13 @@ void comm_megawifi_tick(void)
     if (awaitingRecv || awaitingSend) {
         return;
     }
+
+    u16 seqNum = applemidi_lastSequenceNumber();
+    if (lastSeqNum != seqNum) {
+        applemidi_sendReceiverFeedback();
+        lastSeqNum = seqNum;
+    }
+
     awaitingRecv = true;
     enum lsd_status stat
         = mw_recv(recvBuffer, MAX_UDP_DATA_LENGTH, NULL, recv_complete_cb);
@@ -206,7 +215,6 @@ void send_complete_cb(enum lsd_status stat, void* ctx)
 void comm_megawifi_send(u8 ch, char* data, u16 len)
 {
     awaitingSend = true;
-    // log_info("MegaWiFi: Sending [%x...]", (u8)data[0]);
     enum lsd_status stat = mw_send(ch, data, len, NULL, send_complete_cb);
     if (stat < 0) {
         log_warn("MegaWiFi: mw_send() = %d", stat);

@@ -754,3 +754,10 @@ void __wrap_comm_megawifi_tick(void)
 {
     function_called();
 }
+
+void __wrap_comm_megawifi_send(u8 ch, char* data, u16 len)
+{
+    check_expected(ch);
+    check_expected(data);
+    check_expected(len);
+}

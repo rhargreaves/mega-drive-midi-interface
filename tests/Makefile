@@ -89,6 +89,7 @@ MOCKS=midi_process \
 	comm_megawifi_midiEmitCallback \
 	comm_megawifi_init \
 	comm_megawifi_tick \
+	comm_megawifi_send \
 	midi_receiver_readIfCommReady
 
 MD_MOCKS=SYS_setVIntCallback \
@@ -143,7 +144,8 @@ MD_MOCKS=SYS_setVIntCallback \
 	mw_ap_assoc_wait \
 	mw_ip_current \
 	mw_udp_set \
-	mw_sock_conn_wait
+	mw_sock_conn_wait \
+	mw_send
 
 LDFLAGS=-ggdb -ffreestanding -lcmocka -L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src
 LDFLAGS+=$(foreach MOCK,$(MD_MOCKS),-Wl,--wrap=$(MOCK))
