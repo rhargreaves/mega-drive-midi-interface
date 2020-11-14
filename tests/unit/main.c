@@ -257,8 +257,11 @@ int main(void)
         applemidi_test(
             test_applemidi_parses_rtpmidi_packet_with_multiple_2_byte_midi_events),
         applemidi_test(test_applemidi_parses_rtpmidi_packet_with_sysex),
-        //   applemidi_test(test_applemidi_parses_notes_sysex_cc_in_one_packet),
+        applemidi_test(test_applemidi_parses_notes_sysex_cc_in_one_packet),
         applemidi_test(test_applemidi_ignores_middle_sysex_segments),
+        applemidi_test(test_applemidi_processes_multiple_sysex_segments),
+        applemidi_test(test_applemidi_processes_ccs),
+        applemidi_test(test_applemidi_sets_last_sequence_number),
 
         cmocka_unit_test(test_vstring_handles_variable_argument_list_correctly)
 

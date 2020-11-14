@@ -64,3 +64,4 @@ typedef union AppleMidiExchangePacket AppleMidiExchangePacket;
 
 mw_err applemidi_processSessionControlPacket(char* buffer, u16 length);
 mw_err applemidi_processSessionMidiPacket(char* buffer, u16 length);
+u16 applemidi_lastSequenceNumber(void);

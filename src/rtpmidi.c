@@ -49,9 +49,15 @@ void processSysEx(u8** cursor)
     comm_megawifi_midiEmitCallback(**cursor);
 }
 
-mw_err rtpmidi_processRtpMidiPacket(char* buffer, u16 length)
+static u16 sequenceNumber(char* buffer)
+{
+    return (buffer[2] << 8) + buffer[3];
+}
+
+mw_err rtpmidi_processRtpMidiPacket(char* buffer, u16 length, u16* lastSeqNum)
 {
     (void)length; // TODO: Probably shouldn't ignore length...
+    u16 seqNum = sequenceNumber(buffer);
     u8* commandSection = (u8*)&buffer[RTP_MIDI_HEADER_LEN];
     bool longHeader = isLongHeader(commandSection);
     u16 midiLength = longHeader ? twelveBitMidiLength(commandSection)
@@ -78,11 +84,19 @@ mw_err rtpmidi_processRtpMidiPacket(char* buffer, u16 length)
         if (*cursor == MIDI_SYSEX_END) {
             // middle sysex segment
             // we're ignoring these for now...
-            while (*cursor != MIDI_SYSEX_START) { cursor++; }
+            do {
+                cursor++;
+            } while (*cursor != MIDI_SYSEX_START && *cursor != MIDI_SYSEX_END);
+            if (cursor == midiEnd) {
+                break;
+            }
             cursor++;
 
             // fast forward over high delta time octets
             while (*cursor & 0x80) { cursor++; }
+            if (cursor == midiEnd) {
+                break;
+            }
             // skip over final low delta time octet
             cursor++;
             continue;
@@ -104,5 +118,6 @@ mw_err rtpmidi_processRtpMidiPacket(char* buffer, u16 length)
         cursor++;
     }
 
+    *lastSeqNum = seqNum;
     return MW_ERR_NONE;
 }

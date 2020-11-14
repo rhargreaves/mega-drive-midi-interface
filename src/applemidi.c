@@ -151,6 +151,8 @@ mw_err applemidi_processSessionControlPacket(char* buffer, u16 length)
     return MW_ERR_NONE;
 }
 
+static u16 lastSeqNum = 0;
+
 mw_err applemidi_processSessionMidiPacket(char* buffer, u16 length)
 {
     if (hasAppleMidiSignature(buffer, length)) {
@@ -164,8 +166,13 @@ mw_err applemidi_processSessionMidiPacket(char* buffer, u16 length)
             v_sprintf(text, "Unknown event %s", command);
         }
     } else {
-        return rtpmidi_processRtpMidiPacket(buffer, length);
+        return rtpmidi_processRtpMidiPacket(buffer, length, &lastSeqNum);
     }
 
     return MW_ERR_NONE;
+}
+
+u16 applemidi_lastSequenceNumber(void)
+{
+    return lastSeqNum;
 }
