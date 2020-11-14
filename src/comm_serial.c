@@ -38,6 +38,7 @@ static void flushRRDY(void)
 
 void comm_serial_init(void)
 {
+    buffer_init();
     serial_init(SCTRL_4800_BPS | SCTRL_SIN | SCTRL_SOUT | SCTRL_RINT);
     serial_setReadyToReceiveCallback(&recvReadyCallback);
     flushRRDY();

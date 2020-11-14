@@ -273,7 +273,10 @@ int main(void)
         cmocka_unit_test(test_vstring_handles_variable_argument_list_correctly),
 
         buffer_test(test_buffer_reads_and_writes_single_byte),
-        buffer_test(test_buffer_reads_and_writes_circularly_over_capacity)
+        buffer_test(test_buffer_reads_and_writes_circularly_over_capacity),
+        buffer_test(test_buffer_available_returns_correct_value),
+        buffer_test(test_buffer_available_returns_correct_value_when_empty),
+        buffer_test(test_buffer_available_returns_correct_value_when_full)
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
