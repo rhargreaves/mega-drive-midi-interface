@@ -5,6 +5,7 @@
 #include "mw/megawifi.h"
 #include "mw/mpool.h"
 #include "mw/util.h"
+#include "buffer.h"
 
 extern void __real_comm_megawifi_init(void);
 
@@ -14,11 +15,6 @@ static int test_comm_megawifi_setup(UNUSED void** state)
     wraps_enable_logging_checks();
     return 0;
 }
-
-#define expect_log_info(f)                                                     \
-    {                                                                          \
-        expect_memory(__wrap_log_info, fmt, f, sizeof(f));                     \
-    }
 
 #define expect_udp_port_open(c, d_port, s_port)                                \
     {                                                                          \
@@ -94,4 +90,13 @@ static void test_comm_megawifi_initialises(UNUSED void** state)
 static void test_comm_megawifi_reads_midi_message(UNUSED void** state)
 {
     megawifi_init();
+}
+
+static void test_comm_megawifi_logs_if_buffer_full(UNUSED void** state)
+{
+    expect_log_warn("MegaWiFi: MIDI buffer full!");
+
+    for (u16 i = 0; i < BUFFER_SIZE + 1; i++) {
+        __real_comm_megawifi_midiEmitCallback(0x00);
+    }
 }

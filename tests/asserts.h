@@ -18,6 +18,16 @@ void expect_synth_pitch(u8 channel, u8 octave, u16 freqNumber);
 void expect_synth_volume_any(void);
 void expect_synth_volume(u8 channel, u8 volume);
 
+#define expect_log_info(f)                                                     \
+    {                                                                          \
+        expect_memory(__wrap_log_info, fmt, f, sizeof(f));                     \
+    }
+
+#define expect_log_warn(f)                                                     \
+    {                                                                          \
+        expect_memory(__wrap_log_warn, fmt, f, sizeof(f));                     \
+    }
+
 #define expect_psg_attenuation(chan, v)                                        \
     {                                                                          \
         expect_value(__wrap_PSG_setEnvelope, channel, chan);                   \

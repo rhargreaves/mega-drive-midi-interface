@@ -8,6 +8,8 @@
 #include "log.h"
 #include "synth.h"
 
+extern void __real_comm_megawifi_midiEmitCallback(u8 midiByte);
+
 void wraps_disable_checks(void);
 void wraps_enable_checks(void);
 void wraps_disable_logging_checks(void);

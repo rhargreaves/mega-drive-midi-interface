@@ -196,6 +196,7 @@ int main(void)
 
         comm_megawifi_test(test_comm_megawifi_initialises),
         comm_megawifi_test(test_comm_megawifi_reads_midi_message),
+        comm_megawifi_test(test_comm_megawifi_logs_if_buffer_full),
 
         dynamic_midi_test(test_midi_dynamic_uses_all_channels),
         dynamic_midi_test(

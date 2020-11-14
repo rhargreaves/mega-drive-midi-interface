@@ -2,7 +2,7 @@
 #include <types.h>
 #include <stdbool.h>
 
-#define BUFFER_SIZE 2048
+#define BUFFER_SIZE 256
 
 void buffer_init(void);
 u8 buffer_read(void);

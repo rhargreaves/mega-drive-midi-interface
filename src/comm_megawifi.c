@@ -216,6 +216,10 @@ void comm_megawifi_tick(void)
 void comm_megawifi_midiEmitCallback(u8 data)
 {
     recvData = true;
+    if (!buffer_canWrite()) {
+        log_warn("MegaWiFi: MIDI buffer full!");
+        return;
+    }
     buffer_write(data);
 }
 
