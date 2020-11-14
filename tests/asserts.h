@@ -52,3 +52,16 @@ void expect_synth_volume(u8 channel, u8 volume);
     {                                                                          \
         expect_value(__wrap_comm_megawifi_midiEmitCallback, midiByte, mb);     \
     }
+
+#define expect_midi_emit_trio(mb1, mb2, mb3)                                   \
+    {                                                                          \
+        expect_value(__wrap_comm_megawifi_midiEmitCallback, midiByte, mb1);    \
+        expect_value(__wrap_comm_megawifi_midiEmitCallback, midiByte, mb2);    \
+        expect_value(__wrap_comm_megawifi_midiEmitCallback, midiByte, mb3);    \
+    }
+
+#define expect_midi_emit_duo(mb1, mb2)                                         \
+    {                                                                          \
+        expect_value(__wrap_comm_megawifi_midiEmitCallback, midiByte, mb1);    \
+        expect_value(__wrap_comm_megawifi_midiEmitCallback, midiByte, mb2);    \
+    }

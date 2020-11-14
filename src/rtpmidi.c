@@ -1,6 +1,8 @@
 #include "rtpmidi.h"
 #include "comm_megawifi.h"
 
+#define STATUS_UPPER(status) (status >> 4)
+
 static bool isLongHeader(u8* commandSection)
 {
     return (u8)commandSection[0] >> 7;
@@ -18,7 +20,8 @@ static u16 twelveBitMidiLength(u8* commandSection)
 
 static u8 bytesToEmit(u8 status)
 {
-    if ((status & 0xC0) == 0xC0 || (status & 0xD0) == 0xD0) {
+    if (STATUS_UPPER(status) == 0xC || STATUS_UPPER(status) == 0xD
+        || status == 0xF1 || status == 0xF3) {
         return 1;
     } else {
         return 2;
@@ -61,6 +64,27 @@ mw_err rtpmidi_processRtpMidiPacket(char* buffer, u16 length)
 
         if (*cursor == MIDI_SYSEX_START) {
             processSysEx(&cursor);
+
+            // fast forward over high delta time octets
+            while (*cursor & 0x80) { cursor++; }
+            // skip over final low delta time octet
+            if (cursor == midiEnd) {
+                break;
+            }
+            cursor++;
+            continue;
+        }
+
+        if (*cursor == MIDI_SYSEX_END) {
+            // middle sysex segment
+            // we're ignoring these for now...
+            while (*cursor != MIDI_SYSEX_START) { cursor++; }
+            cursor++;
+
+            // fast forward over high delta time octets
+            while (*cursor & 0x80) { cursor++; }
+            // skip over final low delta time octet
+            cursor++;
             continue;
         }
 

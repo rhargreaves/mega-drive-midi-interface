@@ -194,6 +194,7 @@ int main(void)
         comm_test(test_comm_clamps_busy_count),
 
         comm_megawifi_test(test_comm_megawifi_initialises),
+        comm_megawifi_test(test_comm_megawifi_reads_midi_message),
 
         dynamic_midi_test(test_midi_dynamic_uses_all_channels),
         dynamic_midi_test(
@@ -256,6 +257,8 @@ int main(void)
         applemidi_test(
             test_applemidi_parses_rtpmidi_packet_with_multiple_2_byte_midi_events),
         applemidi_test(test_applemidi_parses_rtpmidi_packet_with_sysex),
+        //   applemidi_test(test_applemidi_parses_notes_sysex_cc_in_one_packet),
+        applemidi_test(test_applemidi_ignores_middle_sysex_segments),
 
         cmocka_unit_test(test_vstring_handles_variable_argument_list_correctly)
 
