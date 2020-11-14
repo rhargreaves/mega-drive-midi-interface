@@ -53,7 +53,10 @@ LIBS = -L$(GENDEV)/m68k-elf/lib \
 	--wrap=SYS_disableInts \
 	--wrap=JOY_update
 
-LINKFLAGS = -T mw.ld -nostdlib
+LINKFLAGS = -T mw.ld \
+	-Map=out/output.map \
+	-nostdlib \
+	-s
 ARCHIVES = $(GENDEV)/sgdk/$(LIB)/libmd.a
 ARCHIVES += $(GENDEV)/$(LIB)/gcc/m68k-elf/$(GCC_VER)/libgcc.a
 
@@ -109,7 +112,9 @@ bin/%.bin: %.elf
 
 %.o: %.c
 	mkdir -p $(ASSEMBLY_OUT)
-	$(CC) $(CCFLAGS) $(INCS) -c -Wa,-aln=$(ASSEMBLY_OUT)/$(notdir $(@:.o=.s)) $< -o $@
+	$(CC) $(CCFLAGS) $(INCS) -c \
+		-Wa,-aln=$(ASSEMBLY_OUT)/$(notdir $(@:.o=.s)) \
+		$< -o $@
 
 %.o: %.s res/sprite.s
 	$(AS) $(ASFLAGS) $< -o $@
