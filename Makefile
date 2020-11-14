@@ -55,8 +55,7 @@ LIBS = -L$(GENDEV)/m68k-elf/lib \
 
 LINKFLAGS = -T mw.ld \
 	-Map=out/output.map \
-	-nostdlib \
-	-s
+	-nostdlib
 ARCHIVES = $(GENDEV)/sgdk/$(LIB)/libmd.a
 ARCHIVES += $(GENDEV)/$(LIB)/gcc/m68k-elf/$(GCC_VER)/libgcc.a
 
