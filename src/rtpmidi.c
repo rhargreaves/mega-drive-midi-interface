@@ -81,7 +81,7 @@ mw_err rtpmidi_processRtpMidiPacket(char* buffer, u16 length, u16* lastSeqNum)
     u16 midiLength = longHeader ? twelveBitMidiLength(commandSection)
                                 : fourBitMidiLength(commandSection);
     u8* midiStart = &commandSection[longHeader ? 2 : 1];
-    u8* midiEnd = &midiStart[midiLength - 1];
+    u8* midiEnd = midiStart + (midiLength - 1);
     u8 status = 0;
     u8* cursor = midiStart;
 
