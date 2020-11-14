@@ -3,10 +3,10 @@
 #include <midi.h>
 #include <sprite_eng.h>
 #include <types.h>
-#include "log.h"
 #include "mw/loop.h"
+#include "mw/megawifi.h"
+#include "log.h"
 #include "synth.h"
-#include "megawifi.h"
 
 void wraps_disable_checks(void);
 void wraps_enable_checks(void);

@@ -1,4 +1,3 @@
-#pragma once
 #include <setjmp.h>
 #include <stdint.h>
 #include <types.h>

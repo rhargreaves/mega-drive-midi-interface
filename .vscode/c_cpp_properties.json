@@ -8,6 +8,9 @@
         "${workspaceFolder}/../SGDK/inc",
         "${workspaceFolder}/../SGDK/res",
         "${workspaceFolder}/tests/cmocka/include",
+        "${workspaceFolder}/tests/unit",
+        "${workspaceFolder}/tests/system",
+        "${workspaceFolder}/tests",
         "/usr/include/linux",
         "/usr/include/c++/7/tr1",
         "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/"

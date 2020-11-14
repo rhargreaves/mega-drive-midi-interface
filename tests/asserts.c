@@ -1,5 +1,4 @@
 #include "cmocka_inc.h"
-
 #include "comm.h"
 
 #define REG_PART(chan) chan < 3 ? 0 : 1
