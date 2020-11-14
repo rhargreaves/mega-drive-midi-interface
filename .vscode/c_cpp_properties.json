@@ -11,15 +11,13 @@
         "${workspaceFolder}/tests/unit",
         "${workspaceFolder}/tests/system",
         "${workspaceFolder}/tests",
-        "/usr/include/linux",
-        "/usr/include/c++/7/tr1",
         "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/"
       ],
-      "defines": ["DEBUG_EVENTS"],
+      "compileCommands": "",
+      "defines": ["DEBUG_EVENTS", "DEBUG_TICKS"],
       "macFrameworkPath": [
         "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"
       ],
-      "compilerPath": "${workspaceFolder}/docker-run /opt/gendev/bin/m68k-elf-gcc",
       "cStandard": "c11",
       "cppStandard": "c++17",
       "intelliSenseMode": "gcc-x64"
