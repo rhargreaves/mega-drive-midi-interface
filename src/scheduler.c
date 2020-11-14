@@ -28,6 +28,7 @@ static void onFrame(void)
     midi_psg_tick();
     ui_update();
     everdrive_led_tick();
+    comm_megawifi_vsync();
 }
 
 u16 scheduler_ticks(void)

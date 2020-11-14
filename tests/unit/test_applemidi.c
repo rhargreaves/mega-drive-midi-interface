@@ -96,7 +96,7 @@ static void test_applemidi_parses_rtpmidi_packet_with_two_midi_events(
         = { /* V P X CC M PT */ 0x80, 0x61, /* sequence number */ 0x8c, 0x24,
               /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67,
               0xe1, 0x08, /* MIDI command section */ 0x06, 0x90, 0x48, 0x6f,
-              0x00, 0x51, 0x6f };
+              0x00, 0x51, 0x7c };
 
     size_t len = sizeof(rtp_packet);
 
@@ -106,7 +106,7 @@ static void test_applemidi_parses_rtpmidi_packet_with_two_midi_events(
 
     expect_midi_emit(0x90);
     expect_midi_emit(0x51);
-    expect_midi_emit(0x6f);
+    expect_midi_emit(0x7c);
 
     mw_err err = applemidi_processSessionMidiPacket(rtp_packet, len);
     assert_int_equal(err, MW_ERR_NONE);
@@ -145,6 +145,47 @@ static void test_applemidi_parses_rtpmidi_packet_with_sysex(UNUSED void** state)
         /* sequence number */ 0x8c, 0x24,
         /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1,
         0x08, /* MIDI command section */ 0x05, 0xF0, 0x12, 0x34, 0x56, 0xF7 };
+
+    size_t len = sizeof(rtpPacket);
+
+    expect_midi_emit(0xF0);
+    expect_midi_emit(0x12);
+    expect_midi_emit(0x34);
+    expect_midi_emit(0x56);
+    expect_midi_emit(0xF7);
+
+    mw_err err = applemidi_processSessionMidiPacket(rtpPacket, len);
+    assert_int_equal(err, MW_ERR_NONE);
+}
+
+static void test_applemidi_parses_rtpmidi_packet_with_sysex_ending_with_F0(
+    UNUSED void** state)
+{
+    char rtpPacket[1024] = { /* V P X CC M PT */ 0x80, 0x61,
+        /* sequence number */ 0x8c, 0x24,
+        /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1,
+        0x08, /* MIDI command section */ 0x05, 0xF0, 0x12, 0x34, 0x56, 0xF0 };
+
+    size_t len = sizeof(rtpPacket);
+
+    expect_midi_emit(0xF0);
+    expect_midi_emit(0x12);
+    expect_midi_emit(0x34);
+    expect_midi_emit(0x56);
+    expect_midi_emit(0xF7);
+
+    mw_err err = applemidi_processSessionMidiPacket(rtpPacket, len);
+    assert_int_equal(err, MW_ERR_NONE);
+}
+
+static void test_applemidi_parses_rtpmidi_packet_with_sysex_with_0xF7_at_end(
+    UNUSED void** state)
+{
+    char rtpPacket[1024] = { /* V P X CC M PT */ 0x80, 0x61,
+        /* sequence number */ 0x8c, 0x24,
+        /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1,
+        0x08, /* MIDI command section */ 0x05, 0xF0, 0x12, 0x34, 0x56, 0xF7,
+        0xF7 };
 
     size_t len = sizeof(rtpPacket);
 
@@ -242,7 +283,7 @@ static void test_applemidi_ignores_middle_sysex_segments(UNUSED void** state)
 
     for (u8 i = 0; i < 2; i++) {
         const u8 ending = endings[i];
-        print_message("Testing segment %d", i);
+        print_message("Testing segment %d\n", i);
 
         char rtp_packet[] = { /* V P X CC M PT */ 0x80, 0x61,
             /* sequence number */ 0xe0, 0x19, /* timestamp */ 0x03, 0x31, 0xdd,
@@ -277,10 +318,6 @@ static void test_applemidi_processes_multiple_sysex_segments(
     expect_midi_emit_trio(0xF0, 0x00, 0xF7);
     expect_midi_emit_trio(0xF0, 0x01, 0xF7);
     expect_midi_emit_trio(0xF0, 0x02, 0xF7);
-    //  expect_midi_emit(0x00);
-    //  expect_midi_emit(0x00);
-    // expect_midi_emit(0x00);
-    // expect_midi_emit(0x00);
 
     mw_err err = applemidi_processSessionMidiPacket(rtp_packet, len);
     assert_int_equal(err, MW_ERR_NONE);

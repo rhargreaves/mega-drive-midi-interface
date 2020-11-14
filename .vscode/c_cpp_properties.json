@@ -12,7 +12,7 @@
         "/usr/include/c++/7/tr1",
         "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/"
       ],
-      "defines": [],
+      "defines": ["DEBUG_EVENTS"],
       "macFrameworkPath": [
         "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"
       ],

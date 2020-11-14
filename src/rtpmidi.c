@@ -1,5 +1,7 @@
 #include "rtpmidi.h"
 #include "comm_megawifi.h"
+#include "bits.h"
+#include <stdbool.h>
 
 #define STATUS_UPPER(status) (status >> 4)
 
@@ -31,9 +33,12 @@ static u8 bytesToEmit(u8 status)
 static void emitMidiEvent(u8 status, u8** cursor)
 {
     comm_megawifi_midiEmitCallback(status);
-    for (u8 i = 0; i < bytesToEmit(status); i++) {
+    u8 count = bytesToEmit(status);
+    for (u8 i = 0; i < count; i++) {
         comm_megawifi_midiEmitCallback(**cursor);
-        (*cursor)++;
+        if (i < count - 1) {
+            (*cursor)++;
+        }
     };
 }
 
@@ -45,13 +50,18 @@ void processSysEx(u8** cursor)
     do {
         comm_megawifi_midiEmitCallback(**cursor);
         (*cursor)++;
-    } while (**cursor != MIDI_SYSEX_END);
-    comm_megawifi_midiEmitCallback(**cursor);
+    } while (**cursor != MIDI_SYSEX_END && **cursor != MIDI_SYSEX_START);
+    comm_megawifi_midiEmitCallback(MIDI_SYSEX_END);
 }
 
 static u16 sequenceNumber(char* buffer)
 {
     return ((u8)buffer[2] << 8) + (u8)buffer[3];
+}
+
+static bool isFinalDeltaByte(u8 value)
+{
+    return !CHECK_BIT(value, 7);
 }
 
 mw_err rtpmidi_processRtpMidiPacket(char* buffer, u16 length, u16* lastSeqNum)
@@ -66,55 +76,28 @@ mw_err rtpmidi_processRtpMidiPacket(char* buffer, u16 length, u16* lastSeqNum)
     u8* midiEnd = &midiStart[midiLength];
     u8 status = 0;
     u8* cursor = midiStart;
-    while (cursor != midiEnd) {
 
-        if (*cursor == MIDI_SYSEX_START) {
+    bool walkingOverDeltas = false;
+    while (cursor <= midiEnd) {
+        if (walkingOverDeltas && isFinalDeltaByte(*cursor)) {
+            walkingOverDeltas = false;
+        } else if (*cursor == MIDI_SYSEX_START) {
             processSysEx(&cursor);
-
-            // fast forward over high delta time octets
-            while (*cursor & 0x80) { cursor++; }
-            // skip over final low delta time octet
-            if (cursor == midiEnd) {
-                break;
-            }
-            cursor++;
-            continue;
-        }
-
-        if (*cursor == MIDI_SYSEX_END) {
+            walkingOverDeltas = true;
+        } else if (*cursor == MIDI_SYSEX_END) {
             // middle sysex segment
             // we're ignoring these for now...
             do {
                 cursor++;
             } while (*cursor != MIDI_SYSEX_START && *cursor != MIDI_SYSEX_END);
-            if (cursor == midiEnd) {
-                break;
-            }
-            cursor++;
-
-            // fast forward over high delta time octets
-            while (*cursor & 0x80) { cursor++; }
-            if (cursor == midiEnd) {
-                break;
-            }
-            // skip over final low delta time octet
-            cursor++;
-            continue;
-        }
-
-        if (*cursor & 0x80) { // status bit present
+            walkingOverDeltas = true;
+        } else if (CHECK_BIT(*cursor, 7)) { // status bit present
             status = *cursor;
-            cursor++;
-            continue;
+        } else {
+            emitMidiEvent(status, &cursor);
+            walkingOverDeltas = true;
         }
 
-        emitMidiEvent(status, &cursor);
-        if (cursor == midiEnd) {
-            break;
-        }
-        // fast forward over high delta time octets
-        while (*cursor & 0x80) { cursor++; }
-        // skip over final low delta time octet
         cursor++;
     }
 

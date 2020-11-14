@@ -168,7 +168,30 @@ static void recv_complete_cb(
     awaitingRecv = false;
 }
 
+static u16 frame = 0;
+
+void comm_megawifi_vsync(void)
+{
+    frame++;
+}
+
 static u16 lastSeqNum = 0;
+
+#define RECEIVER_FEEDBACK_FRAME_FREQUENCY 25
+
+static void sendReceiverFeedback(void)
+{
+    if (frame < RECEIVER_FEEDBACK_FRAME_FREQUENCY) {
+        return;
+    }
+
+    u16 seqNum = applemidi_lastSequenceNumber();
+    if (lastSeqNum != seqNum) {
+        applemidi_sendReceiverFeedback();
+        lastSeqNum = seqNum;
+    }
+    frame = 0;
+}
 
 void comm_megawifi_tick(void)
 {
@@ -178,12 +201,7 @@ void comm_megawifi_tick(void)
     if (awaitingRecv || awaitingSend) {
         return;
     }
-
-    u16 seqNum = applemidi_lastSequenceNumber();
-    if (lastSeqNum != seqNum) {
-        applemidi_sendReceiverFeedback();
-        lastSeqNum = seqNum;
-    }
+    sendReceiverFeedback();
 
     awaitingRecv = true;
     enum lsd_status stat

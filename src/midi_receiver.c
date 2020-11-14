@@ -5,6 +5,7 @@
 #include "synth.h"
 #include <vstring.h>
 #include "ui.h"
+#include "applemidi.h"
 
 #define STATUS_LOWER(status) (status & 0x0F)
 #define STATUS_UPPER(status) (status >> 4)
@@ -48,8 +49,10 @@ void midi_receiver_readIfCommReady(void)
 static void debugPrintEvent(u8 status, u8 data1, u8 data2)
 {
 #if DEBUG_EVENTS
+    u16 seqNum = applemidi_lastSequenceNumber();
     char t[30];
-    v_sprintf(t, "S:%02X D1:%02X D2:%02X ", status, data1, data2);
+    v_sprintf(
+        t, "S:%02X D1:%02X D2:%02X Sn:%05u", status, data1, data2, seqNum);
     ui_drawText(t, 7, 1);
 #else
     (void)status;

@@ -50,7 +50,8 @@ LIBS = -L$(GENDEV)/m68k-elf/lib \
 	-L$(GENDEV)/lib/gcc/m68k-elf/$(GCC_VER)/* \
 	-L$(GENDEV)/sgdk/lib -lmd -lnosys \
 	--wrap=SYS_enableInts \
-	--wrap=SYS_disableInts
+	--wrap=SYS_disableInts \
+	--wrap=JOY_update
 
 LINKFLAGS = -T mw.ld -nostdlib
 ARCHIVES = $(GENDEV)/sgdk/$(LIB)/libmd.a
