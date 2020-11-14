@@ -44,3 +44,8 @@ u16 buffer_available(void)
 {
     return BUFFER_SIZE - length;
 }
+
+bool buffer_canWrite(void)
+{
+    return length != BUFFER_SIZE;
+}

@@ -73,3 +73,14 @@ static void test_buffer_available_returns_correct_value_when_full(
     for (u16 i = 0; i < BUFFER_SIZE; i++) { buffer_write(0x00); }
     assert_int_equal(buffer_available(), 0);
 }
+
+static void test_buffer_returns_cannot_write_if_full(UNUSED void** state)
+{
+    for (u16 i = 0; i < BUFFER_SIZE; i++) { buffer_write(0x00); }
+    assert_int_equal(buffer_canWrite(), false);
+}
+
+static void test_buffer_returns_can_write_if_empty(UNUSED void** state)
+{
+    assert_int_equal(buffer_canWrite(), true);
+}
