@@ -3,8 +3,8 @@
     {
       "name": "Docker",
       "includePath": [
-        "${workspaceFolder}/**",
         "${workspaceFolder}/src",
+        "${workspaceFolder}/src/mw",
         "${workspaceFolder}/../SGDK/inc",
         "${workspaceFolder}/../SGDK/res",
         "${workspaceFolder}/tests/cmocka/include",
