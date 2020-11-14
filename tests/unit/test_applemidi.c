@@ -407,3 +407,23 @@ static void test_applemidi_sends_receiver_feedback(UNUSED void** state)
     err = applemidi_sendReceiverFeedback();
     assert_int_equal(err, MW_ERR_NONE);
 }
+
+static void test_applemidi_does_not_read_beyond_length(UNUSED void** state)
+{
+    u8 length = 4;
+    char rtp_packet[1024] = { /* V P X CC M PT */ 0x80, 0x61,
+        /* sequence number */ 0x8c, 0x24,
+        /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1,
+        0x08, /* MIDI command section */ 0xC0, length, 0xF0, 0x01, 0xF7, 0x00,
+        /* should not emit this byte */ 0x00 };
+
+    size_t len = sizeof(rtp_packet);
+
+    expect_midi_emit_trio(0xF0, 0x01, 0xF7);
+
+    mw_err err = applemidi_processSessionMidiPacket(rtp_packet, len);
+    assert_int_equal(err, MW_ERR_NONE);
+
+    u16 seqNum = applemidi_lastSequenceNumber();
+    assert_int_equal(seqNum, 0x8c24);
+}

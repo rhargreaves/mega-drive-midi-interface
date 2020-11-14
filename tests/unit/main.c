@@ -267,6 +267,7 @@ int main(void)
             test_applemidi_parses_rtpmidi_packet_with_sysex_ending_with_F0),
         applemidi_test(
             test_applemidi_parses_rtpmidi_packet_with_sysex_with_0xF7_at_end),
+        applemidi_test(test_applemidi_does_not_read_beyond_length),
 
         cmocka_unit_test(test_vstring_handles_variable_argument_list_correctly)
 

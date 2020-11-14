@@ -3,6 +3,9 @@
 #include "bits.h"
 #include <stdbool.h>
 
+#define MIDI_SYSEX_START 0xF0
+#define MIDI_SYSEX_END 0xF7
+
 #define STATUS_UPPER(status) (status >> 4)
 
 static bool isLongHeader(u8* commandSection)
@@ -42,16 +45,21 @@ static void emitMidiEvent(u8 status, u8** cursor)
     };
 }
 
-#define MIDI_SYSEX_START 0xF0
-#define MIDI_SYSEX_END 0xF7
-
-void processSysEx(u8** cursor)
+static void processSysEx(u8** cursor)
 {
     do {
         comm_megawifi_midiEmitCallback(**cursor);
         (*cursor)++;
-    } while (**cursor != MIDI_SYSEX_END && **cursor != MIDI_SYSEX_START);
+    } while (!(**cursor == MIDI_SYSEX_END || **cursor == MIDI_SYSEX_START));
     comm_megawifi_midiEmitCallback(MIDI_SYSEX_END);
+}
+
+static void processMiddleSysEx(u8** cursor)
+{
+    // we're ignoring these for now...
+    do {
+        (*cursor)++;
+    } while (!(**cursor == MIDI_SYSEX_END || **cursor == MIDI_SYSEX_START));
 }
 
 static u16 sequenceNumber(char* buffer)
@@ -73,7 +81,7 @@ mw_err rtpmidi_processRtpMidiPacket(char* buffer, u16 length, u16* lastSeqNum)
     u16 midiLength = longHeader ? twelveBitMidiLength(commandSection)
                                 : fourBitMidiLength(commandSection);
     u8* midiStart = &commandSection[longHeader ? 2 : 1];
-    u8* midiEnd = &midiStart[midiLength];
+    u8* midiEnd = &midiStart[midiLength - 1];
     u8 status = 0;
     u8* cursor = midiStart;
 
@@ -85,11 +93,7 @@ mw_err rtpmidi_processRtpMidiPacket(char* buffer, u16 length, u16* lastSeqNum)
             processSysEx(&cursor);
             walkingOverDeltas = true;
         } else if (*cursor == MIDI_SYSEX_END) {
-            // middle sysex segment
-            // we're ignoring these for now...
-            do {
-                cursor++;
-            } while (*cursor != MIDI_SYSEX_START && *cursor != MIDI_SYSEX_END);
+            processMiddleSysEx(&cursor);
             walkingOverDeltas = true;
         } else if (CHECK_BIT(*cursor, 7)) { // status bit present
             status = *cursor;
@@ -97,7 +101,6 @@ mw_err rtpmidi_processRtpMidiPacket(char* buffer, u16 length, u16* lastSeqNum)
             emitMidiEvent(status, &cursor);
             walkingOverDeltas = true;
         }
-
         cursor++;
     }
 
