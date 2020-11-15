@@ -48,7 +48,9 @@ static const CommVTable* activeCommType = NULL;
 
 void comm_init(void)
 {
-    for (u16 i = 0; i < COMM_TYPES; i++) { commTypes[i]->init(); }
+    for (u16 i = 0; i < COMM_TYPES; i++) {
+        commTypes[i]->init();
+    }
     activeCommType = NULL;
 }
 
