@@ -2,6 +2,10 @@
 
 Control the Yamaha YM2612 and PSG of the Sega Mega Drive via MIDI.
 
+<p align="center">
+    <img src="https://github.com/rhargreaves/mega-drive-midi-interface/raw/master/docs/blastem_chan.png" width="600" />
+</p>
+
 ## Features
 
 - On-screen per-channel activity indicators & log
@@ -15,10 +19,6 @@ Control the Yamaha YM2612 and PSG of the Sega Mega Drive via MIDI.
   - [Controller port via custom USB serial cable](https://github.com/rhargreaves/mega-drive-serial-port#hardware).
   - [MegaWiFi cartridge / BlastEm emulator](https://github.com/rhargreaves/mega-drive-midi-interface/wiki/BlastEm-&-MegaWiFi-Guide) (experimental)
   - Control of YM2612 registers via [GenMDM-style CCs](https://catskullelectronics.com/public/genMDM.pdf)
-
-<p align="center">
-    <img src="https://github.com/rhargreaves/mega-drive-midi-interface/raw/master/docs/blastem_chan.png" width="600" />
-</p>
 
 ## Getting Started
 
