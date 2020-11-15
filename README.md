@@ -17,7 +17,7 @@ Control the Yamaha YM2612 and PSG of the Sega Mega Drive via MIDI.
   - Control of YM2612 registers via [GenMDM-style CCs](https://catskullelectronics.com/public/genMDM.pdf)
 
 <p align="center">
-    <img src="https://github.com/rhargreaves/mega-drive-midi-interface/raw/master/docs/screenshot.jpg" width="600" />
+    <img src="https://github.com/rhargreaves/mega-drive-midi-interface/raw/master/docs/blastem_chan.png" width="600" />
 </p>
 
 ## Getting Started
