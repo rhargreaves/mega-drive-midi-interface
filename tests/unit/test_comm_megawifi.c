@@ -24,12 +24,6 @@ static int test_comm_megawifi_setup(UNUSED void** state)
         expect_memory(__wrap_mw_udp_set, src_port, s_port, sizeof(s_port));    \
         will_return(__wrap_mw_udp_set, MW_ERR_NONE);                           \
         expect_log_info("AppleMIDI: %s UDP Port: %d");                         \
-                                                                               \
-        expect_any(__wrap_lsd_recv, buf);                                      \
-        expect_any(__wrap_lsd_recv, len);                                      \
-        expect_any(__wrap_lsd_recv, ctx);                                      \
-        expect_any(__wrap_lsd_recv, recv_cb);                                  \
-        will_return(__wrap_lsd_recv, LSD_STAT_COMPLETE);                       \
     } while (0)
 
 static void expect_mw_init(void)

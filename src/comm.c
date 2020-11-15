@@ -4,6 +4,10 @@
 #include "comm_megawifi.h"
 #include "comm_serial.h"
 #include <stdbool.h>
+#include <vdp.h>
+#include <vdp_bg.h>
+#include "vstring.h"
+#include "settings.h"
 
 static u16 idle = 0;
 static u16 reads = 0;
@@ -39,8 +43,20 @@ static const CommVTable Megawifi_VTable
     = { comm_megawifi_init, comm_megawifi_readReady, comm_megawifi_read,
           comm_megawifi_writeReady, comm_megawifi_write };
 
-static const CommVTable* commTypes[] = { &Everdrive_VTable,
-    &EverdrivePro_VTable, &Serial_VTable, &Megawifi_VTable };
+static const CommVTable* commTypes[] = {
+#if COMM_EVERDRIVE_X7 == 1
+    &Everdrive_VTable,
+#endif
+#if COMM_EVERDRIVE_PRO == 1
+    &EverdrivePro_VTable,
+#endif
+#if COMM_SERIAL == 1
+    &Serial_VTable,
+#endif
+#if COMM_MEGAWIFI == 1
+    &Megawifi_VTable
+#endif
+};
 
 #define COMM_TYPES (sizeof(commTypes) / sizeof(CommVTable*))
 

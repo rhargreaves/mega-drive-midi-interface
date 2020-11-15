@@ -179,8 +179,6 @@ u16 applemidi_lastSequenceNumber(void)
 
 #define RECEIVER_FEEDBACK_PACKET_LENGTH 12
 
-char rsBuffer[RECEIVER_FEEDBACK_PACKET_LENGTH];
-
 mw_err applemidi_sendReceiverFeedback(void)
 {
     char receiverFeedbackPacket[RECEIVER_FEEDBACK_PACKET_LENGTH]
@@ -188,7 +186,7 @@ mw_err applemidi_sendReceiverFeedback(void)
               (u8)(MEGADRIVE_SSRC >> 16), (u8)(MEGADRIVE_SSRC >> 8),
               (u8)MEGADRIVE_SSRC, (u8)(lastSeqNum >> 8), (u8)lastSeqNum, 0, 0 };
 
-    memcpy(rsBuffer, receiverFeedbackPacket, RECEIVER_FEEDBACK_PACKET_LENGTH);
-    comm_megawifi_send(CH_CONTROL_PORT, rsBuffer, sizeof(rsBuffer));
+    comm_megawifi_send(CH_CONTROL_PORT, receiverFeedbackPacket,
+        RECEIVER_FEEDBACK_PACKET_LENGTH);
     return MW_ERR_NONE;
 }
