@@ -15,13 +15,12 @@
     {
       "type": "gdb",
       "request": "attach",
-      "name": "Attach to gdbserver BlastEm",
+      "name": "BlastEm (GDB)",
       "executable": "bin/out.elf",
       "target": "127.0.0.1:1234",
       "remote": true,
       "cwd": "${workspaceRoot}",
-      "gdbpath": "gdb",
-      "autorun": [""]
+      "gdbpath": "gdb"
     }
   ]
 }
