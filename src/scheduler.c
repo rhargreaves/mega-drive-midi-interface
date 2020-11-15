@@ -54,5 +54,7 @@ void scheduler_tick(void)
 
 void scheduler_run(void)
 {
-    while (TRUE) { scheduler_tick(); }
+    while (TRUE) {
+        scheduler_tick();
+    }
 }

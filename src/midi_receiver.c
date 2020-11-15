@@ -43,7 +43,9 @@ void midi_receiver_init(void)
 
 void midi_receiver_readIfCommReady(void)
 {
-    while (comm_readReady()) { midi_receiver_read(); }
+    while (comm_readReady()) {
+        midi_receiver_read();
+    }
 }
 
 static void debugPrintEvent(u8 status, u8 data1, u8 data2)
