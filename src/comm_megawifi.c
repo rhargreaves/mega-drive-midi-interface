@@ -21,6 +21,8 @@ static bool recvData = false;
 
 #define MAX_UDP_DATA_LENGTH 1460
 
+#define RECEIVER_FEEDBACK_FRAME_FREQUENCY 10
+
 static char recvBuffer[MAX_UDP_DATA_LENGTH];
 static char sendBuffer[MAX_UDP_DATA_LENGTH];
 
