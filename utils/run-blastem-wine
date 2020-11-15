@@ -1,0 +1,6 @@
+#!/bin/bash
+ROM="$(winepath -w $1)"
+rm ~/.wine/dosdevices/c:/Documents\ and\ Settings/Robert/Local\ Settings/Application\ Data/blastem/out/save.nor
+wine ~/Emulation/Mega\ Drive/Emulators/blastem-win32-0.6.3-pre-4c418ee9a9d8/blastem.exe "$ROM" "$2"
+
+

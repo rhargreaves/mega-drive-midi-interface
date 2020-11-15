@@ -1,12 +1,3 @@
 #!/bin/bash
-ROM="$1"
-
 rm ~/.local/share/blastem/out/save.nor
-~/Downloads/blastem-193b804c9845/blastem "$ROM"
-# ~/Emulation/Mega\ Drive/Emulators/blastem-osx-0.6.2/blastem "$ROM"
-
-# ROM="$(winepath -w $1)"
-# rm ~/.wine/dosdevices/c:/Documents\ and\ Settings/Robert/Local\ Settings/Application\ Data/blastem/out/save.nor
-# wine ~/Emulation/Mega\ Drive/Emulators/blastem-win32-0.6.3-pre-4c418ee9a9d8/blastem.exe "$ROM"
-
-
+~/Downloads/blastem-193b804c9845/blastem "$@"
