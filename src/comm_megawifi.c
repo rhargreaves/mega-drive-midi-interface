@@ -11,28 +11,22 @@
 #include "buffer.h"
 #include "memory.h"
 
-/// Length of the wflash buffer
 #define MW_BUFLEN 1460
-
-/// Command buffer
+#define MAX_UDP_DATA_LENGTH MW_BUFLEN
 static char cmd_buf[MW_BUFLEN];
-static bool mw_detected = false;
+
+static bool mwDetected = false;
 static bool recvData = false;
 
-#define MAX_UDP_DATA_LENGTH 1460
-
+#define REUSE_PAYLOAD_HEADER_LEN 6
 #define RECEIVER_FEEDBACK_FRAME_FREQUENCY 10
+#define MW_MAX_LOOP_FUNCS 2
+#define MW_MAX_LOOP_TIMERS 4
 
 static char recvBuffer[MAX_UDP_DATA_LENGTH];
 static char sendBuffer[MAX_UDP_DATA_LENGTH];
-
-#define REUSE_PAYLOAD_HEADER_LEN 6
-
 static bool awaitingRecv = false;
 static bool awaitingSend = false;
-
-#define MW_MAX_LOOP_FUNCS 2
-#define MW_MAX_LOOP_TIMERS 4
 
 static void recv_complete_cb(
     enum lsd_status stat, uint8_t ch, char* data, uint16_t len, void* ctx);
@@ -78,7 +72,7 @@ static mw_err displayLocalIp(void)
     return err;
 }
 
-bool detect_mw(void)
+static bool detect_mw(void)
 {
     u8 ver_major = 0, ver_minor = 0;
     char* variant = NULL;
@@ -110,8 +104,8 @@ void comm_megawifi_init(void)
     mp_init(0);
     mw_process_loop_init();
     mw_init(cmd_buf, MW_BUFLEN);
-    mw_detected = detect_mw();
-    if (!mw_detected) {
+    mwDetected = detect_mw();
+    if (!mwDetected) {
         return;
     }
     associateAp();
@@ -219,7 +213,7 @@ static void sendReceiverFeedback(void)
 
 void comm_megawifi_tick(void)
 {
-    if (!mw_detected)
+    if (!mwDetected)
         return;
     mw_process();
     if (awaitingRecv || awaitingSend) {
@@ -247,8 +241,6 @@ void comm_megawifi_midiEmitCallback(u8 data)
     }
     buffer_write(data);
 }
-
-#define MAX_UDP_DATA_LENGTH 1460
 
 void send_complete_cb(enum lsd_status stat, void* ctx)
 {
