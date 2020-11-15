@@ -4,3 +4,6 @@ AllowShortLoopsOnASingleLine: true
 ColumnLimit: 80
 ReflowComments: false
 SortIncludes: false
+AllowShortBlocksOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
