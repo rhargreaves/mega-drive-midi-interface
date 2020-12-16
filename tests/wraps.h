@@ -3,6 +3,7 @@
 #include <midi.h>
 #include <sprite_eng.h>
 #include <types.h>
+#include <sys.h>
 #include "mw/loop.h"
 #include "mw/megawifi.h"
 #include "log.h"
@@ -149,3 +150,6 @@ enum lsd_status __wrap_lsd_recv(
     char* buf, int16_t len, void* ctx, lsd_recv_cb recv_cb);
 enum lsd_status __wrap_lsd_send(
     uint8_t ch, const char* data, int16_t len, void* ctx, lsd_send_cb send_cb);
+
+void __wrap_Z80_requestBus(bool wait);
+void __wrap_SYS_doVBlankProcessEx(VBlankProcessTime processTime);

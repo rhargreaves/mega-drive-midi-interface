@@ -87,7 +87,7 @@ OBJS = $(RESOURCES)
 all: test bin/out.bin bin/out.elf
 
 boot/sega.o: boot/rom_head.bin
-	$(AS) $(ASFLAGS) boot/sega.s -o $@
+	$(CC) -x assembler-with-cpp $(CCFLAGS) boot/sega.s -o $@
 
 newlib/setjmp.o:
 	$(AS) $(ASFLAGS) newlib/setjmp.s -o $@

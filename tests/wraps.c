@@ -788,3 +788,11 @@ enum lsd_status __wrap_lsd_send(
     check_expected(send_cb);
     return mock_type(enum lsd_status);
 }
+
+void __wrap_Z80_requestBus(bool wait)
+{
+}
+
+void __wrap_SYS_doVBlankProcessEx(VBlankProcessTime processTime)
+{
+}

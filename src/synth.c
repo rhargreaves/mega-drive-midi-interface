@@ -2,6 +2,7 @@
 #include "bits.h"
 #include <memory.h>
 #include <stdbool.h>
+#include <z80_ctrl.h>
 #include <ym2612.h>
 
 static Global global = { .lfoEnable = 1, .lfoFrequency = 0 };
@@ -49,6 +50,7 @@ static void otherParameterUpdated(
 
 void synth_init(const FmChannel* initialPreset)
 {
+    Z80_requestBus(TRUE);
     YM2612_writeReg(0, 0x27, 0); // Ch 3 Normal
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         volumes[chan] = MAX_VOLUME;
