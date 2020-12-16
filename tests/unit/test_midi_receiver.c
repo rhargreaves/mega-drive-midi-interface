@@ -2,6 +2,7 @@
 
 #include "midi.h"
 #include "midi_receiver.h"
+#include "comm.h"
 
 #define STATUS_CC 0xB0
 #define STATUS_PITCH_BEND 0xE0
@@ -205,4 +206,31 @@ static void test_midi_receiver_sends_sysex_to_midi_layer(UNUSED void** state)
     expect_value(__wrap_midi_sysex, length, 1);
 
     midi_receiver_read();
+}
+
+static void test_midi_receiver_handles_sysex_limits(UNUSED void** state)
+{
+    const u16 SYSEX_BUFFER_SIZE = 256;
+    const u16 SYSEX_MESSAGE_SIZE = 300;
+
+    const u8 command = 0x12;
+    will_return(__wrap_comm_read, STATUS_SYSEX_START);
+    for (u16 i = 0; i < SYSEX_MESSAGE_SIZE; i++) {
+        will_return(__wrap_comm_read, command);
+    }
+    will_return(__wrap_comm_read, SYSEX_END);
+
+    u8 data[SYSEX_BUFFER_SIZE];
+    for (u16 i = 0; i < SYSEX_BUFFER_SIZE; i++) {
+        data[i] = command;
+    }
+
+    expect_memory(__wrap_midi_sysex, data, &data, SYSEX_BUFFER_SIZE);
+    expect_value(__wrap_midi_sysex, length, SYSEX_BUFFER_SIZE);
+
+    midi_receiver_read();
+
+    for (u16 i = 0; i < SYSEX_MESSAGE_SIZE - SYSEX_BUFFER_SIZE + 1; i++) {
+        comm_read();
+    }
 }

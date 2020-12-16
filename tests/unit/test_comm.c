@@ -5,14 +5,6 @@
 static const u16 MAX_COMM_IDLE = 0x28F;
 static const u16 MAX_COMM_BUSY = 0x28F;
 
-extern bool __real_comm_readReady(void);
-extern void __real_comm_init(void);
-extern void __real_comm_write(u8 data);
-extern u8 __real_comm_read(void);
-extern u16 __real_comm_idleCount(void);
-extern u16 __real_comm_busyCount(void);
-extern void __real_comm_resetCounts(void);
-
 static int test_comm_setup(UNUSED void** state)
 {
     __real_comm_init();

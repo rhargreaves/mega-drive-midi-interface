@@ -168,10 +168,9 @@ static void readSysEx(void)
 
     u8 buffer[BUFFER_LENGTH];
     u8 data;
-    u8 index = 0;
-    while ((data = comm_read()) != SYSEX_END) {
-        buffer[index] = data;
-        index++;
+    u16 index = 0;
+    while (index < BUFFER_LENGTH && (data = comm_read()) != SYSEX_END) {
+        buffer[index++] = data;
     }
     midi_sysex(buffer, index);
 }

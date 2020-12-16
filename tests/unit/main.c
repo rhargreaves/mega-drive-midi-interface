@@ -48,6 +48,7 @@ int main(void)
         cmocka_unit_test(test_midi_receiver_does_nothing_on_midi_position),
         cmocka_unit_test(test_midi_receiver_sets_midi_program),
         cmocka_unit_test(test_midi_receiver_sends_sysex_to_midi_layer),
+        cmocka_unit_test(test_midi_receiver_handles_sysex_limits),
 
         midi_test(test_midi_triggers_synth_note_on),
         midi_test(test_midi_triggers_synth_note_on_with_velocity),

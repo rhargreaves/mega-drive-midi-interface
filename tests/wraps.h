@@ -9,6 +9,13 @@
 #include "log.h"
 #include "synth.h"
 
+extern bool __real_comm_readReady(void);
+extern void __real_comm_init(void);
+extern void __real_comm_write(u8 data);
+extern u8 __real_comm_read(void);
+extern u16 __real_comm_idleCount(void);
+extern u16 __real_comm_busyCount(void);
+extern void __real_comm_resetCounts(void);
 extern void __real_comm_megawifi_midiEmitCallback(u8 midiByte);
 
 void wraps_disable_checks(void);
