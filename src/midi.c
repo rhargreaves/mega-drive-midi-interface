@@ -44,7 +44,6 @@ struct MidiChannel {
 };
 
 static MidiChannel midiChannels[MIDI_CHANNELS];
-static ControlChange lastUnknownControlChange;
 static bool dynamicMode;
 static bool disableNonGeneralMidiCCs;
 static bool stickToDeviceType;
@@ -82,13 +81,16 @@ static void initDeviceChannel(u8 devChan)
 
 static void initAllDeviceChannels(void)
 {
-    for (u16 i = 0; i < DEV_CHANS; i++) { initDeviceChannel(i); }
+    for (u16 i = 0; i < DEV_CHANS; i++) {
+        initDeviceChannel(i);
+    }
 }
 
 static void resetAllState(void)
 {
-    memset(&lastUnknownControlChange, 0, sizeof(ControlChange));
-    for (u8 i = 0; i < MIDI_CHANNELS; i++) { initMidiChannel(i); }
+    for (u8 i = 0; i < MIDI_CHANNELS; i++) {
+        initMidiChannel(i);
+    }
     initAllDeviceChannels();
     setDynamicMode(dynamicMode);
 }
@@ -455,11 +457,6 @@ DeviceChannel* midi_channelMappings(void)
     return deviceChannels;
 }
 
-ControlChange* midi_lastUnknownCC(void)
-{
-    return &lastUnknownControlChange;
-}
-
 static void allNotesOff(u8 chan)
 {
     for (u8 i = 0; i < DEV_CHANS; i++) {
@@ -596,7 +593,9 @@ void midi_remapChannel(u8 midiChan, u8 devChan)
 
 static void generalMidiReset(void)
 {
-    for (u8 chan = 0; chan < MIDI_CHANNELS; chan++) { allNotesOff(chan); }
+    for (u8 chan = 0; chan < MIDI_CHANNELS; chan++) {
+        allNotesOff(chan);
+    }
     resetAllState();
 }
 
@@ -609,18 +608,18 @@ static void setDynamicMode(bool enabled)
     }
 }
 
-static void setFmChanParameter(u8 devChan, u8 controller, u8 value)
+static void setFmChanParameter(DeviceChannel* devChan, u8 controller, u8 value)
 {
     switch (controller) {
     case CC_GENMDM_FM_ALGORITHM:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_algorithm(devChan, RANGE(value, 8));
+        synth_algorithm(devChan->number, RANGE(value, 8));
         break;
     case CC_GENMDM_FM_FEEDBACK:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_feedback(devChan, RANGE(value, 8));
+        synth_feedback(devChan->number, RANGE(value, 8));
         break;
     case CC_GENMDM_TOTAL_LEVEL_OP1:
     case CC_GENMDM_TOTAL_LEVEL_OP2:
@@ -629,7 +628,7 @@ static void setFmChanParameter(u8 devChan, u8 controller, u8 value)
         if (isIgnoringNonGeneralMidiCCs())
             break;
         synth_operatorTotalLevel(
-            devChan, controller - CC_GENMDM_TOTAL_LEVEL_OP1, value);
+            devChan->number, controller - CC_GENMDM_TOTAL_LEVEL_OP1, value);
         break;
     case CC_GENMDM_MULTIPLE_OP1:
     case CC_GENMDM_MULTIPLE_OP2:
@@ -637,8 +636,8 @@ static void setFmChanParameter(u8 devChan, u8 controller, u8 value)
     case CC_GENMDM_MULTIPLE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorMultiple(
-            devChan, controller - CC_GENMDM_MULTIPLE_OP1, RANGE(value, 16));
+        synth_operatorMultiple(devChan->number,
+            controller - CC_GENMDM_MULTIPLE_OP1, RANGE(value, 16));
         break;
     case CC_GENMDM_DETUNE_OP1:
     case CC_GENMDM_DETUNE_OP2:
@@ -646,8 +645,8 @@ static void setFmChanParameter(u8 devChan, u8 controller, u8 value)
     case CC_GENMDM_DETUNE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorDetune(
-            devChan, controller - CC_GENMDM_DETUNE_OP1, RANGE(value, 8));
+        synth_operatorDetune(devChan->number, controller - CC_GENMDM_DETUNE_OP1,
+            RANGE(value, 8));
         break;
     case CC_GENMDM_RATE_SCALING_OP1:
     case CC_GENMDM_RATE_SCALING_OP2:
@@ -655,8 +654,8 @@ static void setFmChanParameter(u8 devChan, u8 controller, u8 value)
     case CC_GENMDM_RATE_SCALING_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorRateScaling(
-            devChan, controller - CC_GENMDM_RATE_SCALING_OP1, RANGE(value, 4));
+        synth_operatorRateScaling(devChan->number,
+            controller - CC_GENMDM_RATE_SCALING_OP1, RANGE(value, 4));
         break;
     case CC_GENMDM_ATTACK_RATE_OP1:
     case CC_GENMDM_ATTACK_RATE_OP2:
@@ -664,8 +663,8 @@ static void setFmChanParameter(u8 devChan, u8 controller, u8 value)
     case CC_GENMDM_ATTACK_RATE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorAttackRate(
-            devChan, controller - CC_GENMDM_ATTACK_RATE_OP1, RANGE(value, 32));
+        synth_operatorAttackRate(devChan->number,
+            controller - CC_GENMDM_ATTACK_RATE_OP1, RANGE(value, 32));
         break;
     case CC_GENMDM_FIRST_DECAY_RATE_OP1:
     case CC_GENMDM_FIRST_DECAY_RATE_OP2:
@@ -673,7 +672,7 @@ static void setFmChanParameter(u8 devChan, u8 controller, u8 value)
     case CC_GENMDM_FIRST_DECAY_RATE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorFirstDecayRate(devChan,
+        synth_operatorFirstDecayRate(devChan->number,
             controller - CC_GENMDM_FIRST_DECAY_RATE_OP1, RANGE(value, 32));
         break;
     case CC_GENMDM_SECOND_DECAY_RATE_OP1:
@@ -682,7 +681,7 @@ static void setFmChanParameter(u8 devChan, u8 controller, u8 value)
     case CC_GENMDM_SECOND_DECAY_RATE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorSecondDecayRate(devChan,
+        synth_operatorSecondDecayRate(devChan->number,
             controller - CC_GENMDM_SECOND_DECAY_RATE_OP1, RANGE(value, 16));
         break;
     case CC_GENMDM_SECOND_AMPLITUDE_OP1:
@@ -691,7 +690,7 @@ static void setFmChanParameter(u8 devChan, u8 controller, u8 value)
     case CC_GENMDM_SECOND_AMPLITUDE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorSecondaryAmplitude(devChan,
+        synth_operatorSecondaryAmplitude(devChan->number,
             controller - CC_GENMDM_SECOND_AMPLITUDE_OP1, RANGE(value, 16));
         break;
     case CC_GENMDM_RELEASE_RATE_OP1:
@@ -700,8 +699,8 @@ static void setFmChanParameter(u8 devChan, u8 controller, u8 value)
     case CC_GENMDM_RELEASE_RATE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorReleaseRate(
-            devChan, controller - CC_GENMDM_RELEASE_RATE_OP1, RANGE(value, 16));
+        synth_operatorReleaseRate(devChan->number,
+            controller - CC_GENMDM_RELEASE_RATE_OP1, RANGE(value, 16));
         break;
     case CC_GENMDM_AMPLITUDE_MODULATION_OP1:
     case CC_GENMDM_AMPLITUDE_MODULATION_OP2:
@@ -709,7 +708,7 @@ static void setFmChanParameter(u8 devChan, u8 controller, u8 value)
     case CC_GENMDM_AMPLITUDE_MODULATION_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorAmplitudeModulation(devChan,
+        synth_operatorAmplitudeModulation(devChan->number,
             controller - CC_GENMDM_AMPLITUDE_MODULATION_OP1, RANGE(value, 2));
         break;
     case CC_GENMDM_SSG_EG_OP1:
@@ -718,8 +717,8 @@ static void setFmChanParameter(u8 devChan, u8 controller, u8 value)
     case CC_GENMDM_SSG_EG_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorSsgEg(
-            devChan, controller - CC_GENMDM_SSG_EG_OP1, RANGE(value, 16));
+        synth_operatorSsgEg(devChan->number, controller - CC_GENMDM_SSG_EG_OP1,
+            RANGE(value, 16));
         break;
     case CC_GENMDM_GLOBAL_LFO_ENABLE:
         if (isIgnoringNonGeneralMidiCCs())
@@ -734,21 +733,21 @@ static void setFmChanParameter(u8 devChan, u8 controller, u8 value)
     case CC_GENMDM_AMS:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_ams(devChan, RANGE(value, 4));
+        synth_ams(devChan->number, RANGE(value, 4));
         break;
     case CC_GENMDM_FMS:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_fms(devChan, RANGE(value, 8));
+        synth_fms(devChan->number, RANGE(value, 8));
         break;
     case CC_GENMDM_STEREO:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_stereo(devChan, RANGE(value, 4));
+        synth_stereo(devChan->number, RANGE(value, 4));
         break;
     default:
-        lastUnknownControlChange.controller = controller;
-        lastUnknownControlChange.value = value;
+        log_warn(
+            "Ch %d: CC %02X %02X?", devChan->midiChannel, controller, value);
         break;
     }
 }
@@ -758,7 +757,7 @@ static void fmParameterCC(u8 chan, u8 controller, u8 value)
     for (u8 i = 0; i < DEV_CHANS; i++) {
         DeviceChannel* devChan = &deviceChannels[i];
         if (devChan->midiChannel == chan) {
-            setFmChanParameter(devChan->number, controller, value);
+            setFmChanParameter(devChan, controller, value);
         }
     }
 }

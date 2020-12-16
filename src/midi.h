@@ -85,13 +85,6 @@
 #define CC_ALL_SOUND_OFF 120
 #define CC_ALL_NOTES_OFF 123
 
-typedef struct ControlChange ControlChange;
-
-struct ControlChange {
-    u8 controller;
-    u8 value;
-};
-
 typedef struct VTable VTable;
 
 struct VTable {
@@ -124,7 +117,6 @@ void midi_init(const FmChannel** defaultPresets,
 void midi_noteOn(u8 chan, u8 pitch, u8 velocity);
 void midi_noteOff(u8 chan, u8 pitch);
 void midi_pitchBend(u8 chan, u16 bend);
-ControlChange* midi_lastUnknownCC(void);
 void midi_cc(u8 chan, u8 controller, u8 value);
 void midi_program(u8 chan, u8 program);
 void midi_sysex(const u8* data, u16 length);

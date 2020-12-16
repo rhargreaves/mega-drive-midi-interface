@@ -84,7 +84,7 @@ void midi_receiver_read(void)
         systemMessage(status);
         break;
     default:
-        log_warn("MIDI Status? %02X", status);
+        log_warn("Status? %02X", status);
         break;
     }
 }
@@ -156,7 +156,7 @@ static void systemMessage(u8 status)
         readSysEx();
         break;
     default:
-        log_warn("MIDI System Status? %02X", status);
+        log_warn("System Status? %02X", status);
         break;
     }
 }

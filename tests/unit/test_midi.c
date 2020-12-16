@@ -97,15 +97,13 @@ void test_midi_sets_all_sound_off(UNUSED void** state)
 
 void test_midi_sets_unknown_CC(UNUSED void** state)
 {
+    wraps_enable_logging_checks();
+
     u8 expectedController = 0x9;
     u8 expectedValue = 0x50;
 
+    expect_log_warn("Ch %d: CC %02X %02X?");
     __real_midi_cc(0, expectedController, expectedValue);
-
-    ControlChange* cc = midi_lastUnknownCC();
-
-    assert_int_equal(cc->controller, expectedController);
-    assert_int_equal(cc->value, expectedValue);
 }
 
 void test_midi_shows_fm_parameter_ui(UNUSED void** state)

@@ -45,7 +45,6 @@
 
 #define FRAMES_BEFORE_UPDATE_CHAN_ACTIVITY 1
 #define FRAMES_BEFORE_UPDATE_ACTIVITY 5
-#define FRAMES_BEFORE_UPDATE_ERROR 11
 #define FRAMES_BEFORE_UPDATE_LOAD 47
 #define FRAMES_BEFORE_UPDATE_LOAD_PERCENT 13
 
@@ -53,7 +52,6 @@ static const char HEADER[] = "Mega Drive MIDI Interface";
 static const char CHAN_HEADER[] = "Ch.  F1 F2 F3 F4 F5 F6 P1 P2 P3 P4";
 static const char MIDI_HEADER[] = "MIDI";
 
-static void checkLastError(void);
 static void printChannels(void);
 static void printHeader(void);
 static void printLoad(void);
@@ -198,12 +196,6 @@ void ui_update(void)
         loadFrame = 0;
         printLoad();
         printDynamicModeIfNeeded();
-    }
-
-    static u8 errorFrame = 0;
-    if (++errorFrame == FRAMES_BEFORE_UPDATE_ERROR) {
-        errorFrame = 0;
-        checkLastError();
     }
 
     ui_fm_update();
@@ -372,17 +364,5 @@ static void printDynamicModeIfNeeded(void)
     if (lastDynamicModeStatus != enabled) {
         printDynamicModeStatus(enabled);
         lastDynamicModeStatus = enabled;
-    }
-}
-
-static void checkLastError(void)
-{
-    static ControlChange lastCc;
-    ControlChange* cc = midi_lastUnknownCC();
-    if ((cc->controller != lastCc.controller || cc->value != lastCc.value)
-        && (cc->controller != 0 || cc->value != 0)) {
-        log_warn("Unknown CC %02X Value %02X", cc->controller, cc->value);
-        lastCc.controller = cc->controller;
-        lastCc.value = cc->value;
     }
 }

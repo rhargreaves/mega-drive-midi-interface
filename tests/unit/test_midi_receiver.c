@@ -75,7 +75,7 @@ static void test_midi_receiver_sets_unknown_event_for_unknown_status(
     u8 expectedStatus = 0xD0;
 
     will_return(__wrap_comm_read, expectedStatus);
-    expect_log_warn("MIDI Status? %02X");
+    expect_log_warn("Status? %02X");
 
     midi_receiver_read();
 }
@@ -88,7 +88,7 @@ static void test_midi_receiver_sets_unknown_event_for_unknown_system_message(
     u8 expectedStatus = 0xF1;
 
     will_return(__wrap_comm_read, expectedStatus);
-    expect_log_warn("MIDI System Status? %02X");
+    expect_log_warn("System Status? %02X");
 
     midi_receiver_read();
 }
@@ -107,10 +107,6 @@ static void test_midi_receiver_sets_CC(UNUSED void** state)
     expect_value(__wrap_midi_cc, value, expectedValue);
 
     midi_receiver_read();
-
-    ControlChange* cc = midi_lastUnknownCC();
-    assert_int_not_equal(cc->controller, expectedController);
-    assert_int_not_equal(cc->value, expectedValue);
 }
 
 static void test_midi_receiver_sets_pitch_bend(UNUSED void** state)
