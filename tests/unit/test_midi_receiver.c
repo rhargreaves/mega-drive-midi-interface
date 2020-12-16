@@ -70,25 +70,27 @@ static void test_midi_receiver_does_nothing_for_control_change(
 static void test_midi_receiver_sets_unknown_event_for_unknown_status(
     UNUSED void** state)
 {
+    wraps_enable_logging_checks();
+
     u8 expectedStatus = 0xD0;
 
     will_return(__wrap_comm_read, expectedStatus);
+    expect_log_warn("MIDI Status? %02X");
 
     midi_receiver_read();
-
-    assert_int_equal(midi_receiver_lastUnknownStatus(), expectedStatus);
 }
 
 static void test_midi_receiver_sets_unknown_event_for_unknown_system_message(
     UNUSED void** state)
 {
+    wraps_enable_logging_checks();
+
     u8 expectedStatus = 0xF1;
 
     will_return(__wrap_comm_read, expectedStatus);
+    expect_log_warn("MIDI System Status? %02X");
 
     midi_receiver_read();
-
-    assert_int_equal(midi_receiver_lastUnknownStatus(), expectedStatus);
 }
 
 static void test_midi_receiver_sets_CC(UNUSED void** state)
@@ -135,8 +137,6 @@ static void test_midi_receiver_does_nothing_on_midi_clock(UNUSED void** state)
     will_return(__wrap_comm_read, status);
 
     midi_receiver_read();
-
-    assert_int_equal(midi_receiver_lastUnknownStatus(), 0);
 }
 
 static void test_midi_receiver_does_nothing_on_midi_start_midi(
@@ -148,8 +148,6 @@ static void test_midi_receiver_does_nothing_on_midi_start_midi(
     will_return(__wrap_comm_read, status);
 
     midi_receiver_read();
-
-    assert_int_equal(midi_receiver_lastUnknownStatus(), 0);
 }
 
 static void test_midi_receiver_swallows_midi_stop(UNUSED void** state)
@@ -160,8 +158,6 @@ static void test_midi_receiver_swallows_midi_stop(UNUSED void** state)
     will_return(__wrap_comm_read, status);
 
     midi_receiver_read();
-
-    assert_int_equal(midi_receiver_lastUnknownStatus(), 0);
 }
 
 static void test_midi_receiver_swallows_midi_continue(UNUSED void** state)
@@ -172,8 +168,6 @@ static void test_midi_receiver_swallows_midi_continue(UNUSED void** state)
     will_return(__wrap_comm_read, status);
 
     midi_receiver_read();
-
-    assert_int_equal(midi_receiver_lastUnknownStatus(), 0);
 }
 
 static void test_midi_receiver_does_nothing_on_midi_position(
@@ -186,8 +180,6 @@ static void test_midi_receiver_does_nothing_on_midi_position(
     will_return(__wrap_comm_read, 0);
 
     midi_receiver_read();
-
-    assert_int_equal(midi_receiver_lastUnknownStatus(), 0);
 }
 
 static void test_midi_receiver_sets_midi_program(UNUSED void** state)

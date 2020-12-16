@@ -377,13 +377,6 @@ static void printDynamicModeIfNeeded(void)
 
 static void checkLastError(void)
 {
-    static u8 lastStatus = 0;
-    u8 unknownStatus = midi_receiver_lastUnknownStatus();
-    if (unknownStatus != lastStatus && unknownStatus != 0) {
-        log_warn("Unknown Status %02X", unknownStatus);
-        lastStatus = unknownStatus;
-    }
-
     static ControlChange lastCc;
     ControlChange* cc = midi_lastUnknownCC();
     if ((cc->controller != lastCc.controller || cc->value != lastCc.value)

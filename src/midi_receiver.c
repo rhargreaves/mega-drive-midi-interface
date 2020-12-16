@@ -6,6 +6,7 @@
 #include <vstring.h>
 #include "ui.h"
 #include "applemidi.h"
+#include "log.h"
 
 #define STATUS_LOWER(status) (status & 0x0F)
 #define STATUS_UPPER(status) (status >> 4)
@@ -24,21 +25,17 @@
 #define SYSTEM_SONG_POSITION 0x2
 #define SYSTEM_SYSEX 0x0
 
-static u8 lastUnknownStatus = 0;
-
 static void noteOn(u8 status);
 static void noteOff(u8 status);
 static void controlChange(u8 status);
 static void pitchBend(u8 status);
 static void systemMessage(u8 status);
-static void setUnknownStatus(u8 status);
 static void program(u8 status);
 static u16 read14bitValue(void);
 static void readSysEx(void);
 
 void midi_receiver_init(void)
 {
-    lastUnknownStatus = 0;
 }
 
 void midi_receiver_readIfCommReady(void)
@@ -87,20 +84,9 @@ void midi_receiver_read(void)
         systemMessage(status);
         break;
     default:
-        setUnknownStatus(status);
+        log_warn("MIDI Status? %02X", status);
         break;
     }
-}
-
-u8 midi_receiver_lastUnknownStatus(void)
-{
-    return lastUnknownStatus;
-}
-
-static void setUnknownStatus(u8 status)
-{
-    debugPrintEvent(status, 0, 0);
-    lastUnknownStatus = status;
 }
 
 static void controlChange(u8 status)
@@ -170,7 +156,7 @@ static void systemMessage(u8 status)
         readSysEx();
         break;
     default:
-        setUnknownStatus(status);
+        log_warn("MIDI System Status? %02X", status);
         break;
     }
 }
