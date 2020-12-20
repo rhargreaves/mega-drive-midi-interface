@@ -51,6 +51,8 @@
 static const char HEADER[] = "Mega Drive MIDI Interface";
 static const char CHAN_HEADER[] = "Ch.  F1 F2 F3 F4 F5 F6 P1 P2 P3 P4";
 static const char MIDI_HEADER[] = "MIDI";
+static const char MIDI_CH_TEXT[17][3] = { " -", " 1", " 2", " 3", " 4", " 5",
+    " 6", " 7", " 8", " 9", "10", "11", "12", "13", "14", "15", "16" };
 
 static void printChannels(void);
 static void printHeader(void);
@@ -270,12 +272,9 @@ static void printMappingsIfDirty(u8* midiChans)
         return;
     }
     memcpy(lastMidiChans, midiChans, sizeof(u8) * DEV_CHANS);
-
-    char text[38];
-    v_sprintf(text, "%2d %2d %2d %2d %2d %2d %2d %2d %2d %2d", midiChans[0],
-        midiChans[1], midiChans[2], midiChans[3], midiChans[4], midiChans[5],
-        midiChans[6], midiChans[7], midiChans[8], midiChans[9]);
-    drawText(text, 5, MIDI_Y);
+    for (u8 ch = 0; ch < 10; ch++) {
+        drawText(MIDI_CH_TEXT[midiChans[ch]], 5 + (ch * 3), MIDI_Y);
+    }
 }
 
 static void populateMappings(u8* midiChans)
