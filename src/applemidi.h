@@ -61,7 +61,6 @@ union PACK_BIG_ENDIAN AppleMidiExchangePacket {
 
 typedef union AppleMidiExchangePacket AppleMidiExchangePacket;
 
-void applemidi_init(void);
 mw_err applemidi_processSessionControlPacket(char* buffer, u16 length);
 mw_err applemidi_processSessionMidiPacket(char* buffer, u16 length);
 u16 applemidi_lastSequenceNumber(void);
