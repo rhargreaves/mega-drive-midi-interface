@@ -101,6 +101,7 @@ static mw_err listenOnUdpPort(u8 ch, u16 src_port)
 
 void comm_megawifi_init(void)
 {
+    applemidi_init();
     mp_init(0);
     mw_process_loop_init();
     mw_init(cmd_buf, MW_BUFLEN);

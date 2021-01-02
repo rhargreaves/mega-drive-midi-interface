@@ -10,6 +10,15 @@ static mw_err unpackInvitation(
     char* buffer, u16 length, AppleMidiExchangePacket* invite);
 static void sendInviteResponse(u8 ch, AppleMidiExchangePacket* invite);
 
+static bool sessionEstablished;
+static u16 secsSinceTimesync;
+
+void applemidi_init(void)
+{
+    sessionEstablished = false;
+    secsSinceTimesync = 0;
+}
+
 static mw_err processInvitation(u8 ch, char* buffer, u16 length)
 {
     AppleMidiExchangePacket packet;
