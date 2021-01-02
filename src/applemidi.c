@@ -17,7 +17,7 @@ static mw_err processInvitation(u8 ch, char* buffer, u16 length)
     if (err != MW_ERR_NONE) {
         return err;
     }
-    log_info("AppleMIDI: Session invite on UDP ch %d", ch);
+    log_info("AM: Session invite on UDP ch %d", ch);
     sendInviteResponse(ch, &packet);
     return MW_ERR_NONE;
 }
@@ -113,7 +113,7 @@ static mw_err processTimestampSync(char* buffer, u16 length)
         packet.timestamp2Hi = 0;
         packet.timestamp2Lo = 0;
         packet.senderSSRC = MEGADRIVE_SSRC;
-        log_info("AppleMIDI: Timestamp Sync");
+        log_info("AM: Timestamp Sync");
         sendTimestampSync(&packet);
     }
 
