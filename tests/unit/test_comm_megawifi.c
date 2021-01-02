@@ -23,7 +23,6 @@ static int test_comm_megawifi_setup(UNUSED void** state)
         expect_value(__wrap_mw_udp_set, dst_port, NULL);                       \
         expect_memory(__wrap_mw_udp_set, src_port, s_port, sizeof(s_port));    \
         will_return(__wrap_mw_udp_set, MW_ERR_NONE);                           \
-        expect_log_info("AppleMIDI: %s UDP Port: %d");                         \
     } while (0)
 
 static void expect_mw_init(void)
@@ -44,25 +43,23 @@ static void expect_mw_detect(void)
 {
     mock_mw_detect(3, 1);
     will_return(__wrap_mw_detect, MW_ERR_NONE);
-    expect_log_info("MegaWiFi: Found v%d.%d");
+    expect_log_info("MW: Detected v%d.%d");
 }
 
 static void expect_ap_connection(void)
 {
-    expect_log_info("MegaWiFi: Connecting AP");
     expect_value(__wrap_mw_ap_assoc, slot, 0);
     will_return(__wrap_mw_ap_assoc, MW_ERR_NONE);
 
     expect_any(__wrap_mw_ap_assoc_wait, tout_frames);
     will_return(__wrap_mw_ap_assoc_wait, MW_ERR_NONE);
-    expect_log_info("MegaWiFi: Connected.");
 }
 
 static void expect_ip_log(void)
 {
     mock_ip_cfg(ip_str_to_uint32("127.1.2.3"));
     will_return(__wrap_mw_ip_current, MW_ERR_NONE);
-    expect_log_info("MegaWiFi: IP: %s");
+    expect_log_info("MW: IP: %s");
 }
 
 static void megawifi_init(void)
@@ -73,7 +70,7 @@ static void megawifi_init(void)
     expect_ip_log();
     expect_udp_port_open(CH_CONTROL_PORT, "5006");
     expect_udp_port_open(CH_MIDI_PORT, "5007");
-
+    expect_log_info("MW: Listening on UDP %d");
     __real_comm_megawifi_init();
 }
 
@@ -89,7 +86,7 @@ static void test_comm_megawifi_reads_midi_message(UNUSED void** state)
 
 static void test_comm_megawifi_logs_if_buffer_full(UNUSED void** state)
 {
-    expect_log_warn("MegaWiFi: MIDI buffer full!");
+    expect_log_warn("MW: MIDI buffer full!");
 
     for (u16 i = 0; i < BUFFER_SIZE + 1; i++) {
         __real_comm_megawifi_midiEmitCallback(0x00);
