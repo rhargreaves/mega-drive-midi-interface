@@ -12,6 +12,7 @@
 #define STATUS_CONTINUE 0xFB
 #define STATUS_SONG_POSITION 0xF2
 #define STATUS_PROGRAM 0xC0
+#define STATUS_RESET 0xFF
 #define STATUS_SYSEX_START 0xF0
 #define SYSEX_END 0xF7
 
@@ -189,6 +190,17 @@ static void test_midi_receiver_sets_midi_program(UNUSED void** state)
 
     expect_value(__wrap_midi_program, chan, 0);
     expect_value(__wrap_midi_program, program, program);
+
+    midi_receiver_read();
+}
+
+static void test_midi_receiver_sends_midi_reset(UNUSED void** state)
+{
+    u8 status = STATUS_RESET;
+
+    will_return(__wrap_comm_read, status);
+
+    expect_function_call(__wrap_midi_reset);
 
     midi_receiver_read();
 }

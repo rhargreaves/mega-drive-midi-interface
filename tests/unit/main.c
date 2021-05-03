@@ -146,6 +146,7 @@ int main(void)
             test_midi_sets_all_channel_mappings_when_setting_polyphonic_mode),
         midi_test(test_midi_shows_fm_parameter_ui),
         midi_test(test_midi_hides_fm_parameter_ui),
+        midi_test(test_midi_receiver_sends_midi_reset),
 
         synth_test(test_synth_init_sets_initial_registers),
         synth_test(test_synth_sets_note_on_fm_reg_chan_0_to_2),
@@ -271,6 +272,7 @@ int main(void)
         applemidi_test(
             test_applemidi_parses_rtpmidi_packet_with_sysex_with_0xF7_at_end),
         applemidi_test(test_applemidi_does_not_read_beyond_length),
+        applemidi_test(test_applemidi_parses_rtpmidi_packet_with_system_reset),
 
         cmocka_unit_test(test_vstring_handles_variable_argument_list_correctly),
 

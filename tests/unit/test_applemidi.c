@@ -227,6 +227,21 @@ test_applemidi_parses_rtpmidi_packet_with_multiple_different_midi_events(
     assert_int_equal(err, MW_ERR_NONE);
 }
 
+static void test_applemidi_parses_rtpmidi_packet_with_system_reset(
+    UNUSED void** state)
+{
+    char rtp_packet[1024]
+        = { /* V P X CC M PT */ 0x80, 0x61, /* sequence number */ 0x8c, 0x24,
+              /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67,
+              0xe1, 0x08, /* MIDI command section */ 0x01, 0xff };
+
+    size_t len = sizeof(rtp_packet);
+    expect_midi_emit(0xff);
+
+    mw_err err = applemidi_processSessionMidiPacket(rtp_packet, len);
+    assert_int_equal(err, MW_ERR_NONE);
+}
+
 static void test_applemidi_parses_notes_sysex_cc_in_one_packet(
     UNUSED void** state)
 {

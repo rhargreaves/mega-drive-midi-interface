@@ -328,6 +328,11 @@ void __wrap_midi_psg_loadEnvelope(const u8* eef)
     check_expected_ptr(eef);
 }
 
+void __wrap_midi_reset(void)
+{
+    function_called();
+}
+
 void __wrap_fm_writeReg(u16 part, u8 reg, u8 data)
 {
     check_expected(part);
@@ -616,7 +621,7 @@ void wraps_region_setIsPal(bool isPal)
 
 void __wrap_comm_megawifi_midiEmitCallback(u8 midiByte)
 {
-    // print_message("MIDI Emit: %02X\n", midiByte);
+    print_message("MIDI Emit: %02X\n", midiByte);
     check_expected(midiByte);
 }
 

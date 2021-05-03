@@ -24,6 +24,7 @@
 #define SYSTEM_CONTINUE 0xB
 #define SYSTEM_SONG_POSITION 0x2
 #define SYSTEM_SYSEX 0x0
+#define SYSTEM_RESET 0xF
 
 static void noteOn(u8 status);
 static void noteOff(u8 status);
@@ -154,6 +155,10 @@ static void systemMessage(u8 status)
         break;
     case SYSTEM_SYSEX:
         readSysEx();
+        break;
+    case SYSTEM_RESET:
+        log_warn("Reset all");
+        midi_reset();
         break;
     default:
         log_warn("System Status? %02X", status);

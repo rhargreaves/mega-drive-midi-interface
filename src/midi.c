@@ -796,3 +796,7 @@ void midi_cc(u8 chan, u8 controller, u8 value)
         break;
     }
 }
+
+void midi_reset(void)
+{
+}
