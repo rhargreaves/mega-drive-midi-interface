@@ -28,8 +28,6 @@ static u8 bytesToEmit(u8 status)
     if (STATUS_UPPER(status) == 0xC || STATUS_UPPER(status) == 0xD
         || status == 0xF1 || status == 0xF3) {
         return 1;
-    } else if (status == 0xFF) {
-        return 0;
     } else {
         return 2;
     }
