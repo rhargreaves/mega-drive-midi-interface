@@ -131,3 +131,9 @@ void test_midi_hides_fm_parameter_ui(UNUSED void** state)
 
     __real_midi_cc(midiChan, cc, hide);
 }
+
+void test_midi_reset_reinitialises_module(UNUSED void** state)
+{
+    expect_any(__wrap_synth_init, defaultPreset);
+    __real_midi_reset();
+}

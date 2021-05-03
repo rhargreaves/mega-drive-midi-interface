@@ -95,9 +95,11 @@ static void resetAllState(void)
     setDynamicMode(dynamicMode);
 }
 
-void midi_init(const FmChannel** defaultPresets,
-    const PercussionPreset** defaultPercussionPresets,
-    const u8** defaultEnvelopes)
+static const u8** defaultEnvelopes;
+static const FmChannel** defaultPresets;
+static const PercussionPreset** defaultPercussionPresets;
+
+static void init(void)
 {
     midi_psg_init(defaultEnvelopes);
     midi_fm_init(defaultPresets, defaultPercussionPresets);
@@ -105,6 +107,15 @@ void midi_init(const FmChannel** defaultPresets,
     disableNonGeneralMidiCCs = false;
     stickToDeviceType = false;
     resetAllState();
+}
+
+void midi_init(const FmChannel** presets,
+    const PercussionPreset** percussionPresets, const u8** envelopes)
+{
+    defaultEnvelopes = envelopes;
+    defaultPresets = presets;
+    defaultPercussionPresets = percussionPresets;
+    init();
 }
 
 static DeviceChannel* findChannelPlayingNote(u8 midiChannel, u8 pitch)
@@ -799,4 +810,5 @@ void midi_cc(u8 chan, u8 controller, u8 value)
 
 void midi_reset(void)
 {
+    init();
 }

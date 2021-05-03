@@ -199,8 +199,8 @@ static void test_midi_receiver_sends_midi_reset(UNUSED void** state)
     u8 status = STATUS_RESET;
 
     will_return(__wrap_comm_read, status);
-
     expect_function_call(__wrap_midi_reset);
+    expect_log_warn("Reset all");
 
     midi_receiver_read();
 }
