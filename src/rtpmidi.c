@@ -5,6 +5,7 @@
 
 #define MIDI_SYSEX_START 0xF0
 #define MIDI_SYSEX_END 0xF7
+#define MIDI_RESET 0xFF
 
 #define STATUS_UPPER(status) (status >> 4)
 
@@ -95,7 +96,7 @@ mw_err rtpmidi_processRtpMidiPacket(char* buffer, u16 length, u16* lastSeqNum)
         } else if (*cursor == MIDI_SYSEX_END) {
             processMiddleSysEx(&cursor);
             walkingOverDeltas = true;
-        } else if (*cursor == 0xFF) {
+        } else if (*cursor == MIDI_RESET) {
             comm_megawifi_midiEmitCallback(*cursor);
             walkingOverDeltas = true;
         } else if (CHECK_BIT(*cursor, 7)) { // status bit present
