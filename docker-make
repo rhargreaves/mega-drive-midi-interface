@@ -1,3 +1,5 @@
-#!/bin/bash -e
+#!/bin/bash
+set -euo pipefail
+
 export BUILD=$(git describe --tags --abbrev=0)
 . ./docker-run make "$@"
