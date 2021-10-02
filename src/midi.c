@@ -479,16 +479,6 @@ static void allNotesOff(u8 chan)
     }
 }
 
-static bool sysex_valid(const u8* sourceData, const u16 sourceLength,
-    const u8* commandSequenceData, const u16 commandSequenceLength,
-    const u16 commandParametersLength)
-{
-    if (sourceLength != (commandSequenceLength + commandParametersLength)) {
-        return false;
-    }
-    return memcmp(sourceData, commandSequenceData, commandSequenceLength) == 0;
-}
-
 static void setNonGeneralMidiCCs(bool enable)
 {
     disableNonGeneralMidiCCs = !enable;
@@ -503,7 +493,7 @@ static void loadPsgEnvelope(const u8* data, u16 length)
 {
     u8 buffer[256];
     u16 eefStepIndex = 0;
-    for (u16 i = 4; i < length; i += 2) {
+    for (u16 i = 0; i < length; i += 2) {
         buffer[eefStepIndex++] = (data[i] << 4) | data[i + 1];
     }
     buffer[eefStepIndex] = EEF_END;
@@ -511,56 +501,70 @@ static void loadPsgEnvelope(const u8* data, u16 length)
     log_info("Loaded User Defined Envelope");
 }
 
+static void incrementSysExCursor(const u8** data, u16* length, u8 value)
+{
+    (*data) += value;
+    (*length) -= value;
+}
+
+static void handleCustomSysEx(const u8* data, u16 length)
+{
+    u8 command = *data;
+    incrementSysExCursor(&data, &length, 1);
+    switch (command) {
+    case SYSEX_COMMAND_REMAP:
+        if (length == 2) {
+            midi_remapChannel(data[0], data[1]);
+        }
+        break;
+    case SYSEX_COMMAND_PING:
+        if (length == 0) {
+            sendPong();
+        }
+        break;
+    case SYSEX_COMMAND_DYNAMIC:
+        if (length == 1) {
+            setDynamicMode((bool)data[0]);
+        }
+        break;
+    case SYSEX_COMMAND_NON_GENERAL_MIDI_CCS:
+        if (length == 1) {
+            setNonGeneralMidiCCs((bool)data[0]);
+        }
+        break;
+    case SYSEX_COMMAND_STICK_TO_DEVICE_TYPE:
+        if (length == 1) {
+            setStickToDeviceType((bool)data[0]);
+        }
+        break;
+    case SYSEX_COMMAND_INVERT_TOTAL_LEVEL:
+        if (length == 1) {
+            setInvertTotalLevel((bool)data[0]);
+        }
+        break;
+    case SYSEX_COMMAND_LOAD_PSG_ENVELOPE:
+        loadPsgEnvelope(data, length);
+        break;
+    }
+}
+
 void midi_sysex(const u8* data, u16 length)
 {
-    const u8 GENERAL_MIDI_RESET_SEQUENCE[] = { 0x7E, 0x7F, 0x09, 0x01 };
-
-    const u8 REMAP_SEQUENCE[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
-        SYSEX_MANU_ID, SYSEX_COMMAND_REMAP };
-
-    const u8 PING_SEQUENCE[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
-        SYSEX_MANU_ID, SYSEX_COMMAND_PING };
-
-    const u8 DYNAMIC_SEQUENCE[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
-        SYSEX_MANU_ID, SYSEX_COMMAND_DYNAMIC };
-
-    const u8 NON_GENERAL_MIDI_CCS_SEQUENCE[] = { SYSEX_MANU_EXTENDED,
-        SYSEX_MANU_REGION, SYSEX_MANU_ID, SYSEX_COMMAND_NON_GENERAL_MIDI_CCS };
-
-    const u8 STICK_TO_DEVICE_TYPE_SEQUENCE[] = { SYSEX_MANU_EXTENDED,
-        SYSEX_MANU_REGION, SYSEX_MANU_ID, SYSEX_COMMAND_STICK_TO_DEVICE_TYPE };
-
-    const u8 LOAD_PSG_ENVELOPE_SEQUENCE[] = { SYSEX_MANU_EXTENDED,
-        SYSEX_MANU_REGION, SYSEX_MANU_ID, SYSEX_COMMAND_LOAD_PSG_ENVELOPE };
-
-    const u8 INVERT_TOTAL_LEVEL_SEQUENCE[] = { SYSEX_MANU_EXTENDED,
-        SYSEX_MANU_REGION, SYSEX_MANU_ID, SYSEX_COMMAND_INVERT_TOTAL_LEVEL };
-
-    if (sysex_valid(data, length, GENERAL_MIDI_RESET_SEQUENCE,
-            LENGTH_OF(GENERAL_MIDI_RESET_SEQUENCE), 0)) {
-        generalMidiReset();
-    } else if (sysex_valid(data, length, REMAP_SEQUENCE,
-                   LENGTH_OF(REMAP_SEQUENCE), 2)) {
-        midi_remapChannel(data[4], data[5]);
-    } else if (sysex_valid(
-                   data, length, PING_SEQUENCE, LENGTH_OF(PING_SEQUENCE), 0)) {
-        sendPong();
-    } else if (sysex_valid(data, length, DYNAMIC_SEQUENCE,
-                   LENGTH_OF(DYNAMIC_SEQUENCE), 1)) {
-        setDynamicMode((bool)data[4]);
-    } else if (sysex_valid(data, length, NON_GENERAL_MIDI_CCS_SEQUENCE,
-                   LENGTH_OF(NON_GENERAL_MIDI_CCS_SEQUENCE), 1)) {
-        setNonGeneralMidiCCs((bool)data[4]);
-    } else if (sysex_valid(data, length, STICK_TO_DEVICE_TYPE_SEQUENCE,
-                   LENGTH_OF(STICK_TO_DEVICE_TYPE_SEQUENCE), 1)) {
-        setStickToDeviceType((bool)data[4]);
-    } else if (sysex_valid(data, length, INVERT_TOTAL_LEVEL_SEQUENCE,
-                   LENGTH_OF(INVERT_TOTAL_LEVEL_SEQUENCE), 1)) {
-        setInvertTotalLevel((bool)data[4]);
-    } else if (memcmp(data, LOAD_PSG_ENVELOPE_SEQUENCE,
-                   LENGTH_OF(LOAD_PSG_ENVELOPE_SEQUENCE))
+    const u8 GENERAL_MIDI_RESET_SEQ[] = { 0x7E, 0x7F, 0x09, 0x01 };
+    if (length < LENGTH_OF(GENERAL_MIDI_RESET_SEQ)) {
+        return;
+    }
+    if (memcmp(data, GENERAL_MIDI_RESET_SEQ, LENGTH_OF(GENERAL_MIDI_RESET_SEQ))
         == 0) {
-        loadPsgEnvelope(data, length);
+        generalMidiReset();
+        return;
+    }
+
+    const u8 CUSTOM_SYSEX_SEQ[]
+        = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID };
+    if (memcmp(data, CUSTOM_SYSEX_SEQ, LENGTH_OF(CUSTOM_SYSEX_SEQ)) == 0) {
+        incrementSysExCursor(&data, &length, LENGTH_OF(CUSTOM_SYSEX_SEQ));
+        handleCustomSysEx(data, length);
     }
 }
 
