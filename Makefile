@@ -64,7 +64,7 @@ BOOT_RESOURCES=
 
 BOOTSS=$(wildcard boot/*.s)
 BOOTSS+=$(wildcard src/boot/*.s)
-NEWLIBSS=$(wildcard newlib/*.s)
+NEWLIBSS=$(wildcard src/newlib/*.s)
 BOOT_RESOURCES+=$(BOOTSS:.s=.o)
 NEWLIB_RESOURCES+=$(NEWLIBSS:.s=.o)
 RESS=$(wildcard res/*.res)
@@ -89,8 +89,8 @@ all: test bin/out.bin bin/out.elf
 boot/sega.o: boot/rom_head.bin
 	$(CC) -x assembler-with-cpp $(CCFLAGS) boot/sega.s -o $@
 
-newlib/setjmp.o:
-	$(AS) $(ASFLAGS) newlib/setjmp.s -o $@
+src/newlib/setjmp.o:
+	$(AS) $(ASFLAGS) src/newlib/setjmp.s -o $@
 
 bin/%.bin: %.elf
 	mkdir -p bin
