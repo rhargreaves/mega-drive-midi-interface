@@ -1,0 +1,10 @@
+#!/bin/bash
+set -euo pipefail
+SCRIPT_DIR="$(dirname $0)"
+
+rm -f $SCRIPT_DIR/../boot/rom_head.o \
+    $SCRIPT_DIR/../boot/rom_head.bin \
+    $SCRIPT_DIR/../bin/out.bin
+
+$SCRIPT_DIR/../docker-make ROM_TYPE=MEGAWIFI
+$SCRIPT_DIR/run-blastem bin/out.bin

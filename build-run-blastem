@@ -1,6 +1,0 @@
-#!/bin/bash
-set -euo pipefail
-
-rm -f boot/rom_head.o boot/rom_head.bin bin/out.bin
-./docker-make ROM_TYPE=MEGAWIFI
-./utils/run-blastem bin/out.bin
