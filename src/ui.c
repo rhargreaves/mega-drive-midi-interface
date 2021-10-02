@@ -89,7 +89,7 @@ void ui_init(void)
     printLoad();
     printCommMode();
     printMappings();
-    printDynamicModeStatus(midi_dynamicMode());
+    printDynamicModeStatus(midi_dynamic_mode());
     SYS_disableInts();
     SPR_init();
 
@@ -279,7 +279,7 @@ static void printMappingsIfDirty(u8* midiChans)
 
 static void populateMappings(u8* midiChans)
 {
-    DeviceChannel* chans = midi_channelMappings();
+    DeviceChannel* chans = midi_channel_mappings();
     for (u8 i = 0; i < DEV_CHANS; i++) {
         midiChans[i] = midiChannelForUi(chans, i);
     }
@@ -359,7 +359,7 @@ static void printDynamicModeStatus(bool enabled)
 static void printDynamicModeIfNeeded(void)
 {
     static bool lastDynamicModeStatus = false;
-    bool enabled = midi_dynamicMode();
+    bool enabled = midi_dynamic_mode();
     if (lastDynamicModeStatus != enabled) {
         printDynamicModeStatus(enabled);
         lastDynamicModeStatus = enabled;

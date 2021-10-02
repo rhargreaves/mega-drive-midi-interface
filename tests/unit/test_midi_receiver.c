@@ -29,9 +29,9 @@ static void test_midi_receiver_read_passes_note_on_to_midi_processor(
         stub_comm_read_returns_midi_event(
             expectedStatus, expectedData, expectedData2);
 
-        expect_value(__wrap_midi_noteOn, chan, chan);
-        expect_value(__wrap_midi_noteOn, pitch, expectedData);
-        expect_value(__wrap_midi_noteOn, velocity, expectedData2);
+        expect_value(__wrap_midi_note_on, chan, chan);
+        expect_value(__wrap_midi_note_on, pitch, expectedData);
+        expect_value(__wrap_midi_note_on, velocity, expectedData2);
 
         midi_receiver_read();
     }
@@ -47,8 +47,8 @@ static void test_midi_receiver_read_passes_note_off_to_midi_processor(
     stub_comm_read_returns_midi_event(
         expectedStatus, expectedData, expectedData2);
 
-    expect_value(__wrap_midi_noteOff, chan, 0);
-    expect_value(__wrap_midi_noteOff, pitch, expectedData);
+    expect_value(__wrap_midi_note_off, chan, 0);
+    expect_value(__wrap_midi_note_off, pitch, expectedData);
 
     midi_receiver_read();
 }
@@ -120,8 +120,8 @@ static void test_midi_receiver_sets_pitch_bend(UNUSED void** state)
     stub_comm_read_returns_midi_event(
         expectedStatus, expectedValueLower, expectedValueUpper);
 
-    expect_value(__wrap_midi_pitchBend, chan, 0);
-    expect_value(__wrap_midi_pitchBend, bend, expectedValue);
+    expect_value(__wrap_midi_pitch_bend, chan, 0);
+    expect_value(__wrap_midi_pitch_bend, bend, expectedValue);
 
     midi_receiver_read();
 }

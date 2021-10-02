@@ -15,7 +15,7 @@ static void test_midi_sysex_sends_all_notes_off(UNUSED void** state)
     for (u8 chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN; chan++) {
         expect_any_psg_tone();
         expect_any_psg_attenuation();
-        __real_midi_noteOn(chan, 60, 127);
+        __real_midi_note_on(chan, 60, 127);
     }
 
     expect_value(__wrap_synth_noteOff, channel, 0);
@@ -80,7 +80,7 @@ static void test_midi_sysex_remaps_midi_channel_to_psg(UNUSED void** state)
     expect_any_psg_tone_on_channel(0);
     expect_psg_attenuation(0, PSG_ATTENUATION_LOUDEST);
 
-    __real_midi_noteOn(0, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
+    __real_midi_note_on(0, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
 }
 
 static void test_midi_sysex_remaps_midi_channel_to_fm(UNUSED void** state)
@@ -99,14 +99,14 @@ static void test_midi_sysex_remaps_midi_channel_to_fm(UNUSED void** state)
     expect_synth_volume_any();
     expect_value(__wrap_synth_noteOn, channel, 1);
 
-    __real_midi_noteOn(0, 60, MAX_MIDI_VOLUME);
+    __real_midi_note_on(0, 60, MAX_MIDI_VOLUME);
 }
 
 static void test_midi_sysex_unassigns_midi_channel(UNUSED void** state)
 {
     remapChannel(0, 0x7F);
 
-    __real_midi_noteOn(0, 60, MAX_MIDI_VOLUME);
+    __real_midi_note_on(0, 60, MAX_MIDI_VOLUME);
 }
 
 static void test_midi_sysex_does_nothing_for_empty_payload(UNUSED void** state)
@@ -142,13 +142,13 @@ static void test_midi_sysex_enables_dynamic_channel_mode(UNUSED void** state)
     expect_synth_pitch(0, 4, 0x28d);
     expect_synth_volume_any();
     expect_value(__wrap_synth_noteOn, channel, 0);
-    __real_midi_noteOn(0, 60, MAX_MIDI_VOLUME);
+    __real_midi_note_on(0, 60, MAX_MIDI_VOLUME);
 
     print_message("Second note");
     expect_synth_pitch(1, 4, 0x2b4);
     expect_synth_volume_any();
     expect_value(__wrap_synth_noteOn, channel, 1);
-    __real_midi_noteOn(0, 61, MAX_MIDI_VOLUME);
+    __real_midi_note_on(0, 61, MAX_MIDI_VOLUME);
 }
 
 static void test_midi_sysex_disables_fm_parameter_CCs(UNUSED void** state)

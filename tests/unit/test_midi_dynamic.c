@@ -39,7 +39,7 @@ static void test_midi_dynamic_uses_all_channels(UNUSED void** state)
         expect_synth_volume_any();
         expect_value(__wrap_synth_noteOn, channel, i);
 
-        __real_midi_noteOn(0, pitch, MAX_MIDI_VOLUME);
+        __real_midi_note_on(0, pitch, MAX_MIDI_VOLUME);
     }
 
     print_message("PSG channels (except noise)..\n");
@@ -47,7 +47,7 @@ static void test_midi_dynamic_uses_all_channels(UNUSED void** state)
         u8 psgChan = i - DEV_CHAN_MIN_PSG;
         expect_any_psg_tone_on_channel(psgChan);
         expect_psg_attenuation(psgChan, 0);
-        __real_midi_noteOn(0, pitch, MAX_MIDI_VOLUME);
+        __real_midi_note_on(0, pitch, MAX_MIDI_VOLUME);
     }
 }
 
@@ -63,19 +63,19 @@ static void test_midi_dynamic_tries_to_reuse_original_midi_channel_if_available(
         expect_synth_volume_any();
         expect_value(__wrap_synth_noteOn, channel, chan);
 
-        __real_midi_noteOn(chan, pitch, MAX_MIDI_VOLUME);
+        __real_midi_note_on(chan, pitch, MAX_MIDI_VOLUME);
     }
 
     const u8 REUSE_MIDI_CHANNEL = 2;
 
     expect_value(__wrap_synth_noteOff, channel, REUSE_MIDI_CHANNEL);
-    __real_midi_noteOff(REUSE_MIDI_CHANNEL, pitch);
+    __real_midi_note_off(REUSE_MIDI_CHANNEL, pitch);
 
     expect_synth_pitch(REUSE_MIDI_CHANNEL, octave, freq);
     expect_synth_volume_any();
     expect_value(__wrap_synth_noteOn, channel, REUSE_MIDI_CHANNEL);
 
-    __real_midi_noteOn(REUSE_MIDI_CHANNEL, pitch, MAX_MIDI_VOLUME);
+    __real_midi_note_on(REUSE_MIDI_CHANNEL, pitch, MAX_MIDI_VOLUME);
 }
 
 static void
@@ -93,18 +93,18 @@ test_midi_dynamic_reuses_mapped_midi_channel_even_if_busy_if_sticking_to_device_
         expect_value(__wrap_synth_noteOn, channel, chan);
 
         print_message("FM channel %d\n", chan);
-        __real_midi_noteOn(REUSE_MIDI_CHANNEL, pitch, MAX_MIDI_VOLUME);
+        __real_midi_note_on(REUSE_MIDI_CHANNEL, pitch, MAX_MIDI_VOLUME);
     }
 
     expect_synth_pitch(0, 6, 0x48c);
     expect_synth_volume_any();
     expect_value(__wrap_synth_noteOn, channel, 0);
-    __real_midi_noteOn(REUSE_MIDI_CHANNEL, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
+    __real_midi_note_on(REUSE_MIDI_CHANNEL, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
 }
 
 static void test_midi_reports_dynamic_mode_enabled(UNUSED void** state)
 {
-    assert_true(__real_midi_dynamicMode);
+    assert_true(__real_midi_dynamic_mode);
 }
 
 static void test_midi_reports_dynamic_mode_disabled(UNUSED void** state)
@@ -119,12 +119,12 @@ static void test_midi_reports_dynamic_mode_disabled(UNUSED void** state)
 
     __real_midi_sysex(sequence, sizeof(sequence));
 
-    assert_false(__real_midi_dynamicMode());
+    assert_false(__real_midi_dynamic_mode());
 }
 
 static void test_midi_exposes_dynamic_mode_mappings(UNUSED void** state)
 {
-    DeviceChannel* mappings = __real_midi_channelMappings();
+    DeviceChannel* mappings = __real_midi_channel_mappings();
     for (u8 i = DEV_CHAN_MIN_FM; i < DEV_CHAN_MAX_FM; i++) {
         DeviceChannel* mapping = &mappings[i];
 
@@ -147,7 +147,7 @@ static void test_midi_dynamic_enables_percussive_mode_if_needed(
     expect_value(__wrap_synth_noteOn, channel, 0);
 
     print_message("Playing first drum\n");
-    __real_midi_noteOn(
+    __real_midi_note_on(
         GENERAL_MIDI_PERCUSSION_CHANNEL, MIDI_KEY, MAX_MIDI_VOLUME);
 
     expect_value(__wrap_synth_preset, channel, 1);
@@ -158,7 +158,7 @@ static void test_midi_dynamic_enables_percussive_mode_if_needed(
     expect_value(__wrap_synth_noteOn, channel, 1);
 
     print_message("Playing second drum\n");
-    __real_midi_noteOn(
+    __real_midi_note_on(
         GENERAL_MIDI_PERCUSSION_CHANNEL, MIDI_KEY, MAX_MIDI_VOLUME);
 }
 
@@ -175,7 +175,7 @@ static void test_midi_sets_presets_on_dynamic_channels(UNUSED void** state)
     expect_value(__wrap_synth_noteOn, channel, 0);
 
     print_message("Playing first note\n");
-    __real_midi_noteOn(0, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
+    __real_midi_note_on(0, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
 
     expect_value(__wrap_synth_preset, channel, 1);
     expect_any(__wrap_synth_preset, preset);
@@ -186,7 +186,7 @@ static void test_midi_sets_presets_on_dynamic_channels(UNUSED void** state)
     expect_value(__wrap_synth_noteOn, channel, 1);
 
     print_message("Playing second note\n");
-    __real_midi_noteOn(0, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
+    __real_midi_note_on(0, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
 }
 
 static void test_midi_dynamic_does_not_send_percussion_to_psg_channels(
@@ -200,11 +200,11 @@ static void test_midi_dynamic_does_not_send_percussion_to_psg_channels(
         expect_value(__wrap_synth_noteOn, channel, chan);
 
         print_message("Playing FM note %d\n", chan);
-        __real_midi_noteOn(0, MIDI_KEY_IN_PSG_RANGE, MAX_MIDI_VOLUME);
+        __real_midi_note_on(0, MIDI_KEY_IN_PSG_RANGE, MAX_MIDI_VOLUME);
     }
 
     print_message("Drum should be dropped.\n");
-    __real_midi_noteOn(GENERAL_MIDI_PERCUSSION_CHANNEL, MIDI_KEY_IN_PSG_RANGE,
+    __real_midi_note_on(GENERAL_MIDI_PERCUSSION_CHANNEL, MIDI_KEY_IN_PSG_RANGE,
         MAX_MIDI_VOLUME);
 }
 
@@ -220,7 +220,7 @@ static void test_midi_sysex_resets_dynamic_mode_state(UNUSED void** state)
         expect_synth_volume_any();
         expect_value(__wrap_synth_noteOn, channel, i);
 
-        __real_midi_noteOn(0, pitch, MAX_MIDI_VOLUME);
+        __real_midi_note_on(0, pitch, MAX_MIDI_VOLUME);
     }
 
     expect_value(__wrap_synth_noteOff, channel, 0);
@@ -233,7 +233,7 @@ static void test_midi_sysex_resets_dynamic_mode_state(UNUSED void** state)
     __real_midi_sysex(
         sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
 
-    DeviceChannel* mappings = __real_midi_channelMappings();
+    DeviceChannel* mappings = __real_midi_channel_mappings();
     for (u8 i = 0; i < DEV_CHANS; i++) {
         DeviceChannel* mapping = &mappings[i];
         assert_int_equal(mapping->midiChannel, DEFAULT_MIDI_CHANNEL);
@@ -249,17 +249,17 @@ static void test_midi_dynamic_sends_note_off_to_channel_playing_same_pitch(
     expect_synth_volume_any();
     expect_value(__wrap_synth_noteOn, channel, 0);
 
-    __real_midi_noteOn(0, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
+    __real_midi_note_on(0, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
 
     expect_synth_pitch_any();
     expect_synth_volume_any();
     expect_value(__wrap_synth_noteOn, channel, 1);
 
-    __real_midi_noteOn(0, MIDI_PITCH_B6, MAX_MIDI_VOLUME);
+    __real_midi_note_on(0, MIDI_PITCH_B6, MAX_MIDI_VOLUME);
 
     expect_value(__wrap_synth_noteOff, channel, 1);
 
-    __real_midi_noteOff(0, MIDI_PITCH_B6);
+    __real_midi_note_off(0, MIDI_PITCH_B6);
 }
 
 static void test_midi_dynamic_limits_percussion_notes(UNUSED void** state)
@@ -274,12 +274,12 @@ static void test_midi_dynamic_limits_percussion_notes(UNUSED void** state)
         expect_any(__wrap_synth_preset, preset);
 
         print_message("Drum %d\n", i + 1);
-        __real_midi_noteOn(
+        __real_midi_note_on(
             GENERAL_MIDI_PERCUSSION_CHANNEL, DRUM_KEY, MAX_MIDI_VOLUME);
     }
 
     print_message("Drum 3 (dropped)\n");
-    __real_midi_noteOn(
+    __real_midi_note_on(
         GENERAL_MIDI_PERCUSSION_CHANNEL, DRUM_KEY, MAX_MIDI_VOLUME);
 }
 
@@ -297,7 +297,7 @@ static void test_midi_dynamic_maintains_volume_on_remapping(UNUSED void** state)
     expect_value(__wrap_synth_noteOn, channel, 0);
 
     print_message("Note 1\n");
-    __real_midi_noteOn(0, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
+    __real_midi_note_on(0, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
 
     expect_synth_pitch_any();
     expect_synth_volume(1, expected_synth_vol);
@@ -305,7 +305,7 @@ static void test_midi_dynamic_maintains_volume_on_remapping(UNUSED void** state)
     expect_value(__wrap_synth_noteOn, channel, 1);
 
     print_message("Note 2\n");
-    __real_midi_noteOn(0, MIDI_PITCH_B6, MAX_MIDI_VOLUME);
+    __real_midi_note_on(0, MIDI_PITCH_B6, MAX_MIDI_VOLUME);
 }
 
 static void test_midi_dynamic_sets_volume_on_playing_notes(UNUSED void** state)
@@ -324,7 +324,7 @@ static void test_midi_dynamic_sets_volume_on_playing_notes(UNUSED void** state)
     expect_value(__wrap_synth_noteOn, channel, 0);
 
     print_message("Note 1\n");
-    __real_midi_noteOn(0, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
+    __real_midi_note_on(0, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
 
     expect_synth_pitch_any();
     expect_synth_volume(1, expected_synth_vol_initial);
@@ -332,7 +332,7 @@ static void test_midi_dynamic_sets_volume_on_playing_notes(UNUSED void** state)
     expect_value(__wrap_synth_noteOn, channel, 1);
 
     print_message("Note 2\n");
-    __real_midi_noteOn(0, MIDI_PITCH_B6, MAX_MIDI_VOLUME);
+    __real_midi_note_on(0, MIDI_PITCH_B6, MAX_MIDI_VOLUME);
 
     expect_synth_volume(0, expected_synth_vol_next);
     expect_synth_volume(1, expected_synth_vol_next);
@@ -355,7 +355,7 @@ static void test_midi_dynamic_maintains_pan_on_remapping(UNUSED void** state)
     expect_value(__wrap_synth_noteOn, channel, 0);
 
     print_message("Note 1\n");
-    __real_midi_noteOn(0, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
+    __real_midi_note_on(0, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
 
     expect_synth_pitch_any();
     expect_synth_volume(1, 127);
@@ -364,7 +364,7 @@ static void test_midi_dynamic_maintains_pan_on_remapping(UNUSED void** state)
     expect_value(__wrap_synth_noteOn, channel, 1);
 
     print_message("Note 2\n");
-    __real_midi_noteOn(0, MIDI_PITCH_B6, MAX_MIDI_VOLUME);
+    __real_midi_note_on(0, MIDI_PITCH_B6, MAX_MIDI_VOLUME);
 }
 
 static void test_midi_dynamic_maintains_pitch_bend_on_remapping(
@@ -379,11 +379,11 @@ static void test_midi_dynamic_maintains_pitch_bend_on_remapping(
     expect_value(__wrap_synth_noteOn, channel, 0);
 
     print_message("Note 1\n");
-    __real_midi_noteOn(0, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
+    __real_midi_note_on(0, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
 
     print_message("Setting bend\n");
     expect_synth_pitch(0, 6, 0x4c2);
-    __real_midi_pitchBend(0, midi_bend);
+    __real_midi_pitch_bend(0, midi_bend);
 
     expect_synth_pitch(1, 7, 0x29f);
     expect_synth_pitch(1, 7,
@@ -393,7 +393,7 @@ static void test_midi_dynamic_maintains_pitch_bend_on_remapping(
     expect_value(__wrap_synth_noteOn, channel, 1);
 
     print_message("Note 2\n");
-    __real_midi_noteOn(0, MIDI_PITCH_B6, MAX_MIDI_VOLUME);
+    __real_midi_note_on(0, MIDI_PITCH_B6, MAX_MIDI_VOLUME);
 }
 
 static void test_midi_dynamic_resets_mappings_on_cc_121(UNUSED void** state)
@@ -405,12 +405,12 @@ static void test_midi_dynamic_resets_mappings_on_cc_121(UNUSED void** state)
         expect_synth_volume_any();
         expect_value(__wrap_synth_noteOn, channel, i);
 
-        __real_midi_noteOn(midiChannel, MIDI_PITCH_AS6, 127);
+        __real_midi_note_on(midiChannel, MIDI_PITCH_AS6, 127);
     }
 
     __real_midi_cc(midiChannel, 121, 0);
 
-    DeviceChannel* channels = __real_midi_channelMappings();
+    DeviceChannel* channels = __real_midi_channel_mappings();
     for (u16 i = DEV_CHAN_MIN_FM; i <= DEV_CHAN_MAX_FM; i++) {
         DeviceChannel* chan = &channels[i];
         assert_int_equal(chan->midiChannel, DEFAULT_MIDI_CHANNEL);
@@ -426,7 +426,7 @@ static void test_midi_dynamic_all_notes_off_on_cc_123(UNUSED void** state)
         expect_synth_volume_any();
         expect_value(__wrap_synth_noteOn, channel, i);
 
-        __real_midi_noteOn(midiChannel, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
+        __real_midi_note_on(midiChannel, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
     }
 
     for (u16 i = DEV_CHAN_MIN_FM; i <= DEV_CHAN_MAX_FM; i++) {
@@ -435,7 +435,7 @@ static void test_midi_dynamic_all_notes_off_on_cc_123(UNUSED void** state)
 
     __real_midi_cc(midiChannel, 123, 0);
 
-    DeviceChannel* channels = __real_midi_channelMappings();
+    DeviceChannel* channels = __real_midi_channel_mappings();
     for (u16 i = DEV_CHAN_MIN_FM; i <= DEV_CHAN_MAX_FM; i++) {
         DeviceChannel* chan = &channels[i];
         assert_false(chan->noteOn);
@@ -456,7 +456,7 @@ static void test_midi_dynamic_sysex_remaps_midi_channel(UNUSED void** state)
     expect_any_psg_tone_on_channel(0);
     expect_psg_attenuation(0, PSG_ATTENUATION_LOUDEST);
 
-    __real_midi_noteOn(MIDI_CHANNEL, 60, MAX_MIDI_VOLUME);
+    __real_midi_note_on(MIDI_CHANNEL, 60, MAX_MIDI_VOLUME);
 }
 
 static void test_midi_dynamic_sysex_removes_mapping_of_midi_channel(
@@ -477,7 +477,7 @@ static void test_midi_dynamic_sysex_removes_mapping_of_midi_channel(
     expect_psg_attenuation(0, PSG_ATTENUATION_LOUDEST);
 
     print_message("Playing note\n");
-    __real_midi_noteOn(MIDI_CHANNEL, 60, MAX_MIDI_VOLUME);
+    __real_midi_note_on(MIDI_CHANNEL, 60, MAX_MIDI_VOLUME);
 
     const u8 removeMappingSeq[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
         SYSEX_MANU_ID, SYSEX_COMMAND_REMAP, MIDI_CHANNEL_NO_MAPPING,
@@ -491,7 +491,7 @@ static void test_midi_dynamic_sysex_removes_mapping_of_midi_channel(
     expect_value(__wrap_synth_noteOn, channel, 0);
 
     print_message("Playing note\n");
-    __real_midi_noteOn(MIDI_CHANNEL, 60, MAX_MIDI_VOLUME);
+    __real_midi_note_on(MIDI_CHANNEL, 60, MAX_MIDI_VOLUME);
 }
 
 static void test_midi_dynamic_prefers_psg_for_square_wave_instruments(
@@ -513,11 +513,11 @@ static void test_midi_dynamic_prefers_psg_for_square_wave_instruments(
         expect_psg_attenuation(PSG_CHANNEL, PSG_ATTENUATION_LOUDEST);
 
         print_message("Note on: %d\n", program);
-        __real_midi_noteOn(MIDI_CHANNEL, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
+        __real_midi_note_on(MIDI_CHANNEL, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
 
         expect_psg_attenuation(PSG_CHANNEL, PSG_ATTENUATION_SILENCE);
         print_message("Note off: %d\n", program);
-        __real_midi_noteOff(MIDI_CHANNEL, MIDI_PITCH_AS6);
+        __real_midi_note_off(MIDI_CHANNEL, MIDI_PITCH_AS6);
     }
 }
 
@@ -535,13 +535,13 @@ static void test_midi_dynamic_sticks_to_assigned_device_type_for_midi_channels(
         expect_value(__wrap_synth_noteOn, channel, chan);
 
         print_message("FM channel %d\n", chan);
-        __real_midi_noteOn(REUSE_MIDI_CHANNEL, pitch, MAX_MIDI_VOLUME);
+        __real_midi_note_on(REUSE_MIDI_CHANNEL, pitch, MAX_MIDI_VOLUME);
     }
 
     expect_synth_pitch(0, 6, 0x48c);
     expect_synth_volume_any();
     expect_value(__wrap_synth_noteOn, channel, 0);
-    __real_midi_noteOn(REUSE_MIDI_CHANNEL, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
+    __real_midi_note_on(REUSE_MIDI_CHANNEL, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
 }
 
 static void
@@ -559,11 +559,11 @@ test_midi_dynamic_sticks_to_assigned_psg_device_type_for_midi_channels(
         u8 psgChannel = chan - DEV_CHAN_MIN_PSG;
         expect_any_psg_tone_on_channel(psgChannel);
         expect_psg_attenuation(psgChannel, PSG_ATTENUATION_LOUDEST);
-        __real_midi_noteOn(MIDI_CHANNEL, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
+        __real_midi_note_on(MIDI_CHANNEL, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
     }
 
     expect_any_psg_tone_on_channel(0);
-    __real_midi_noteOn(MIDI_CHANNEL, MIDI_PITCH_B6, MAX_MIDI_VOLUME);
+    __real_midi_note_on(MIDI_CHANNEL, MIDI_PITCH_B6, MAX_MIDI_VOLUME);
 }
 
 static void test_midi_assign_channel_to_psg_device(UNUSED void** state)
@@ -577,7 +577,7 @@ static void test_midi_assign_channel_to_psg_device(UNUSED void** state)
     expect_any_psg_tone_on_channel(PSG_CHANNEL);
     expect_psg_attenuation(PSG_CHANNEL, PSG_ATTENUATION_LOUDEST);
 
-    __real_midi_noteOn(MIDI_CHANNEL, 60, MAX_MIDI_VOLUME);
+    __real_midi_note_on(MIDI_CHANNEL, 60, MAX_MIDI_VOLUME);
 }
 
 static void test_midi_assign_channel_to_fm_device_only(UNUSED void** state)
@@ -593,13 +593,13 @@ static void test_midi_assign_channel_to_fm_device_only(UNUSED void** state)
         expect_synth_volume_any();
         expect_value(__wrap_synth_noteOn, channel, chan);
 
-        __real_midi_noteOn(MIDI_CHANNEL, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
+        __real_midi_note_on(MIDI_CHANNEL, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
     }
 
     expect_synth_pitch_any();
     expect_synth_volume_any();
     expect_value(__wrap_synth_noteOn, channel, 0);
-    __real_midi_noteOn(MIDI_CHANNEL, 60, MAX_MIDI_VOLUME);
+    __real_midi_note_on(MIDI_CHANNEL, 60, MAX_MIDI_VOLUME);
 }
 
 static void test_midi_assign_channel_to_psg_noise(UNUSED void** state)
@@ -613,5 +613,5 @@ static void test_midi_assign_channel_to_psg_noise(UNUSED void** state)
     expect_any_psg_tone_on_channel(PSG_NOISE_CHANNEL);
     expect_psg_attenuation(PSG_NOISE_CHANNEL, PSG_ATTENUATION_LOUDEST);
 
-    __real_midi_noteOn(MIDI_CHANNEL, 60, MAX_MIDI_VOLUME);
+    __real_midi_note_on(MIDI_CHANNEL, 60, MAX_MIDI_VOLUME);
 }

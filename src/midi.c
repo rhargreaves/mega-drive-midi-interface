@@ -351,10 +351,10 @@ static DeviceChannel* findSuitableDeviceChannel(u8 midiChan)
                        : deviceChannelByMidiChannel(midiChan);
 }
 
-void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
+void midi_note_on(u8 chan, u8 pitch, u8 velocity)
 {
     if (velocity == MIN_MIDI_VELOCITY) {
-        midi_noteOff(chan, pitch);
+        midi_note_off(chan, pitch);
         return;
     }
     if (tooManyPercussiveNotes(chan)) {
@@ -372,7 +372,7 @@ void midi_noteOn(u8 chan, u8 pitch, u8 velocity)
     devChan->ops->noteOn(devChan->number, pitch, velocity);
 }
 
-void midi_noteOff(u8 chan, u8 pitch)
+void midi_note_off(u8 chan, u8 pitch)
 {
     DeviceChannel* devChan;
     while ((devChan = findChannelPlayingNote(chan, pitch)) != NULL) {
@@ -428,12 +428,12 @@ static void setPolyphonicMode(bool enable)
     setDynamicMode(enable);
     if (enable) {
         for (u8 chan = 0; chan <= DEV_CHAN_MAX_FM; chan++) {
-            midi_remapChannel(0, chan);
+            midi_remap_channel(0, chan);
         }
     }
 }
 
-void midi_pitchBend(u8 chan, u16 bend)
+void midi_pitch_bend(u8 chan, u16 bend)
 {
     MidiChannel* midiChannel = &midiChannels[chan];
     midiChannel->pitchBend = bend;
@@ -457,12 +457,12 @@ void midi_program(u8 chan, u8 program)
     }
 }
 
-bool midi_dynamicMode(void)
+bool midi_dynamic_mode(void)
 {
     return dynamicMode;
 }
 
-DeviceChannel* midi_channelMappings(void)
+DeviceChannel* midi_channel_mappings(void)
 {
     return deviceChannels;
 }
@@ -514,7 +514,7 @@ static void handleCustomSysEx(const u8* data, u16 length)
     switch (command) {
     case SYSEX_COMMAND_REMAP:
         if (length == 2) {
-            midi_remapChannel(data[0], data[1]);
+            midi_remap_channel(data[0], data[1]);
         }
         break;
     case SYSEX_COMMAND_PING:
@@ -576,7 +576,7 @@ static void sendPong(void)
     midi_sender_send_sysex(pongSequence, sizeof(pongSequence));
 }
 
-void midi_remapChannel(u8 midiChan, u8 devChan)
+void midi_remap_channel(u8 midiChan, u8 devChan)
 {
     const u8 SYSEX_UNASSIGNED_DEVICE_CHANNEL = 0x7F;
     const u8 SYSEX_UNASSIGNED_MIDI_CHANNEL = 0x7F;

@@ -243,13 +243,13 @@ void __wrap_comm_megawifi_init(void)
 {
 }
 
-void __wrap_midi_noteOff(u8 chan, u8 pitch)
+void __wrap_midi_note_off(u8 chan, u8 pitch)
 {
     check_expected(chan);
     check_expected(pitch);
 }
 
-void __wrap_midi_channelVolume(u8 chan, u8 volume)
+void __wrap_midi_channel_volume(u8 chan, u8 volume)
 {
     check_expected(chan);
     check_expected(volume);
@@ -261,14 +261,14 @@ void __wrap_midi_pan(u8 chan, u8 pan)
     check_expected(pan);
 }
 
-void __wrap_midi_noteOn(u8 chan, u8 pitch, u8 velocity)
+void __wrap_midi_note_on(u8 chan, u8 pitch, u8 velocity)
 {
     check_expected(chan);
     check_expected(pitch);
     check_expected(velocity);
 }
 
-void __wrap_midi_pitchBend(u8 chan, u16 bend)
+void __wrap_midi_pitch_bend(u8 chan, u16 bend)
 {
     check_expected(chan);
     check_expected(bend);
@@ -308,12 +308,12 @@ void __wrap_midi_mappings(u8* mappingDest)
     check_expected(mappingDest);
 }
 
-bool __wrap_midi_dynamicMode(void)
+bool __wrap_midi_dynamic_mode(void)
 {
     return mock_type(bool);
 }
 
-DeviceChannel* __wrap_midi_channelMappings(void)
+DeviceChannel* __wrap_midi_channel_mappings(void)
 {
     return mock_type(DeviceChannel*);
 }

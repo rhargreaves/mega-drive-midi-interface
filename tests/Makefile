@@ -66,16 +66,16 @@ MOCKS=midi_process \
 	synth_channelParameters \
 	synth_globalParameters \
 	fm_writeReg \
-	midi_noteOff \
-	midi_noteOn \
-	midi_pitchBend \
+	midi_note_off \
+	midi_note_on \
+	midi_pitch_bend \
 	midi_getPolyphonic \
 	midi_cc \
 	midi_program \
 	midi_sysex \
 	midi_mappings \
-	midi_dynamicMode \
-	midi_channelMappings \
+	midi_dynamic_mode \
+	midi_channel_mappings \
 	midi_psg_tick \
 	midi_psg_loadEnvelope \
 	midi_reset \

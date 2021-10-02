@@ -105,7 +105,7 @@ static void noteOn(u8 status)
     u8 pitch = comm_read();
     u8 velocity = comm_read();
     debugPrintEvent(status, pitch, velocity);
-    midi_noteOn(chan, pitch, velocity);
+    midi_note_on(chan, pitch, velocity);
 }
 
 static void noteOff(u8 status)
@@ -114,7 +114,7 @@ static void noteOff(u8 status)
     u8 pitch = comm_read();
     comm_read();
     debugPrintEvent(status, pitch, 0);
-    midi_noteOff(chan, pitch);
+    midi_note_off(chan, pitch);
 }
 
 static void pitchBend(u8 status)
@@ -122,7 +122,7 @@ static void pitchBend(u8 status)
     u8 chan = STATUS_LOWER(status);
     u16 bend = read14bitValue();
     debugPrintEvent(status, (u8)bend, 0);
-    midi_pitchBend(chan, bend);
+    midi_pitch_bend(chan, bend);
 }
 
 static void program(u8 status)

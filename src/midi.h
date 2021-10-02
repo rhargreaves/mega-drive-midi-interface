@@ -130,13 +130,13 @@ struct DeviceChannel {
 void midi_init(const FmChannel** defaultPresets,
     const PercussionPreset** defaultPercussionPresets,
     const u8** defaultEnvelopes);
-void midi_noteOn(u8 chan, u8 pitch, u8 velocity);
-void midi_noteOff(u8 chan, u8 pitch);
-void midi_pitchBend(u8 chan, u16 bend);
+void midi_note_on(u8 chan, u8 pitch, u8 velocity);
+void midi_note_off(u8 chan, u8 pitch);
+void midi_pitch_bend(u8 chan, u16 bend);
 void midi_cc(u8 chan, u8 controller, u8 value);
 void midi_program(u8 chan, u8 program);
 void midi_sysex(const u8* data, u16 length);
-bool midi_dynamicMode(void);
-DeviceChannel* midi_channelMappings(void);
-void midi_remapChannel(u8 midiChannel, u8 deviceChannel);
+bool midi_dynamic_mode(void);
+DeviceChannel* midi_channel_mappings(void);
+void midi_remap_channel(u8 midiChannel, u8 deviceChannel);
 void midi_reset(void);

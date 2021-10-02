@@ -119,7 +119,7 @@ static void updateAlgorithmDiagram(u8 algorithm)
 
 static u8 getFmChanForMidiChan(u8 midiChan)
 {
-    DeviceChannel* devChans = midi_channelMappings();
+    DeviceChannel* devChans = midi_channel_mappings();
     for (u8 i = 0; i <= DEV_CHAN_MAX_FM; i++) {
         DeviceChannel* devChan = &devChans[i];
         if (devChan->midiChannel == midiChan) {
