@@ -2,4 +2,4 @@
 set -euo pipefail
 
 export BUILD=$(git describe --tags --abbrev=0)
-. ./docker-run make "$@"
+utils/docker-run make "$@"
