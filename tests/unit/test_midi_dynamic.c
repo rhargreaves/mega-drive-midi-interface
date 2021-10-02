@@ -4,9 +4,8 @@
 
 static void setStickToDeviceType(bool enable)
 {
-    const u8 sequence[] = { SYSEX_EXTENDED_MANU_ID_SECTION,
-        SYSEX_UNUSED_EUROPEAN_SECTION, SYSEX_UNUSED_MANU_ID,
-        SYSEX_COMMAND_STICK_TO_DEVICE_TYPE, enable ? 1 : 0 };
+    const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
+        SYSEX_MANU_ID, SYSEX_COMMAND_STICK_TO_DEVICE_TYPE, enable ? 1 : 0 };
 
     __real_midi_sysex(sequence, sizeof(sequence));
 }
@@ -16,9 +15,9 @@ static int test_dynamic_midi_setup(UNUSED void** state)
     test_midi_setup(state);
 
     const u8 sequence[] = {
-        SYSEX_EXTENDED_MANU_ID_SECTION,
-        SYSEX_UNUSED_EUROPEAN_SECTION,
-        SYSEX_UNUSED_MANU_ID,
+        SYSEX_MANU_EXTENDED,
+        SYSEX_MANU_REGION,
+        SYSEX_MANU_ID,
         SYSEX_COMMAND_DYNAMIC,
         SYSEX_DYNAMIC_ENABLED,
     };
@@ -111,9 +110,9 @@ static void test_midi_reports_dynamic_mode_enabled(UNUSED void** state)
 static void test_midi_reports_dynamic_mode_disabled(UNUSED void** state)
 {
     const u8 sequence[] = {
-        SYSEX_EXTENDED_MANU_ID_SECTION,
-        SYSEX_UNUSED_EUROPEAN_SECTION,
-        SYSEX_UNUSED_MANU_ID,
+        SYSEX_MANU_EXTENDED,
+        SYSEX_MANU_REGION,
+        SYSEX_MANU_ID,
         SYSEX_COMMAND_DYNAMIC,
         SYSEX_DYNAMIC_DISABLED,
     };
@@ -448,9 +447,9 @@ static void test_midi_dynamic_sysex_remaps_midi_channel(UNUSED void** state)
     const u8 MIDI_CHANNEL = 0x01;
     const u8 DESTINATION_FIRST_PSG_CHANNEL = 0x06;
 
-    const u8 sequence[] = { SYSEX_EXTENDED_MANU_ID_SECTION,
-        SYSEX_UNUSED_EUROPEAN_SECTION, SYSEX_UNUSED_MANU_ID,
-        SYSEX_COMMAND_REMAP, MIDI_CHANNEL, DESTINATION_FIRST_PSG_CHANNEL };
+    const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
+        SYSEX_MANU_ID, SYSEX_COMMAND_REMAP, MIDI_CHANNEL,
+        DESTINATION_FIRST_PSG_CHANNEL };
 
     __real_midi_sysex(sequence, sizeof(sequence));
 
@@ -467,9 +466,9 @@ static void test_midi_dynamic_sysex_removes_mapping_of_midi_channel(
     const u8 MIDI_CHANNEL_NO_MAPPING = 0x7F;
     const u8 DESTINATION_FIRST_PSG_CHANNEL = 0x06;
 
-    const u8 sequence[] = { SYSEX_EXTENDED_MANU_ID_SECTION,
-        SYSEX_UNUSED_EUROPEAN_SECTION, SYSEX_UNUSED_MANU_ID,
-        SYSEX_COMMAND_REMAP, MIDI_CHANNEL, DESTINATION_FIRST_PSG_CHANNEL };
+    const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
+        SYSEX_MANU_ID, SYSEX_COMMAND_REMAP, MIDI_CHANNEL,
+        DESTINATION_FIRST_PSG_CHANNEL };
 
     print_message("Assigning PSG to MIDI Chan 0\n");
     __real_midi_sysex(sequence, sizeof(sequence));
@@ -480,10 +479,9 @@ static void test_midi_dynamic_sysex_removes_mapping_of_midi_channel(
     print_message("Playing note\n");
     __real_midi_noteOn(MIDI_CHANNEL, 60, MAX_MIDI_VOLUME);
 
-    const u8 removeMappingSeq[]
-        = { SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
-              SYSEX_UNUSED_MANU_ID, SYSEX_COMMAND_REMAP,
-              MIDI_CHANNEL_NO_MAPPING, DESTINATION_FIRST_PSG_CHANNEL };
+    const u8 removeMappingSeq[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
+        SYSEX_MANU_ID, SYSEX_COMMAND_REMAP, MIDI_CHANNEL_NO_MAPPING,
+        DESTINATION_FIRST_PSG_CHANNEL };
 
     print_message("Removing MIDI Chan 0 assignment\n");
     __real_midi_sysex(removeMappingSeq, sizeof(removeMappingSeq));

@@ -159,9 +159,9 @@ static void test_general_midi_reset_sysex_stops_all_notes(void** state)
 
 static void remapChannel(u8 midiChannel, u8 deviceChannel)
 {
-    u8 sysExRemapSequence[] = { SYSEX_START, SYSEX_EXTENDED_MANU_ID_SECTION,
-        SYSEX_UNUSED_EUROPEAN_SECTION, SYSEX_UNUSED_MANU_ID,
-        SYSEX_COMMAND_REMAP, midiChannel, deviceChannel, SYSEX_END };
+    u8 sysExRemapSequence[]
+        = { SYSEX_START, SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+              SYSEX_COMMAND_REMAP, midiChannel, deviceChannel, SYSEX_END };
     for (u16 i = 0; i < sizeof(sysExRemapSequence); i++) {
         stub_usb_receive_byte(sysExRemapSequence[i]);
     }
@@ -232,13 +232,11 @@ static void test_set_device_for_midi_channel_1_to_psg()
 
 static void test_pong_received_after_ping_sent()
 {
-    const u8 sysExPingSequence[] = { SYSEX_START,
-        SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
-        SYSEX_UNUSED_MANU_ID, SYSEX_COMMAND_PING, SYSEX_END };
+    const u8 sysExPingSequence[] = { SYSEX_START, SYSEX_MANU_EXTENDED,
+        SYSEX_MANU_REGION, SYSEX_MANU_ID, SYSEX_COMMAND_PING, SYSEX_END };
 
-    const u8 sysExPongSequence[] = { SYSEX_START,
-        SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
-        SYSEX_UNUSED_MANU_ID, SYSEX_COMMAND_PONG, SYSEX_END };
+    const u8 sysExPongSequence[] = { SYSEX_START, SYSEX_MANU_EXTENDED,
+        SYSEX_MANU_REGION, SYSEX_MANU_ID, SYSEX_COMMAND_PONG, SYSEX_END };
 
     for (u16 i = 0; i < sizeof(sysExPingSequence); i++) {
         stub_usb_receive_byte(sysExPingSequence[i]);
@@ -254,8 +252,7 @@ static void test_pong_received_after_ping_sent()
 static void test_loads_psg_envelope()
 {
     const u8 sysExPingSequence[]
-        = { SYSEX_START, SYSEX_EXTENDED_MANU_ID_SECTION,
-              SYSEX_UNUSED_EUROPEAN_SECTION, SYSEX_UNUSED_MANU_ID,
+        = { SYSEX_START, SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
               SYSEX_COMMAND_LOAD_PSG_ENVELOPE, 0x06, 0x06, SYSEX_END };
 
     for (u16 i = 0; i < sizeof(sysExPingSequence); i++) {

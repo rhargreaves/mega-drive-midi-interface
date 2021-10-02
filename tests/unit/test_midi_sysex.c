@@ -2,9 +2,8 @@
 
 static void remapChannel(u8 midiChannel, u8 deviceChannel)
 {
-    const u8 sequence[] = { SYSEX_EXTENDED_MANU_ID_SECTION,
-        SYSEX_UNUSED_EUROPEAN_SECTION, SYSEX_UNUSED_MANU_ID,
-        SYSEX_COMMAND_REMAP, midiChannel, deviceChannel };
+    const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
+        SYSEX_MANU_ID, SYSEX_COMMAND_REMAP, midiChannel, deviceChannel };
 
     __real_midi_sysex(sequence, sizeof(sequence));
 }
@@ -121,9 +120,8 @@ static void test_midi_sysex_does_nothing_for_empty_payload(UNUSED void** state)
 static void test_midi_sysex_handles_incomplete_channel_mapping_command(
     UNUSED void** state)
 {
-    const u8 sequence[]
-        = { SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
-              SYSEX_UNUSED_MANU_ID, SYSEX_COMMAND_REMAP };
+    const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
+        SYSEX_MANU_ID, SYSEX_COMMAND_REMAP };
 
     __real_midi_sysex(sequence, 4);
 }
@@ -131,9 +129,9 @@ static void test_midi_sysex_handles_incomplete_channel_mapping_command(
 static void test_midi_sysex_enables_dynamic_channel_mode(UNUSED void** state)
 {
     const u8 sequence[] = {
-        SYSEX_EXTENDED_MANU_ID_SECTION,
-        SYSEX_UNUSED_EUROPEAN_SECTION,
-        SYSEX_UNUSED_MANU_ID,
+        SYSEX_MANU_EXTENDED,
+        SYSEX_MANU_REGION,
+        SYSEX_MANU_ID,
         SYSEX_COMMAND_DYNAMIC,
         SYSEX_DYNAMIC_ENABLED,
     };
@@ -156,9 +154,9 @@ static void test_midi_sysex_enables_dynamic_channel_mode(UNUSED void** state)
 static void test_midi_sysex_disables_fm_parameter_CCs(UNUSED void** state)
 {
     const u8 sequence[] = {
-        SYSEX_EXTENDED_MANU_ID_SECTION,
-        SYSEX_UNUSED_EUROPEAN_SECTION,
-        SYSEX_UNUSED_MANU_ID,
+        SYSEX_MANU_EXTENDED,
+        SYSEX_MANU_REGION,
+        SYSEX_MANU_ID,
         SYSEX_COMMAND_NON_GENERAL_MIDI_CCS,
         SYSEX_NON_GENERAL_MIDI_CCS_DISABLED,
     };
@@ -182,9 +180,8 @@ static void test_midi_sysex_loads_psg_envelope(UNUSED void** state)
 {
     wraps_enable_logging_checks();
 
-    const u8 sequence[] = { SYSEX_EXTENDED_MANU_ID_SECTION,
-        SYSEX_UNUSED_EUROPEAN_SECTION, SYSEX_UNUSED_MANU_ID,
-        SYSEX_COMMAND_LOAD_PSG_ENVELOPE, 0x01, 0x01 };
+    const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
+        SYSEX_MANU_ID, SYSEX_COMMAND_LOAD_PSG_ENVELOPE, 0x01, 0x01 };
 
     const u8 eef[] = { 0x11, EEF_END };
     const u8 eefLength = sizeof(eef) / sizeof(u8);
@@ -198,9 +195,8 @@ static void test_midi_sysex_loads_psg_envelope(UNUSED void** state)
 
 static void test_midi_sysex_inverts_total_level_values(UNUSED void** state)
 {
-    const u8 sequence[]
-        = { SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
-              SYSEX_UNUSED_MANU_ID, SYSEX_COMMAND_INVERT_TOTAL_LEVEL, 0x01 };
+    const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
+        SYSEX_MANU_ID, SYSEX_COMMAND_INVERT_TOTAL_LEVEL, 0x01 };
 
     __real_midi_sysex(sequence, sizeof(sequence));
 
@@ -213,9 +209,8 @@ static void test_midi_sysex_inverts_total_level_values(UNUSED void** state)
 static void test_midi_sysex_sets_original_total_level_values(
     UNUSED void** state)
 {
-    const u8 invert_sequence[]
-        = { SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
-              SYSEX_UNUSED_MANU_ID, SYSEX_COMMAND_INVERT_TOTAL_LEVEL, 0x01 };
+    const u8 invert_sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
+        SYSEX_MANU_ID, SYSEX_COMMAND_INVERT_TOTAL_LEVEL, 0x01 };
 
     __real_midi_sysex(invert_sequence, sizeof(invert_sequence));
     expect_value(__wrap_synth_operatorTotalLevel, channel, 0);
@@ -223,9 +218,8 @@ static void test_midi_sysex_sets_original_total_level_values(
     expect_value(__wrap_synth_operatorTotalLevel, totalLevel, 126);
     __real_midi_cc(0, CC_GENMDM_TOTAL_LEVEL_OP1, 1);
 
-    const u8 original_sequence[]
-        = { SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
-              SYSEX_UNUSED_MANU_ID, SYSEX_COMMAND_INVERT_TOTAL_LEVEL, 0x00 };
+    const u8 original_sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
+        SYSEX_MANU_ID, SYSEX_COMMAND_INVERT_TOTAL_LEVEL, 0x00 };
 
     __real_midi_sysex(original_sequence, sizeof(original_sequence));
     expect_value(__wrap_synth_operatorTotalLevel, channel, 0);

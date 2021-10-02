@@ -479,8 +479,7 @@ static void test_midi_sets_synth_pitch_bend(UNUSED void** state)
 
 static void remap_midi_channel(u8 midiChannel, u8 deviceChannel)
 {
-    u8 sequence[] = { SYSEX_EXTENDED_MANU_ID_SECTION,
-        SYSEX_UNUSED_EUROPEAN_SECTION, SYSEX_UNUSED_MANU_ID,
+    u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
         SYSEX_COMMAND_REMAP, midiChannel, deviceChannel };
 
     __real_midi_sysex(sequence, sizeof(sequence) / sizeof(sequence[0]));
