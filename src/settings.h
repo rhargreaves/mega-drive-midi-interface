@@ -9,5 +9,8 @@ bool settings_isMegaWiFiRom(void);
 #define COMM_MEGAWIFI 1
 
 #define DEBUG_MEGAWIFI_SEND 0
+#define DEBUG_MEGAWIFI_INIT 0
+#define DEBUG_MEGAWIFI_SYNC 0
+
 // #define DEBUG_TICKS
 // #define DEBUG_EVENTS

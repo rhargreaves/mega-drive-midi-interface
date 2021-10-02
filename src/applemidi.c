@@ -113,7 +113,9 @@ static mw_err processTimestampSync(char* buffer, u16 length)
         packet.timestamp2Hi = 0;
         packet.timestamp2Lo = 0;
         packet.senderSSRC = MEGADRIVE_SSRC;
+#if DEBUG_MEGAWIFI_SYNC
         log_info("AM: Timestamp Sync");
+#endif
         sendTimestampSync(&packet);
     }
 

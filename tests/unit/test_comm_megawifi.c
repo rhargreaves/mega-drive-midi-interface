@@ -59,7 +59,9 @@ static void expect_ip_log(void)
 {
     mock_ip_cfg(ip_str_to_uint32("127.1.2.3"));
     will_return(__wrap_mw_ip_current, MW_ERR_NONE);
+#if DEBUG_MEGAWIFI_INIT
     expect_log_info("MW: IP: %s");
+#endif
 }
 
 static void megawifi_init(void)

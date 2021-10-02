@@ -69,7 +69,9 @@ static mw_err displayLocalIp(void)
     }
     char ip_str[16] = {};
     uint32_to_ip_str(ip_cfg->addr.addr, ip_str);
+#if DEBUG_MEGAWIFI_INIT
     log_info("MW: IP: %s", ip_str);
+#endif
     return err;
 }
 
