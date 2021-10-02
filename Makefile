@@ -53,7 +53,7 @@ LIBS = -L$(GENDEV)/m68k-elf/lib \
 	--wrap=SYS_disableInts \
 	--wrap=JOY_update
 
-LINKFLAGS = -T mw.ld \
+LINKFLAGS = -T src/mw.ld \
 	-Map=out/output.map \
 	-nostdlib
 ARCHIVES = $(GENDEV)/sgdk/$(LIB)/libmd.a
