@@ -6,7 +6,7 @@ static void setStickToDeviceType(bool enable)
 {
     const u8 sequence[] = { SYSEX_EXTENDED_MANU_ID_SECTION,
         SYSEX_UNUSED_EUROPEAN_SECTION, SYSEX_UNUSED_MANU_ID,
-        SYSEX_STICK_TO_DEVICE_TYPE_COMMAND_ID, enable ? 1 : 0 };
+        SYSEX_COMMAND_STICK_TO_DEVICE_TYPE, enable ? 1 : 0 };
 
     __real_midi_sysex(sequence, sizeof(sequence));
 }
@@ -19,7 +19,7 @@ static int test_dynamic_midi_setup(UNUSED void** state)
         SYSEX_EXTENDED_MANU_ID_SECTION,
         SYSEX_UNUSED_EUROPEAN_SECTION,
         SYSEX_UNUSED_MANU_ID,
-        SYSEX_DYNAMIC_COMMAND_ID,
+        SYSEX_COMMAND_DYNAMIC,
         SYSEX_DYNAMIC_ENABLED,
     };
 
@@ -114,7 +114,7 @@ static void test_midi_reports_dynamic_mode_disabled(UNUSED void** state)
         SYSEX_EXTENDED_MANU_ID_SECTION,
         SYSEX_UNUSED_EUROPEAN_SECTION,
         SYSEX_UNUSED_MANU_ID,
-        SYSEX_DYNAMIC_COMMAND_ID,
+        SYSEX_COMMAND_DYNAMIC,
         SYSEX_DYNAMIC_DISABLED,
     };
 
@@ -389,7 +389,7 @@ static void test_midi_dynamic_maintains_pitch_bend_on_remapping(
     expect_synth_pitch(1, 7, 0x29f);
     expect_synth_pitch(1, 7,
         0x269); // defaults back as pitch bend not taken into consideration on
-                // note on
+    // note on
     expect_synth_volume(1, MAX_MIDI_VOLUME);
     expect_value(__wrap_synth_noteOn, channel, 1);
 
@@ -450,7 +450,7 @@ static void test_midi_dynamic_sysex_remaps_midi_channel(UNUSED void** state)
 
     const u8 sequence[] = { SYSEX_EXTENDED_MANU_ID_SECTION,
         SYSEX_UNUSED_EUROPEAN_SECTION, SYSEX_UNUSED_MANU_ID,
-        SYSEX_REMAP_COMMAND_ID, MIDI_CHANNEL, DESTINATION_FIRST_PSG_CHANNEL };
+        SYSEX_COMMAND_REMAP, MIDI_CHANNEL, DESTINATION_FIRST_PSG_CHANNEL };
 
     __real_midi_sysex(sequence, sizeof(sequence));
 
@@ -469,7 +469,7 @@ static void test_midi_dynamic_sysex_removes_mapping_of_midi_channel(
 
     const u8 sequence[] = { SYSEX_EXTENDED_MANU_ID_SECTION,
         SYSEX_UNUSED_EUROPEAN_SECTION, SYSEX_UNUSED_MANU_ID,
-        SYSEX_REMAP_COMMAND_ID, MIDI_CHANNEL, DESTINATION_FIRST_PSG_CHANNEL };
+        SYSEX_COMMAND_REMAP, MIDI_CHANNEL, DESTINATION_FIRST_PSG_CHANNEL };
 
     print_message("Assigning PSG to MIDI Chan 0\n");
     __real_midi_sysex(sequence, sizeof(sequence));
@@ -482,7 +482,7 @@ static void test_midi_dynamic_sysex_removes_mapping_of_midi_channel(
 
     const u8 removeMappingSeq[]
         = { SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
-              SYSEX_UNUSED_MANU_ID, SYSEX_REMAP_COMMAND_ID,
+              SYSEX_UNUSED_MANU_ID, SYSEX_COMMAND_REMAP,
               MIDI_CHANNEL_NO_MAPPING, DESTINATION_FIRST_PSG_CHANNEL };
 
     print_message("Removing MIDI Chan 0 assignment\n");

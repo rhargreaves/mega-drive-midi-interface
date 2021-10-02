@@ -161,7 +161,7 @@ static void remapChannel(u8 midiChannel, u8 deviceChannel)
 {
     u8 sysExRemapSequence[] = { SYSEX_START, SYSEX_EXTENDED_MANU_ID_SECTION,
         SYSEX_UNUSED_EUROPEAN_SECTION, SYSEX_UNUSED_MANU_ID,
-        SYSEX_REMAP_COMMAND_ID, midiChannel, deviceChannel, SYSEX_END };
+        SYSEX_COMMAND_REMAP, midiChannel, deviceChannel, SYSEX_END };
     for (u16 i = 0; i < sizeof(sysExRemapSequence); i++) {
         stub_usb_receive_byte(sysExRemapSequence[i]);
     }
@@ -234,11 +234,11 @@ static void test_pong_received_after_ping_sent()
 {
     const u8 sysExPingSequence[] = { SYSEX_START,
         SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
-        SYSEX_UNUSED_MANU_ID, SYSEX_PING_COMMAND_ID, SYSEX_END };
+        SYSEX_UNUSED_MANU_ID, SYSEX_COMMAND_PING, SYSEX_END };
 
     const u8 sysExPongSequence[] = { SYSEX_START,
         SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
-        SYSEX_UNUSED_MANU_ID, SYSEX_PONG_COMMAND_ID, SYSEX_END };
+        SYSEX_UNUSED_MANU_ID, SYSEX_COMMAND_PONG, SYSEX_END };
 
     for (u16 i = 0; i < sizeof(sysExPingSequence); i++) {
         stub_usb_receive_byte(sysExPingSequence[i]);
@@ -256,7 +256,7 @@ static void test_loads_psg_envelope()
     const u8 sysExPingSequence[]
         = { SYSEX_START, SYSEX_EXTENDED_MANU_ID_SECTION,
               SYSEX_UNUSED_EUROPEAN_SECTION, SYSEX_UNUSED_MANU_ID,
-              SYSEX_LOAD_PSG_ENVELOPE_COMMAND_ID, 0x06, 0x06, SYSEX_END };
+              SYSEX_COMMAND_LOAD_PSG_ENVELOPE, 0x06, 0x06, SYSEX_END };
 
     for (u16 i = 0; i < sizeof(sysExPingSequence); i++) {
         stub_usb_receive_byte(sysExPingSequence[i]);

@@ -481,7 +481,7 @@ static void remap_midi_channel(u8 midiChannel, u8 deviceChannel)
 {
     u8 sequence[] = { SYSEX_EXTENDED_MANU_ID_SECTION,
         SYSEX_UNUSED_EUROPEAN_SECTION, SYSEX_UNUSED_MANU_ID,
-        SYSEX_REMAP_COMMAND_ID, midiChannel, deviceChannel };
+        SYSEX_COMMAND_REMAP, midiChannel, deviceChannel };
 
     __real_midi_sysex(sequence, sizeof(sequence) / sizeof(sequence[0]));
 }
