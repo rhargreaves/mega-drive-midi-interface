@@ -209,3 +209,27 @@ static void test_midi_sysex_inverts_total_level_values(UNUSED void** state)
     expect_value(__wrap_synth_operatorTotalLevel, totalLevel, 126);
     __real_midi_cc(0, CC_GENMDM_TOTAL_LEVEL_OP1, 1);
 }
+
+static void test_midi_sysex_sets_original_total_level_values(
+    UNUSED void** state)
+{
+    const u8 invert_sequence[]
+        = { SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
+              SYSEX_UNUSED_MANU_ID, SYSEX_INVERT_TOTAL_LEVEL_COMMAND_ID, 0x01 };
+
+    __real_midi_sysex(invert_sequence, sizeof(invert_sequence));
+    expect_value(__wrap_synth_operatorTotalLevel, channel, 0);
+    expect_value(__wrap_synth_operatorTotalLevel, op, 0);
+    expect_value(__wrap_synth_operatorTotalLevel, totalLevel, 126);
+    __real_midi_cc(0, CC_GENMDM_TOTAL_LEVEL_OP1, 1);
+
+    const u8 original_sequence[]
+        = { SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
+              SYSEX_UNUSED_MANU_ID, SYSEX_INVERT_TOTAL_LEVEL_COMMAND_ID, 0x00 };
+
+    __real_midi_sysex(original_sequence, sizeof(original_sequence));
+    expect_value(__wrap_synth_operatorTotalLevel, channel, 0);
+    expect_value(__wrap_synth_operatorTotalLevel, op, 0);
+    expect_value(__wrap_synth_operatorTotalLevel, totalLevel, 126);
+    __real_midi_cc(0, CC_GENMDM_TOTAL_LEVEL_OP1, 126);
+}

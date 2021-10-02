@@ -144,6 +144,7 @@ int main(void)
         midi_test(test_midi_sysex_disables_fm_parameter_CCs),
         midi_test(test_midi_sysex_loads_psg_envelope),
         midi_test(test_midi_sysex_inverts_total_level_values),
+        midi_test(test_midi_sysex_sets_original_total_level_values),
         midi_test(
             test_midi_sets_all_channel_mappings_when_setting_polyphonic_mode),
         midi_test(test_midi_shows_fm_parameter_ui),
