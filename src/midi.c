@@ -43,10 +43,12 @@ static MidiChannel midiChannels[MIDI_CHANNELS];
 static bool dynamicMode;
 static bool disableNonGeneralMidiCCs;
 static bool stickToDeviceType;
+static bool invertTotalLevel;
 
 static void allNotesOff(u8 chan);
 static void generalMidiReset(void);
 static void sendPong(void);
+static void setInvertTotalLevel(bool enabled);
 static void setDynamicMode(bool enabled);
 static void updateDeviceChannelFromAssociatedMidiChannel(
     DeviceChannel* devChan);
@@ -536,6 +538,10 @@ void midi_sysex(const u8* data, u16 length)
         = { SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
               SYSEX_UNUSED_MANU_ID, SYSEX_LOAD_PSG_ENVELOPE_COMMAND_ID };
 
+    const u8 INVERT_TOTAL_LEVEL_SEQUENCE[]
+        = { SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
+              SYSEX_UNUSED_MANU_ID, SYSEX_INVERT_TOTAL_LEVEL_COMMAND_ID };
+
     if (sysex_valid(data, length, GENERAL_MIDI_RESET_SEQUENCE,
             LENGTH_OF(GENERAL_MIDI_RESET_SEQUENCE), 0)) {
         generalMidiReset();
@@ -554,7 +560,9 @@ void midi_sysex(const u8* data, u16 length)
     } else if (sysex_valid(data, length, STICK_TO_DEVICE_TYPE_SEQUENCE,
                    LENGTH_OF(STICK_TO_DEVICE_TYPE_SEQUENCE), 1)) {
         setStickToDeviceType((bool)data[4]);
-
+    } else if (sysex_valid(data, length, INVERT_TOTAL_LEVEL_SEQUENCE,
+                   LENGTH_OF(INVERT_TOTAL_LEVEL_SEQUENCE), 1)) {
+        setInvertTotalLevel((bool)data[4]);
     } else if (memcmp(data, LOAD_PSG_ENVELOPE_SEQUENCE,
                    LENGTH_OF(LOAD_PSG_ENVELOPE_SEQUENCE))
         == 0) {
@@ -625,6 +633,9 @@ static void setFmChanParameter(DeviceChannel* devChan, u8 controller, u8 value)
     case CC_GENMDM_TOTAL_LEVEL_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
+        if (invertTotalLevel) {
+            value = 127 - value;
+        }
         synth_operatorTotalLevel(
             devChan->number, controller - CC_GENMDM_TOTAL_LEVEL_OP1, value);
         break;
@@ -748,6 +759,11 @@ static void setFmChanParameter(DeviceChannel* devChan, u8 controller, u8 value)
             "Ch %d: CC %02X %02X?", devChan->midiChannel, controller, value);
         break;
     }
+}
+
+static void setInvertTotalLevel(bool invert)
+{
+    invertTotalLevel = invert;
 }
 
 static void fmParameterCC(u8 chan, u8 controller, u8 value)

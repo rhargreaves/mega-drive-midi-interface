@@ -195,3 +195,17 @@ static void test_midi_sysex_loads_psg_envelope(UNUSED void** state)
 
     __real_midi_sysex(sequence, sizeof(sequence));
 }
+
+static void test_midi_sysex_inverts_total_level_values(UNUSED void** state)
+{
+    const u8 sequence[]
+        = { SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
+              SYSEX_UNUSED_MANU_ID, SYSEX_INVERT_TOTAL_LEVEL_COMMAND_ID, 0x01 };
+
+    __real_midi_sysex(sequence, sizeof(sequence));
+
+    expect_value(__wrap_synth_operatorTotalLevel, channel, 0);
+    expect_value(__wrap_synth_operatorTotalLevel, op, 0);
+    expect_value(__wrap_synth_operatorTotalLevel, totalLevel, 126);
+    __real_midi_cc(0, CC_GENMDM_TOTAL_LEVEL_OP1, 1);
+}
