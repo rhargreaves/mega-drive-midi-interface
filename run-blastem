@@ -1,0 +1,4 @@
+#!/bin/bash
+set -euo pipefail
+
+./utils/run-blastem bin/out.bin > /dev/null &
