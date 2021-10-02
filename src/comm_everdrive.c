@@ -7,7 +7,7 @@
 #define STE_USB_RD_RDY 4
 #define STE_USB_WR_RDY 2 // usb write ready bit
 
-u8 comm_everdrive_readReady(void)
+u8 comm_everdrive_read_ready(void)
 {
     return SSF_REG16(REG_STE) & STE_USB_RD_RDY;
 }
@@ -18,7 +18,7 @@ u8 comm_everdrive_read(void)
     return SSF_REG16(REG_USB);
 }
 
-u8 comm_everdrive_writeReady(void)
+u8 comm_everdrive_write_ready(void)
 {
     return SSF_REG16(REG_STE) & STE_USB_WR_RDY;
 }

@@ -43,7 +43,8 @@ static void bi_fifo_rd(void* data, u16 len)
             block -= 4;
         }
 
-        while (block--) *data8++ = REG_FIFO_DATA;
+        while (block--)
+            *data8++ = REG_FIFO_DATA;
     }
 }
 
@@ -73,7 +74,7 @@ static void bi_cmd_usb_wr(void* data, u16 len)
     bi_fifo_wr(data, len);
 }
 
-u8 comm_everdrive_pro_readReady(void)
+u8 comm_everdrive_pro_read_ready(void)
 {
     if (!pro_present()) {
         return 0;
@@ -91,7 +92,7 @@ u8 comm_everdrive_pro_read(void)
     return data;
 }
 
-u8 comm_everdrive_pro_writeReady(void)
+u8 comm_everdrive_pro_write_ready(void)
 {
     return TRUE;
 }

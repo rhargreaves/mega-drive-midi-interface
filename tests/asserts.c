@@ -6,13 +6,13 @@
 
 void stub_usb_receive_byte(u8 value)
 {
-    will_return(__wrap_comm_everdrive_readReady, 1);
+    will_return(__wrap_comm_everdrive_read_ready, 1);
     will_return(__wrap_comm_everdrive_read, value);
 }
 
 void expect_usb_sent_byte(u8 value)
 {
-    will_return(__wrap_comm_everdrive_writeReady, 1);
+    will_return(__wrap_comm_everdrive_write_ready, 1);
     expect_value(__wrap_comm_everdrive_write, data, value);
 }
 

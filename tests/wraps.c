@@ -464,7 +464,7 @@ void __wrap_comm_everdrive_init(void)
 {
 }
 
-u8 __wrap_comm_everdrive_readReady(void)
+u8 __wrap_comm_everdrive_read_ready(void)
 {
     return mock_type(u8);
 }
@@ -474,7 +474,7 @@ u8 __wrap_comm_everdrive_read(void)
     return mock_type(u8);
 }
 
-u8 __wrap_comm_everdrive_writeReady(void)
+u8 __wrap_comm_everdrive_write_ready(void)
 {
     return mock_type(u8);
 }
@@ -488,7 +488,7 @@ void __wrap_comm_everdrive_pro_init(void)
 {
 }
 
-u8 __wrap_comm_everdrive_pro_readReady(void)
+u8 __wrap_comm_everdrive_pro_read_ready(void)
 {
     return mock_type(u8);
 }
@@ -498,7 +498,7 @@ u8 __wrap_comm_everdrive_pro_read(void)
     return mock_type(u8);
 }
 
-u8 __wrap_comm_everdrive_pro_writeReady(void)
+u8 __wrap_comm_everdrive_pro_write_ready(void)
 {
     return mock_type(u8);
 }
@@ -548,7 +548,7 @@ void __wrap_comm_serial_init(void)
 {
 }
 
-u8 __wrap_comm_serial_readReady(void)
+u8 __wrap_comm_serial_read_ready(void)
 {
     return mock_type(u8);
 }
@@ -558,7 +558,7 @@ u8 __wrap_comm_serial_read(void)
     return mock_type(u8);
 }
 
-u8 __wrap_comm_serial_writeReady(void)
+u8 __wrap_comm_serial_write_ready(void)
 {
     return mock_type(u8);
 }

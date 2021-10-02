@@ -296,7 +296,7 @@ static void printChanActivity(u16 busy)
 static void printBaudRate(void)
 {
     char baudRateText[9];
-    v_sprintf(baudRateText, "%dbps", comm_serial_baudRate());
+    v_sprintf(baudRateText, "%dbps", comm_serial_baud_rate());
     drawText(baudRateText, 17, MAX_EFFECTIVE_Y);
 }
 

@@ -35,7 +35,7 @@ void buffer_write(u8 data)
     }
 }
 
-u8 buffer_canRead(void)
+u8 buffer_can_read(void)
 {
     return length != 0;
 }
@@ -45,7 +45,7 @@ u16 buffer_available(void)
     return BUFFER_SIZE - length;
 }
 
-bool buffer_canWrite(void)
+bool buffer_can_write(void)
 {
     return length != BUFFER_SIZE;
 }

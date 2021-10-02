@@ -121,11 +121,11 @@ void comm_megawifi_init(void)
     log_info("MW: Listening on UDP %d", UDP_CONTROL_PORT);
 }
 
-u8 comm_megawifi_readReady(void)
+u8 comm_megawifi_read_ready(void)
 {
     if (!recvData)
         return false;
-    return buffer_canRead();
+    return buffer_can_read();
 }
 
 u8 comm_megawifi_read(void)
@@ -133,7 +133,7 @@ u8 comm_megawifi_read(void)
     return buffer_read();
 }
 
-u8 comm_megawifi_writeReady(void)
+u8 comm_megawifi_write_ready(void)
 {
     return 0;
 }
@@ -242,7 +242,7 @@ void comm_megawifi_tick(void)
 void comm_megawifi_midiEmitCallback(u8 data)
 {
     recvData = true;
-    if (!buffer_canWrite()) {
+    if (!buffer_can_write()) {
         log_warn("MW: MIDI buffer full!");
         return;
     }

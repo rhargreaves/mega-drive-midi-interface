@@ -117,19 +117,19 @@ MD_MOCKS=SYS_setVIntCallback \
 	SPR_setVisibility \
 	VDP_setPaletteColors \
 	comm_serial_init \
-	comm_serial_readReady \
+	comm_serial_read_ready \
 	comm_serial_read \
-	comm_serial_writeReady \
+	comm_serial_write_ready \
 	comm_serial_write \
 	comm_everdrive_init \
-	comm_everdrive_readReady \
+	comm_everdrive_read_ready \
 	comm_everdrive_read \
-	comm_everdrive_writeReady \
+	comm_everdrive_write_ready \
 	comm_everdrive_write \
 	comm_everdrive_pro_init \
-	comm_everdrive_pro_readReady \
+	comm_everdrive_pro_read_ready \
 	comm_everdrive_pro_read \
-	comm_everdrive_pro_writeReady \
+	comm_everdrive_pro_write_ready \
 	comm_everdrive_pro_write \
 	SYS_getCPULoad \
 	getFPS \

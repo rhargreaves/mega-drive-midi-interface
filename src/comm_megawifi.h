@@ -3,9 +3,9 @@
 #include <types.h>
 
 void comm_megawifi_init(void);
-u8 comm_megawifi_readReady(void);
+u8 comm_megawifi_read_ready(void);
 u8 comm_megawifi_read(void);
-u8 comm_megawifi_writeReady(void);
+u8 comm_megawifi_write_ready(void);
 void comm_megawifi_write(u8 data);
 
 void comm_megawifi_tick(void);

@@ -7,6 +7,6 @@
 void buffer_init(void);
 u8 buffer_read(void);
 void buffer_write(u8 data);
-u8 buffer_canRead(void);
-bool buffer_canWrite(void);
+u8 buffer_can_read(void);
+bool buffer_can_write(void);
 u16 buffer_available(void);

@@ -4,7 +4,7 @@
 
 static bool recvData = false;
 
-u16 comm_serial_baudRate(void)
+u16 comm_serial_baud_rate(void)
 {
     switch (serial_sctrl() & 0xC0) {
     case SCTRL_300_BPS:
@@ -33,7 +33,9 @@ static void recvReadyCallback(void)
 
 static void flushRRDY(void)
 {
-    while (serial_readyToReceive()) { serial_receive(); }
+    while (serial_readyToReceive()) {
+        serial_receive();
+    }
 }
 
 void comm_serial_init(void)
@@ -44,11 +46,11 @@ void comm_serial_init(void)
     flushRRDY();
 }
 
-u8 comm_serial_readReady(void)
+u8 comm_serial_read_ready(void)
 {
     if (!recvData)
         return false;
-    return buffer_canRead();
+    return buffer_can_read();
 }
 
 u8 comm_serial_read(void)
@@ -56,7 +58,7 @@ u8 comm_serial_read(void)
     return buffer_read();
 }
 
-u8 comm_serial_writeReady(void)
+u8 comm_serial_write_ready(void)
 {
     return serial_readyToSend();
 }

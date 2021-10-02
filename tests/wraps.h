@@ -101,21 +101,21 @@ void __wrap_SYS_setExtIntCallback(VoidCallback* CB);
 void __wrap_SYS_setInterruptMaskLevel(u16 value);
 void __wrap_comm_init(void);
 void __wrap_comm_serial_init(void);
-u8 __wrap_comm_serial_readReady(void);
+u8 __wrap_comm_serial_read_ready(void);
 u8 __wrap_comm_serial_read(void);
-u8 __wrap_comm_serial_writeReady(void);
+u8 __wrap_comm_serial_write_ready(void);
 void __wrap_comm_serial_write(u8 data);
 
 void __wrap_comm_everdrive_init(void);
-u8 __wrap_comm_everdrive_readReady(void);
+u8 __wrap_comm_everdrive_read_ready(void);
 u8 __wrap_comm_everdrive_read(void);
-u8 __wrap_comm_everdrive_writeReady(void);
+u8 __wrap_comm_everdrive_write_ready(void);
 void __wrap_comm_everdrive_write(u8 data);
 
 void __wrap_comm_everdrive_pro_init(void);
-u8 __wrap_comm_everdrive_pro_readReady(void);
+u8 __wrap_comm_everdrive_pro_read_ready(void);
 u8 __wrap_comm_everdrive_pro_read(void);
-u8 __wrap_comm_everdrive_pro_writeReady(void);
+u8 __wrap_comm_everdrive_pro_write_ready(void);
 void __wrap_comm_everdrive_pro_write(u8 data);
 
 u16 __wrap_SYS_getCPULoad();
