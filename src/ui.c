@@ -297,7 +297,7 @@ static void printBaudRate(void)
 {
     char baudRateText[9];
     v_sprintf(baudRateText, "%dbps", comm_serial_baud_rate());
-    drawText(baudRateText, 17, MAX_EFFECTIVE_Y);
+    drawText(baudRateText, 18, MAX_EFFECTIVE_Y);
 }
 
 static void printCommMode(void)
@@ -306,7 +306,7 @@ static void printCommMode(void)
         return;
     }
     const char* MODES_TEXT[]
-        = { "Waiting", "X7 USB ", "PRO USB", "Serial ", "MegaWiFi", "Unknown" };
+        = { "Waiting", "ED X7  ", "ED PRO ", "Serial ", "M.WiFi ", "???    " };
     u16 index;
     switch (comm_mode()) {
     case Discovery:
@@ -334,7 +334,7 @@ static void printCommMode(void)
         index = 5;
         break;
     }
-    drawText(MODES_TEXT[index], 10, MAX_EFFECTIVE_Y);
+    drawText(MODES_TEXT[index], 11, MAX_EFFECTIVE_Y);
 }
 
 static void printLoad(void)
@@ -352,8 +352,7 @@ static void printLoad(void)
 
 static void printDynamicModeStatus(bool enabled)
 {
-    drawText(
-        enabled ? "Dynamic" : " Static", MAX_EFFECTIVE_X - 6, MAX_EFFECTIVE_Y);
+    drawText(enabled ? "D" : "S", MAX_EFFECTIVE_X, MIDI_Y);
 }
 
 static void printDynamicModeIfNeeded(void)
