@@ -91,7 +91,7 @@ MOCKS=midi_process \
 	comm_megawifi_init \
 	comm_megawifi_tick \
 	comm_megawifi_send \
-	midi_receiver_readIfCommReady
+	midi_receiver_read_if_comm_ready
 
 MD_MOCKS=SYS_setVIntCallback \
 	VDP_setTextPalette \

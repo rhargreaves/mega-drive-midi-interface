@@ -747,7 +747,7 @@ mw_err __wrap_mw_sock_conn_wait(uint8_t ch, int tout_frames)
     return mock_type(mw_err);
 }
 
-void __wrap_midi_receiver_readIfCommReady(void)
+void __wrap_midi_receiver_read_if_comm_ready(void)
 {
     function_called();
 }

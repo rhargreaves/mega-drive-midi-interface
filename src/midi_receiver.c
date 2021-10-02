@@ -39,7 +39,7 @@ void midi_receiver_init(void)
 {
 }
 
-void midi_receiver_readIfCommReady(void)
+void midi_receiver_read_if_comm_ready(void)
 {
     while (comm_read_ready()) {
         midi_receiver_read();

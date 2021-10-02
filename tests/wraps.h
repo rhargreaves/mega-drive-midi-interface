@@ -149,7 +149,7 @@ mw_err __wrap_mw_udp_set(uint8_t ch, const char* dst_addr, const char* dst_port,
     const char* src_port);
 mw_err __wrap_mw_sock_conn_wait(uint8_t ch, int tout_frames);
 
-void __wrap_midi_receiver_readIfCommReady(void);
+void __wrap_midi_receiver_read_if_comm_ready(void);
 void __wrap_scheduler_tick(void);
 void __wrap_comm_megawifi_tick(void);
 void __wrap_comm_megawifi_send(u8 ch, char* data, u16 len);

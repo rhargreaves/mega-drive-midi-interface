@@ -40,7 +40,7 @@ static void onTick(void)
 {
     ticks++;
     comm_megawifi_tick();
-    midi_receiver_readIfCommReady();
+    midi_receiver_read_if_comm_ready();
 }
 
 void scheduler_tick(void)
