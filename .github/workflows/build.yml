@@ -1,7 +1,7 @@
 name: Build & Release
 on:
   push:
-    branches: master
+    branches: main
   create:
     tags:
       - v*
