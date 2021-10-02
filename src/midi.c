@@ -15,10 +15,6 @@
 #define CHANNEL_UNASSIGNED 0xFF
 #define LENGTH_OF(x) (sizeof(x) / sizeof(x[0]))
 
-static const u8 SYSEX_EXTENDED_MANU_ID_SECTION = 0x00;
-static const u8 SYSEX_UNUSED_EUROPEAN_SECTION = 0x22;
-static const u8 SYSEX_UNUSED_MANU_ID = 0x77;
-
 static DeviceChannel deviceChannels[DEV_CHANS];
 
 static const VTable PSG_VTable = { midi_psg_noteOn, midi_psg_noteOff,
@@ -514,13 +510,6 @@ static void loadPsgEnvelope(const u8* data, u16 length)
 
 void midi_sysex(const u8* data, u16 length)
 {
-    const u8 SYSEX_REMAP_COMMAND_ID = 0x00;
-    const u8 SYSEX_PING_COMMAND_ID = 0x01;
-    const u8 SYSEX_DYNAMIC_COMMAND_ID = 0x03;
-    const u8 SYSEX_NON_GENERAL_MIDI_CCS_COMMAND_ID = 0x04;
-    const u8 SYSEX_STICK_TO_DEVICE_TYPE_COMMAND_ID = 0x05;
-    const u8 SYSEX_LOAD_PSG_ENVELOPE_COMMAND_ID = 0x06;
-
     const u8 GENERAL_MIDI_RESET_SEQUENCE[] = { 0x7E, 0x7F, 0x09, 0x01 };
 
     const u8 REMAP_SEQUENCE[]
@@ -575,8 +564,6 @@ void midi_sysex(const u8* data, u16 length)
 
 static void sendPong(void)
 {
-    const u8 SYSEX_PONG_COMMAND_ID = 0x02;
-
     const u8 pongSequence[]
         = { SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
               SYSEX_UNUSED_MANU_ID, SYSEX_PONG_COMMAND_ID };

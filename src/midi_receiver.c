@@ -169,8 +169,6 @@ static void systemMessage(u8 status)
 static void readSysEx(void)
 {
     const u16 BUFFER_LENGTH = 256;
-    const u8 SYSEX_END = 0xF7;
-
     u8 buffer[BUFFER_LENGTH];
     u8 data;
     u16 index = 0;

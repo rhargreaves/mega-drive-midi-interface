@@ -159,8 +159,8 @@ static void test_midi_sysex_disables_fm_parameter_CCs(UNUSED void** state)
         SYSEX_EXTENDED_MANU_ID_SECTION,
         SYSEX_UNUSED_EUROPEAN_SECTION,
         SYSEX_UNUSED_MANU_ID,
-        SYSEX_NON_GENERAL_MIDI_CC_COMMAND_ID,
-        SYSEX_NON_GENERAL_MIDI_CC_DISABLED,
+        SYSEX_NON_GENERAL_MIDI_CCS_COMMAND_ID,
+        SYSEX_NON_GENERAL_MIDI_CCS_DISABLED,
     };
 
     __real_midi_sysex(sequence, sizeof(sequence));

@@ -14,7 +14,6 @@
 #define STATUS_PROGRAM 0xC0
 #define STATUS_RESET 0xFF
 #define STATUS_SYSEX_START 0xF0
-#define SYSEX_END 0xF7
 
 void midi_receiver_read(void);
 

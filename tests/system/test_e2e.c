@@ -11,12 +11,6 @@
 #include "wraps.h"
 #include <cmocka.h>
 
-static const u8 SYSEX_START = 0xF0;
-static const u8 SYSEX_EXTENDED_MANU_ID_SECTION = 0x00;
-static const u8 SYSEX_UNUSED_EUROPEAN_SECTION = 0x22;
-static const u8 SYSEX_UNUSED_MANU_ID = 0x77;
-static const u8 SYSEX_END = 0xF7;
-
 static int test_e2e_setup(void** state)
 {
     wraps_disable_checks();
@@ -165,7 +159,6 @@ static void test_general_midi_reset_sysex_stops_all_notes(void** state)
 
 static void remapChannel(u8 midiChannel, u8 deviceChannel)
 {
-    const u8 SYSEX_REMAP_COMMAND_ID = 0x00;
     u8 sysExRemapSequence[] = { SYSEX_START, SYSEX_EXTENDED_MANU_ID_SECTION,
         SYSEX_UNUSED_EUROPEAN_SECTION, SYSEX_UNUSED_MANU_ID,
         SYSEX_REMAP_COMMAND_ID, midiChannel, deviceChannel, SYSEX_END };
@@ -239,9 +232,6 @@ static void test_set_device_for_midi_channel_1_to_psg()
 
 static void test_pong_received_after_ping_sent()
 {
-    const u8 SYSEX_PING_COMMAND_ID = 0x01;
-    const u8 SYSEX_PONG_COMMAND_ID = 0x02;
-
     const u8 sysExPingSequence[] = { SYSEX_START,
         SYSEX_EXTENDED_MANU_ID_SECTION, SYSEX_UNUSED_EUROPEAN_SECTION,
         SYSEX_UNUSED_MANU_ID, SYSEX_PING_COMMAND_ID, SYSEX_END };
@@ -263,8 +253,6 @@ static void test_pong_received_after_ping_sent()
 
 static void test_loads_psg_envelope()
 {
-    const u8 SYSEX_LOAD_PSG_ENVELOPE_COMMAND_ID = 0x06;
-
     const u8 sysExPingSequence[]
         = { SYSEX_START, SYSEX_EXTENDED_MANU_ID_SECTION,
               SYSEX_UNUSED_EUROPEAN_SECTION, SYSEX_UNUSED_MANU_ID,
