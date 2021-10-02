@@ -72,7 +72,9 @@ static void megawifi_init(void)
     expect_ip_log();
     expect_udp_port_open(CH_CONTROL_PORT, "5006");
     expect_udp_port_open(CH_MIDI_PORT, "5007");
+#if DEBUG_MEGAWIFI_INIT
     expect_log_info("MW: Listening on UDP %d");
+#endif
     __real_comm_megawifi_init();
 }
 

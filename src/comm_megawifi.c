@@ -120,7 +120,9 @@ void comm_megawifi_init(void)
     if (err != MW_ERR_NONE) {
         return;
     }
+#if DEBUG_MEGAWIFI_INIT
     log_info("MW: Listening on UDP %d", UDP_CONTROL_PORT);
+#endif
 }
 
 u8 comm_megawifi_read_ready(void)
