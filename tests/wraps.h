@@ -9,13 +9,13 @@
 #include "log.h"
 #include "synth.h"
 
-extern bool __real_comm_readReady(void);
+extern bool __real_comm_read_ready(void);
 extern void __real_comm_init(void);
 extern void __real_comm_write(u8 data);
 extern u8 __real_comm_read(void);
-extern u16 __real_comm_idleCount(void);
-extern u16 __real_comm_busyCount(void);
-extern void __real_comm_resetCounts(void);
+extern u16 __real_comm_idle_count(void);
+extern u16 __real_comm_busy_count(void);
+extern void __real_comm_reset_counts(void);
 extern void __real_comm_megawifi_midiEmitCallback(u8 midiByte);
 
 void wraps_disable_checks(void);
@@ -51,7 +51,7 @@ void __wrap_synth_preset(u8 channel, const FmChannel* preset);
 void __wrap_synth_volume(u8 channel, u8 volume);
 const FmChannel* __wrap_synth_channelParameters(u8 channel);
 const Global* __wrap_synth_globalParameters();
-bool __wrap_comm_readReady(void);
+bool __wrap_comm_read_ready(void);
 u8 __wrap_comm_read(void);
 void __wrap_comm_write(u8 data);
 void __wrap_comm_megawifi_init(void);

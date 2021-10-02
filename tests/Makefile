@@ -35,10 +35,10 @@ MOCKS=midi_process \
 	comm_init \
 	comm_read \
 	comm_write \
-	comm_idleCount \
-	comm_busyCount \
-	comm_resetCounts \
-	comm_readReady \
+	comm_idle_count \
+	comm_busy_count \
+	comm_reset_counts \
+	comm_read_ready \
 	synth_init \
 	synth_noteOn \
 	synth_noteOff \

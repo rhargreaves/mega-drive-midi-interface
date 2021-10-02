@@ -17,7 +17,7 @@ static void switch_comm_type_to_everdrive(void)
     will_return(__wrap_comm_everdrive_read_ready, 1);
     will_return(__wrap_comm_everdrive_read, 50);
     __real_comm_read();
-    __real_comm_resetCounts();
+    __real_comm_reset_counts();
 }
 
 static void test_comm_reads_from_serial_when_ready(UNUSED void** state)
@@ -72,7 +72,7 @@ static void test_comm_idle_count_is_correct(UNUSED void** state)
     will_return(__wrap_comm_everdrive_read, 50);
 
     __real_comm_read();
-    u16 idle = __real_comm_idleCount();
+    u16 idle = __real_comm_idle_count();
 
     assert_int_equal(idle, 2);
 }
@@ -82,7 +82,7 @@ static void test_comm_busy_count_is_correct(UNUSED void** state)
     will_return(__wrap_comm_everdrive_read_ready, 1);
     will_return(__wrap_comm_everdrive_read, 50);
     __real_comm_read();
-    __real_comm_resetCounts();
+    __real_comm_reset_counts();
 
     will_return(__wrap_comm_everdrive_read_ready, 1);
     will_return(__wrap_comm_everdrive_read_ready, 1);
@@ -91,7 +91,7 @@ static void test_comm_busy_count_is_correct(UNUSED void** state)
 
     __real_comm_read();
     __real_comm_read();
-    u16 busy = __real_comm_busyCount();
+    u16 busy = __real_comm_busy_count();
 
     assert_int_equal(busy, 2);
 }
@@ -107,7 +107,7 @@ static void test_comm_clamps_idle_count(UNUSED void** state)
     will_return(__wrap_comm_everdrive_read, 50);
 
     __real_comm_read();
-    u16 idle = __real_comm_idleCount();
+    u16 idle = __real_comm_idle_count();
 
     assert_int_equal(idle, MAX_COMM_IDLE);
 }
@@ -122,7 +122,7 @@ static void test_comm_clamps_busy_count(UNUSED void** state)
         __real_comm_read();
     }
 
-    u16 busy = __real_comm_busyCount();
+    u16 busy = __real_comm_busy_count();
 
     assert_int_equal(busy, MAX_COMM_BUSY);
 }

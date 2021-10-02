@@ -21,9 +21,9 @@ typedef struct CommVTable CommVTable;
 
 struct CommVTable {
     void (*init)(void);
-    u8 (*readReady)(void);
+    u8 (*read_ready)(void);
     u8 (*read)(void);
-    u8 (*writeReady)(void);
+    u8 (*write_ready)(void);
     void (*write)(u8 data);
 };
 
@@ -74,13 +74,13 @@ static bool readReady(void)
 {
     if (activeCommType == NULL) {
         for (u16 i = 0; i < COMM_TYPES; i++) {
-            if (commTypes[i]->readReady()) {
+            if (commTypes[i]->read_ready()) {
                 activeCommType = commTypes[i];
                 return true;
             }
         }
         return false;
-    } else if (activeCommType->readReady()) {
+    } else if (activeCommType->read_ready()) {
         return true;
     } else {
         if (countsInBounds()) {
@@ -90,7 +90,7 @@ static bool readReady(void)
     }
 }
 
-bool comm_readReady(void)
+bool comm_read_ready(void)
 {
     return readReady();
 }
@@ -105,17 +105,17 @@ u8 comm_read(void)
     return activeCommType->read();
 }
 
-u16 comm_idleCount(void)
+u16 comm_idle_count(void)
 {
     return idle;
 }
 
-u16 comm_busyCount(void)
+u16 comm_busy_count(void)
 {
     return reads;
 }
 
-void comm_resetCounts(void)
+void comm_reset_counts(void)
 {
     idle = 0;
     reads = 0;
@@ -123,7 +123,7 @@ void comm_resetCounts(void)
 
 void comm_write(u8 data)
 {
-    while (!activeCommType->writeReady())
+    while (!activeCommType->write_ready())
         ;
     activeCommType->write(data);
 }

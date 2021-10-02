@@ -206,8 +206,8 @@ void ui_update(void)
 
 static u16 loadPercent(void)
 {
-    u16 idle = comm_idleCount();
-    u16 busy = comm_busyCount();
+    u16 idle = comm_idle_count();
+    u16 busy = comm_busy_count();
     if (idle == 0 && busy == 0) {
         return 0;
     }
@@ -345,7 +345,7 @@ static void printLoad(void)
     loadPercentSum = 0;
     VDP_setTextPalette(percent > 70 ? PAL1 : PAL0);
     v_sprintf(loadText, "Load %i%c  ", percent, '%');
-    comm_resetCounts();
+    comm_reset_counts();
     drawText(loadText, 0, MAX_EFFECTIVE_Y);
     VDP_setTextPalette(PAL0);
 }

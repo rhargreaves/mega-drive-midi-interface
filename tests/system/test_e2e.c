@@ -14,7 +14,7 @@
 static int test_e2e_setup(void** state)
 {
     wraps_disable_checks();
-    comm_resetCounts();
+    comm_reset_counts();
     comm_init();
     midi_init(M_BANK_0, P_BANK_0, ENVELOPES);
     wraps_enable_checks();

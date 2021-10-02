@@ -215,7 +215,7 @@ void __wrap_comm_write(u8 data)
     check_expected(data);
 }
 
-bool __wrap_comm_readReady(void)
+bool __wrap_comm_read_ready(void)
 {
     return mock_type(bool);
 }
@@ -225,17 +225,17 @@ u8 __wrap_comm_read(void)
     return mock_type(u8);
 }
 
-u16 __wrap_comm_idleCount(void)
+u16 __wrap_comm_idle_count(void)
 {
     return mock_type(u16);
 }
 
-u16 __wrap_comm_busyCount(void)
+u16 __wrap_comm_busy_count(void)
 {
     return mock_type(u16);
 }
 
-void __wrap_comm_resetCounts(void)
+void __wrap_comm_reset_counts(void)
 {
 }
 
