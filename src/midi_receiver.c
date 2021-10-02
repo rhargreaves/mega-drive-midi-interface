@@ -53,7 +53,7 @@ static void debugPrintEvent(u8 status, u8 data1, u8 data2)
     char t[30];
     v_sprintf(
         t, "S:%02X D1:%02X D2:%02X Sn:%05u", status, data1, data2, seqNum);
-    ui_drawText(t, 7, 1);
+    ui_draw_text(t, 7, 1);
 #else
     (void)status;
     (void)data1;

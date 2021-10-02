@@ -802,7 +802,7 @@ void midi_cc(u8 chan, u8 controller, u8 value)
     case CC_SHOW_PARAMETERS_ON_UI:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        ui_fm_setMidiChannelParametersVisibility(chan, RANGE(value, 2));
+        ui_fm_set_parameters_visibility(chan, RANGE(value, 2));
         break;
     case CC_DEVICE_SELECT:
         if (isIgnoringNonGeneralMidiCCs())

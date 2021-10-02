@@ -83,7 +83,7 @@ MOCKS=midi_process \
 	log_info \
 	log_warn \
 	log_dequeue \
-	ui_fm_setMidiChannelParametersVisibility \
+	ui_fm_set_parameters_visibility \
 	ui_update \
 	scheduler_init \
 	scheduler_tick \

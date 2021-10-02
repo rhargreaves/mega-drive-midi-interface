@@ -79,27 +79,27 @@ static void synthParameterUpdated(u8 fmChan, ParameterUpdated parameterUpdated)
 static void printChannelParameterHeadings(void)
 {
     VDP_setTextPalette(PAL3);
-    ui_drawText("Op.   1   2   3   4", OP_HEADING_X, BASE_Y + 3);
-    ui_drawText(" TL", OP_HEADING_X, BASE_Y + 4);
-    ui_drawText(" AR", OP_HEADING_X, BASE_Y + 5);
-    ui_drawText("MUL", OP_HEADING_X, BASE_Y + 6);
-    ui_drawText(" DT", OP_HEADING_X, BASE_Y + 7);
-    ui_drawText(" RS", OP_HEADING_X, BASE_Y + 8);
-    ui_drawText(" AM", OP_HEADING_X, BASE_Y + 9);
-    ui_drawText("D1R", OP_HEADING_X, BASE_Y + 10);
-    ui_drawText("D2R", OP_HEADING_X, BASE_Y + 11);
-    ui_drawText(" SL", OP_HEADING_X, BASE_Y + 12);
-    ui_drawText(" RR", OP_HEADING_X, BASE_Y + 13);
-    ui_drawText("SSG", OP_HEADING_X, BASE_Y + 14);
+    ui_draw_text("Op.   1   2   3   4", OP_HEADING_X, BASE_Y + 3);
+    ui_draw_text(" TL", OP_HEADING_X, BASE_Y + 4);
+    ui_draw_text(" AR", OP_HEADING_X, BASE_Y + 5);
+    ui_draw_text("MUL", OP_HEADING_X, BASE_Y + 6);
+    ui_draw_text(" DT", OP_HEADING_X, BASE_Y + 7);
+    ui_draw_text(" RS", OP_HEADING_X, BASE_Y + 8);
+    ui_draw_text(" AM", OP_HEADING_X, BASE_Y + 9);
+    ui_draw_text("D1R", OP_HEADING_X, BASE_Y + 10);
+    ui_draw_text("D2R", OP_HEADING_X, BASE_Y + 11);
+    ui_draw_text(" SL", OP_HEADING_X, BASE_Y + 12);
+    ui_draw_text(" RR", OP_HEADING_X, BASE_Y + 13);
+    ui_draw_text("SSG", OP_HEADING_X, BASE_Y + 14);
 
-    ui_drawText("MIDI", FM_HEADING_X, BASE_Y + 3);
-    ui_drawText("FM", FM_HEADING_X + 8, BASE_Y + 3);
-    ui_drawText("Alg", FM_HEADING_X, BASE_Y + 5);
-    ui_drawText("FB", FM_HEADING_X, BASE_Y + 6);
-    ui_drawText("LFO", FM_HEADING_X, BASE_Y + 9);
-    ui_drawText("AMS", FM_HEADING_X, BASE_Y + 10);
-    ui_drawText("FMS", FM_HEADING_X, BASE_Y + 11);
-    ui_drawText("Pan", FM_HEADING_X, BASE_Y + 12);
+    ui_draw_text("MIDI", FM_HEADING_X, BASE_Y + 3);
+    ui_draw_text("FM", FM_HEADING_X + 8, BASE_Y + 3);
+    ui_draw_text("Alg", FM_HEADING_X, BASE_Y + 5);
+    ui_draw_text("FB", FM_HEADING_X, BASE_Y + 6);
+    ui_draw_text("LFO", FM_HEADING_X, BASE_Y + 9);
+    ui_draw_text("AMS", FM_HEADING_X, BASE_Y + 10);
+    ui_draw_text("FMS", FM_HEADING_X, BASE_Y + 11);
+    ui_draw_text("Pan", FM_HEADING_X, BASE_Y + 12);
     VDP_setTextPalette(PAL0);
 }
 
@@ -191,7 +191,7 @@ static bool updateFmValue(u8* last, const u8* current, bool forceRefresh,
     FormatTextFunc formatFunc, u8 x, u8 y)
 {
     if (*last != *current || forceRefresh) {
-        ui_drawText(formatFunc(*current), x, y);
+        ui_draw_text(formatFunc(*current), x, y);
         *last = *current;
         return true;
     }
@@ -207,7 +207,7 @@ static void updateOpValue(
     if (*last != *current || forceRefresh) {
         char buffer[4];
         v_sprintf(buffer, "%3d", *current);
-        ui_drawText(buffer, OP_VALUE_X + (op * OP_VALUE_GAP), BASE_Y + line);
+        ui_draw_text(buffer, OP_VALUE_X + (op * OP_VALUE_GAP), BASE_Y + line);
         *last = *current;
     }
 }
@@ -294,19 +294,19 @@ static void updateFmValuesIfChanSelected(void)
     }
 }
 
-void ui_fm_setMidiChannelParametersVisibility(u8 chan, bool show)
+void ui_fm_set_parameters_visibility(u8 chan, bool show)
 {
     showChanParameters = show;
     chanParasMidiChan = chan;
     if (show) {
-        ui_hideLogs();
+        ui_hide_logs();
         forceRefresh = true;
         printChannelParameterHeadings();
     } else {
         VDP_clearTextArea(0, MARGIN_Y + BASE_Y + 3, MAX_X, 12);
         hideAllAlgorithms();
         SPR_update();
-        ui_showLogs();
+        ui_show_logs();
     }
     synthParameterValuesDirty = true;
 }

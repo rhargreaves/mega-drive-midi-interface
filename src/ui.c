@@ -151,12 +151,12 @@ static void printLog(void)
     logCurrentY++;
 }
 
-void ui_showLogs(void)
+void ui_show_logs(void)
 {
     showLogs = true;
 }
 
-void ui_hideLogs(void)
+void ui_hide_logs(void)
 {
     clearLogArea();
     showLogs = false;
@@ -214,7 +214,7 @@ static u16 loadPercent(void)
     return (busy * 100) / (idle + busy);
 }
 
-void ui_drawText(const char* text, u16 x, u16 y)
+void ui_draw_text(const char* text, u16 x, u16 y)
 {
     drawText(text, x, y);
 }

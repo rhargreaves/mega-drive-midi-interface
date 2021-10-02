@@ -363,7 +363,7 @@ void __wrap_psg_attenuation(u8 channel, u8 attenuation)
     check_expected(attenuation);
 }
 
-void __wrap_ui_fm_setMidiChannelParametersVisibility(u8 chan, bool show)
+void __wrap_ui_fm_set_parameters_visibility(u8 chan, bool show)
 {
     check_expected(chan);
     check_expected(show);

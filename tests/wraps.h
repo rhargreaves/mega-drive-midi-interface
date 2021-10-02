@@ -73,7 +73,7 @@ DeviceChannel* __wrap_midi_channel_mappings(void);
 void __wrap_midi_psg_tick(void);
 void __wrap_midi_psg_load_envelope(const u8* eef);
 void __wrap_midi_reset(void);
-void __wrap_ui_fm_setMidiChannelParametersVisibility(u8 chan, bool show);
+void __wrap_ui_fm_set_parameters_visibility(u8 chan, bool show);
 void __wrap_ui_update(void);
 void __wrap_YM2612_writeReg(const u16 part, const u8 reg, const u8 data);
 void __wrap_VDP_drawText(const char* str, u16 x, u16 y);
