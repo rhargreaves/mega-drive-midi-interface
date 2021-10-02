@@ -50,6 +50,7 @@ static void generalMidiReset(void);
 static void sendPong(void);
 static void setInvertTotalLevel(bool enabled);
 static void setDynamicMode(bool enabled);
+static void setOperatorTotalLevel(u8 chan, u8 op, u8 value);
 static void updateDeviceChannelFromAssociatedMidiChannel(
     DeviceChannel* devChan);
 static DeviceChannel* deviceChannelByMidiChannel(u8 midiChannel);
@@ -614,6 +615,16 @@ static void setDynamicMode(bool enabled)
     }
 }
 
+static void setOperatorTotalLevel(u8 chan, u8 op, u8 value)
+{
+    const u8 MAX_TOTAL_LEVEL = 127;
+
+    if (invertTotalLevel) {
+        value = MAX_TOTAL_LEVEL - value;
+    }
+    synth_operatorTotalLevel(chan, op, value);
+}
+
 static void setFmChanParameter(DeviceChannel* devChan, u8 controller, u8 value)
 {
     switch (controller) {
@@ -633,10 +644,7 @@ static void setFmChanParameter(DeviceChannel* devChan, u8 controller, u8 value)
     case CC_GENMDM_TOTAL_LEVEL_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        if (invertTotalLevel) {
-            value = 127 - value;
-        }
-        synth_operatorTotalLevel(
+        setOperatorTotalLevel(
             devChan->number, controller - CC_GENMDM_TOTAL_LEVEL_OP1, value);
         break;
     case CC_GENMDM_MULTIPLE_OP1:
