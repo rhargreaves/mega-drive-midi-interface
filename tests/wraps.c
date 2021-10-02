@@ -323,7 +323,7 @@ void __wrap_midi_psg_tick(void)
     function_called();
 }
 
-void __wrap_midi_psg_loadEnvelope(const u8* eef)
+void __wrap_midi_psg_load_envelope(const u8* eef)
 {
     check_expected_ptr(eef);
 }
@@ -340,7 +340,7 @@ void __wrap_fm_writeReg(u16 part, u8 reg, u8 data)
     check_expected(data);
 }
 
-void __wrap_psg_noteOn(u8 channel, u16 freq)
+void __wrap_psg_note_on(u8 channel, u16 freq)
 {
     if (disableChecks)
         return;
@@ -348,7 +348,7 @@ void __wrap_psg_noteOn(u8 channel, u16 freq)
     check_expected(freq);
 }
 
-void __wrap_psg_noteOff(u8 channel)
+void __wrap_psg_note_off(u8 channel)
 {
     if (disableChecks)
         return;

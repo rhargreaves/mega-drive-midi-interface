@@ -17,9 +17,9 @@
 
 static DeviceChannel deviceChannels[DEV_CHANS];
 
-static const VTable PSG_VTable = { midi_psg_noteOn, midi_psg_noteOff,
-    midi_psg_channelVolume, midi_psg_pitchBend, midi_psg_program,
-    midi_psg_allNotesOff, midi_psg_pan };
+static const VTable PSG_VTable = { midi_psg_note_on, midi_psg_note_off,
+    midi_psg_channel_volume, midi_psg_pitch_bend, midi_psg_program,
+    midi_psg_all_notes_off, midi_psg_pan };
 
 static const VTable FM_VTable = { midi_fm_noteOn, midi_fm_noteOff,
     midi_fm_channelVolume, midi_fm_pitchBend, midi_fm_program,
@@ -497,7 +497,7 @@ static void loadPsgEnvelope(const u8* data, u16 length)
         buffer[eefStepIndex++] = (data[i] << 4) | data[i + 1];
     }
     buffer[eefStepIndex] = EEF_END;
-    midi_psg_loadEnvelope(buffer);
+    midi_psg_load_envelope(buffer);
     log_info("Loaded User Defined Envelope");
 }
 

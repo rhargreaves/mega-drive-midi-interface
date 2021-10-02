@@ -403,7 +403,7 @@ static void test_midi_loads_psg_envelope(UNUSED void** state)
     const u8 chan = MIN_PSG_CHAN;
     const u8 eef[] = { 0x66, EEF_END };
 
-    __real_midi_psg_loadEnvelope(eef);
+    __real_midi_psg_load_envelope(eef);
 
     expect_psg_tone(0, 0x17c);
     expect_psg_attenuation(0, 6);

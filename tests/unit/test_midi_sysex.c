@@ -186,7 +186,7 @@ static void test_midi_sysex_loads_psg_envelope(UNUSED void** state)
     const u8 eef[] = { 0x11, EEF_END };
     const u8 eefLength = sizeof(eef) / sizeof(u8);
 
-    expect_memory(__wrap_midi_psg_loadEnvelope, eef, eef, eefLength);
+    expect_memory(__wrap_midi_psg_load_envelope, eef, eef, eefLength);
 
     expect_memory(__wrap_log_info, fmt, "Loaded User Defined Envelope", 29);
 

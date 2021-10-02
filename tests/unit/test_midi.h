@@ -36,7 +36,7 @@ extern void __real_midi_sysex(const u8* data, u16 length);
 extern bool __real_midi_dynamic_mode(void);
 extern DeviceChannel* __real_midi_channel_mappings(void);
 extern void __real_midi_psg_tick(void);
-extern void __real_midi_psg_loadEnvelope(const u8* eef);
+extern void __real_midi_psg_load_envelope(const u8* eef);
 extern void __real_midi_reset(void);
 
 int test_midi_setup(UNUSED void** state);
