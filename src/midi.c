@@ -21,9 +21,9 @@ static const VTable PSG_VTable = { midi_psg_note_on, midi_psg_note_off,
     midi_psg_channel_volume, midi_psg_pitch_bend, midi_psg_program,
     midi_psg_all_notes_off, midi_psg_pan };
 
-static const VTable FM_VTable = { midi_fm_noteOn, midi_fm_noteOff,
-    midi_fm_channelVolume, midi_fm_pitchBend, midi_fm_program,
-    midi_fm_allNotesOff, midi_fm_pan };
+static const VTable FM_VTable = { midi_fm_note_on, midi_fm_note_off,
+    midi_fm_channel_volume, midi_fm_pitch_bend, midi_fm_program,
+    midi_fm_all_notes_off, midi_fm_pan };
 
 typedef enum DeviceSelect DeviceSelect;
 

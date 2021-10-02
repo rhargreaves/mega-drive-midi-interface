@@ -54,7 +54,7 @@ void midi_fm_init(const FmChannel** defaultPresets,
     synth_init(presets[0]);
 }
 
-void midi_fm_noteOn(u8 chan, u8 pitch, u8 velocity)
+void midi_fm_note_on(u8 chan, u8 pitch, u8 velocity)
 {
     if (pitchIsOutOfRange(pitch)) {
         return;
@@ -72,20 +72,20 @@ void midi_fm_noteOn(u8 chan, u8 pitch, u8 velocity)
     synth_noteOn(chan);
 }
 
-void midi_fm_noteOff(u8 chan, u8 pitch)
+void midi_fm_note_off(u8 chan, u8 pitch)
 {
     (void)pitch;
     synth_noteOff(chan);
 }
 
-void midi_fm_channelVolume(u8 chan, u8 volume)
+void midi_fm_channel_volume(u8 chan, u8 volume)
 {
     MidiFmChannel* fmChan = &fmChannels[chan];
     fmChan->volume = volume;
     synth_volume(chan, effectiveVolume(fmChan));
 }
 
-void midi_fm_pitchBend(u8 chan, u16 bend)
+void midi_fm_pitch_bend(u8 chan, u16 bend)
 {
     MidiFmChannel* fmChan = &fmChannels[chan];
     u16 freq = freqNumber(fmChan->pitch);
@@ -101,9 +101,9 @@ void midi_fm_program(u8 chan, u8 program)
     updatePan(chan);
 }
 
-void midi_fm_allNotesOff(u8 chan)
+void midi_fm_all_notes_off(u8 chan)
 {
-    midi_fm_noteOff(chan, 0);
+    midi_fm_note_off(chan, 0);
 }
 
 void midi_fm_percussive(u8 chan, bool enabled)
