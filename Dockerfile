@@ -6,7 +6,9 @@ RUN apt-get -y update && \
 	gdb \
 	gdbserver
 WORKDIR /app
+COPY tests/cmocka* /app/tests/
+COPY tests/Makefile /app/tests/Makefile
+RUN make -C tests cmocka
 COPY . /app
 EXPOSE 2345
-RUN make -C tests cmocka
 ENTRYPOINT []
