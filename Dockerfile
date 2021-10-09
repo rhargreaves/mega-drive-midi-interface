@@ -8,4 +8,5 @@ RUN apt-get -y update && \
 WORKDIR /app
 COPY . /app
 EXPOSE 2345
+RUN make -C tests cmocka
 ENTRYPOINT []
