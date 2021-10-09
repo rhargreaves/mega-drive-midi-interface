@@ -5,5 +5,7 @@ RUN apt-get -y update && \
 	cmake \
 	gdb \
 	gdbserver
+WORKDIR /app
+COPY . /app
 EXPOSE 2345
 ENTRYPOINT []
