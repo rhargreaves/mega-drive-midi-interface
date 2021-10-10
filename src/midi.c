@@ -31,7 +31,7 @@ struct MidiChannel {
 
 typedef enum MappingMode MappingMode;
 
-enum MappingMode { RoutingMode_Static, RoutingMode_Dynamic, RoutingMode_Auto };
+enum MappingMode { MappingMode_Static, MappingMode_Dynamic, MappingMode_Auto };
 
 static DeviceChannel deviceChannels[DEV_CHANS];
 
@@ -108,7 +108,7 @@ static void init(void)
 {
     midi_psg_init(defaultEnvelopes);
     midi_fm_init(defaultPresets, defaultPercussionPresets);
-    mappingModePref = RoutingMode_Auto;
+    mappingModePref = MappingMode_Auto;
     dynamicMode = false;
     disableNonGeneralMidiCCs = false;
     stickToDeviceType = false;
@@ -606,7 +606,7 @@ static void generalMidiReset(void)
     for (u8 chan = 0; chan < MIDI_CHANNELS; chan++) {
         allNotesOff(chan);
     }
-    if (mappingModePref == RoutingMode_Auto) {
+    if (mappingModePref == MappingMode_Auto) {
         dynamicMode = true;
     }
     resetAllState();
@@ -623,10 +623,10 @@ static void applyDynamicMode(void)
 static void setDynamicMode(MappingMode mode)
 {
     mappingModePref = mode;
-    if (mode == RoutingMode_Dynamic) {
+    if (mode == MappingMode_Dynamic) {
         dynamicMode = true;
         applyDynamicMode();
-    } else if (mode == RoutingMode_Static) {
+    } else if (mode == MappingMode_Static) {
         dynamicMode = false;
         applyDynamicMode();
     }
