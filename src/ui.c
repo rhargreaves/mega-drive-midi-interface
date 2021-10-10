@@ -68,6 +68,7 @@ static void drawText(const char* text, u16 x, u16 y);
 static void printChanActivity(u16 busy);
 static void printCommMode(void);
 static void populateMappings(u8* midiChans);
+static void init_routing_mode_tiles(void);
 static void print_routing_mode_if_needed(void);
 static void print_routing_mode(bool enabled);
 static void printMappingsIfDirty(u8* midiChans);
@@ -93,6 +94,7 @@ void ui_init(void)
     initLoad();
     printCommMode();
     printMappings();
+    init_routing_mode_tiles();
     print_routing_mode(midi_dynamic_mode());
     SYS_disableInts();
 
@@ -182,6 +184,7 @@ void ui_update(void)
         printMappings();
         printCommMode();
         printLog();
+        print_routing_mode_if_needed();
 #if DEBUG_TICKS
         debugPrintTicks();
 #else
@@ -199,7 +202,6 @@ void ui_update(void)
     if (++loadFrame == FRAMES_BEFORE_UPDATE_LOAD) {
         loadFrame = 0;
         update_load();
-        print_routing_mode_if_needed();
     }
 
     ui_fm_update();
@@ -316,7 +318,7 @@ static void printCommMode(void)
         index = 5;
         break;
     }
-    drawText(MODES_TEXT[index], 11, MAX_EFFECTIVE_Y);
+    drawText(MODES_TEXT[index], 8, MAX_EFFECTIVE_Y);
 
     const char* MW_TEXT[]
         = { "MW not detected", "MW detected    ", "MW listening   ",
@@ -342,7 +344,7 @@ static void printCommMode(void)
         index2 = 5;
         break;
     }
-    drawText(MW_TEXT[index2], 11, MAX_EFFECTIVE_Y - 1);
+    drawText(MW_TEXT[index2], 8, MAX_EFFECTIVE_Y - 1);
 }
 
 static void initLoad(void)
@@ -366,6 +368,12 @@ static void print_load_text(u16 percent)
 #define LED_TILE_OFF_OFFSET (LED_TILE_COUNT)
 #define LOAD_TILE_Y (MAX_EFFECTIVE_Y + 1)
 
+static void set_tile(u16 tileIndex, u16 x, u16 y)
+{
+    VDP_setTileMapXY(
+        BG_A, TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, tileIndex), x, y);
+}
+
 static void update_load(void)
 {
     u16 percent = loadPercentSum
@@ -378,9 +386,7 @@ static void update_load(void)
         if (i < led_level) {
             tile_index -= LED_TILE_OFF_OFFSET;
         }
-        VDP_setTileMapXY(BG_A,
-            TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, tile_index), 2 + i,
-            LOAD_TILE_Y);
+        set_tile(tile_index, 2 + i, LOAD_TILE_Y);
     }
     if (settings_debugLoad()) {
         print_load_text(percent);
@@ -388,23 +394,18 @@ static void update_load(void)
     comm_reset_counts();
 }
 
+static void init_routing_mode_tiles(void)
+{
+    set_tile(TILE_ROUTING_INDEX, MAX_EFFECTIVE_X, MIDI_Y + 1);
+    set_tile(TILE_ROUTING_INDEX + 1, MAX_EFFECTIVE_X + 1, MIDI_Y + 1);
+    set_tile(TILE_ROUTING_INDEX + 2, MAX_EFFECTIVE_X, MIDI_Y + 2);
+    set_tile(TILE_ROUTING_INDEX + 3, MAX_EFFECTIVE_X + 1, MIDI_Y + 2);
+}
+
 static void print_routing_mode(bool enabled)
 {
     VDP_loadTileSet(
         enabled ? &ts_dynamic : &ts_static, TILE_ROUTING_INDEX, DMA);
-
-    VDP_setTileMapXY(BG_A,
-        TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_ROUTING_INDEX),
-        MAX_EFFECTIVE_X, MIDI_Y + 1);
-    VDP_setTileMapXY(BG_A,
-        TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_ROUTING_INDEX + 1),
-        MAX_EFFECTIVE_X + 1, MIDI_Y + 1);
-    VDP_setTileMapXY(BG_A,
-        TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_ROUTING_INDEX + 2),
-        MAX_EFFECTIVE_X, MIDI_Y + 2);
-    VDP_setTileMapXY(BG_A,
-        TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_ROUTING_INDEX + 3),
-        MAX_EFFECTIVE_X + 1, MIDI_Y + 2);
 }
 
 static void print_routing_mode_if_needed(void)
