@@ -31,6 +31,8 @@ static char sendBuffer[MAX_UDP_DATA_LENGTH];
 static bool awaitingRecv = false;
 static bool awaitingSend = false;
 
+static MegaWifiStatus status;
+
 static void recv_complete_cb(
     enum lsd_status stat, uint8_t ch, char* data, uint16_t len, void* ctx);
 
@@ -103,6 +105,7 @@ static mw_err listenOnUdpPort(u8 ch, u16 src_port)
 
 void comm_megawifi_init(void)
 {
+    status = NotDetected;
     mp_init(0);
     mw_process_loop_init();
     mw_init(cmd_buf, MW_BUFLEN);
@@ -110,6 +113,7 @@ void comm_megawifi_init(void)
     if (!mwDetected) {
         return;
     }
+    status = Detected;
     associateAp();
     displayLocalIp();
     mw_err err = listenOnUdpPort(CH_CONTROL_PORT, UDP_CONTROL_PORT);
@@ -120,6 +124,7 @@ void comm_megawifi_init(void)
     if (err != MW_ERR_NONE) {
         return;
     }
+    status = Listening;
 #if DEBUG_MEGAWIFI_INIT
     log_info("MW: Listening on UDP %d", UDP_CONTROL_PORT);
 #endif
@@ -268,6 +273,8 @@ void comm_megawifi_send(u8 ch, char* data, u16 len)
     restoreRemoteEndpoint(ch, &udp->remote_ip, &udp->remote_port);
     memcpy(udp->payload, data, len);
 
+    status = Connected;
+
 #if DEBUG_MEGAWIFI_SEND == 1
     char ip_buf[16];
     uint32_to_ip_str(remoteIp, ip_buf);
@@ -282,4 +289,9 @@ void comm_megawifi_send(u8 ch, char* data, u16 len)
         awaitingSend = false;
         return;
     }
+}
+
+MegaWifiStatus comm_megawifi_status(void)
+{
+    return status;
 }

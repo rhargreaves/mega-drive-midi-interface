@@ -3,6 +3,7 @@
 #include "comm.h"
 #include "comm_everdrive_pro.h"
 #include "comm_serial.h"
+#include "comm_megawifi.h"
 #include "log.h"
 #include "memcmp.h"
 #include "midi.h"
@@ -54,6 +55,7 @@ static const char MIDI_HEADER[] = "MIDI";
 static const char MIDI_CH_TEXT[17][3] = { " -", " 1", " 2", " 3", " 4", " 5",
     " 6", " 7", " 8", " 9", "10", "11", "12", "13", "14", "15", "16" };
 
+static void initLoad(void);
 static void printChannels(void);
 static void printHeader(void);
 static void printLoad(void);
@@ -78,6 +80,7 @@ static Sprite* activitySprites[DEV_CHANS];
 
 void ui_init(void)
 {
+    SPR_init();
     VDP_setBackgroundColor(BG_COLOUR_INDEX);
     VDP_setPaletteColor(BG_COLOUR_INDEX, RGB24_TO_VDPCOLOR(0x202020));
     VDP_setPaletteColor(
@@ -87,11 +90,11 @@ void ui_init(void)
     printHeader();
     printChannels();
     printLoad();
+    initLoad();
     printCommMode();
     printMappings();
     printDynamicModeStatus(midi_dynamic_mode());
     SYS_disableInts();
-    SPR_init();
 
     for (int i = 0; i < DEV_CHANS; i++) {
         Sprite* sprite = SPR_addSprite(&activity,
@@ -335,6 +338,44 @@ static void printCommMode(void)
         break;
     }
     drawText(MODES_TEXT[index], 11, MAX_EFFECTIVE_Y);
+
+    const char* MW_TEXT[]
+        = { "MW not detected", "MW detected    ", "MW listening   ",
+              "MW connected   ", "MW disconnected", "MW ???         " };
+    u16 index2;
+    switch (comm_megawifi_status()) {
+    case NotDetected:
+        index2 = 0;
+        break;
+    case Detected:
+        index2 = 1;
+        break;
+    case Listening:
+        index2 = 2;
+        break;
+    case Connected:
+        index2 = 3;
+        break;
+    case Disconnected:
+        index2 = 4;
+        break;
+    default:
+        index2 = 5;
+        break;
+    }
+    drawText(MW_TEXT[index2], 11, MAX_EFFECTIVE_Y - 1);
+}
+
+static void initLoad(void)
+{
+    drawText("%", 0, MAX_EFFECTIVE_Y);
+    VDP_setPaletteColors(
+        (PAL2 * 16), spr_load.palette->data, spr_load.palette->length);
+
+    Sprite* sprite = SPR_addSprite(&spr_load, fix32ToInt(FIX32(2 * 8)),
+        fix32ToInt(FIX32((MAX_EFFECTIVE_Y + 1) * 8)),
+        TILE_ATTR(PAL2, TRUE, FALSE, FALSE));
+    SPR_setVisibility(sprite, VISIBLE);
 }
 
 static void printLoad(void)
@@ -346,7 +387,7 @@ static void printLoad(void)
     VDP_setTextPalette(percent > 70 ? PAL1 : PAL0);
     v_sprintf(loadText, "Load %i%c  ", percent, '%');
     comm_reset_counts();
-    drawText(loadText, 0, MAX_EFFECTIVE_Y);
+    drawText(loadText, 0, MAX_EFFECTIVE_Y - 1);
     VDP_setTextPalette(PAL0);
 }
 
