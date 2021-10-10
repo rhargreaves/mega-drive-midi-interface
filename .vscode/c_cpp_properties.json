@@ -1,27 +1,31 @@
 {
-  "configurations": [
-    {
-      "name": "Docker",
-      "includePath": [
-        "${workspaceFolder}/src",
-        "${workspaceFolder}/src/mw",
-        "${workspaceFolder}/../SGDK/inc",
-        "${workspaceFolder}/../SGDK/res",
-        "${workspaceFolder}/tests/cmocka/include",
-        "${workspaceFolder}/tests/unit",
-        "${workspaceFolder}/tests/system",
-        "${workspaceFolder}/tests",
-        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/"
-      ],
-      "compileCommands": "",
-      "defines": ["DEBUG_EVENTS", "DEBUG_TICKS"],
-      "macFrameworkPath": [
-        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"
-      ],
-      "cStandard": "c11",
-      "cppStandard": "c++17",
-      "intelliSenseMode": "gcc-x64"
-    }
-  ],
-  "version": 4
+    "configurations": [
+        {
+            "name": "Docker",
+            "includePath": [
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/src/mw",
+                "${workspaceFolder}/../SGDK/inc",
+                "${workspaceFolder}/../SGDK/res",
+                "${workspaceFolder}/tests/cmocka/include",
+                "${workspaceFolder}/tests/unit",
+                "${workspaceFolder}/tests/system",
+                "${workspaceFolder}/tests",
+                "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/",
+                "${workspaceFolder}/res"
+            ],
+            "compileCommands": "",
+            "defines": [
+                "DEBUG_EVENTS",
+                "DEBUG_TICKS"
+            ],
+            "macFrameworkPath": [
+                "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"
+            ],
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "gcc-x64"
+        }
+    ],
+    "version": 4
 }
