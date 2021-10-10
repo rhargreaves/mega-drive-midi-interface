@@ -4,6 +4,7 @@
 bool settings_isMegaWiFiRom(void);
 bool settings_debugLoad(void);
 bool settings_debugSerial(void);
+bool settings_debug_megawifi_init(void);
 
 #define COMM_EVERDRIVE_X7 1
 #define COMM_EVERDRIVE_PRO 1

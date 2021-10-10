@@ -6,6 +6,7 @@
 #include "mw/mpool.h"
 #include "mw/util.h"
 #include "buffer.h"
+#include "settings.h"
 
 extern void __real_comm_megawifi_init(void);
 
@@ -43,7 +44,9 @@ static void expect_mw_detect(void)
 {
     mock_mw_detect(3, 1);
     will_return(__wrap_mw_detect, MW_ERR_NONE);
-    expect_log_info("MW: Detected v%d.%d");
+    if (settings_debug_megawifi_init()) {
+        expect_log_info("MW: Detected v%d.%d");
+    }
 }
 
 static void expect_ap_connection(void)
@@ -59,9 +62,9 @@ static void expect_ip_log(void)
 {
     mock_ip_cfg(ip_str_to_uint32("127.1.2.3"));
     will_return(__wrap_mw_ip_current, MW_ERR_NONE);
-#if DEBUG_MEGAWIFI_INIT
-    expect_log_info("MW: IP: %s");
-#endif
+    if (settings_debug_megawifi_init()) {
+        expect_log_info("MW: IP: %s");
+    }
 }
 
 static void megawifi_init(void)
@@ -72,9 +75,9 @@ static void megawifi_init(void)
     expect_ip_log();
     expect_udp_port_open(CH_CONTROL_PORT, "5006");
     expect_udp_port_open(CH_MIDI_PORT, "5007");
-#if DEBUG_MEGAWIFI_INIT
-    expect_log_info("MW: Listening on UDP %d");
-#endif
+    if (settings_debug_megawifi_init()) {
+        expect_log_info("MW: Listening on UDP %d");
+    }
     __real_comm_megawifi_init();
 }
 

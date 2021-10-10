@@ -26,3 +26,12 @@ bool settings_debugSerial(void)
     return false;
 #endif
 }
+
+bool settings_debug_megawifi_init(void)
+{
+#if DEBUG_MEGAWIFI_INIT
+    return true;
+#else
+    return false;
+#endif
+}

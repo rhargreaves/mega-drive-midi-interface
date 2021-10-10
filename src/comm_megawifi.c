@@ -83,12 +83,14 @@ static bool detect_mw(void)
     char* variant = NULL;
     mw_err err = mw_detect(&ver_major, &ver_minor, &variant);
     if (MW_ERR_NONE != err) {
-        if (settings_isMegaWiFiRom()) {
+        if (settings_debug_megawifi_init()) {
             log_warn("MW: Not found");
         }
         return false;
     }
-    log_info("MW: Detected v%d.%d", ver_major, ver_minor);
+    if (settings_debug_megawifi_init()) {
+        log_info("MW: Detected v%d.%d", ver_major, ver_minor);
+    }
     return true;
 }
 
