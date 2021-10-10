@@ -7,12 +7,12 @@
                 "${workspaceFolder}/src/mw",
                 "${workspaceFolder}/../SGDK/inc",
                 "${workspaceFolder}/../SGDK/res",
-                "${workspaceFolder}/tests/cmocka/include",
                 "${workspaceFolder}/tests/unit",
                 "${workspaceFolder}/tests/system",
                 "${workspaceFolder}/tests",
                 "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/",
-                "${workspaceFolder}/res"
+                "${workspaceFolder}/res",
+                "/Users/Robert/Projects/cmocka-1.1.2/include"
             ],
             "compileCommands": "",
             "defines": [
