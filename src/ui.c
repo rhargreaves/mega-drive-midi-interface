@@ -49,7 +49,7 @@
 #define FRAMES_BEFORE_UPDATE_LOAD 15
 #define FRAMES_BEFORE_UPDATE_LOAD_PERCENT 15
 
-#define TILE_LOAD_INDEX TILE_USERINDEX
+#define TILE_LED_INDEX TILE_USERINDEX
 
 static const char HEADER[] = "Mega Drive MIDI Interface";
 static const char CHAN_HEADER[] = "Ch.  F1 F2 F3 F4 F5 F6 P1 P2 P3 P4";
@@ -373,7 +373,7 @@ static void initLoad(void)
     drawText("%", 0, MAX_EFFECTIVE_Y);
     VDP_setPaletteColors(
         (PAL2 * 16), spr_load.palette->data, spr_load.palette->length);
-    VDP_loadTileSet(&ts_load, TILE_LOAD_INDEX, CPU);
+    VDP_loadTileSet(&ts_load, TILE_LED_INDEX, CPU);
 }
 
 static void print_load_text(u16 percent)
@@ -386,20 +386,25 @@ static void print_load_text(u16 percent)
     drawText(text_buffer, 5, MAX_EFFECTIVE_Y);
 }
 
+#define LED_TILE_COUNT 4
+#define LED_TILE_OFF_OFFSET (LED_TILE_COUNT)
+#define LOAD_TILE_Y (MAX_EFFECTIVE_Y + 1)
+
 static void update_load(void)
 {
     u16 percent = loadPercentSum
         / (FRAMES_BEFORE_UPDATE_LOAD / FRAMES_BEFORE_UPDATE_LOAD_PERCENT);
     loadPercentSum = 0;
 
-    s16 led_level = percent == 0 ? 0 : (percent / 25) + 1;
-    for (u16 i = 0; i < 4; i++) {
-        u16 tileIndex = TILE_LOAD_INDEX + i + 4;
+    s16 led_level = percent == 0 ? 0 : (percent / (100 / LED_TILE_COUNT)) + 1;
+    for (u16 i = 0; i < LED_TILE_COUNT; i++) {
+        u16 tile_index = TILE_LED_INDEX + i + LED_TILE_OFF_OFFSET;
         if (i < led_level) {
-            tileIndex -= 4;
+            tile_index -= LED_TILE_OFF_OFFSET;
         }
-        VDP_setTileMapXY(BG_A, TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, tileIndex),
-            2 + i, MAX_EFFECTIVE_Y + 1);
+        VDP_setTileMapXY(BG_A,
+            TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, tile_index), 2 + i,
+            LOAD_TILE_Y);
     }
     if (settings_debugLoad()) {
         print_load_text(percent);
