@@ -11,3 +11,5 @@ const SpriteDefinition algor_7 = {};
 const SpriteDefinition activity = {};
 const Palette pal_load = {};
 const TileSet ts_load = {};
+const TileSet ts_static = {};
+const TileSet ts_dynamic = {};

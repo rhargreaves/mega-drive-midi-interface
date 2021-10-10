@@ -11,4 +11,6 @@ extern const SpriteDefinition algor_7;
 extern const SpriteDefinition activity;
 extern const SpriteDefinition spr_load;
 extern const TileSet ts_load;
+extern const TileSet ts_dynamic;
+extern const TileSet ts_static;
 extern const Palette pal_load;

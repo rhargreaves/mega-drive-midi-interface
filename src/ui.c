@@ -50,6 +50,7 @@
 #define FRAMES_BEFORE_UPDATE_LOAD_PERCENT 15
 
 #define TILE_LED_INDEX TILE_USERINDEX
+#define TILE_ROUTING_INDEX (TILE_LED_INDEX + 8)
 
 static const char HEADER[] = "Mega Drive MIDI Interface";
 static const char CHAN_HEADER[] = "Ch.  F1 F2 F3 F4 F5 F6 P1 P2 P3 P4";
@@ -413,7 +414,21 @@ static void update_load(void)
 
 static void printDynamicModeStatus(bool enabled)
 {
-    drawText(enabled ? "D" : "S", MAX_EFFECTIVE_X, MIDI_Y);
+    VDP_loadTileSet(
+        enabled ? &ts_dynamic : &ts_static, TILE_ROUTING_INDEX, DMA);
+
+    VDP_setTileMapXY(BG_A,
+        TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_ROUTING_INDEX),
+        MAX_EFFECTIVE_X, MIDI_Y + 1);
+    VDP_setTileMapXY(BG_A,
+        TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_ROUTING_INDEX + 1),
+        MAX_EFFECTIVE_X + 1, MIDI_Y + 1);
+    VDP_setTileMapXY(BG_A,
+        TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_ROUTING_INDEX + 2),
+        MAX_EFFECTIVE_X, MIDI_Y + 2);
+    VDP_setTileMapXY(BG_A,
+        TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_ROUTING_INDEX + 3),
+        MAX_EFFECTIVE_X + 1, MIDI_Y + 2);
 }
 
 static void printDynamicModeIfNeeded(void)
