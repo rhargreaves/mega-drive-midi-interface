@@ -313,7 +313,7 @@ static void print_megawifi_info(void)
         index2 = 5;
         break;
     }
-    drawText(MW_TEXT[index2], 8, MAX_EFFECTIVE_Y - 1);
+    drawText(MW_TEXT[index2], 16, MAX_EFFECTIVE_Y);
 }
 
 static void printCommMode(void)

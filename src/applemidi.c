@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include "comm_megawifi.h"
 #include "memory.h"
+#include "settings.h"
 
 static mw_err unpackInvitation(
     char* buffer, u16 length, AppleMidiExchangePacket* invite);
@@ -17,7 +18,10 @@ static mw_err processInvitation(u8 ch, char* buffer, u16 length)
     if (err != MW_ERR_NONE) {
         return err;
     }
-    log_info("AM: Session invite on UDP ch %d", ch);
+
+    if (settings_debug_megawifi_init()) {
+        log_info("AM: Session invite on UDP ch %d", ch);
+    }
     sendInviteResponse(ch, &packet);
     return MW_ERR_NONE;
 }
