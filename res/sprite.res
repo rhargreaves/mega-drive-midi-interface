@@ -7,5 +7,5 @@ SPRITE algor_5 "sprite/algor_5.bmp" 6 4 FAST 0
 SPRITE algor_6 "sprite/algor_6.bmp" 6 4 FAST 0
 SPRITE algor_7 "sprite/algor_7.bmp" 6 2 FAST 0
 SPRITE activity "sprite/activity.bmp" 1 1 FAST 0
-SPRITE spr_load "sprite/load.bmp" 4 1 FAST 0
+PALETTE pal_load "sprite/load.bmp"
 TILESET ts_load "sprite/load.bmp" FAST NONE

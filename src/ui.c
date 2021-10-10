@@ -371,8 +371,7 @@ static void printCommMode(void)
 static void initLoad(void)
 {
     drawText("%", 0, MAX_EFFECTIVE_Y);
-    VDP_setPaletteColors(
-        (PAL2 * 16), spr_load.palette->data, spr_load.palette->length);
+    VDP_setPaletteColors((PAL2 * 16), pal_load.data, pal_load.length);
     VDP_loadTileSet(&ts_load, TILE_LED_INDEX, CPU);
 }
 
