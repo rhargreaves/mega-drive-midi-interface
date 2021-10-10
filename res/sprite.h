@@ -14,3 +14,8 @@ extern const TileSet ts_load;
 extern const TileSet ts_dynamic;
 extern const TileSet ts_static;
 extern const Palette pal_load;
+extern const Image img_comm_waiting;
+extern const Image img_comm_serial;
+extern const Image img_comm_ed_usb;
+extern const Image img_comm_ed_pro_usb;
+extern const Image img_comm_megawifi;

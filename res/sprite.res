@@ -11,3 +11,8 @@ PALETTE pal_load "sprite/static.bmp"
 TILESET ts_load "sprite/load.bmp" FAST NONE
 TILESET ts_dynamic "sprite/dynamic.bmp" FAST NONE
 TILESET ts_static "sprite/static.bmp" FAST NONE
+IMAGE img_comm_waiting "sprite/waiting.bmp" FAST ALL
+IMAGE img_comm_serial "sprite/serial.bmp" FAST ALL
+IMAGE img_comm_ed_usb "sprite/ed_usb.bmp" FAST ALL
+IMAGE img_comm_ed_pro_usb "sprite/ed_pro_usb.bmp" FAST ALL
+IMAGE img_comm_megawifi "sprite/megawifi.bmp" FAST ALL

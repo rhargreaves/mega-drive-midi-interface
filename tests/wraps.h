@@ -8,6 +8,7 @@
 #include "mw/megawifi.h"
 #include "log.h"
 #include "synth.h"
+#include <vdp_bg.h>
 
 extern bool __real_comm_read_ready(void);
 extern void __real_comm_init(void);
@@ -165,3 +166,5 @@ void __wrap_SYS_doVBlankProcessEx(VBlankProcessTime processTime);
 void __wrap_VDP_setTileMapXY(VDPPlane plane, u16 tile, u16 x, u16 y);
 u16 __wrap_VDP_loadTileSet(
     const TileSet* tileset, u16 index, TransferMethod tm);
+u16 __wrap_VDP_drawImageEx(VDPPlane plane, const Image* image, u16 basetile,
+    u16 x, u16 y, u16 loadpal, bool dma);

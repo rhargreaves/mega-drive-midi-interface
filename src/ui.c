@@ -51,6 +51,7 @@
 
 #define TILE_LED_INDEX TILE_USERINDEX
 #define TILE_ROUTING_INDEX (TILE_LED_INDEX + 8)
+#define TILE_IMAGES_INDEX (TILE_ROUTING_INDEX + 4)
 
 static const char HEADER[] = "Mega Drive MIDI Interface";
 static const char CHAN_HEADER[] = "Ch.  F1 F2 F3 F4 F5 F6 P1 P2 P3 P4";
@@ -286,40 +287,8 @@ static void printChanActivity(u16 busy)
     SPR_update();
 }
 
-static void printCommMode(void)
+static void print_megawifi_info(void)
 {
-    if (commInited) {
-        return;
-    }
-    const char* MODES_TEXT[]
-        = { "Waiting", "ED X7  ", "ED PRO ", "Serial ", "M.WiFi ", "???    " };
-    u16 index;
-    switch (comm_mode()) {
-    case Discovery:
-        index = 0;
-        break;
-    case Everdrive:
-        index = 1;
-        commInited = true;
-        break;
-    case EverdrivePro:
-        index = 2;
-        commInited = true;
-        break;
-    case Serial:
-        index = 3;
-        commInited = true;
-        break;
-    case MegaWiFi:
-        index = 4;
-        commInited = true;
-        break;
-    default:
-        index = 5;
-        break;
-    }
-    drawText(MODES_TEXT[index], 8, MAX_EFFECTIVE_Y);
-
     const char* MW_TEXT[]
         = { "MW not detected", "MW detected    ", "MW listening   ",
               "MW connected   ", "MW disconnected", "MW ???         " };
@@ -345,6 +314,47 @@ static void printCommMode(void)
         break;
     }
     drawText(MW_TEXT[index2], 8, MAX_EFFECTIVE_Y - 1);
+}
+
+static void printCommMode(void)
+{
+    if (commInited) {
+        return;
+    }
+    const Image* MODES_IMAGES[] = { &img_comm_waiting, &img_comm_ed_usb,
+        &img_comm_ed_pro_usb, &img_comm_serial, &img_comm_megawifi, 0 };
+    u16 index;
+    switch (comm_mode()) {
+    case Discovery:
+        index = 0;
+        break;
+    case Everdrive:
+        index = 1;
+        commInited = true;
+        break;
+    case EverdrivePro:
+        index = 2;
+        commInited = true;
+        break;
+    case Serial:
+        index = 3;
+        commInited = true;
+        break;
+    case MegaWiFi:
+        index = 4;
+        commInited = true;
+        break;
+    default:
+        index = 0;
+        break;
+    }
+    VDP_drawImageEx(BG_A, MODES_IMAGES[index],
+        TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_IMAGES_INDEX), 9,
+        MAX_EFFECTIVE_Y + 1, FALSE, FALSE);
+
+    if (settings_isMegaWiFiRom()) {
+        print_megawifi_info();
+    }
 }
 
 static void initLoad(void)
