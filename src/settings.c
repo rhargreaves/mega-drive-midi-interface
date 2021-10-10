@@ -17,3 +17,12 @@ bool settings_debugLoad(void)
     return false;
 #endif
 }
+
+bool settings_debugSerial(void)
+{
+#if DEBUG_SERIAL
+    return true;
+#else
+    return false;
+#endif
+}

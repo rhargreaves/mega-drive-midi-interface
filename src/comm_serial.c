@@ -1,10 +1,12 @@
 #include "comm_serial.h"
 #include "buffer.h"
 #include "serial.h"
+#include "log.h"
+#include "settings.h"
 
 static bool recvData = false;
 
-u16 comm_serial_baud_rate(void)
+u16 baud_rate(void)
 {
     switch (serial_sctrl() & 0xC0) {
     case SCTRL_300_BPS:
@@ -44,6 +46,9 @@ void comm_serial_init(void)
     serial_init(SCTRL_4800_BPS | SCTRL_SIN | SCTRL_SOUT | SCTRL_RINT);
     serial_setReadyToReceiveCallback(&recvReadyCallback);
     flushRRDY();
+    if (settings_debugSerial()) {
+        log_info("Serial: Baud = %i", baud_rate());
+    }
 }
 
 u8 comm_serial_read_ready(void)
@@ -55,7 +60,12 @@ u8 comm_serial_read_ready(void)
 
 u8 comm_serial_read(void)
 {
-    return buffer_read();
+    u8 data = buffer_read();
+    u16 bufferAvailable = buffer_available();
+    if (bufferAvailable < 32) {
+        log_warn("Serial: Buffer free = %d bytes", bufferAvailable);
+    }
+    return data;
 }
 
 u8 comm_serial_write_ready(void)

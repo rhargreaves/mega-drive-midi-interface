@@ -66,9 +66,7 @@ static u16 loadPercent(void);
 static void updateKeyOnOff(void);
 static void drawText(const char* text, u16 x, u16 y);
 static void printChanActivity(u16 busy);
-static void printBaudRate(void);
 static void printCommMode(void);
-static void printCommBuffer(void);
 static void populateMappings(u8* midiChans);
 static void printDynamicModeIfNeeded(void);
 static void printDynamicModeStatus(bool enabled);
@@ -77,7 +75,6 @@ static void printMappings(void);
 
 static u16 loadPercentSum = 0;
 static bool commInited = false;
-static bool commSerial = false;
 
 static Sprite* activitySprites[DEV_CHANS];
 
@@ -184,7 +181,6 @@ void ui_update(void)
         activityFrame = 0;
         printMappings();
         printCommMode();
-        printCommBuffer();
         printLog();
 #if DEBUG_TICKS
         debugPrintTicks();
@@ -245,17 +241,6 @@ static void printChannels(void)
     VDP_setTextPalette(PAL0);
 }
 
-static void printCommBuffer(void)
-{
-    if (!commSerial) {
-        return;
-    }
-    u16 bufferAvailable = buffer_available();
-    if (bufferAvailable < 32) {
-        log_warn("Serial port buffer has %d bytes left", bufferAvailable);
-    }
-}
-
 static void updateKeyOnOff(void)
 {
     static u16 lastBusy = 0;
@@ -299,13 +284,6 @@ static void printChanActivity(u16 busy)
     SPR_update();
 }
 
-static void printBaudRate(void)
-{
-    char baudRateText[9];
-    v_sprintf(baudRateText, "%dbps", comm_serial_baud_rate());
-    drawText(baudRateText, 18, MAX_EFFECTIVE_Y);
-}
-
 static void printCommMode(void)
 {
     if (commInited) {
@@ -329,8 +307,6 @@ static void printCommMode(void)
     case Serial:
         index = 3;
         commInited = true;
-        commSerial = true;
-        printBaudRate();
         break;
     case MegaWiFi:
         index = 4;
