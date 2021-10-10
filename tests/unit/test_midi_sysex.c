@@ -151,8 +151,7 @@ static void test_midi_sysex_enables_dynamic_channel_mode(UNUSED void** state)
     __real_midi_note_on(0, 61, MAX_MIDI_VOLUME);
 }
 
-static void test_midi_sysex_sets_dynamic_channel_mode_to_auto(
-    UNUSED void** state)
+static void test_midi_sysex_sets_mapping_mode_to_auto(UNUSED void** state)
 {
     const u8 sequence[] = {
         SYSEX_MANU_EXTENDED,

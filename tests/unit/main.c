@@ -141,7 +141,7 @@ int main(void)
         midi_test(test_midi_switching_program_retains_pan_setting),
         midi_test(test_midi_sets_genmdm_stereo_mode),
         midi_test(test_midi_sysex_enables_dynamic_channel_mode),
-        midi_test(test_midi_sysex_sets_dynamic_channel_mode_to_auto),
+        midi_test(test_midi_sysex_sets_mapping_mode_to_auto),
         midi_test(test_midi_sysex_disables_fm_parameter_CCs),
         midi_test(test_midi_sysex_loads_psg_envelope),
         midi_test(test_midi_sysex_inverts_total_level_values),

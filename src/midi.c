@@ -29,9 +29,9 @@ struct MidiChannel {
     DeviceSelect deviceSelect;
 };
 
-typedef enum RoutingMode RoutingMode;
+typedef enum MappingMode MappingMode;
 
-enum RoutingMode { RoutingMode_Static, RoutingMode_Dynamic, RoutingMode_Auto };
+enum MappingMode { RoutingMode_Static, RoutingMode_Dynamic, RoutingMode_Auto };
 
 static DeviceChannel deviceChannels[DEV_CHANS];
 
@@ -43,7 +43,7 @@ static const VTable FM_VTable = { midi_fm_note_on, midi_fm_note_off,
     midi_fm_channel_volume, midi_fm_pitch_bend, midi_fm_program,
     midi_fm_all_notes_off, midi_fm_pan };
 
-static RoutingMode routingModePref;
+static MappingMode mappingModePref;
 static MidiChannel midiChannels[MIDI_CHANNELS];
 static bool dynamicMode;
 static bool disableNonGeneralMidiCCs;
@@ -55,7 +55,7 @@ static void generalMidiReset(void);
 static void applyDynamicMode(void);
 static void sendPong(void);
 static void setInvertTotalLevel(bool enabled);
-static void setDynamicMode(RoutingMode mode);
+static void setDynamicMode(MappingMode mode);
 static void setOperatorTotalLevel(u8 chan, u8 op, u8 value);
 static void updateDeviceChannelFromAssociatedMidiChannel(
     DeviceChannel* devChan);
@@ -108,7 +108,7 @@ static void init(void)
 {
     midi_psg_init(defaultEnvelopes);
     midi_fm_init(defaultPresets, defaultPercussionPresets);
-    routingModePref = RoutingMode_Auto;
+    mappingModePref = RoutingMode_Auto;
     dynamicMode = false;
     disableNonGeneralMidiCCs = false;
     stickToDeviceType = false;
@@ -606,7 +606,7 @@ static void generalMidiReset(void)
     for (u8 chan = 0; chan < MIDI_CHANNELS; chan++) {
         allNotesOff(chan);
     }
-    if (routingModePref == RoutingMode_Auto) {
+    if (mappingModePref == RoutingMode_Auto) {
         dynamicMode = true;
     }
     resetAllState();
@@ -620,9 +620,9 @@ static void applyDynamicMode(void)
     }
 }
 
-static void setDynamicMode(RoutingMode mode)
+static void setDynamicMode(MappingMode mode)
 {
-    routingModePref = mode;
+    mappingModePref = mode;
     if (mode == RoutingMode_Dynamic) {
         dynamicMode = true;
         applyDynamicMode();
