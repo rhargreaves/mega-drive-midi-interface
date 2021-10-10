@@ -141,6 +141,7 @@ int main(void)
         midi_test(test_midi_switching_program_retains_pan_setting),
         midi_test(test_midi_sets_genmdm_stereo_mode),
         midi_test(test_midi_sysex_enables_dynamic_channel_mode),
+        midi_test(test_midi_sysex_sets_dynamic_channel_mode_to_auto),
         midi_test(test_midi_sysex_disables_fm_parameter_CCs),
         midi_test(test_midi_sysex_loads_psg_envelope),
         midi_test(test_midi_sysex_inverts_total_level_values),
@@ -204,6 +205,7 @@ int main(void)
         comm_megawifi_test(test_comm_megawifi_logs_if_buffer_full),
 
         dynamic_midi_test(test_midi_dynamic_uses_all_channels),
+        dynamic_midi_test(test_midi_routing_switches_to_dynamic_on_gm_reset),
         dynamic_midi_test(
             test_midi_dynamic_tries_to_reuse_original_midi_channel_if_available),
         dynamic_midi_test(test_midi_reports_dynamic_mode_enabled),

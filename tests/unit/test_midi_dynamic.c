@@ -51,6 +51,26 @@ static void test_midi_dynamic_uses_all_channels(UNUSED void** state)
     }
 }
 
+static void test_midi_routing_switches_to_dynamic_on_gm_reset(
+    UNUSED void** state)
+{
+    const u8 sysExGeneralMidiResetSequence[] = { 0x7E, 0x7F, 0x09, 0x01 };
+    __real_midi_sysex(
+        sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
+
+    print_message("Initial note");
+    expect_synth_pitch(0, 4, 0x28d);
+    expect_synth_volume_any();
+    expect_value(__wrap_synth_noteOn, channel, 0);
+    __real_midi_note_on(0, 60, MAX_MIDI_VOLUME);
+
+    print_message("Second note");
+    expect_synth_pitch(1, 4, 0x2b4);
+    expect_synth_volume_any();
+    expect_value(__wrap_synth_noteOn, channel, 1);
+    __real_midi_note_on(0, 61, MAX_MIDI_VOLUME);
+}
+
 static void test_midi_dynamic_tries_to_reuse_original_midi_channel_if_available(
     UNUSED void** state)
 {

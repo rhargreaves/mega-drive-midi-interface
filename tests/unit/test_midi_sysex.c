@@ -151,6 +151,36 @@ static void test_midi_sysex_enables_dynamic_channel_mode(UNUSED void** state)
     __real_midi_note_on(0, 61, MAX_MIDI_VOLUME);
 }
 
+static void test_midi_sysex_sets_dynamic_channel_mode_to_auto(
+    UNUSED void** state)
+{
+    const u8 sequence[] = {
+        SYSEX_MANU_EXTENDED,
+        SYSEX_MANU_REGION,
+        SYSEX_MANU_ID,
+        SYSEX_COMMAND_DYNAMIC,
+        SYSEX_DYNAMIC_AUTO,
+    };
+
+    __real_midi_sysex(sequence, sizeof(sequence));
+
+    const u8 sysExGeneralMidiResetSequence[] = { 0x7E, 0x7F, 0x09, 0x01 };
+    __real_midi_sysex(
+        sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
+
+    print_message("Initial note");
+    expect_synth_pitch(0, 4, 0x28d);
+    expect_synth_volume_any();
+    expect_value(__wrap_synth_noteOn, channel, 0);
+    __real_midi_note_on(0, 60, MAX_MIDI_VOLUME);
+
+    print_message("Second note");
+    expect_synth_pitch(1, 4, 0x2b4);
+    expect_synth_volume_any();
+    expect_value(__wrap_synth_noteOn, channel, 1);
+    __real_midi_note_on(0, 61, MAX_MIDI_VOLUME);
+}
+
 static void test_midi_sysex_disables_fm_parameter_CCs(UNUSED void** state)
 {
     const u8 sequence[] = {

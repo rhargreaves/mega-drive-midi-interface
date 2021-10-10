@@ -15,16 +15,6 @@
 #define CHANNEL_UNASSIGNED 0xFF
 #define LENGTH_OF(x) (sizeof(x) / sizeof(x[0]))
 
-static DeviceChannel deviceChannels[DEV_CHANS];
-
-static const VTable PSG_VTable = { midi_psg_note_on, midi_psg_note_off,
-    midi_psg_channel_volume, midi_psg_pitch_bend, midi_psg_program,
-    midi_psg_all_notes_off, midi_psg_pan };
-
-static const VTable FM_VTable = { midi_fm_note_on, midi_fm_note_off,
-    midi_fm_channel_volume, midi_fm_pitch_bend, midi_fm_program,
-    midi_fm_all_notes_off, midi_fm_pan };
-
 typedef enum DeviceSelect DeviceSelect;
 
 enum DeviceSelect { Auto, FM, PSG_Tone, PSG_Noise };
@@ -39,6 +29,21 @@ struct MidiChannel {
     DeviceSelect deviceSelect;
 };
 
+typedef enum RoutingMode RoutingMode;
+
+enum RoutingMode { RoutingMode_Static, RoutingMode_Dynamic, RoutingMode_Auto };
+
+static DeviceChannel deviceChannels[DEV_CHANS];
+
+static const VTable PSG_VTable = { midi_psg_note_on, midi_psg_note_off,
+    midi_psg_channel_volume, midi_psg_pitch_bend, midi_psg_program,
+    midi_psg_all_notes_off, midi_psg_pan };
+
+static const VTable FM_VTable = { midi_fm_note_on, midi_fm_note_off,
+    midi_fm_channel_volume, midi_fm_pitch_bend, midi_fm_program,
+    midi_fm_all_notes_off, midi_fm_pan };
+
+static RoutingMode routingModePref;
 static MidiChannel midiChannels[MIDI_CHANNELS];
 static bool dynamicMode;
 static bool disableNonGeneralMidiCCs;
@@ -47,9 +52,10 @@ static bool invertTotalLevel;
 
 static void allNotesOff(u8 chan);
 static void generalMidiReset(void);
+static void applyDynamicMode(void);
 static void sendPong(void);
 static void setInvertTotalLevel(bool enabled);
-static void setDynamicMode(bool enabled);
+static void setDynamicMode(RoutingMode mode);
 static void setOperatorTotalLevel(u8 chan, u8 op, u8 value);
 static void updateDeviceChannelFromAssociatedMidiChannel(
     DeviceChannel* devChan);
@@ -91,7 +97,7 @@ static void resetAllState(void)
         initMidiChannel(i);
     }
     initAllDeviceChannels();
-    setDynamicMode(dynamicMode);
+    applyDynamicMode();
 }
 
 static const u8** defaultEnvelopes;
@@ -102,6 +108,7 @@ static void init(void)
 {
     midi_psg_init(defaultEnvelopes);
     midi_fm_init(defaultPresets, defaultPercussionPresets);
+    routingModePref = RoutingMode_Auto;
     dynamicMode = false;
     disableNonGeneralMidiCCs = false;
     stickToDeviceType = false;
@@ -599,15 +606,29 @@ static void generalMidiReset(void)
     for (u8 chan = 0; chan < MIDI_CHANNELS; chan++) {
         allNotesOff(chan);
     }
+    if (routingModePref == RoutingMode_Auto) {
+        dynamicMode = true;
+    }
     resetAllState();
 }
 
-static void setDynamicMode(bool enabled)
+static void applyDynamicMode(void)
 {
-    dynamicMode = enabled;
     for (u8 chan = 0; chan < DEV_CHANS; chan++) {
         DeviceChannel* devChan = &deviceChannels[chan];
-        devChan->midiChannel = enabled ? DEFAULT_MIDI_CHANNEL : chan;
+        devChan->midiChannel = dynamicMode ? DEFAULT_MIDI_CHANNEL : chan;
+    }
+}
+
+static void setDynamicMode(RoutingMode mode)
+{
+    routingModePref = mode;
+    if (mode == RoutingMode_Dynamic) {
+        dynamicMode = true;
+        applyDynamicMode();
+    } else if (mode == RoutingMode_Static) {
+        dynamicMode = false;
+        applyDynamicMode();
     }
 }
 
