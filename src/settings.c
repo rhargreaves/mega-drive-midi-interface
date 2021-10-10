@@ -8,3 +8,12 @@ bool settings_isMegaWiFiRom(void)
     return false;
 #endif
 }
+
+bool settings_debugLoad(void)
+{
+#if DEBUG_LOAD
+    return true;
+#else
+    return false;
+#endif
+}

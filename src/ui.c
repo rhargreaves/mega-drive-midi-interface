@@ -46,8 +46,10 @@
 
 #define FRAMES_BEFORE_UPDATE_CHAN_ACTIVITY 1
 #define FRAMES_BEFORE_UPDATE_ACTIVITY 5
-#define FRAMES_BEFORE_UPDATE_LOAD 47
-#define FRAMES_BEFORE_UPDATE_LOAD_PERCENT 13
+#define FRAMES_BEFORE_UPDATE_LOAD 15
+#define FRAMES_BEFORE_UPDATE_LOAD_PERCENT 15
+
+#define TILE_LOAD_INDEX TILE_USERINDEX
 
 static const char HEADER[] = "Mega Drive MIDI Interface";
 static const char CHAN_HEADER[] = "Ch.  F1 F2 F3 F4 F5 F6 P1 P2 P3 P4";
@@ -58,7 +60,7 @@ static const char MIDI_CH_TEXT[17][3] = { " -", " 1", " 2", " 3", " 4", " 5",
 static void initLoad(void);
 static void printChannels(void);
 static void printHeader(void);
-static void printLoad(void);
+static void update_load(void);
 static u16 loadPercent(void);
 static void updateKeyOnOff(void);
 static void drawText(const char* text, u16 x, u16 y);
@@ -89,7 +91,7 @@ void ui_init(void)
         PALETTE_INDEX(PAL3, FONT_COLOUR_INDEX), RGB24_TO_VDPCOLOR(0x808080));
     printHeader();
     printChannels();
-    printLoad();
+    update_load();
     initLoad();
     printCommMode();
     printMappings();
@@ -199,7 +201,7 @@ void ui_update(void)
     static u8 loadFrame = 0;
     if (++loadFrame == FRAMES_BEFORE_UPDATE_LOAD) {
         loadFrame = 0;
-        printLoad();
+        update_load();
         printDynamicModeIfNeeded();
     }
 
@@ -371,24 +373,38 @@ static void initLoad(void)
     drawText("%", 0, MAX_EFFECTIVE_Y);
     VDP_setPaletteColors(
         (PAL2 * 16), spr_load.palette->data, spr_load.palette->length);
-
-    Sprite* sprite = SPR_addSprite(&spr_load, fix32ToInt(FIX32(2 * 8)),
-        fix32ToInt(FIX32((MAX_EFFECTIVE_Y + 1) * 8)),
-        TILE_ATTR(PAL2, TRUE, FALSE, FALSE));
-    SPR_setVisibility(sprite, VISIBLE);
+    VDP_loadTileSet(&ts_load, TILE_LOAD_INDEX, CPU);
 }
 
-static void printLoad(void)
+static void print_load_text(u16 percent)
 {
-    static char loadText[16];
+    static char text_buffer[3];
+    if (percent > 99) {
+        percent = 99;
+    }
+    v_sprintf(text_buffer, "%-2i", percent);
+    drawText(text_buffer, 5, MAX_EFFECTIVE_Y);
+}
+
+static void update_load(void)
+{
     u16 percent = loadPercentSum
         / (FRAMES_BEFORE_UPDATE_LOAD / FRAMES_BEFORE_UPDATE_LOAD_PERCENT);
     loadPercentSum = 0;
-    VDP_setTextPalette(percent > 70 ? PAL1 : PAL0);
-    v_sprintf(loadText, "Load %i%c  ", percent, '%');
+
+    s16 led_level = percent == 0 ? 0 : (percent / 25) + 1;
+    for (u16 i = 0; i < 4; i++) {
+        u16 tileIndex = TILE_LOAD_INDEX + i + 4;
+        if (i < led_level) {
+            tileIndex -= 4;
+        }
+        VDP_setTileMapXY(BG_A, TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, tileIndex),
+            2 + i, MAX_EFFECTIVE_Y + 1);
+    }
+    if (settings_debugLoad()) {
+        print_load_text(percent);
+    }
     comm_reset_counts();
-    drawText(loadText, 0, MAX_EFFECTIVE_Y - 1);
-    VDP_setTextPalette(PAL0);
 }
 
 static void printDynamicModeStatus(bool enabled)

@@ -161,3 +161,7 @@ enum lsd_status __wrap_lsd_send(
 
 void __wrap_Z80_requestBus(bool wait);
 void __wrap_SYS_doVBlankProcessEx(VBlankProcessTime processTime);
+
+void __wrap_VDP_setTileMapXY(VDPPlane plane, u16 tile, u16 x, u16 y);
+u16 __wrap_VDP_loadTileSet(
+    const TileSet* tileset, u16 index, TransferMethod tm);

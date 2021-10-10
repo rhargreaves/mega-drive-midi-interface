@@ -152,7 +152,9 @@ MD_MOCKS=SYS_setVIntCallback \
 	mw_udp_reuse_recv \
 	mw_udp_reuse_send \
 	Z80_requestBus \
-	SYS_doVBlankProcessEx
+	SYS_doVBlankProcessEx \
+    VDP_loadTileSet \
+    VDP_setTileMapXY
 
 LDFLAGS=-ggdb -ffreestanding -lcmocka -L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src
 LDFLAGS+=$(foreach MOCK,$(MD_MOCKS),-Wl,--wrap=$(MOCK))
