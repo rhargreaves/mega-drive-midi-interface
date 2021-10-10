@@ -48,3 +48,5 @@ void test_midi_sets_unknown_CC(UNUSED void** state);
 void test_midi_shows_fm_parameter_ui(UNUSED void** state);
 void test_midi_hides_fm_parameter_ui(UNUSED void** state);
 void test_midi_reset_reinitialises_module(UNUSED void** state);
+void test_midi_ignores_sustain_pedal_cc(UNUSED void** state);
+void test_midi_ignores_sysex_nrpn_ccs(UNUSED void** state);

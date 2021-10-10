@@ -779,6 +779,14 @@ static void setFmChanParameter(DeviceChannel* devChan, u8 controller, u8 value)
             break;
         synth_stereo(devChan->number, RANGE(value, 4));
         break;
+    case CC_SUSTAIN_PEDAL:
+    case CC_DATA_ENTRY_LSB:
+    case CC_DATA_ENTRY_MSB:
+    case CC_NRPN_LSB:
+    case CC_NRPN_MSB:
+    case CC_RPN_LSB:
+    case CC_RPN_MSB:
+        break;
     default:
         log_warn("Ch %d: CC 0x%02X 0x%02X?", devChan->midiChannel, controller,
             value);

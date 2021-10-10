@@ -106,6 +106,27 @@ void test_midi_sets_unknown_CC(UNUSED void** state)
     __real_midi_cc(0, expectedController, expectedValue);
 }
 
+void test_midi_ignores_sustain_pedal_cc(UNUSED void** state)
+{
+    wraps_enable_logging_checks();
+
+    u8 cc = 64;
+
+    __real_midi_cc(0, cc, 1);
+}
+
+void test_midi_ignores_sysex_nrpn_ccs(UNUSED void** state)
+{
+    wraps_enable_logging_checks();
+
+    __real_midi_cc(0, 6, 1);
+    __real_midi_cc(0, 38, 1);
+    __real_midi_cc(0, 98, 1);
+    __real_midi_cc(0, 99, 1);
+    __real_midi_cc(0, 100, 1);
+    __real_midi_cc(0, 101, 1);
+}
+
 void test_midi_shows_fm_parameter_ui(UNUSED void** state)
 {
     u8 midiChan = 0;
