@@ -68,8 +68,8 @@ static void drawText(const char* text, u16 x, u16 y);
 static void printChanActivity(u16 busy);
 static void printCommMode(void);
 static void populateMappings(u8* midiChans);
-static void printDynamicModeIfNeeded(void);
-static void printDynamicModeStatus(bool enabled);
+static void print_routing_mode_if_needed(void);
+static void print_routing_mode(bool enabled);
 static void printMappingsIfDirty(u8* midiChans);
 static void printMappings(void);
 
@@ -93,7 +93,7 @@ void ui_init(void)
     initLoad();
     printCommMode();
     printMappings();
-    printDynamicModeStatus(midi_dynamic_mode());
+    print_routing_mode(midi_dynamic_mode());
     SYS_disableInts();
 
     for (int i = 0; i < DEV_CHANS; i++) {
@@ -199,7 +199,7 @@ void ui_update(void)
     if (++loadFrame == FRAMES_BEFORE_UPDATE_LOAD) {
         loadFrame = 0;
         update_load();
-        printDynamicModeIfNeeded();
+        print_routing_mode_if_needed();
     }
 
     ui_fm_update();
@@ -388,7 +388,7 @@ static void update_load(void)
     comm_reset_counts();
 }
 
-static void printDynamicModeStatus(bool enabled)
+static void print_routing_mode(bool enabled)
 {
     VDP_loadTileSet(
         enabled ? &ts_dynamic : &ts_static, TILE_ROUTING_INDEX, DMA);
@@ -407,12 +407,12 @@ static void printDynamicModeStatus(bool enabled)
         MAX_EFFECTIVE_X + 1, MIDI_Y + 2);
 }
 
-static void printDynamicModeIfNeeded(void)
+static void print_routing_mode_if_needed(void)
 {
     static bool lastDynamicModeStatus = false;
     bool enabled = midi_dynamic_mode();
     if (lastDynamicModeStatus != enabled) {
-        printDynamicModeStatus(enabled);
+        print_routing_mode(enabled);
         lastDynamicModeStatus = enabled;
     }
 }
