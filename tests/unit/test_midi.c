@@ -102,7 +102,7 @@ void test_midi_sets_unknown_CC(UNUSED void** state)
     u8 expectedController = 0x9;
     u8 expectedValue = 0x50;
 
-    expect_log_warn("Ch %d: CC %02X %02X?");
+    expect_log_warn("Ch %d: CC 0x%02X 0x%02X?");
     __real_midi_cc(0, expectedController, expectedValue);
 }
 

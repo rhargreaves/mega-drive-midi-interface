@@ -780,8 +780,8 @@ static void setFmChanParameter(DeviceChannel* devChan, u8 controller, u8 value)
         synth_stereo(devChan->number, RANGE(value, 4));
         break;
     default:
-        log_warn(
-            "Ch %d: CC %02X %02X?", devChan->midiChannel, controller, value);
+        log_warn("Ch %d: CC 0x%02X 0x%02X?", devChan->midiChannel, controller,
+            value);
         break;
     }
 }
