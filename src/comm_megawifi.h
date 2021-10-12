@@ -15,12 +15,6 @@ void comm_megawifi_vsync(void);
 
 typedef enum MegaWifiStatus MegaWifiStatus;
 
-enum MegaWifiStatus {
-    NotDetected,
-    Detected,
-    Listening,
-    Connected,
-    Disconnected
-};
+enum MegaWifiStatus { NotDetected, Detected, Listening, Connected };
 
 MegaWifiStatus comm_megawifi_status(void);

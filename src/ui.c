@@ -56,6 +56,7 @@
 #define TILE_IMAGES_INDEX (TILE_BORDERS_INDEX + 8)
 #define TILE_DEVICE_FM_INDEX (TILE_IMAGES_INDEX + 7)
 #define TILE_DEVICE_PSG_INDEX (TILE_DEVICE_FM_INDEX + 6)
+#define TILE_MEGAWIFI_STATUS_INDEX (TILE_DEVICE_PSG_INDEX + 4)
 
 #define TILE_BORDERS_LEFT_CORNER_INDEX (TILE_BORDERS_INDEX)
 #define TILE_BORDERS_H_LINE_INDEX (TILE_BORDERS_INDEX + 1)
@@ -332,31 +333,28 @@ static void print_chan_activity(u16 busy)
 
 static void print_megawifi_info(void)
 {
-    const char* MW_TEXT[]
-        = { "MW not detected", "MW detected    ", "MW listening   ",
-              "MW connected   ", "MW disconnected", "MW ???         " };
-    u16 index2;
+    const Image* MW_IMAGES[]
+        = { &img_megawifi_not_detected, &img_megawifi_detected,
+              &img_megawifi_listening, &img_megawifi_connected };
+    u16 index = 0;
     switch (comm_megawifi_status()) {
     case NotDetected:
-        index2 = 0;
+        index = 0;
         break;
     case Detected:
-        index2 = 1;
+        index = 1;
         break;
     case Listening:
-        index2 = 2;
+        index = 2;
         break;
     case Connected:
-        index2 = 3;
-        break;
-    case Disconnected:
-        index2 = 4;
-        break;
-    default:
-        index2 = 5;
+        index = 3;
         break;
     }
-    draw_text(MW_TEXT[index2], 16, MAX_EFFECTIVE_Y);
+
+    VDP_drawImageEx(BG_A, MW_IMAGES[index],
+        TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_MEGAWIFI_STATUS_INDEX), 17,
+        MAX_EFFECTIVE_Y + 1, FALSE, FALSE);
 }
 
 static void print_comm_mode(void)

@@ -22,3 +22,7 @@ extern const Image img_comm_megawifi;
 extern const TileSet ts_borders;
 extern const Image img_device_psg;
 extern const Image img_device_fm;
+extern const Image img_megawifi_connected;
+extern const Image img_megawifi_detected;
+extern const Image img_megawifi_not_detected;
+extern const Image img_megawifi_listening;

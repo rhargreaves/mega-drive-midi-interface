@@ -21,3 +21,7 @@ const Image img_comm_megawifi = {};
 const TileSet ts_borders = {};
 const Image img_device_psg = {};
 const Image img_device_fm = {};
+const Image img_megawifi_connected = {};
+const Image img_megawifi_detected = {};
+const Image img_megawifi_not_detected = {};
+const Image img_megawifi_listening = {};

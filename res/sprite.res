@@ -19,3 +19,7 @@ IMAGE img_comm_megawifi "sprite/megawifi.bmp" FAST ALL
 TILESET ts_borders "sprite/borders.bmp" FAST NONE
 IMAGE img_device_psg "sprite/device_psg.bmp" FAST ALL
 IMAGE img_device_fm "sprite/device_fm.bmp" FAST ALL
+IMAGE img_megawifi_connected "sprite/megawifi_connected.bmp" FAST ALL
+IMAGE img_megawifi_detected "sprite/megawifi_detected.bmp" FAST ALL
+IMAGE img_megawifi_listening "sprite/megawifi_listening.bmp" FAST ALL
+IMAGE img_megawifi_not_detected "sprite/megawifi_not_detected.bmp" FAST ALL
