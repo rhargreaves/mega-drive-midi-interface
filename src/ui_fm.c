@@ -95,7 +95,7 @@ static void printChannelParameterHeadings(void)
     ui_draw_text("MIDI", FM_HEADING_X, BASE_Y + 3);
     ui_draw_text("FM", FM_HEADING_X + 8, BASE_Y + 3);
     ui_draw_text("Alg", FM_HEADING_X, BASE_Y + 5);
-    ui_draw_text("FB", FM_HEADING_X, BASE_Y + 6);
+    ui_draw_text("Fb", FM_HEADING_X, BASE_Y + 6);
     ui_draw_text("LFO", FM_HEADING_X, BASE_Y + 9);
     ui_draw_text("AMS", FM_HEADING_X, BASE_Y + 10);
     ui_draw_text("FMS", FM_HEADING_X, BASE_Y + 11);

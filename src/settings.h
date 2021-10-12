@@ -1,10 +1,11 @@
 #pragma once
 #include <stdbool.h>
 
-bool settings_isMegaWiFiRom(void);
-bool settings_debugLoad(void);
-bool settings_debugSerial(void);
+bool settings_is_megawifi_rom(void);
+bool settings_debug_load(void);
+bool settings_debug_serial(void);
 bool settings_debug_megawifi_init(void);
+bool settings_debug_ticks(void);
 
 #define COMM_EVERDRIVE_X7 1
 #define COMM_EVERDRIVE_PRO 1
@@ -16,6 +17,6 @@ bool settings_debug_megawifi_init(void);
 #define DEBUG_MEGAWIFI_SYNC 0
 #define DEBUG_LOAD 0
 #define DEBUG_SERIAL 0
+#define DEBUG_TICKS 0
 
-// #define DEBUG_TICKS
 // #define DEBUG_EVENTS

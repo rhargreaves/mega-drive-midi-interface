@@ -57,6 +57,12 @@
 #define TILE_DEVICE_FM_INDEX (TILE_IMAGES_INDEX + 7)
 #define TILE_DEVICE_PSG_INDEX (TILE_DEVICE_FM_INDEX + 6)
 
+#define TILE_BORDERS_LEFT_CORNER_INDEX (TILE_BORDERS_INDEX)
+#define TILE_BORDERS_H_LINE_INDEX (TILE_BORDERS_INDEX + 1)
+#define TILE_BORDERS_H_LINE_END_INDEX (TILE_BORDERS_INDEX + 3)
+#define TILE_BORDERS_H_LINE_START_INDEX (TILE_BORDERS_INDEX + 4)
+#define TILE_BORDERS_RIGHT_CORNER_INDEX (TILE_BORDERS_INDEX + 2)
+
 static const char HEADER[] = "Mega Drive MIDI Interface";
 static const char CHAN_HEADER[] = "Ch.   1  2  3  4  5  6  1  2  3  4";
 static const char MIDI_HEADER[] = "MIDI";
@@ -190,11 +196,9 @@ void ui_update(void)
         printCommMode();
         printLog();
         print_routing_mode_if_needed();
-#if DEBUG_TICKS
-        debugPrintTicks();
-#else
-        (void)debugPrintTicks;
-#endif
+        if (settings_debug_ticks()) {
+            debugPrintTicks();
+        }
     }
 
     static u8 loadCalculationFrame = 0;
@@ -238,12 +242,6 @@ static void set_tile(u16 tileIndex, u16 x, u16 y)
     VDP_setTileMapXY(
         BG_A, TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, tileIndex), x, y);
 }
-
-#define TILE_BORDERS_LEFT_CORNER_INDEX (TILE_BORDERS_INDEX)
-#define TILE_BORDERS_H_LINE_INDEX (TILE_BORDERS_INDEX + 1)
-#define TILE_BORDERS_H_LINE_END_INDEX (TILE_BORDERS_INDEX + 3)
-#define TILE_BORDERS_H_LINE_START_INDEX (TILE_BORDERS_INDEX + 4)
-#define TILE_BORDERS_RIGHT_CORNER_INDEX (TILE_BORDERS_INDEX + 2)
 
 static void printHeader(void)
 {
@@ -397,7 +395,7 @@ static void printCommMode(void)
         TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_IMAGES_INDEX), 9,
         MAX_EFFECTIVE_Y + 1, FALSE, FALSE);
 
-    if (settings_isMegaWiFiRom()) {
+    if (settings_is_megawifi_rom()) {
         print_megawifi_info();
     }
 }
@@ -437,7 +435,7 @@ static void update_load(void)
         }
         set_tile(tile_index, 2 + i, LOAD_TILE_Y);
     }
-    if (settings_debugLoad()) {
+    if (settings_debug_load()) {
         print_load_text(percent);
     }
     comm_reset_counts();

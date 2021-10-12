@@ -1,6 +1,6 @@
 #include "settings.h"
 
-bool settings_isMegaWiFiRom(void)
+bool settings_is_megawifi_rom(void)
 {
 #if MEGAWIFI
     return true;
@@ -9,7 +9,7 @@ bool settings_isMegaWiFiRom(void)
 #endif
 }
 
-bool settings_debugLoad(void)
+bool settings_debug_load(void)
 {
 #if DEBUG_LOAD
     return true;
@@ -18,7 +18,16 @@ bool settings_debugLoad(void)
 #endif
 }
 
-bool settings_debugSerial(void)
+bool settings_debug_ticks(void)
+{
+#if DEBUG_TICKS
+    return true;
+#else
+    return false;
+#endif
+}
+
+bool settings_debug_serial(void)
 {
 #if DEBUG_SERIAL
     return true;

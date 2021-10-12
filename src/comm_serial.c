@@ -46,7 +46,7 @@ void comm_serial_init(void)
     serial_init(SCTRL_4800_BPS | SCTRL_SIN | SCTRL_SOUT | SCTRL_RINT);
     serial_setReadyToReceiveCallback(&recvReadyCallback);
     flushRRDY();
-    if (settings_debugSerial()) {
+    if (settings_debug_serial()) {
         log_info("Serial: Baud = %i", baud_rate());
     }
 }
