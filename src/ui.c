@@ -69,21 +69,21 @@ static const char MIDI_HEADER[] = "MIDI";
 static const char MIDI_CH_TEXT[17][3] = { " -", " 1", " 2", " 3", " 4", " 5",
     " 6", " 7", " 8", " 9", "10", "11", "12", "13", "14", "15", "16" };
 
-static void initLoad(void);
-static void printChannels(void);
-static void printHeader(void);
+static void init_load(void);
+static void print_channels(void);
+static void print_header(void);
 static void update_load(void);
-static u16 loadPercent(void);
-static void updateKeyOnOff(void);
-static void drawText(const char* text, u16 x, u16 y);
-static void printChanActivity(u16 busy);
-static void printCommMode(void);
-static void populateMappings(u8* midiChans);
+static u16 load_percent(void);
+static void update_key_on_off(void);
+static void draw_text(const char* text, u16 x, u16 y);
+static void print_chan_activity(u16 busy);
+static void print_comm_mode(void);
+static void populate_mappings(u8* midiChans);
 static void init_routing_mode_tiles(void);
 static void print_routing_mode_if_needed(void);
 static void print_routing_mode(bool enabled);
-static void printMappingsIfDirty(u8* midiChans);
-static void printMappings(void);
+static void print_mappings_if_dirty(u8* midiChans);
+static void print_mappings(void);
 
 static u16 loadPercentSum = 0;
 static bool commInited = false;
@@ -99,12 +99,12 @@ void ui_init(void)
         PALETTE_INDEX(PAL1, FONT_COLOUR_INDEX), RGB24_TO_VDPCOLOR(0xFFFF00));
     VDP_setPaletteColor(
         PALETTE_INDEX(PAL3, FONT_COLOUR_INDEX), RGB24_TO_VDPCOLOR(0x808080));
-    printHeader();
-    printChannels();
+    print_header();
+    print_channels();
     update_load();
-    initLoad();
-    printCommMode();
-    printMappings();
+    init_load();
+    print_comm_mode();
+    print_mappings();
     init_routing_mode_tiles();
     print_routing_mode(midi_dynamic_mode());
     SYS_disableInts();
@@ -123,24 +123,24 @@ void ui_init(void)
     ui_fm_init();
 }
 
-static void printMappings(void)
+static void print_mappings(void)
 {
     u8 midiChans[DEV_CHANS] = { 0 };
-    populateMappings(midiChans);
-    printMappingsIfDirty(midiChans);
+    populate_mappings(midiChans);
+    print_mappings_if_dirty(midiChans);
 }
 
 static bool showLogs = true;
 static u8 logCurrentY = 0;
 
-static void clearLogArea(void)
+static void clear_log_area(void)
 {
     VDP_clearTextArea(
         MARGIN_X, LOG_Y + MARGIN_Y, MAX_EFFECTIVE_X, MAX_LOG_LINES);
     logCurrentY = 0;
 }
 
-static void printLog(void)
+static void print_log(void)
 {
     if (!showLogs) {
         return;
@@ -151,7 +151,7 @@ static void printLog(void)
         return;
     }
     if (logCurrentY >= MAX_LOG_LINES) {
-        clearLogArea();
+        clear_log_area();
         logCurrentY = 0;
     }
     switch (log->level) {
@@ -162,7 +162,7 @@ static void printLog(void)
         VDP_setTextPalette(PAL2);
         break;
     }
-    drawText(log->msg, 0, LOG_Y + logCurrentY);
+    draw_text(log->msg, 0, LOG_Y + logCurrentY);
     VDP_setTextPalette(PAL0);
     logCurrentY++;
 }
@@ -174,37 +174,37 @@ void ui_show_logs(void)
 
 void ui_hide_logs(void)
 {
-    clearLogArea();
+    clear_log_area();
     showLogs = false;
 }
 
-static void debugPrintTicks(void)
+static void print_ticks(void)
 {
     char t[6];
     v_sprintf(t, "%-5u", scheduler_ticks());
-    drawText(t, 0, 1);
+    draw_text(t, 0, 1);
 }
 
 void ui_update(void)
 {
-    updateKeyOnOff();
+    update_key_on_off();
 
     static u8 activityFrame = 0;
     if (++activityFrame == FRAMES_BEFORE_UPDATE_ACTIVITY) {
         activityFrame = 0;
-        printMappings();
-        printCommMode();
-        printLog();
+        print_mappings();
+        print_comm_mode();
+        print_log();
         print_routing_mode_if_needed();
         if (settings_debug_ticks()) {
-            debugPrintTicks();
+            print_ticks();
         }
     }
 
     static u8 loadCalculationFrame = 0;
     if (++loadCalculationFrame == FRAMES_BEFORE_UPDATE_LOAD_PERCENT) {
         loadCalculationFrame = 0;
-        loadPercentSum += loadPercent();
+        loadPercentSum += load_percent();
     }
 
     static u8 loadFrame = 0;
@@ -217,7 +217,7 @@ void ui_update(void)
     SYS_doVBlankProcessEx(IMMEDIATLY);
 }
 
-static u16 loadPercent(void)
+static u16 load_percent(void)
 {
     u16 idle = comm_idle_count();
     u16 busy = comm_busy_count();
@@ -229,10 +229,10 @@ static u16 loadPercent(void)
 
 void ui_draw_text(const char* text, u16 x, u16 y)
 {
-    drawText(text, x, y);
+    draw_text(text, x, y);
 }
 
-static void drawText(const char* text, u16 x, u16 y)
+static void draw_text(const char* text, u16 x, u16 y)
 {
     VDP_drawText(text, MARGIN_X + x, MARGIN_Y + y);
 }
@@ -243,10 +243,10 @@ static void set_tile(u16 tileIndex, u16 x, u16 y)
         BG_A, TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, tileIndex), x, y);
 }
 
-static void printHeader(void)
+static void print_header(void)
 {
-    drawText(HEADER, 5, 0);
-    drawText(BUILD, RIGHTED_TEXT_X(BUILD), 0);
+    draw_text(HEADER, 5, 0);
+    draw_text(BUILD, RIGHTED_TEXT_X(BUILD), 0);
 
     VDP_loadTileSet(&ts_borders, TILE_BORDERS_INDEX, DMA);
     set_tile(TILE_BORDERS_LEFT_CORNER_INDEX, 7, DEVICE_Y);
@@ -278,31 +278,31 @@ static void printHeader(void)
     set_tile(TILE_BORDERS_RIGHT_CORNER_INDEX, 34, DEVICE_Y);
 }
 
-static void printChannels(void)
+static void print_channels(void)
 {
     VDP_setTextPalette(PAL3);
-    drawText(CHAN_HEADER, 0, CHAN_Y);
-    drawText(MIDI_HEADER, 0, MIDI_Y);
-    drawText("Act.", 0, ACTIVITY_Y);
+    draw_text(CHAN_HEADER, 0, CHAN_Y);
+    draw_text(MIDI_HEADER, 0, MIDI_Y);
+    draw_text("Act.", 0, ACTIVITY_Y);
     VDP_setTextPalette(PAL0);
 }
 
-static void updateKeyOnOff(void)
+static void update_key_on_off(void)
 {
     static u16 lastBusy = 0;
     u16 busy = synth_busy() | (midi_psg_busy() << 6);
     if (busy != lastBusy) {
-        printChanActivity(busy);
+        print_chan_activity(busy);
         lastBusy = busy;
     }
 }
 
-static u8 midiChannelForUi(DeviceChannel* mappings, u8 index)
+static u8 midi_chan_for_ui(DeviceChannel* mappings, u8 index)
 {
     return (mappings[index].midiChannel) + 1;
 }
 
-static void printMappingsIfDirty(u8* midiChans)
+static void print_mappings_if_dirty(u8* midiChans)
 {
     static u8 lastMidiChans[DEV_CHANS];
     if (memcmp(lastMidiChans, midiChans, sizeof(u8) * DEV_CHANS) == 0) {
@@ -310,19 +310,19 @@ static void printMappingsIfDirty(u8* midiChans)
     }
     memcpy(lastMidiChans, midiChans, sizeof(u8) * DEV_CHANS);
     for (u8 ch = 0; ch < 10; ch++) {
-        drawText(MIDI_CH_TEXT[midiChans[ch]], 5 + (ch * 3), MIDI_Y);
+        draw_text(MIDI_CH_TEXT[midiChans[ch]], 5 + (ch * 3), MIDI_Y);
     }
 }
 
-static void populateMappings(u8* midiChans)
+static void populate_mappings(u8* midiChans)
 {
     DeviceChannel* chans = midi_channel_mappings();
     for (u8 i = 0; i < DEV_CHANS; i++) {
-        midiChans[i] = midiChannelForUi(chans, i);
+        midiChans[i] = midi_chan_for_ui(chans, i);
     }
 }
 
-static void printChanActivity(u16 busy)
+static void print_chan_activity(u16 busy)
 {
     for (u8 chan = 0; chan < MAX_FM_CHANS + MAX_PSG_CHANS; chan++) {
         SPR_setFrame(activitySprites[chan], ((busy >> chan) & 1) ? 1 : 0);
@@ -356,10 +356,10 @@ static void print_megawifi_info(void)
         index2 = 5;
         break;
     }
-    drawText(MW_TEXT[index2], 16, MAX_EFFECTIVE_Y);
+    draw_text(MW_TEXT[index2], 16, MAX_EFFECTIVE_Y);
 }
 
-static void printCommMode(void)
+static void print_comm_mode(void)
 {
     if (commInited) {
         return;
@@ -400,9 +400,9 @@ static void printCommMode(void)
     }
 }
 
-static void initLoad(void)
+static void init_load(void)
 {
-    drawText("%", 0, MAX_EFFECTIVE_Y);
+    draw_text("%", 0, MAX_EFFECTIVE_Y);
     VDP_setPaletteColors((PAL2 * 16), pal_load.data, pal_load.length);
     VDP_loadTileSet(&ts_load, TILE_LED_INDEX, CPU);
 }
@@ -414,7 +414,7 @@ static void print_load_text(u16 percent)
         percent = 99;
     }
     v_sprintf(text_buffer, "%-2i", percent);
-    drawText(text_buffer, 5, MAX_EFFECTIVE_Y);
+    draw_text(text_buffer, 5, MAX_EFFECTIVE_Y);
 }
 
 #define LED_TILE_COUNT 4
