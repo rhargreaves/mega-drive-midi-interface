@@ -34,10 +34,11 @@
 #define CHAN_X_GAP 3
 #define ACTIVITY_FM_X 6
 
-#define CHAN_Y 2
-#define MIDI_Y CHAN_Y + 2
-#define ACTIVITY_Y MIDI_Y + 2
-#define LOG_Y ACTIVITY_Y + 3
+#define DEVICE_Y 3
+#define CHAN_Y 3
+#define MIDI_Y (CHAN_Y + 2)
+#define ACTIVITY_Y (MIDI_Y + 2)
+#define LOG_Y (ACTIVITY_Y + 3)
 #define MAX_LOG_LINES 14
 
 #define PALETTE_INDEX(pal, index) ((pal * 16) + index)
@@ -51,10 +52,13 @@
 
 #define TILE_LED_INDEX TILE_USERINDEX
 #define TILE_ROUTING_INDEX (TILE_LED_INDEX + 8)
-#define TILE_IMAGES_INDEX (TILE_ROUTING_INDEX + 4)
+#define TILE_BORDERS_INDEX (TILE_ROUTING_INDEX + 4)
+#define TILE_IMAGES_INDEX (TILE_BORDERS_INDEX + 8)
+#define TILE_DEVICE_FM_INDEX (TILE_IMAGES_INDEX + 7)
+#define TILE_DEVICE_PSG_INDEX (TILE_DEVICE_FM_INDEX + 6)
 
 static const char HEADER[] = "Mega Drive MIDI Interface";
-static const char CHAN_HEADER[] = "Ch.  F1 F2 F3 F4 F5 F6 P1 P2 P3 P4";
+static const char CHAN_HEADER[] = "Ch.   1  2  3  4  5  6  1  2  3  4";
 static const char MIDI_HEADER[] = "MIDI";
 static const char MIDI_CH_TEXT[17][3] = { " -", " 1", " 2", " 3", " 4", " 5",
     " 6", " 7", " 8", " 9", "10", "11", "12", "13", "14", "15", "16" };
@@ -229,10 +233,51 @@ static void drawText(const char* text, u16 x, u16 y)
     VDP_drawText(text, MARGIN_X + x, MARGIN_Y + y);
 }
 
+static void set_tile(u16 tileIndex, u16 x, u16 y)
+{
+    VDP_setTileMapXY(
+        BG_A, TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, tileIndex), x, y);
+}
+
+#define TILE_BORDERS_LEFT_CORNER_INDEX (TILE_BORDERS_INDEX)
+#define TILE_BORDERS_H_LINE_INDEX (TILE_BORDERS_INDEX + 1)
+#define TILE_BORDERS_H_LINE_END_INDEX (TILE_BORDERS_INDEX + 3)
+#define TILE_BORDERS_H_LINE_START_INDEX (TILE_BORDERS_INDEX + 4)
+#define TILE_BORDERS_RIGHT_CORNER_INDEX (TILE_BORDERS_INDEX + 2)
+
 static void printHeader(void)
 {
     drawText(HEADER, 5, 0);
     drawText(BUILD, RIGHTED_TEXT_X(BUILD), 0);
+
+    VDP_loadTileSet(&ts_borders, TILE_BORDERS_INDEX, DMA);
+    set_tile(TILE_BORDERS_LEFT_CORNER_INDEX, 7, DEVICE_Y);
+    set_tile(TILE_BORDERS_H_LINE_INDEX, 8, DEVICE_Y);
+    set_tile(TILE_BORDERS_H_LINE_INDEX, 9, DEVICE_Y);
+    set_tile(TILE_BORDERS_H_LINE_INDEX, 10, DEVICE_Y);
+    set_tile(TILE_BORDERS_H_LINE_INDEX, 11, DEVICE_Y);
+
+    VDP_drawImageEx(BG_A, &img_device_fm,
+        TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_DEVICE_FM_INDEX), 12,
+        DEVICE_Y, FALSE, FALSE);
+
+    set_tile(TILE_BORDERS_H_LINE_INDEX, 18, DEVICE_Y);
+    set_tile(TILE_BORDERS_H_LINE_INDEX, 19, DEVICE_Y);
+    set_tile(TILE_BORDERS_H_LINE_INDEX, 20, DEVICE_Y);
+    set_tile(TILE_BORDERS_H_LINE_INDEX, 21, DEVICE_Y);
+    set_tile(TILE_BORDERS_RIGHT_CORNER_INDEX, 22, DEVICE_Y);
+
+    set_tile(TILE_BORDERS_LEFT_CORNER_INDEX, 25, DEVICE_Y);
+    set_tile(TILE_BORDERS_H_LINE_INDEX, 26, DEVICE_Y);
+    set_tile(TILE_BORDERS_H_LINE_INDEX, 27, DEVICE_Y);
+
+    VDP_drawImageEx(BG_A, &img_device_psg,
+        TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_DEVICE_PSG_INDEX), 28,
+        DEVICE_Y, FALSE, FALSE);
+
+    set_tile(TILE_BORDERS_H_LINE_INDEX, 32, DEVICE_Y);
+    set_tile(TILE_BORDERS_H_LINE_INDEX, 33, DEVICE_Y);
+    set_tile(TILE_BORDERS_RIGHT_CORNER_INDEX, 34, DEVICE_Y);
 }
 
 static void printChannels(void)
@@ -377,12 +422,6 @@ static void print_load_text(u16 percent)
 #define LED_TILE_COUNT 4
 #define LED_TILE_OFF_OFFSET (LED_TILE_COUNT)
 #define LOAD_TILE_Y (MAX_EFFECTIVE_Y + 1)
-
-static void set_tile(u16 tileIndex, u16 x, u16 y)
-{
-    VDP_setTileMapXY(
-        BG_A, TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, tileIndex), x, y);
-}
 
 static void update_load(void)
 {

@@ -18,3 +18,6 @@ const Image img_comm_serial = {};
 const Image img_comm_ed_usb = {};
 const Image img_comm_ed_pro_usb = {};
 const Image img_comm_megawifi = {};
+const TileSet ts_borders = {};
+const Image img_device_psg = {};
+const Image img_device_fm = {};

@@ -19,3 +19,6 @@ extern const Image img_comm_serial;
 extern const Image img_comm_ed_usb;
 extern const Image img_comm_ed_pro_usb;
 extern const Image img_comm_megawifi;
+extern const TileSet ts_borders;
+extern const Image img_device_psg;
+extern const Image img_device_fm;
