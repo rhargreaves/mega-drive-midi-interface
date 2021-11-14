@@ -53,7 +53,7 @@ static void test_midi_polyphonic_mode_uses_multiple_fm_channels(
 
         __real_midi_note_on(chan, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
 
-        expect_synth_pitch(1, 7, 0x269);
+        expect_synth_pitch(1, 7, 0x25f);
         expect_synth_volume_any();
         expect_value(__wrap_synth_noteOn, channel, 1);
 
