@@ -2,6 +2,8 @@ vpath %.c ../src
 
 CC=gcc
 SGDK?=/opt/gendev/sgdk
+VALGRIND=valgrind
+VFLAGS=--leak-check=yes --trace-children=yes
 
 ifeq ($(DEBUG),1)
 	GDB=gdbserver host:2345
@@ -182,7 +184,7 @@ CMOCKA_DIR=cmocka
 UNIT_TESTS_TARGET=$(BIN_DIR)/unit_tests
 SYSTEM_TESTS_TARGET=$(BIN_DIR)/system_tests
 
-all: clean-target unit system
+all: clean-target unit valgrind-unit system valgrind-system
 
 unit: $(UNIT_TESTS_TARGET)
 	$(GDB) ./$(UNIT_TESTS_TARGET)
@@ -191,6 +193,14 @@ unit: $(UNIT_TESTS_TARGET)
 system: $(SYSTEM_TESTS_TARGET)
 	$(GDB) ./$(SYSTEM_TESTS_TARGET)
 .PHONY: system
+
+valgrind-unit: $(UNIT_TESTS_TARGET)
+	$(VALGRIND) $(VFLAGS) $(UNIT_TESTS_TARGET) > /dev/null
+.PHONY: valgrind-unit
+
+valgrind-system: $(UNIT_TESTS_TARGET)
+	$(VALGRIND) $(VFLAGS) $(SYSTEM_TESTS_TARGET) > /dev/null
+.PHONY: valgrind-system
 
 $(SRC_OBJ): | $(OBJ_DIR) $(CMOCKA_DIR)
 

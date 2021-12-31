@@ -4,7 +4,8 @@ RUN apt-get -y update && \
 	build-essential \
 	cmake \
 	gdb \
-	gdbserver
+	gdbserver \
+	valgrind
 WORKDIR /app
 COPY tests/cmocka* /app/tests/
 COPY tests/Makefile /app/tests/Makefile
