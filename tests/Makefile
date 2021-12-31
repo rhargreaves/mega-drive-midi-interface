@@ -3,7 +3,7 @@ vpath %.c ../src
 CC=gcc
 SGDK?=/opt/gendev/sgdk
 VALGRIND=valgrind
-VFLAGS=--leak-check=yes --trace-children=yes
+VFLAGS=--leak-check=full --trace-children=yes --error-exitcode=1
 
 ifeq ($(DEBUG),1)
 	GDB=gdbserver host:2345
@@ -155,15 +155,16 @@ MD_MOCKS=SYS_setVIntCallback \
 	mw_udp_reuse_send \
 	Z80_requestBus \
 	SYS_doVBlankProcessEx \
-    VDP_loadTileSet \
-    VDP_setTileMapXY \
-    VDP_drawImageEx
+	VDP_loadTileSet \
+	VDP_setTileMapXY \
+	VDP_drawImageEx
 
 LDFLAGS=-ggdb -ffreestanding -lcmocka -L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src
 LDFLAGS+=$(foreach MOCK,$(MD_MOCKS),-Wl,--wrap=$(MOCK))
 
 SYSTEM_TEST_LDFLAGS=$(LDFLAGS)
 UNIT_TEST_LDFLAGS=$(LDFLAGS) $(foreach MOCK,$(MOCKS),-Wl,--wrap=$(MOCK))
+SANITISE_LDFLAGS=-fsanitize=address
 
 SRC=$(shell find ../src/* -maxdepth 0 -type f -name '*.c' ! -name '*main.c*' -printf '%f\n')
 SRC+=$(shell find ../src/mw/* -maxdepth 0 -type f -name '*.c' ! -name '*main.c*' -printf 'mw/%f\n')
@@ -183,8 +184,12 @@ CMOCKA_DIR=cmocka
 
 UNIT_TESTS_TARGET=$(BIN_DIR)/unit_tests
 SYSTEM_TESTS_TARGET=$(BIN_DIR)/system_tests
+UNIT_TESTS_SANITISE_TARGET=$(BIN_DIR)/unit_tests_sanitise
+SYSTEM_TESTS_SANITISE_TARGET=$(BIN_DIR)/system_tests_sanitise
 
-all: clean-target unit valgrind-unit system valgrind-system
+all: clean-target \
+	unit sanitise-unit valgrind-unit \
+	system sanitise-system valgrind-system
 
 unit: $(UNIT_TESTS_TARGET)
 	$(GDB) ./$(UNIT_TESTS_TARGET)
@@ -198,9 +203,17 @@ valgrind-unit: $(UNIT_TESTS_TARGET)
 	$(VALGRIND) $(VFLAGS) $(UNIT_TESTS_TARGET) > /dev/null
 .PHONY: valgrind-unit
 
-valgrind-system: $(UNIT_TESTS_TARGET)
+valgrind-system: $(SYSTEM_TESTS_TARGET)
 	$(VALGRIND) $(VFLAGS) $(SYSTEM_TESTS_TARGET) > /dev/null
 .PHONY: valgrind-system
+
+sanitise-unit: $(UNIT_TESTS_SANITISE_TARGET)
+	$(GDB) ./$(UNIT_TESTS_SANITISE_TARGET)
+.PHONY: sanitise-unit
+
+sanitise-system: $(SYSTEM_TESTS_SANITISE_TARGET)
+	$(GDB) ./$(SYSTEM_TESTS_SANITISE_TARGET)
+.PHONY: sanitise-system
 
 $(SRC_OBJ): | $(OBJ_DIR) $(CMOCKA_DIR)
 
@@ -217,9 +230,17 @@ $(UNIT_TESTS_TARGET): $(SRC_OBJ) $(UNIT_TEST_OBJ) $(COMMON_TEST_OBJ)
 	mkdir -p $(BIN_DIR)
 	$(CC) -o $@ $^ $(UNIT_TEST_LDFLAGS)
 
+$(UNIT_TESTS_SANITISE_TARGET): $(SRC_OBJ) $(UNIT_TEST_OBJ) $(COMMON_TEST_OBJ)
+	mkdir -p $(BIN_DIR)
+	$(CC) -o $@ $^ $(UNIT_TEST_LDFLAGS) $(SANITISE_LDFLAGS)
+
 $(SYSTEM_TESTS_TARGET): $(SRC_OBJ) $(SYSTEM_TEST_OBJ) $(COMMON_TEST_OBJ)
 	mkdir -p $(BIN_DIR)
 	$(CC) -o $@ $^ $(SYSTEM_TEST_LDFLAGS)
+
+$(SYSTEM_TESTS_SANITISE_TARGET): $(SRC_OBJ) $(SYSTEM_TEST_OBJ) $(COMMON_TEST_OBJ)
+	mkdir -p $(BIN_DIR)
+	$(CC) -o $@ $^ $(SYSTEM_TEST_LDFLAGS) $(SANITISE_LDFLAGS)
 
 $(CMOCKA_DIR):
 	mkdir -p $@
