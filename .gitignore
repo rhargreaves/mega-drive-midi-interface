@@ -7,5 +7,6 @@ tests/bin/
 out/
 .idea/
 .vscode/ipch/
+.vscode/*.log
 *.swp
 res/*.s
