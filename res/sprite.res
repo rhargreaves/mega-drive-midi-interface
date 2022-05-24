@@ -16,6 +16,7 @@ IMAGE img_comm_serial "sprite/serial.bmp" FAST ALL
 IMAGE img_comm_ed_usb "sprite/ed_usb.bmp" FAST ALL
 IMAGE img_comm_ed_pro_usb "sprite/ed_pro_usb.bmp" FAST ALL
 IMAGE img_comm_megawifi "sprite/megawifi.bmp" FAST ALL
+IMAGE img_comm_demo "sprite/demo.bmp" FAST ALL
 TILESET ts_borders "sprite/borders.bmp" FAST NONE
 IMAGE img_device_psg "sprite/device_psg.bmp" FAST ALL
 IMAGE img_device_fm "sprite/device_fm.bmp" FAST ALL

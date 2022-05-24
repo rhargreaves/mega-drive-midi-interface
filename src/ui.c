@@ -362,8 +362,9 @@ static void print_comm_mode(void)
     if (commInited) {
         return;
     }
-    const Image* MODES_IMAGES[] = { &img_comm_waiting, &img_comm_ed_usb,
-        &img_comm_ed_pro_usb, &img_comm_serial, &img_comm_megawifi, 0 };
+    const Image* MODES_IMAGES[]
+        = { &img_comm_waiting, &img_comm_ed_usb, &img_comm_ed_pro_usb,
+              &img_comm_serial, &img_comm_megawifi, &img_comm_demo, 0 };
     u16 index;
     switch (comm_mode()) {
     case Discovery:
@@ -386,7 +387,7 @@ static void print_comm_mode(void)
         commInited = true;
         break;
     case Demo:
-        index = 3;
+        index = 5;
         commInited = true;
         break;
     default:
