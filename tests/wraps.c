@@ -816,3 +816,16 @@ u16 __wrap_VDP_drawImageEx(VDPPlane plane, const Image* image, u16 basetile,
 {
     return 0;
 }
+
+void __wrap_JOY_update(void)
+{
+}
+
+u16 __wrap_JOY_readJoypad(u16 joy)
+{
+    return 0;
+}
+
+void __wrap_JOY_init(void)
+{
+}

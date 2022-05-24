@@ -3,6 +3,7 @@
 #include "comm_everdrive_pro.h"
 #include "comm_megawifi.h"
 #include "comm_serial.h"
+#include "comm_demo.h"
 #include <stdbool.h>
 #include <vdp.h>
 #include <vdp_bg.h>
@@ -27,6 +28,9 @@ struct CommVTable {
     void (*write)(u8 data);
 };
 
+static const CommVTable Demo_VTable = { comm_demo_init, comm_demo_read_ready,
+    comm_demo_read, comm_demo_write_ready, comm_demo_write };
+
 static const CommVTable Everdrive_VTable
     = { comm_everdrive_init, comm_everdrive_read_ready, comm_everdrive_read,
           comm_everdrive_write_ready, comm_everdrive_write };
@@ -43,7 +47,7 @@ static const CommVTable Megawifi_VTable
     = { comm_megawifi_init, comm_megawifi_read_ready, comm_megawifi_read,
           comm_megawifi_write_ready, comm_megawifi_write };
 
-static const CommVTable* commTypes[] = {
+static const CommVTable* commTypes[] = { &Demo_VTable,
 #if COMM_EVERDRIVE_X7 == 1
     &Everdrive_VTable,
 #endif
@@ -138,6 +142,8 @@ CommMode comm_mode(void)
         return Serial;
     } else if (activeCommType == &Megawifi_VTable) {
         return MegaWiFi;
+    } else if (activeCommType == &Demo_VTable) {
+        return Demo;
     } else {
         return Discovery;
     }

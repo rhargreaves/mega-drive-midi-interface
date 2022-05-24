@@ -50,8 +50,7 @@ LIBS = -L$(GENDEV)/m68k-elf/lib \
 	-L$(GENDEV)/lib/gcc/m68k-elf/$(GCC_VER)/* \
 	-L$(GENDEV)/sgdk/lib -lmd -lnosys \
 	--wrap=SYS_enableInts \
-	--wrap=SYS_disableInts \
-	--wrap=JOY_update
+	--wrap=SYS_disableInts
 
 LINKFLAGS = -T src/mw.ld \
 	-Map=out/output.map \
@@ -171,5 +170,5 @@ test:
 clean:
 	$(MAKE) -C tests clean-target
 	$(RM) $(RESOURCES) res/*.s
-#	$(RM) *.o *.bin *.elf *.map *.iso
+	$(RM) *.o *.bin *.elf *.map *.iso
 	$(RM) boot/*.o boot/*.bin

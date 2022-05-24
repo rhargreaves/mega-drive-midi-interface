@@ -168,3 +168,7 @@ u16 __wrap_VDP_loadTileSet(
     const TileSet* tileset, u16 index, TransferMethod tm);
 u16 __wrap_VDP_drawImageEx(VDPPlane plane, const Image* image, u16 basetile,
     u16 x, u16 y, u16 loadpal, bool dma);
+
+void __wrap_JOY_update(void);
+u16 __wrap_JOY_readJoypad(u16 joy);
+void __wrap_JOY_init(void);

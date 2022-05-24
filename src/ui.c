@@ -385,6 +385,10 @@ static void print_comm_mode(void)
         index = 4;
         commInited = true;
         break;
+    case Demo:
+        index = 3;
+        commInited = true;
+        break;
     default:
         index = 0;
         break;

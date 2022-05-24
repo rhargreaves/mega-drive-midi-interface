@@ -25,6 +25,7 @@
         "istream": "c",
         "ostream": "c",
         "array": "c",
-        "utility": "c"
+        "utility": "c",
+        "joy.h": "c"
     }
 }
