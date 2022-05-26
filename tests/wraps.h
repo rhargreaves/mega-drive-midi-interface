@@ -19,6 +19,12 @@ extern u16 __real_comm_busy_count(void);
 extern void __real_comm_reset_counts(void);
 extern void __real_comm_megawifi_midiEmitCallback(u8 midiByte);
 
+extern void __real_comm_demo_init(void);
+extern u8 __real_comm_demo_read_ready(void);
+extern u8 __real_comm_demo_read(void);
+extern u8 __real_comm_demo_write_ready(void);
+extern void __real_comm_demo_write(u8 data);
+
 void wraps_disable_checks(void);
 void wraps_enable_checks(void);
 void wraps_disable_logging_checks(void);

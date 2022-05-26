@@ -846,7 +846,7 @@ void __wrap_JOY_update(void)
 
 u16 __wrap_JOY_readJoypad(u16 joy)
 {
-    return 0;
+    return mock_type(u16);
 }
 
 void __wrap_JOY_init(void)
