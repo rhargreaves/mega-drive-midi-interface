@@ -33,29 +33,31 @@ static void test_comm_demo_plays_note(UNUSED void** state)
 {
     will_return(__wrap_JOY_readJoypad, BUTTON_A);
 
-    assert_int_equal(__real_comm_demo_read_ready(), true);
-    assert_int_equal(__real_comm_demo_read(), 0x90);
+    for (int rep = 0; rep < 10; rep++) {
+        assert_int_equal(__real_comm_demo_read_ready(), true);
+        assert_int_equal(__real_comm_demo_read(), 0x90);
 
-    assert_int_equal(__real_comm_demo_read_ready(), true);
-    assert_int_equal(__real_comm_demo_read(), 48);
+        assert_int_equal(__real_comm_demo_read_ready(), true);
+        assert_int_equal(__real_comm_demo_read(), 48);
 
-    assert_int_equal(__real_comm_demo_read_ready(), true);
-    assert_int_equal(__real_comm_demo_read(), 127);
+        assert_int_equal(__real_comm_demo_read_ready(), true);
+        assert_int_equal(__real_comm_demo_read(), 127);
 
-    for (int i = 0; i < 10000; i++) {
-        assert_int_equal(__real_comm_demo_read_ready(), false);
-    }
+        for (int i = 0; i < 10000; i++) {
+            assert_int_equal(__real_comm_demo_read_ready(), false);
+        }
 
-    assert_int_equal(__real_comm_demo_read_ready(), true);
-    assert_int_equal(__real_comm_demo_read(), 0x80);
+        assert_int_equal(__real_comm_demo_read_ready(), true);
+        assert_int_equal(__real_comm_demo_read(), 0x80);
 
-    assert_int_equal(__real_comm_demo_read_ready(), true);
-    assert_int_equal(__real_comm_demo_read(), 48);
+        assert_int_equal(__real_comm_demo_read_ready(), true);
+        assert_int_equal(__real_comm_demo_read(), 48);
 
-    assert_int_equal(__real_comm_demo_read_ready(), true);
-    assert_int_equal(__real_comm_demo_read(), 127);
+        assert_int_equal(__real_comm_demo_read_ready(), true);
+        assert_int_equal(__real_comm_demo_read(), 127);
 
-    for (int i = 0; i < 500; i++) {
-        assert_int_equal(__real_comm_demo_read_ready(), false);
+        for (int i = 0; i < 500; i++) {
+            assert_int_equal(__real_comm_demo_read_ready(), false);
+        }
     }
 }
