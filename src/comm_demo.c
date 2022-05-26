@@ -27,7 +27,7 @@ u8 track[] = {
 static u8 cursor;
 static u16 wait;
 static bool enabled;
-static u8 pitch = noteKey;
+static u8 pitch;
 
 void comm_demo_init(void)
 {
@@ -35,6 +35,7 @@ void comm_demo_init(void)
     cursor = 0;
     wait = 0;
     enabled = false;
+    pitch = noteKey;
 }
 
 u8 comm_demo_read_ready(void)
@@ -58,6 +59,10 @@ u8 comm_demo_read_ready(void)
 
 u8 comm_demo_read(void)
 {
+    if (cursor == 0) {
+        track[1] = pitch;
+        track[4] = pitch;
+    }
     u8 data = track[cursor];
     cursor++;
     if (cursor == NOTE_ON_END) {
@@ -68,8 +73,6 @@ u8 comm_demo_read(void)
     }
     if (cursor == NOTE_OFF_END) {
         cursor = 0;
-        track[1] = pitch;
-        track[4] = pitch;
     }
     return data;
 }

@@ -24,6 +24,7 @@ extern u8 __real_comm_demo_read_ready(void);
 extern u8 __real_comm_demo_read(void);
 extern u8 __real_comm_demo_write_ready(void);
 extern void __real_comm_demo_write(u8 data);
+extern void __real_comm_demo_vsync(void);
 
 void wraps_disable_checks(void);
 void wraps_enable_checks(void);

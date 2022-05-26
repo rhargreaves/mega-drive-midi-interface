@@ -29,35 +29,60 @@ static void test_comm_demo_is_not_ready_if_no_button_pressed(
     assert_int_equal(read, false);
 }
 
+static void assert_note_played_and_stopped(u8 pitch)
+{
+    assert_int_equal(__real_comm_demo_read_ready(), true);
+    assert_int_equal(__real_comm_demo_read(), 0x90);
+
+    assert_int_equal(__real_comm_demo_read_ready(), true);
+    assert_int_equal(__real_comm_demo_read(), pitch);
+
+    assert_int_equal(__real_comm_demo_read_ready(), true);
+    assert_int_equal(__real_comm_demo_read(), 127);
+
+    for (int i = 0; i < 10000; i++) {
+        assert_int_equal(__real_comm_demo_read_ready(), false);
+    }
+
+    assert_int_equal(__real_comm_demo_read_ready(), true);
+    assert_int_equal(__real_comm_demo_read(), 0x80);
+
+    assert_int_equal(__real_comm_demo_read_ready(), true);
+    assert_int_equal(__real_comm_demo_read(), pitch);
+
+    assert_int_equal(__real_comm_demo_read_ready(), true);
+    assert_int_equal(__real_comm_demo_read(), 127);
+
+    for (int i = 0; i < 500; i++) {
+        assert_int_equal(__real_comm_demo_read_ready(), false);
+    }
+}
+
 static void test_comm_demo_plays_note(UNUSED void** state)
 {
     will_return(__wrap_JOY_readJoypad, BUTTON_A);
 
     for (int rep = 0; rep < 10; rep++) {
-        assert_int_equal(__real_comm_demo_read_ready(), true);
-        assert_int_equal(__real_comm_demo_read(), 0x90);
-
-        assert_int_equal(__real_comm_demo_read_ready(), true);
-        assert_int_equal(__real_comm_demo_read(), 48);
-
-        assert_int_equal(__real_comm_demo_read_ready(), true);
-        assert_int_equal(__real_comm_demo_read(), 127);
-
-        for (int i = 0; i < 10000; i++) {
-            assert_int_equal(__real_comm_demo_read_ready(), false);
-        }
-
-        assert_int_equal(__real_comm_demo_read_ready(), true);
-        assert_int_equal(__real_comm_demo_read(), 0x80);
-
-        assert_int_equal(__real_comm_demo_read_ready(), true);
-        assert_int_equal(__real_comm_demo_read(), 48);
-
-        assert_int_equal(__real_comm_demo_read_ready(), true);
-        assert_int_equal(__real_comm_demo_read(), 127);
-
-        for (int i = 0; i < 500; i++) {
-            assert_int_equal(__real_comm_demo_read_ready(), false);
-        }
+        assert_note_played_and_stopped(48);
     }
+}
+
+static void test_comm_demo_increases_pitch(UNUSED void** state)
+{
+    will_return(__wrap_JOY_readJoypad, BUTTON_A);
+    assert_note_played_and_stopped(48);
+
+    will_return(__wrap_JOY_readJoypad, BUTTON_UP);
+    __real_comm_demo_vsync();
+    assert_note_played_and_stopped(49);
+}
+
+static void test_comm_demo_decreases_pitch(UNUSED void** state)
+{
+    will_return(__wrap_JOY_readJoypad, BUTTON_A);
+    assert_note_played_and_stopped(48);
+
+    will_return(__wrap_JOY_readJoypad, BUTTON_DOWN);
+    __real_comm_demo_vsync();
+    assert_note_played_and_stopped(47);
 }
