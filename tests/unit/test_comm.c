@@ -37,6 +37,7 @@ static void test_comm_reads_when_ready(UNUSED void** state)
     will_return(__wrap_comm_everdrive_read_ready, 0);
     will_return(__wrap_comm_everdrive_pro_read_ready, 0);
     will_return(__wrap_comm_serial_read_ready, 0);
+    will_return(__wrap_comm_demo_read_ready, 0);
     will_return(__wrap_comm_everdrive_read_ready, 1);
     will_return(__wrap_comm_everdrive_read, 50);
 

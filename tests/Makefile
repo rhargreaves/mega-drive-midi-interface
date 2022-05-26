@@ -133,6 +133,11 @@ MD_MOCKS=SYS_setVIntCallback \
 	comm_everdrive_pro_read \
 	comm_everdrive_pro_write_ready \
 	comm_everdrive_pro_write \
+	comm_demo_init \
+	comm_demo_read_ready \
+	comm_demo_read \
+	comm_demo_ready \
+	comm_demo_write \
 	SYS_getCPULoad \
 	getFPS \
 	VDP_clearTextArea \

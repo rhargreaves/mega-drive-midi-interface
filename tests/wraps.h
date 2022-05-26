@@ -119,6 +119,12 @@ u8 __wrap_comm_everdrive_pro_read(void);
 u8 __wrap_comm_everdrive_pro_write_ready(void);
 void __wrap_comm_everdrive_pro_write(u8 data);
 
+void __wrap_comm_demo_init(void);
+u8 __wrap_comm_demo_read_ready(void);
+u8 __wrap_comm_demo_read(void);
+u8 __wrap_comm_demo_write_ready(void);
+void __wrap_comm_demo_write(u8 data);
+
 u16 __wrap_SYS_getCPULoad();
 u32 __wrap_getFPS();
 void __wrap_log_init(void);

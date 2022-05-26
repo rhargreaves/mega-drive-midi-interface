@@ -508,6 +508,29 @@ void __wrap_comm_everdrive_pro_write(u8 data)
     check_expected(data);
 }
 
+void __wrap_comm_demo_init(void)
+{
+}
+
+u8 __wrap_comm_demo_read_ready(void)
+{
+    return mock_type(u8);
+}
+
+u8 __wrap_comm_demo_read(void)
+{
+    return mock_type(u8);
+}
+
+u8 __wrap_comm_demo_write_ready(void)
+{
+    return mock_type(u8);
+}
+
+void __wrap_comm_demo_write(u8 data)
+{
+}
+
 void __wrap_SPR_setAnim(Sprite* sprite, s16 anim)
 {
 }
