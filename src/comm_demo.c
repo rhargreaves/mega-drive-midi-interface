@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <sys.h>
 #include "midi_fm.h"
+#include "log.h"
 
 #define noteOnStatus 0x90
 #define noteOffStatus 0x80
@@ -62,6 +63,7 @@ u8 comm_demo_read(void)
     if (cursor == 0) {
         track[1] = pitch;
         track[4] = pitch;
+        log_info("Demo: Pitch=%d", pitch);
     }
     u8 data = track[cursor];
     cursor++;
