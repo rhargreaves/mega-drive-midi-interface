@@ -28,3 +28,16 @@ static void test_comm_demo_is_not_ready_if_no_button_pressed(
 
     assert_int_equal(read, false);
 }
+
+static void test_comm_demo_plays_note(UNUSED void** state)
+{
+    will_return(__wrap_JOY_readJoypad, BUTTON_A);
+    assert_int_equal(__real_comm_demo_read_ready(), true);
+    assert_int_equal(__real_comm_demo_read(), 0x90);
+
+    assert_int_equal(__real_comm_demo_read_ready(), true);
+    assert_int_equal(__real_comm_demo_read(), 48);
+
+    assert_int_equal(__real_comm_demo_read_ready(), true);
+    assert_int_equal(__real_comm_demo_read(), 127);
+}

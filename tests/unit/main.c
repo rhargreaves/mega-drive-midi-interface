@@ -206,6 +206,7 @@ int main(void)
 
         comm_demo_test(test_comm_demo_is_ready_if_button_a_pressed),
         comm_demo_test(test_comm_demo_is_not_ready_if_no_button_pressed),
+        comm_demo_test(test_comm_demo_plays_note),
 
         comm_megawifi_test(test_comm_megawifi_initialises),
         comm_megawifi_test(test_comm_megawifi_reads_midi_message),
