@@ -1,4 +1,5 @@
-# SEGA Mega Drive MIDI Interface [![Build](https://github.com/rhargreaves/mega-drive-midi-interface/workflows/Build%20&%20Release/badge.svg?branch=main)](https://github.com/rhargreaves/mega-drive-midi-interface/actions) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/rhargreaves/mega-drive-midi-interface?style=plastic)](https://github.com/rhargreaves/mega-drive-midi-interface/releases)
+# SEGA Mega Drive MIDI Interface 
+[![Build](https://github.com/rhargreaves/mega-drive-midi-interface/workflows/Build%20&%20Release/badge.svg?branch=main)](https://github.com/rhargreaves/mega-drive-midi-interface/actions) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/rhargreaves/mega-drive-midi-interface?style=plastic)](https://github.com/rhargreaves/mega-drive-midi-interface/releases)
 
 Control the Yamaha YM2612 and PSG of the Sega Mega Drive via MIDI.
 
