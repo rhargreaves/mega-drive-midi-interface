@@ -8,6 +8,12 @@
 #define noteKey 48
 #define noteVelocity 127
 
+#define NOTE_OFF_END 6
+#define NOTE_ON_END 3
+
+#define NOTE_ON_WAIT 10000
+#define NOTE_OFF_WAIT 500
+
 const u8 track[] = {
     noteOnStatus,
     noteKey,
@@ -17,9 +23,9 @@ const u8 track[] = {
     noteVelocity,
 };
 
-u8 cursor;
-u16 wait;
-bool enabled;
+static u8 cursor;
+static u16 wait;
+static bool enabled;
 
 void comm_demo_init(void)
 {
@@ -52,13 +58,13 @@ u8 comm_demo_read(void)
 {
     u8 data = track[cursor];
     cursor++;
-    if (cursor == 3) {
-        wait = 19000;
+    if (cursor == NOTE_ON_END) {
+        wait = NOTE_ON_WAIT;
     }
-    if (cursor == 6) {
-        wait = 1000;
+    if (cursor == NOTE_OFF_END) {
+        wait = NOTE_OFF_WAIT;
     }
-    if (cursor == 6) {
+    if (cursor == NOTE_OFF_END) {
         cursor = 0;
     }
     return data;
@@ -66,7 +72,7 @@ u8 comm_demo_read(void)
 
 u8 comm_demo_write_ready(void)
 {
-    return FALSE;
+    return false;
 }
 
 void comm_demo_write(u8 data)
