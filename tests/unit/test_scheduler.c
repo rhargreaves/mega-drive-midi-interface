@@ -30,6 +30,8 @@ static void test_scheduler_processes_frame_events_once_after_vsync(
     expect_function_call(__wrap_midi_receiver_read_if_comm_ready);
     expect_function_call(__wrap_midi_psg_tick);
     expect_function_call(__wrap_ui_update);
+    expect_function_call(__wrap_comm_demo_vsync);
+
     __real_scheduler_tick();
 }
 

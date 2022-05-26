@@ -130,6 +130,7 @@ u8 __wrap_comm_demo_read_ready(void);
 u8 __wrap_comm_demo_read(void);
 u8 __wrap_comm_demo_write_ready(void);
 void __wrap_comm_demo_write(u8 data);
+void __wrap_comm_demo_vsync(void);
 
 u16 __wrap_SYS_getCPULoad();
 u32 __wrap_getFPS();

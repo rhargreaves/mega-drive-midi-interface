@@ -4,6 +4,8 @@
 #include <types.h>
 
 #define MAX_FM_CHAN 5
+#define MIN_MIDI_PITCH 11
+#define MAX_MIDI_PITCH 106
 
 typedef struct PercussionPreset PercussionPreset;
 

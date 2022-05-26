@@ -138,6 +138,7 @@ MD_MOCKS=SYS_setVIntCallback \
 	comm_demo_read \
 	comm_demo_ready \
 	comm_demo_write \
+    comm_demo_vsync \
 	SYS_getCPULoad \
 	getFPS \
 	VDP_clearTextArea \

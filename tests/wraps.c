@@ -531,6 +531,11 @@ void __wrap_comm_demo_write(u8 data)
 {
 }
 
+void __wrap_comm_demo_vsync(void)
+{
+    function_called();
+}
+
 void __wrap_SPR_setAnim(Sprite* sprite, s16 anim)
 {
 }

@@ -3,8 +3,6 @@
 #include "region.h"
 #include "synth.h"
 
-static const u8 MIN_MIDI_PITCH = 11;
-static const u8 MAX_MIDI_PITCH = 106;
 static const u8 SEMITONES = 12;
 static const u16 FREQS_NTSC[] = {
     617, // B

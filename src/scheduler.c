@@ -4,6 +4,7 @@
 #include "ui.h"
 #include "midi_receiver.h"
 #include "comm_megawifi.h"
+#include "comm_demo.h"
 #include <stdint.h>
 #include <types.h>
 
@@ -29,6 +30,7 @@ static void onFrame(void)
     ui_update();
     everdrive_led_tick();
     comm_megawifi_vsync();
+    comm_demo_vsync();
 }
 
 u16 scheduler_ticks(void)

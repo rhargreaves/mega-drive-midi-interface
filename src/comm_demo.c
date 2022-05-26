@@ -2,6 +2,7 @@
 #include <joy.h>
 #include <stdbool.h>
 #include <sys.h>
+#include "midi_fm.h"
 
 #define noteOnStatus 0x90
 #define noteOffStatus 0x80
@@ -14,7 +15,7 @@
 #define NOTE_ON_WAIT 10000
 #define NOTE_OFF_WAIT 500
 
-const u8 track[] = {
+u8 track[] = {
     noteOnStatus,
     noteKey,
     noteVelocity,
@@ -26,6 +27,7 @@ const u8 track[] = {
 static u8 cursor;
 static u16 wait;
 static bool enabled;
+static u8 pitch = noteKey;
 
 void comm_demo_init(void)
 {
@@ -38,7 +40,6 @@ void comm_demo_init(void)
 u8 comm_demo_read_ready(void)
 {
     if (!enabled) {
-        JOY_update();
         if (JOY_readJoypad(JOY_1) & BUTTON_A) {
             enabled = true;
         }
@@ -46,6 +47,7 @@ u8 comm_demo_read_ready(void)
     if (!enabled) {
         return false;
     }
+
     if (wait == 0) {
         return true;
     } else {
@@ -66,8 +68,29 @@ u8 comm_demo_read(void)
     }
     if (cursor == NOTE_OFF_END) {
         cursor = 0;
+        track[1] = pitch;
+        track[4] = pitch;
     }
     return data;
+}
+
+void comm_demo_vsync(void)
+{
+    JOY_update();
+
+    u16 curState = JOY_readJoypad(JOY_1);
+    if (curState & BUTTON_UP) {
+        pitch++;
+        if (pitch > MAX_MIDI_PITCH) {
+            pitch = MAX_MIDI_PITCH;
+        }
+    }
+    if (curState & BUTTON_DOWN) {
+        pitch--;
+        if (pitch < MIN_MIDI_PITCH) {
+            pitch = MIN_MIDI_PITCH;
+        }
+    }
 }
 
 u8 comm_demo_write_ready(void)
