@@ -4,16 +4,10 @@
 #include "synth.h"
 
 static const u8 SEMITONES = 12;
-static const u16 FREQS_NTSC[] = {
+static const u16 FREQS[] = {
     607, // B
     644, 681, 722, 765, 810, 858, 910, 964, 1021, 1081,
     1146 // A#
-};
-
-static const u16 FREQS_PAL[] = {
-    613, // B
-    649, 688, 729, 772, 818, 867, 918, 973, 1031, 1092,
-    1157 // A#
 };
 
 typedef struct MidiFmChannel MidiFmChannel;
@@ -136,8 +130,7 @@ static u8 octave(u8 pitch)
 
 static u16 freqNumber(u8 pitch)
 {
-    const u16* freqs = region_isPal() ? FREQS_PAL : FREQS_NTSC;
-    return freqs[((u8)(pitch - MIN_MIDI_PITCH)) % SEMITONES];
+    return FREQS[((u8)(pitch - MIN_MIDI_PITCH)) % SEMITONES];
 }
 
 static u8 pitchIsOutOfRange(u8 pitch)
