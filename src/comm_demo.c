@@ -8,7 +8,7 @@
 #define programChange 0xC0
 #define noteOnStatus 0x90
 #define noteOffStatus 0x80
-#define noteKey 48
+#define noteKey 69
 #define noteVelocity 127
 
 #define PROGRAM_INDEX 1

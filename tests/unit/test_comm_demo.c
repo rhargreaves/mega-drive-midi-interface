@@ -2,6 +2,8 @@
 #include "comm_demo.h"
 #include <joy.h>
 
+#define DEFAULT_PITCH 69
+
 extern void __real_comm_demo_init(void);
 
 static int test_comm_demo_setup(UNUSED void** state)
@@ -69,54 +71,54 @@ static void test_comm_demo_plays_note(UNUSED void** state)
     will_return(__wrap_JOY_readJoypad, BUTTON_A);
 
     for (int rep = 0; rep < 10; rep++) {
-        assert_note_played_and_stopped(48, 0);
+        assert_note_played_and_stopped(DEFAULT_PITCH, 0);
     }
 }
 
 static void test_comm_demo_increases_pitch(UNUSED void** state)
 {
     will_return(__wrap_JOY_readJoypad, BUTTON_A);
-    assert_note_played_and_stopped(48, 0);
+    assert_note_played_and_stopped(DEFAULT_PITCH, 0);
 
     will_return(__wrap_JOY_readJoypad, BUTTON_UP);
     __real_comm_demo_vsync();
-    assert_note_played_and_stopped(49, 0);
+    assert_note_played_and_stopped(DEFAULT_PITCH + 1, 0);
 }
 
 static void test_comm_demo_decreases_pitch(UNUSED void** state)
 {
     will_return(__wrap_JOY_readJoypad, BUTTON_A);
-    assert_note_played_and_stopped(48, 0);
+    assert_note_played_and_stopped(DEFAULT_PITCH, 0);
 
     will_return(__wrap_JOY_readJoypad, BUTTON_DOWN);
     __real_comm_demo_vsync();
-    assert_note_played_and_stopped(47, 0);
+    assert_note_played_and_stopped(DEFAULT_PITCH - 1, 0);
 }
 
 static void test_comm_demo_increases_program(UNUSED void** state)
 {
     will_return(__wrap_JOY_readJoypad, BUTTON_A);
-    assert_note_played_and_stopped(48, 0);
+    assert_note_played_and_stopped(DEFAULT_PITCH, 0);
 
     will_return(__wrap_JOY_readJoypad, BUTTON_RIGHT);
     __real_comm_demo_vsync();
-    assert_note_played_and_stopped(48, 1);
+    assert_note_played_and_stopped(DEFAULT_PITCH, 1);
 }
 
 static void test_comm_demo_decreases_program(UNUSED void** state)
 {
     will_return(__wrap_JOY_readJoypad, BUTTON_A);
-    assert_note_played_and_stopped(48, 0);
+    assert_note_played_and_stopped(DEFAULT_PITCH, 0);
 
     will_return(__wrap_JOY_readJoypad, BUTTON_RIGHT);
     __real_comm_demo_vsync();
-    assert_note_played_and_stopped(48, 1);
+    assert_note_played_and_stopped(DEFAULT_PITCH, 1);
 
     will_return(__wrap_JOY_readJoypad, BUTTON_RIGHT);
     __real_comm_demo_vsync();
-    assert_note_played_and_stopped(48, 2);
+    assert_note_played_and_stopped(DEFAULT_PITCH, 2);
 
     will_return(__wrap_JOY_readJoypad, BUTTON_LEFT);
     __real_comm_demo_vsync();
-    assert_note_played_and_stopped(48, 1);
+    assert_note_played_and_stopped(DEFAULT_PITCH, 1);
 }
