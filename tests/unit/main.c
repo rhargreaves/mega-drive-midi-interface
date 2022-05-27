@@ -209,6 +209,8 @@ int main(void)
         comm_demo_test(test_comm_demo_plays_note),
         comm_demo_test(test_comm_demo_increases_pitch),
         comm_demo_test(test_comm_demo_decreases_pitch),
+        comm_demo_test(test_comm_demo_increases_program),
+        comm_demo_test(test_comm_demo_decreases_program),
 
         comm_megawifi_test(test_comm_megawifi_initialises),
         comm_megawifi_test(test_comm_megawifi_reads_midi_message),
