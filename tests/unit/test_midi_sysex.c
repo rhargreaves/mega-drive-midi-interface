@@ -139,13 +139,13 @@ static void test_midi_sysex_enables_dynamic_channel_mode(UNUSED void** state)
     __real_midi_sysex(sequence, sizeof(sequence));
 
     print_message("Initial note");
-    expect_synth_pitch(0, 4, 0x28d);
+    expect_synth_pitch(0, 4, 0x284);
     expect_synth_volume_any();
     expect_value(__wrap_synth_noteOn, channel, 0);
     __real_midi_note_on(0, 60, MAX_MIDI_VOLUME);
 
     print_message("Second note");
-    expect_synth_pitch(1, 4, 0x2b4);
+    expect_synth_pitch(1, 4, 0x2a9);
     expect_synth_volume_any();
     expect_value(__wrap_synth_noteOn, channel, 1);
     __real_midi_note_on(0, 61, MAX_MIDI_VOLUME);
@@ -168,13 +168,13 @@ static void test_midi_sysex_sets_mapping_mode_to_auto(UNUSED void** state)
         sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
 
     print_message("Initial note");
-    expect_synth_pitch(0, 4, 0x28d);
+    expect_synth_pitch(0, 4, 0x284);
     expect_synth_volume_any();
     expect_value(__wrap_synth_noteOn, channel, 0);
     __real_midi_note_on(0, 60, MAX_MIDI_VOLUME);
 
     print_message("Second note");
-    expect_synth_pitch(1, 4, 0x2b4);
+    expect_synth_pitch(1, 4, 0x2a9);
     expect_synth_volume_any();
     expect_value(__wrap_synth_noteOn, channel, 1);
     __real_midi_note_on(0, 61, MAX_MIDI_VOLUME);

@@ -5,9 +5,9 @@
 
 static const u8 SEMITONES = 12;
 static const u16 FREQS_NTSC[] = {
-    617, // B
-    653, 692, 733, 777, 823, 872, 924, 979, 1037, 1099,
-    1164 // A#
+    607, // B
+    644, 681, 722, 765, 810, 858, 910, 964, 1021, 1081,
+    1146 // A#
 };
 
 static const u16 FREQS_PAL[] = {

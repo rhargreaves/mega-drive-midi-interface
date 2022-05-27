@@ -72,7 +72,7 @@ static void test_midi_triggers_synth_note_on_boundary_values(
     UNUSED void** state)
 {
     const u8 keys[] = { 11, 106 };
-    const u16 expectedFrequencies[] = { 617, SYNTH_NTSC_AS };
+    const u16 expectedFrequencies[] = { 607, SYNTH_NTSC_AS };
     const u8 expectedOctaves[] = { 0, 7 };
 
     for (int index = 0; index < 2; index++) {
@@ -472,7 +472,7 @@ static void test_midi_sets_synth_pitch_bend(UNUSED void** state)
         expect_value(__wrap_synth_noteOn, channel, chan);
         __real_midi_note_on(chan, 60, MAX_MIDI_VOLUME);
 
-        expect_synth_pitch(chan, 4, 0x22e);
+        expect_synth_pitch(chan, 4, 0x225);
         __real_midi_pitch_bend(chan, 1000);
     }
 }
@@ -505,7 +505,7 @@ static void test_midi_fm_note_on_percussion_channel_sets_percussion_preset(
         sizeof(P_BANK_0_INST_30_CASTANETS));
 
     expect_synth_volume_any();
-    expect_synth_pitch(FM_CHANNEL, 0, 0x337);
+    expect_synth_pitch(FM_CHANNEL, 0, 0x32a);
     expect_value(__wrap_synth_noteOn, channel, FM_CHANNEL);
 
     __real_midi_note_on(MIDI_PERCUSSION_CHANNEL, MIDI_KEY, MAX_MIDI_VOLUME);

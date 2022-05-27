@@ -30,7 +30,7 @@ static int test_dynamic_midi_setup(UNUSED void** state)
 static void test_midi_dynamic_uses_all_channels(UNUSED void** state)
 {
     const u8 octave = 4;
-    const u16 freq = 0x28d;
+    const u16 freq = 0x284;
     const u16 pitch = 60;
 
     print_message("FM channels...\n");
@@ -59,13 +59,13 @@ static void test_midi_routing_switches_to_dynamic_on_gm_reset(
         sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
 
     print_message("Initial note");
-    expect_synth_pitch(0, 4, 0x28d);
+    expect_synth_pitch(0, 4, 0x284);
     expect_synth_volume_any();
     expect_value(__wrap_synth_noteOn, channel, 0);
     __real_midi_note_on(0, 60, MAX_MIDI_VOLUME);
 
     print_message("Second note");
-    expect_synth_pitch(1, 4, 0x2b4);
+    expect_synth_pitch(1, 4, 0x2a9);
     expect_synth_volume_any();
     expect_value(__wrap_synth_noteOn, channel, 1);
     __real_midi_note_on(0, 61, MAX_MIDI_VOLUME);
@@ -75,7 +75,7 @@ static void test_midi_dynamic_tries_to_reuse_original_midi_channel_if_available(
     UNUSED void** state)
 {
     const u8 octave = 4;
-    const u16 freq = 0x28d;
+    const u16 freq = 0x284;
     const u16 pitch = 60;
 
     for (u8 chan = 0; chan < 3; chan++) {
@@ -116,7 +116,7 @@ test_midi_dynamic_reuses_mapped_midi_channel_even_if_busy_if_sticking_to_device_
         __real_midi_note_on(REUSE_MIDI_CHANNEL, pitch, MAX_MIDI_VOLUME);
     }
 
-    expect_synth_pitch(0, 6, 0x48c);
+    expect_synth_pitch(0, 6, 0x47a);
     expect_synth_volume_any();
     expect_value(__wrap_synth_noteOn, channel, 0);
     __real_midi_note_on(REUSE_MIDI_CHANNEL, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
@@ -232,7 +232,7 @@ static void test_midi_sysex_resets_dynamic_mode_state(UNUSED void** state)
 {
     const u8 sysExGeneralMidiResetSequence[] = { 0x7E, 0x7F, 0x09, 0x01 };
     const u8 octave = 4;
-    const u16 freq = 0x28d;
+    const u16 freq = 0x284;
     const u16 pitch = 60;
 
     for (u16 i = DEV_CHAN_MIN_FM; i <= DEV_CHAN_MAX_FM; i++) {
@@ -394,7 +394,7 @@ static void test_midi_dynamic_maintains_pitch_bend_on_remapping(
 
     const u16 midi_bend = 0x3000;
 
-    expect_synth_pitch(0, 6, 0x48c);
+    expect_synth_pitch(0, 6, 0x47a);
     expect_synth_volume(0, MAX_MIDI_VOLUME);
     expect_value(__wrap_synth_noteOn, channel, 0);
 
@@ -402,12 +402,12 @@ static void test_midi_dynamic_maintains_pitch_bend_on_remapping(
     __real_midi_note_on(0, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
 
     print_message("Setting bend\n");
-    expect_synth_pitch(0, 6, 0x4c2);
+    expect_synth_pitch(0, 6, 0x4b0);
     __real_midi_pitch_bend(0, midi_bend);
 
-    expect_synth_pitch(1, 7, 0x29f);
+    expect_synth_pitch(1, 7, 0x295);
     expect_synth_pitch(1, 7,
-        0x269); // defaults back as pitch bend not taken into consideration on
+        0x25f); // defaults back as pitch bend not taken into consideration on
     // note on
     expect_synth_volume(1, MAX_MIDI_VOLUME);
     expect_value(__wrap_synth_noteOn, channel, 1);
@@ -558,7 +558,7 @@ static void test_midi_dynamic_sticks_to_assigned_device_type_for_midi_channels(
         __real_midi_note_on(REUSE_MIDI_CHANNEL, pitch, MAX_MIDI_VOLUME);
     }
 
-    expect_synth_pitch(0, 6, 0x48c);
+    expect_synth_pitch(0, 6, 0x47a);
     expect_synth_volume_any();
     expect_value(__wrap_synth_noteOn, channel, 0);
     __real_midi_note_on(REUSE_MIDI_CHANNEL, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
