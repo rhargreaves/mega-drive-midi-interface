@@ -1,31 +1,29 @@
-GENDEV?=/opt/gendev
+SGDK=/sgdk
 GCC_VER?=6.3.0
 MAKE?=make
 LIB?=lib
 ASSEMBLY_OUT?=out
-GENGCC_BIN=$(GENDEV)/bin
-GENBIN=$(GENDEV)/bin
-CC = $(GENGCC_BIN)/m68k-elf-gcc
-AS = $(GENGCC_BIN)/m68k-elf-as
-AR = $(GENGCC_BIN)/m68k-elf-ar
-LD = $(GENGCC_BIN)/m68k-elf-ld
-RANLIB = $(GENGCC_BIN)/m68k-elf-ranlib
-OBJC = $(GENGCC_BIN)/m68k-elf-objcopy
-OBJDUMP = $(GENGCC_BIN)/m68k-elf-objdump
-BINTOS = $(GENBIN)/bintos
+CC = m68k-elf-gcc
+AS = m68k-elf-as
+AR = m68k-elf-ar
+LD = m68k-elf-ld
+RANLIB = m68k-elf-ranlib
+OBJC = m68k-elf-objcopy
+OBJDUMP = m68k-elf-objdump
+BINTOS = $(SGDK)/bin/bintos
 JAVA= java
-RESCOMP= $(JAVA) -jar $(GENBIN)/rescomp.jar
-XGMTOOL= $(GENBIN)/xgmtool
-PCMTORAW = $(GENBIN)/pcmtoraw
-WAVTORAW = $(GENBIN)/wavtoraw
-SIZEBND = $(GENBIN)/sizebnd
-ASMZ80 = $(GENBIN)/zasm
+RESCOMP= $(JAVA) -jar $(SGDK)/bin/rescomp.jar
+XGMTOOL= $(SGDK)/bin/xgmtool
+PCMTORAW = $(SGDK)/bin/pcmtoraw
+WAVTORAW = $(SGDK)/bin/wavtoraw
+SIZEBND = $(SGDK)/bin/sizebnd
+ASMZ80 = $(SGDK)/bin/zasm
 RM = rm -f
 NM = nm
 INCS = -I. \
-	-I$(GENDEV)/sgdk/inc \
-	-I$(GENDEV)/m86k-elf/include \
-	-I$(GENDEV)/sgdk/res \
+	-I$(SGDK)/inc \
+    -I$(SGDK)/res \
+	-I/usr/m86k-elf/include \
 	-Isrc \
 	-Isrc/mw \
 	-Ires
@@ -46,17 +44,18 @@ ifeq ($(DEBUG_INFO), 1)
 endif
 Z80FLAGS = -vb2
 ASFLAGS = -m68000 --register-prefix-optional
-LIBS = -L$(GENDEV)/m68k-elf/lib \
-	-L$(GENDEV)/lib/gcc/m68k-elf/$(GCC_VER)/* \
-	-L$(GENDEV)/sgdk/lib -lmd -lnosys \
+LIBS = -L/usr/m68k-elf/lib \
+	-L/usr/lib/gcc/m68k-elf/$(GCC_VER)/* \
+	-L/sgdk/lib \
+    -lmd -lnosys \
 	--wrap=SYS_enableInts \
 	--wrap=SYS_disableInts
 
 LINKFLAGS = -T src/mw.ld \
 	-Map=out/output.map \
 	-nostdlib
-ARCHIVES = $(GENDEV)/sgdk/$(LIB)/libmd.a
-ARCHIVES += $(GENDEV)/$(LIB)/gcc/m68k-elf/$(GCC_VER)/libgcc.a
+ARCHIVES = /sgdk/lib/libmd.a
+ARCHIVES += /usr/lib/gcc/m68k-elf/$(GCC_VER)/libgcc.a
 
 RESOURCES=
 BOOT_RESOURCES=
@@ -87,6 +86,9 @@ all: test bin/out.bin bin/out.elf
 
 boot/sega.o: boot/rom_head.bin
 	$(CC) -x assembler-with-cpp $(CCFLAGS) boot/sega.s -o $@
+
+boot/sega.s: $(SGDK)/src/boot/sega.s
+	cp $< $@
 
 src/newlib/setjmp.o:
 	$(AS) $(ASFLAGS) src/newlib/setjmp.s -o $@

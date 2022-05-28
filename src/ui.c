@@ -215,7 +215,7 @@ void ui_update(void)
     }
 
     ui_fm_update();
-    SYS_doVBlankProcessEx(IMMEDIATLY);
+    SYS_doVBlankProcessEx(IMMEDIATELY);
 }
 
 static u16 load_percent(void)
