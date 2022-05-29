@@ -26,6 +26,7 @@
         "ostream": "c",
         "array": "c",
         "utility": "c",
-        "joy.h": "c"
+        "joy.h": "c",
+        "comm_megawifi.h": "c"
     }
 }

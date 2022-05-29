@@ -73,7 +73,8 @@ static bool isFinalDeltaByte(u8 value)
     return !CHECK_BIT(value, 7);
 }
 
-mw_err rtpmidi_processRtpMidiPacket(char* buffer, u16 length, u16* lastSeqNum)
+enum mw_err rtpmidi_processRtpMidiPacket(
+    char* buffer, u16 length, u16* lastSeqNum)
 {
     (void)length; // TODO: Probably shouldn't ignore length...
     u16 seqNum = sequenceNumber(buffer);

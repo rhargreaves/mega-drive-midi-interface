@@ -35,7 +35,7 @@ void buffer_write(u8 data)
     }
 }
 
-u8 buffer_can_read(void)
+bool buffer_can_read(void)
 {
     return length != 0;
 }

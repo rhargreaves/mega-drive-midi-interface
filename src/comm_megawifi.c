@@ -1,10 +1,7 @@
 #include "comm_megawifi.h"
 #include "applemidi.h"
 #include "log.h"
-#include "mw/loop.h"
-#include "mw/megawifi.h"
-#include "mw/mpool.h"
-#include "mw/util.h"
+#include <ext/mw/megawifi.h>
 #include "vstring.h"
 #include <stdbool.h>
 #include "settings.h"
@@ -23,35 +20,66 @@ static bool recvData = false;
 
 #define REUSE_PAYLOAD_HEADER_LEN 6
 #define RECEIVER_FEEDBACK_FRAME_FREQUENCY 10
-#define MW_MAX_LOOP_FUNCS 2
-#define MW_MAX_LOOP_TIMERS 4
 
 static char recvBuffer[MAX_UDP_DATA_LENGTH];
 static char sendBuffer[MAX_UDP_DATA_LENGTH];
 static bool awaitingRecv = false;
 static bool awaitingSend = false;
 
+#define FPS 60
+#define MS_TO_FRAMES(ms) (((ms)*FPS / 500 + 1) / 2)
+
 static MegaWifiStatus status;
 
 static void recv_complete_cb(
     enum lsd_status stat, uint8_t ch, char* data, uint16_t len, void* ctx);
 
-static void mw_process_loop_cb(struct loop_func* f)
+uint16_t uint8_to_str(uint8_t num, char* str)
 {
-    UNUSED_PARAM(f);
-    mw_process();
+    uint16_t i = 0;
+    uint16_t tmp;
+
+    // Compute digits and write decimal number
+    // On 3 digit numbers, first one can only be 1 or 2. Take advantage of
+    // this to avoid division (test if this is really faster).
+    if (num > 199) {
+        str[i++] = '2';
+        num -= 200;
+    } else if (num > 99) {
+        str[i++] = '1';
+        num -= 100;
+    }
+
+    tmp = num / 10;
+    if (tmp) {
+        str[i++] = '0' + tmp;
+    }
+    str[i++] = '0' + num % 10;
+    str[i] = '\0';
+
+    return i;
 }
 
-static void mw_process_loop_init(void)
+/// Converts an IP address in uint32_t binary representation to
+int uint32_to_ip_str(uint32_t ip_u32, char* ip_str)
 {
-    loop_init(MW_MAX_LOOP_FUNCS, MW_MAX_LOOP_TIMERS);
-    static struct loop_func loop_func = { .func_cb = mw_process_loop_cb };
-    loop_func_add(&loop_func);
+    uint8_t* byte = (uint8_t*)&ip_u32;
+    int pos = 0;
+    int i;
+
+    for (i = 0; i < 3; i++) {
+        pos += uint8_to_str(byte[i], ip_str + pos);
+        ip_str[pos++] = '.';
+    }
+    pos += uint8_to_str(byte[i], ip_str + pos);
+    ip_str[pos] = '\0';
+
+    return pos;
 }
 
-static mw_err associateAp(void)
+static enum mw_err associateAp(void)
 {
-    mw_err err = mw_ap_assoc(0);
+    enum mw_err err = mw_ap_assoc(0);
     if (err != MW_ERR_NONE) {
         return err;
     }
@@ -62,10 +90,10 @@ static mw_err associateAp(void)
     return MW_ERR_NONE;
 }
 
-static mw_err displayLocalIp(void)
+static enum mw_err displayLocalIp(void)
 {
     struct mw_ip_cfg* ip_cfg;
-    mw_err err = mw_ip_current(&ip_cfg);
+    enum mw_err err = mw_ip_current(&ip_cfg);
     if (err != MW_ERR_NONE) {
         return err;
     }
@@ -81,7 +109,7 @@ static bool detect_mw(void)
 {
     u8 ver_major = 0, ver_minor = 0;
     char* variant = NULL;
-    mw_err err = mw_detect(&ver_major, &ver_minor, &variant);
+    enum mw_err err = mw_detect(&ver_major, &ver_minor, &variant);
     if (MW_ERR_NONE != err) {
         if (settings_debug_megawifi_init()) {
             log_warn("MW: Not found");
@@ -94,11 +122,11 @@ static bool detect_mw(void)
     return true;
 }
 
-static mw_err listenOnUdpPort(u8 ch, u16 src_port)
+static enum mw_err listenOnUdpPort(u8 ch, u16 src_port)
 {
     char src_port_str[6];
     v_sprintf(src_port_str, "%d", src_port);
-    mw_err err = mw_udp_set(ch, NULL, NULL, src_port_str);
+    enum mw_err err = mw_udp_set(ch, NULL, NULL, src_port_str);
     if (err != MW_ERR_NONE) {
         log_warn("MW: Cannot open UDP %s", src_port_str);
     }
@@ -108,8 +136,6 @@ static mw_err listenOnUdpPort(u8 ch, u16 src_port)
 void comm_megawifi_init(void)
 {
     status = NotDetected;
-    mp_init(0);
-    mw_process_loop_init();
     mw_init(cmd_buf, MW_BUFLEN);
     mwDetected = detect_mw();
     if (!mwDetected) {
@@ -118,7 +144,7 @@ void comm_megawifi_init(void)
     status = Detected;
     associateAp();
     displayLocalIp();
-    mw_err err = listenOnUdpPort(CH_CONTROL_PORT, UDP_CONTROL_PORT);
+    enum mw_err err = listenOnUdpPort(CH_CONTROL_PORT, UDP_CONTROL_PORT);
     if (err != MW_ERR_NONE) {
         return;
     }
@@ -156,8 +182,8 @@ void comm_megawifi_write(u8 data)
 
 static void processUdpData(u8 ch, char* buffer, u16 length)
 {
-    UNUSED_PARAM(buffer);
-    mw_err err = MW_ERR_NONE;
+    (void)buffer;
+    enum mw_err err = MW_ERR_NONE;
     switch (ch) {
     case CH_CONTROL_PORT:
         err = applemidi_processSessionControlPacket(buffer, length);
@@ -194,7 +220,7 @@ static void restoreRemoteEndpoint(u8 ch, u32* ip, u16* port)
 static void recv_complete_cb(
     enum lsd_status stat, uint8_t ch, char* data, uint16_t len, void* ctx)
 {
-    UNUSED_PARAM(ctx);
+    (void)ctx;
 
     if (LSD_STAT_COMPLETE == stat) {
         struct mw_reuse_payload* udp = (struct mw_reuse_payload*)data;
@@ -262,7 +288,7 @@ void comm_megawifi_midiEmitCallback(u8 data)
 
 void send_complete_cb(enum lsd_status stat, void* ctx)
 {
-    UNUSED_PARAM(ctx);
+    (void)ctx;
     if (stat < 0) {
         log_warn("MW: send_complete_cb() = %d", stat);
     }

@@ -1,4 +1,4 @@
-FROM registry.gitlab.com/doragasu/docker-sgdk:v1.70
+FROM docker-sgdk
 USER root
 RUN apt-get -y update && \
     apt-get -y install \
@@ -7,7 +7,6 @@ RUN apt-get -y update && \
     gdb \
     gdbserver \
     valgrind
-# USER m68k
 WORKDIR /app
 COPY tests/cmocka* /app/tests/
 COPY tests/Makefile /app/tests/Makefile

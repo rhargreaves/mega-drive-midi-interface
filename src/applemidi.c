@@ -2,19 +2,17 @@
 #include "rtpmidi.h"
 #include "vstring.h"
 #include "log.h"
-#include <stdbool.h>
 #include "comm_megawifi.h"
-#include "memory.h"
 #include "settings.h"
 
-static mw_err unpackInvitation(
+static enum mw_err unpackInvitation(
     char* buffer, u16 length, AppleMidiExchangePacket* invite);
 static void sendInviteResponse(u8 ch, AppleMidiExchangePacket* invite);
 
-static mw_err processInvitation(u8 ch, char* buffer, u16 length)
+static enum mw_err processInvitation(u8 ch, char* buffer, u16 length)
 {
     AppleMidiExchangePacket packet;
-    mw_err err = unpackInvitation(buffer, length, &packet);
+    enum mw_err err = unpackInvitation(buffer, length, &packet);
     if (err != MW_ERR_NONE) {
         return err;
     }
@@ -26,7 +24,7 @@ static mw_err processInvitation(u8 ch, char* buffer, u16 length)
     return MW_ERR_NONE;
 }
 
-static mw_err unpackInvitation(
+static enum mw_err unpackInvitation(
     char* buffer, u16 length, AppleMidiExchangePacket* invite)
 {
     if (length < APPLE_MIDI_EXCH_PKT_MIN_LEN) {
@@ -69,7 +67,7 @@ static void sendInviteResponse(u8 ch, AppleMidiExchangePacket* invite)
     comm_megawifi_send(ch, inviteSendBuffer, length);
 }
 
-static mw_err unpackTimestampSync(
+static enum mw_err unpackTimestampSync(
     char* buffer, u16 length, AppleMidiTimeSyncPacket* timeSyncPacket)
 {
     if (length < TIMESYNC_PKT_LEN) {
@@ -105,10 +103,10 @@ static void sendTimestampSync(AppleMidiTimeSyncPacket* timeSyncPacket)
     comm_megawifi_send(CH_MIDI_PORT, timestampSyncSendBuffer, length);
 }
 
-static mw_err processTimestampSync(char* buffer, u16 length)
+static enum mw_err processTimestampSync(char* buffer, u16 length)
 {
     AppleMidiTimeSyncPacket packet;
-    mw_err err = unpackTimestampSync(buffer, length, &packet);
+    enum mw_err err = unpackTimestampSync(buffer, length, &packet);
     if (err != MW_ERR_NONE) {
         return err;
     }
@@ -144,7 +142,7 @@ static bool isTimestampSyncCommand(char* command)
     return command[0] == 'C' && command[1] == 'K';
 }
 
-mw_err applemidi_processSessionControlPacket(char* buffer, u16 length)
+enum mw_err applemidi_processSessionControlPacket(char* buffer, u16 length)
 {
     if (!hasAppleMidiSignature(buffer, length)) {
         return ERR_INVALID_APPLE_MIDI_SIGNATURE;
@@ -159,7 +157,7 @@ mw_err applemidi_processSessionControlPacket(char* buffer, u16 length)
 
 static u16 lastSeqNum = 0;
 
-mw_err applemidi_processSessionMidiPacket(char* buffer, u16 length)
+enum mw_err applemidi_processSessionMidiPacket(char* buffer, u16 length)
 {
     if (hasAppleMidiSignature(buffer, length)) {
         char* command = &buffer[2];
@@ -185,7 +183,7 @@ u16 applemidi_lastSequenceNumber(void)
 
 #define RECEIVER_FEEDBACK_PACKET_LENGTH 12
 
-mw_err applemidi_sendReceiverFeedback(void)
+enum mw_err applemidi_sendReceiverFeedback(void)
 {
     char receiverFeedbackPacket[RECEIVER_FEEDBACK_PACKET_LENGTH]
         = { 0xFF, 0xFF, 'R', 'S', (u8)(MEGADRIVE_SSRC >> 24),
