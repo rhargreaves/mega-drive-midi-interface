@@ -30,13 +30,6 @@ static void expect_mw_init(void)
     expect_any(__wrap_mw_init, cmd_buf);
     expect_any(__wrap_mw_init, buf_len);
     will_return(__wrap_mw_init, MW_ERR_NONE);
-
-    expect_value(__wrap_loop_init, max_func, 2);
-    expect_value(__wrap_loop_init, max_timer, 4);
-    will_return(__wrap_loop_init, MW_ERR_NONE);
-
-    expect_any(__wrap_loop_func_add, func);
-    will_return(__wrap_loop_func_add, MW_ERR_NONE);
 }
 
 static void expect_mw_detect(void)
