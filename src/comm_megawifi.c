@@ -38,7 +38,10 @@ static void recv_complete_cb(
 
 static enum mw_err associateAp(void)
 {
-    enum mw_err err = mw_ap_assoc(0);
+    int16_t def_ap = mw_def_ap_cfg_get();
+    def_ap = def_ap < 0 ? 0 : def_ap;
+
+    enum mw_err err = mw_ap_assoc(def_ap);
     if (err != MW_ERR_NONE) {
         return err;
     }
@@ -46,6 +49,7 @@ static enum mw_err associateAp(void)
     if (err != MW_ERR_NONE) {
         return err;
     }
+    mw_sleep(3 * 60);
     return MW_ERR_NONE;
 }
 
@@ -92,18 +96,34 @@ static enum mw_err listenOnUdpPort(u8 ch, u16 src_port)
     return err;
 }
 
+static void idle_tsk(void)
+{
+    mw_process();
+}
+
+static void tasking_init(void)
+{
+    TSK_userSet(idle_tsk);
+}
+
 void comm_megawifi_init(void)
 {
     status = NotDetected;
-    mw_init(cmd_buf, MW_BUFLEN);
+    enum mw_err err = mw_init(cmd_buf, MW_BUFLEN);
+    if (err != MW_ERR_NONE) {
+        return;
+    }
     mwDetected = detect_mw();
     if (!mwDetected) {
         return;
     }
+    tasking_init();
     status = Detected;
+
     associateAp();
+    return;
     displayLocalIp();
-    enum mw_err err = listenOnUdpPort(CH_CONTROL_PORT, UDP_CONTROL_PORT);
+    err = listenOnUdpPort(CH_CONTROL_PORT, UDP_CONTROL_PORT);
     if (err != MW_ERR_NONE) {
         return;
     }
