@@ -1,7 +1,7 @@
 vpath %.c ../src
 
 CC=gcc
-SGDK?=/opt/gendev/sgdk
+SGDK?=/sgdk
 VALGRIND=valgrind
 VFLAGS=--leak-check=full --trace-children=yes --error-exitcode=1
 
@@ -11,16 +11,18 @@ else
 	GDB=
 endif
 
+INCLUDE_DIRS+=-I$(SGDK)/inc/ext/mw
+INCLUDE_DIRS+=-I$(SGDK)/inc/ext
 INCLUDE_DIRS+=-I$(SGDK)/inc
 INCLUDE_DIRS+=-I$(SGDK)/res
 INCLUDE_DIRS+=-I.
 INCLUDE_DIRS+=-I../res
 INCLUDE_DIRS+=-I../src
-INCLUDE_DIRS+=-I../src/mw
 INCLUDE_DIRS+=-I$(CMOCKA_DIR)/include
 
 CFLAGS=$(INCLUDE_DIRS) \
 	-DUNIT_TESTS \
+    -DMODULE_MEGAWIFI=1 \
 	-ggdb \
 	-O0 \
 	-Wall \
@@ -146,6 +148,7 @@ MD_MOCKS=SYS_setVIntCallback \
 	SYS_die \
 	mw_init \
 	mw_process \
+    lsd_process \
 	mw_detect \
 	loop_init \
 	loop_func_add \

@@ -688,6 +688,13 @@ void __wrap_mw_process(void)
     function_called();
 }
 
+void __wrap_lsd_process(void)
+{
+    if (disableChecks)
+        return;
+    function_called();
+}
+
 static u8 mock_ver_major;
 static u8 mock_ver_minor;
 
@@ -712,14 +719,6 @@ int __wrap_loop_init(uint8_t max_func, uint8_t max_timer)
         return MW_ERR_NONE;
     check_expected(max_func);
     check_expected(max_timer);
-    return mock_type(mw_err);
-}
-
-int __wrap_loop_func_add(struct loop_func* func)
-{
-    if (disableChecks)
-        return MW_ERR_NONE;
-    check_expected(func);
     return mock_type(mw_err);
 }
 

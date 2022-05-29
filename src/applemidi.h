@@ -1,5 +1,5 @@
 #pragma once
-#include <genesis.h>
+#include <ext/mw/megawifi.h>
 
 #define ERR_BASE 100
 #define ERR_INVALID_APPLE_MIDI_SIGNATURE ERR_BASE;

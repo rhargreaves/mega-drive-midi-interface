@@ -4,11 +4,12 @@
 #include <sprite_eng.h>
 #include <types.h>
 #include <sys.h>
-#include "mw/loop.h"
-#include "mw/megawifi.h"
+#include <ext/mw/megawifi.h>
 #include "log.h"
 #include "synth.h"
 #include <vdp_bg.h>
+
+typedef enum mw_err mw_err;
 
 extern bool __real_comm_read_ready(void);
 extern void __real_comm_init(void);
@@ -150,12 +151,12 @@ void __wrap_SYS_die(char* err);
 
 int __wrap_mw_init(char* cmd_buf, uint16_t buf_len);
 void __wrap_mw_process(void);
+void __wrap_mw_process(void);
 mw_err __wrap_mw_detect(uint8_t* major, uint8_t* minor, char** variant);
 
 void mock_mw_detect(u8 major, u8 minor);
 
 int __wrap_loop_init(uint8_t max_func, uint8_t max_timer);
-int __wrap_loop_func_add(struct loop_func* func);
 mw_err __wrap_mw_ap_assoc(uint8_t slot);
 mw_err __wrap_mw_ap_assoc_wait(int tout_frames);
 mw_err __wrap_mw_ip_current(struct mw_ip_cfg** ip);

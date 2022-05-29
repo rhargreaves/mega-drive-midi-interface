@@ -1,3 +1,16 @@
 SGDK=/sgdk
+MAKE=make
 
 include $(SGDK)/makefile.gen
+
+EXTRA_FLAGS:=-I/sgdk/inc/ext/mw -DMODULE_MEGAWIFI=1
+
+all: release test
+
+unit-test:
+	$(MAKE) -C tests clean-target unit
+.PHONY: unit-test
+
+test:
+	$(MAKE) -C tests
+.PHONY: test

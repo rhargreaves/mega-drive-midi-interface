@@ -1,12 +1,11 @@
 #include "cmocka_inc.h"
 #include "applemidi.h"
 #include "comm_megawifi.h"
-#include "mw/loop.h"
-#include "mw/megawifi.h"
-#include "mw/mpool.h"
-#include "mw/util.h"
+#include <ext/mw/megawifi.h>
+#include <ext/mw/lsd.h>
 #include "buffer.h"
 #include "settings.h"
+#include "ip_util.h"
 
 extern void __real_comm_megawifi_init(void);
 
