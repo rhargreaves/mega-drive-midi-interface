@@ -1,4 +1,4 @@
-FROM docker-sgdk
+FROM ghcr.io/rhargreaves/docker-sgdk:v1.70-mw
 USER root
 RUN apt-get -y update && \
     apt-get -y install \
