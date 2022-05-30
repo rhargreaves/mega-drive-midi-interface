@@ -5,8 +5,7 @@ all: release out/rom.s test
 
 include $(SGDK)/makefile.gen
 
-EXTRA_FLAGS:=-I/sgdk/inc/ext/mw \
-    -DMODULE_MEGAWIFI=1 \
+EXTRA_FLAGS:=-DMODULE_MEGAWIFI=1 \
     -DBUILD='"$(BUILD)"'
 
 ifeq ($(ROM_TYPE), MEGAWIFI)
