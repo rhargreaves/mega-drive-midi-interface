@@ -15,7 +15,7 @@
 
 #define MW_BUFLEN 1460
 #define MAX_UDP_DATA_LENGTH MW_BUFLEN
-static char cmd_buf[MW_BUFLEN];
+static char __attribute__((aligned(2))) cmd_buf[MW_BUFLEN];
 
 static bool mwDetected = false;
 static bool recvData = false;
@@ -72,6 +72,7 @@ static bool detect_mw(void)
 {
     u8 ver_major = 0, ver_minor = 0;
     char* variant = NULL;
+
     enum mw_err err = mw_detect(&ver_major, &ver_minor, &variant);
     if (MW_ERR_NONE != err) {
         if (settings_debug_megawifi_init()) {
@@ -98,7 +99,9 @@ static enum mw_err listenOnUdpPort(u8 ch, u16 src_port)
 
 static void idle_tsk(void)
 {
-    mw_process();
+    while (1) {
+        mw_process();
+    }
 }
 
 static void tasking_init(void)
@@ -110,18 +113,18 @@ void comm_megawifi_init(void)
 {
     status = NotDetected;
     enum mw_err err = mw_init(cmd_buf, MW_BUFLEN);
-    if (err != MW_ERR_NONE) {
+    if (err) {
         return;
     }
+    tasking_init();
+
     mwDetected = detect_mw();
     if (!mwDetected) {
         return;
     }
-    tasking_init();
     status = Detected;
 
     associateAp();
-    return;
     displayLocalIp();
     err = listenOnUdpPort(CH_CONTROL_PORT, UDP_CONTROL_PORT);
     if (err != MW_ERR_NONE) {
