@@ -6,7 +6,9 @@ all: release out/rom.s test
 include $(SGDK)/makefile.gen
 
 EXTRA_FLAGS:=-DMODULE_MEGAWIFI=1 \
-    -DBUILD='"$(BUILD)"'
+    -DBUILD='"$(BUILD)"' \
+    -Wl,--wrap=SYS_enableInts \
+    -Wl,--wrap=SYS_disableInts
 
 ifeq ($(ROM_TYPE), MEGAWIFI)
 	EXTRA_FLAGS += -DMEGAWIFI -DENABLE_MEGAWIFI=1
