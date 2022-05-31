@@ -3,3 +3,4 @@ set -euo pipefail
 
 export BUILD=$(git describe --tags --abbrev=0)
 utils/docker-run make "$@"
+echo $BUILD > out/version.txt
