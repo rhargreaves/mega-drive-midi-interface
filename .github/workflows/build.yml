@@ -1,7 +1,7 @@
 name: Build & Release
 on:
   push:
-    branches: '*'
+    branches: "*"
   create:
     tags:
       - v*
@@ -15,12 +15,12 @@ jobs:
           CMOCKA_MESSAGE_OUTPUT: xml
           CMOCKA_XML_FILE: ../bin/TEST-cmocka.xml
         run: |
-          mkdir bin
+          mkdir out
           ./docker-make all
-          mv bin/out.bin bin/out_standard.bin
-          rm -f boot/rom_head.o boot/rom_head.bin bin/out.bin
-          ./docker-make ROM_TYPE=MEGAWIFI bin/out.bin
-          mv bin/out.bin bin/out_megawifi.bin
+          mv out/rom.bin out/rom_standard.bin
+          rm -f out/rom_head.o out/rom_head.bin out/rom.out out/rom.bin
+          ./docker-make ROM_TYPE=MEGAWIFI release
+          mv out/rom.bin out/rom_megawifi.bin
       - name: Report test results
         uses: ashley-taylor/junit-report-annotations-action@1.3
         if: always()
@@ -28,7 +28,7 @@ jobs:
           access-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Get version
         id: get_version
-        run: echo ::set-output name=VERSION::$(cat ./bin/version.txt)
+        run: echo ::set-output name=VERSION::$(cat ./out/version.txt)
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -48,7 +48,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./bin/out_standard.bin
+          asset_path: ./out/rom_standard.bin
           asset_name: mega-drive-midi-interface-${{ steps.get_version.outputs.VERSION }}.bin
           asset_content_type: application/octet-stream
       - name: Upload MegaWiFi ROM
@@ -59,6 +59,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./bin/out_megawifi.bin
+          asset_path: ./out/rom_megawifi.bin
           asset_name: mega-drive-midi-interface-megawifi-${{ steps.get_version.outputs.VERSION }}.bin
           asset_content_type: application/octet-stream

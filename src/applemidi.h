@@ -1,5 +1,5 @@
 #pragma once
-#include "mw/megawifi.h"
+#include <ext/mw/megawifi.h>
 
 #define ERR_BASE 100
 #define ERR_INVALID_APPLE_MIDI_SIGNATURE ERR_BASE;
@@ -25,8 +25,6 @@
 
 #define PACK_BIG_ENDIAN                                                        \
     __attribute__((packed, scalar_storage_order("big-endian")))
-
-typedef enum mw_err mw_err;
 
 union PACK_BIG_ENDIAN AppleMidiTimeSyncPacket {
     u8 byte[TIMESYNC_PKT_LEN];
@@ -61,7 +59,7 @@ union PACK_BIG_ENDIAN AppleMidiExchangePacket {
 
 typedef union AppleMidiExchangePacket AppleMidiExchangePacket;
 
-mw_err applemidi_processSessionControlPacket(char* buffer, u16 length);
-mw_err applemidi_processSessionMidiPacket(char* buffer, u16 length);
+enum mw_err applemidi_processSessionControlPacket(char* buffer, u16 length);
+enum mw_err applemidi_processSessionMidiPacket(char* buffer, u16 length);
 u16 applemidi_lastSequenceNumber(void);
-mw_err applemidi_sendReceiverFeedback(void);
+enum mw_err applemidi_sendReceiverFeedback(void);

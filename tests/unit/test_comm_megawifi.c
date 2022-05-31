@@ -1,12 +1,11 @@
 #include "cmocka_inc.h"
 #include "applemidi.h"
 #include "comm_megawifi.h"
-#include "mw/loop.h"
-#include "mw/megawifi.h"
-#include "mw/mpool.h"
-#include "mw/util.h"
+#include <ext/mw/megawifi.h>
+#include <ext/mw/lsd.h>
 #include "buffer.h"
 #include "settings.h"
+#include "ip_util.h"
 
 extern void __real_comm_megawifi_init(void);
 
@@ -31,13 +30,6 @@ static void expect_mw_init(void)
     expect_any(__wrap_mw_init, cmd_buf);
     expect_any(__wrap_mw_init, buf_len);
     will_return(__wrap_mw_init, MW_ERR_NONE);
-
-    expect_value(__wrap_loop_init, max_func, 2);
-    expect_value(__wrap_loop_init, max_timer, 4);
-    will_return(__wrap_loop_init, MW_ERR_NONE);
-
-    expect_any(__wrap_loop_func_add, func);
-    will_return(__wrap_loop_func_add, MW_ERR_NONE);
 }
 
 static void expect_mw_detect(void)
@@ -51,6 +43,8 @@ static void expect_mw_detect(void)
 
 static void expect_ap_connection(void)
 {
+    will_return(__wrap_mw_def_ap_cfg_get, 0);
+
     expect_value(__wrap_mw_ap_assoc, slot, 0);
     will_return(__wrap_mw_ap_assoc, MW_ERR_NONE);
 

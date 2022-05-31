@@ -688,6 +688,13 @@ void __wrap_mw_process(void)
     function_called();
 }
 
+void __wrap_lsd_process(void)
+{
+    if (disableChecks)
+        return;
+    function_called();
+}
+
 static u8 mock_ver_major;
 static u8 mock_ver_minor;
 
@@ -700,7 +707,7 @@ void mock_mw_detect(u8 major, u8 minor)
 mw_err __wrap_mw_detect(uint8_t* major, uint8_t* minor, char** variant)
 {
     if (disableChecks)
-        return MW_ERR_NONE;
+        return MW_ERR_NOT_READY;
     *major = mock_ver_major;
     *minor = mock_ver_minor;
     return mock_type(mw_err);
@@ -712,14 +719,6 @@ int __wrap_loop_init(uint8_t max_func, uint8_t max_timer)
         return MW_ERR_NONE;
     check_expected(max_func);
     check_expected(max_timer);
-    return mock_type(mw_err);
-}
-
-int __wrap_loop_func_add(struct loop_func* func)
-{
-    if (disableChecks)
-        return MW_ERR_NONE;
-    check_expected(func);
     return mock_type(mw_err);
 }
 
@@ -847,6 +846,7 @@ u16 __wrap_VDP_drawImageEx(VDPPlane plane, const Image* image, u16 basetile,
 
 void __wrap_JOY_update(void)
 {
+    function_called();
 }
 
 u16 __wrap_JOY_readJoypad(u16 joy)
@@ -856,4 +856,13 @@ u16 __wrap_JOY_readJoypad(u16 joy)
 
 void __wrap_JOY_init(void)
 {
+}
+
+void __wrap_TSK_userSet(VoidCallback* task)
+{
+}
+
+int16_t __wrap_mw_def_ap_cfg_get(void)
+{
+    return mock_type(int16_t);
 }

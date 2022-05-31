@@ -1,11 +1,12 @@
-FROM rhargreaves/gendev:circle-21
+FROM ghcr.io/rhargreaves/docker-sgdk:v1.70-mw
+USER root
 RUN apt-get -y update && \
-	apt-get -y install \
-	build-essential \
-	cmake \
-	gdb \
-	gdbserver \
-	valgrind
+    apt-get -y install \
+    build-essential \
+    cmake \
+    gdb \
+    gdbserver \
+    valgrind
 WORKDIR /app
 COPY tests/cmocka* /app/tests/
 COPY tests/Makefile /app/tests/Makefile

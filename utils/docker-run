@@ -16,7 +16,6 @@ docker run \
     -e CMOCKA_MESSAGE_OUTPUT \
     -e CMOCKA_XML_FILE \
     --rm \
-    -v $(pwd)/bin:/app/bin \
     -v $(pwd)/out:/app/out \
     -i \
     $TTY_PARAM \
