@@ -9,6 +9,7 @@
 #include "buffer.h"
 #include "memory.h"
 #include "ip_util.h"
+#include <task.h>
 
 #define UDP_CONTROL_PORT 5006
 #define UDP_MIDI_PORT 5007
@@ -49,7 +50,6 @@ static enum mw_err associateAp(void)
     if (err != MW_ERR_NONE) {
         return err;
     }
-    mw_sleep(3 * 60);
     return MW_ERR_NONE;
 }
 
@@ -113,7 +113,7 @@ void comm_megawifi_init(void)
 {
     status = NotDetected;
     enum mw_err err = mw_init(cmd_buf, MW_BUFLEN);
-    if (err) {
+    if (err != MW_ERR_NONE) {
         return;
     }
     tasking_init();

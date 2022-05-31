@@ -81,6 +81,7 @@ static void test_comm_demo_increases_pitch(UNUSED void** state)
     assert_note_played_and_stopped(DEFAULT_PITCH, 0);
 
     will_return(__wrap_JOY_readJoypad, BUTTON_UP);
+    expect_function_call(__wrap_JOY_update);
     __real_comm_demo_vsync();
     assert_note_played_and_stopped(DEFAULT_PITCH + 1, 0);
 }
@@ -91,6 +92,7 @@ static void test_comm_demo_decreases_pitch(UNUSED void** state)
     assert_note_played_and_stopped(DEFAULT_PITCH, 0);
 
     will_return(__wrap_JOY_readJoypad, BUTTON_DOWN);
+    expect_function_call(__wrap_JOY_update);
     __real_comm_demo_vsync();
     assert_note_played_and_stopped(DEFAULT_PITCH - 1, 0);
 }
@@ -101,6 +103,7 @@ static void test_comm_demo_increases_program(UNUSED void** state)
     assert_note_played_and_stopped(DEFAULT_PITCH, 0);
 
     will_return(__wrap_JOY_readJoypad, BUTTON_RIGHT);
+    expect_function_call(__wrap_JOY_update);
     __real_comm_demo_vsync();
     assert_note_played_and_stopped(DEFAULT_PITCH, 1);
 }
@@ -111,14 +114,17 @@ static void test_comm_demo_decreases_program(UNUSED void** state)
     assert_note_played_and_stopped(DEFAULT_PITCH, 0);
 
     will_return(__wrap_JOY_readJoypad, BUTTON_RIGHT);
+    expect_function_call(__wrap_JOY_update);
     __real_comm_demo_vsync();
     assert_note_played_and_stopped(DEFAULT_PITCH, 1);
 
     will_return(__wrap_JOY_readJoypad, BUTTON_RIGHT);
+    expect_function_call(__wrap_JOY_update);
     __real_comm_demo_vsync();
     assert_note_played_and_stopped(DEFAULT_PITCH, 2);
 
     will_return(__wrap_JOY_readJoypad, BUTTON_LEFT);
+    expect_function_call(__wrap_JOY_update);
     __real_comm_demo_vsync();
     assert_note_played_and_stopped(DEFAULT_PITCH, 1);
 }

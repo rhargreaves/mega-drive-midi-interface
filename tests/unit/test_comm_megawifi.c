@@ -43,6 +43,8 @@ static void expect_mw_detect(void)
 
 static void expect_ap_connection(void)
 {
+    will_return(__wrap_mw_def_ap_cfg_get, 0);
+
     expect_value(__wrap_mw_ap_assoc, slot, 0);
     will_return(__wrap_mw_ap_assoc, MW_ERR_NONE);
 

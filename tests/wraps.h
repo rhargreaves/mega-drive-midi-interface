@@ -187,3 +187,7 @@ u16 __wrap_VDP_drawImageEx(VDPPlane plane, const Image* image, u16 basetile,
 void __wrap_JOY_update(void);
 u16 __wrap_JOY_readJoypad(u16 joy);
 void __wrap_JOY_init(void);
+
+void __wrap_TSK_userSet(VoidCallback* task);
+
+int16_t __wrap_mw_def_ap_cfg_get(void);
