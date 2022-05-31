@@ -17,8 +17,8 @@
 #define NOTE_KEY_2_INDEX 6
 #define NOTE_OFF_END_INDEX 7
 
-#define NOTE_ON_WAIT 10000
-#define NOTE_OFF_WAIT 500
+#define NOTE_ON_WAIT 50
+#define NOTE_OFF_WAIT 2
 
 static u8 cursor;
 static u16 wait;
@@ -57,13 +57,7 @@ u8 comm_demo_read_ready(void)
     if (!enabled) {
         return false;
     }
-
-    if (wait == 0) {
-        return true;
-    } else {
-        wait--;
-        return false;
-    }
+    return wait == 0;
 }
 
 u8 comm_demo_read(void)
@@ -86,10 +80,18 @@ u8 comm_demo_read(void)
     return data;
 }
 
+static void decrementWait(void)
+{
+    if (wait != 0) {
+        wait--;
+    }
+}
+
 void comm_demo_vsync(void)
 {
-    JOY_update();
+    decrementWait();
 
+    JOY_update();
     u16 curState = JOY_readJoypad(JOY_1);
     if (curState & BUTTON_UP) {
         pitch++;
