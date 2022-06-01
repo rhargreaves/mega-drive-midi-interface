@@ -54,15 +54,17 @@ static void test_log_stores_two_logs(UNUSED void** state)
 static void test_log_stores_multiple_logs_and_overwrites_older(
     UNUSED void** state)
 {
-    for (u8 i = 1; i <= 15; i++) { __real_log_info("Test Message %d", i); }
+    for (u8 i = 1; i <= 15; i++) {
+        __real_log_info("Test Message %d", i);
+    }
 
     for (u8 i = 7; i <= 15; i++) {
         print_message("Dequeuing log %d\n", i);
         Log* log = __real_log_dequeue();
 
-        char expectedMsg[15];
+        char expectedMsg[20];
         v_sprintf(expectedMsg, "Test Message %d", i);
-        assert_memory_equal(expectedMsg, log->msg, 15);
+        assert_string_equal(expectedMsg, log->msg);
     }
 }
 
