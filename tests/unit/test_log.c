@@ -22,7 +22,7 @@ static void test_log_info_writes_to_log_buffer(UNUSED void** state)
 
     assert_int_not_equal(log->msgLen, 0);
     print_message("%s", &log->msg[0]);
-    assert_memory_equal("Test Message 1", log->msg, 15);
+    assert_string_equal("Test Message 1", log->msg);
 }
 
 static void test_log_warn_writes_to_log_buffer(UNUSED void** state)
@@ -32,7 +32,7 @@ static void test_log_warn_writes_to_log_buffer(UNUSED void** state)
     Log* log = __real_log_dequeue();
 
     assert_int_not_equal(log->msgLen, 0);
-    assert_memory_equal("Test Message 1", log->msg, 15);
+    assert_string_equal("Test Message 1", log->msg);
     assert_int_equal(log->level, Warn);
 }
 
@@ -47,8 +47,8 @@ static void test_log_stores_two_logs(UNUSED void** state)
     Log* log2 = __real_log_dequeue();
     assert_non_null(log2);
 
-    assert_memory_equal("Test Message 1", log1->msg, 15);
-    assert_memory_equal("Test Message 2", log2->msg, 15);
+    assert_string_equal("Test Message 1", log1->msg);
+    assert_string_equal("Test Message 2", log2->msg);
 }
 
 static void test_log_stores_multiple_logs_and_overwrites_older(
