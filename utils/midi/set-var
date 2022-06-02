@@ -1,6 +1,6 @@
 #!/bin/bash
-set -euo pipefail
+set -eo pipefail
 
 if [ -z "$MDMI_MIDI_PORT" ]; then
-	MDMI_MIDI_PORT="Network MegaDriveLink"
+	MDMI_MIDI_PORT="rtpmidi"
 fi
