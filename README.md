@@ -52,7 +52,7 @@ Build MegaWiFi ROM:
 
 ### Linux without Docker
 
-You'll need to configure SGDK in your environment accordingly and make changes to the Makefile to support building outside of Docker. I've never built it outside of Docker :)
+You'll need to configure SGDK in your environment accordingly and make changes to the Makefile to support building outside of Docker. I've never tried to build it outside of Docker :)
 
 ```sh
 make
