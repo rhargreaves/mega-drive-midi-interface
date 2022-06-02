@@ -41,22 +41,22 @@ The key difference between the two builds is the console header. The standard bu
 Build EverDrive / Generic Flash ROM:
 
 ```sh
-./docker-make
+./docker-make release
 ```
 
 Build MegaWiFi ROM:
 
 ```sh
-./docker-make ROM_TYPE=MEGAWIFI
+./docker-make release ROM_TYPE=MEGAWIFI
 ```
 
-### Linux (with `cmake` & [gendev](https://github.com/kubilus1/gendev)):
+### Linux without Docker
+
+You'll need to configure SGDK in your environment accordingly and make changes to the Makefile to support building outside of Docker. I've never built it outside of Docker :)
 
 ```sh
 make
 ```
-
-See Docker for arguments which can be passed to `make`.
 
 ## Contributions
 
