@@ -1,3 +1,5 @@
 #!/bin/bash
-sendmidi dev "IAC Bus 1" hex syx 00 22 77 00 09 05
-sendmidi dev "IAC Bus 1" hex syx 00 22 77 00 05 7F
+set -euo pipefail
+. $(dirname $0)/set-var
+sendmidi dev "$MDMI_MIDI_PORT" hex syx 00 22 77 00 09 05
+sendmidi dev "$MDMI_MIDI_PORT" hex syx 00 22 77 00 05 7F

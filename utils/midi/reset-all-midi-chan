@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 for chan in {1..16}
 do
