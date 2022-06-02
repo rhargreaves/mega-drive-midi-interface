@@ -12,7 +12,7 @@
 #include <task.h>
 
 #define UDP_CONTROL_PORT 5006
-#define UDP_MIDI_PORT 5007
+#define UDP_MIDI_PORT (UDP_CONTROL_PORT + 1)
 
 #define MW_BUFLEN 1460
 #define MAX_UDP_DATA_LENGTH MW_BUFLEN
@@ -89,7 +89,7 @@ static bool detect_mw(void)
 static enum mw_err listenOnUdpPort(u8 ch, u16 src_port)
 {
     char src_port_str[6];
-    v_sprintf(src_port_str, "%d", src_port);
+    v_sprintf(src_port_str, "%u", src_port);
     enum mw_err err = mw_udp_set(ch, NULL, NULL, src_port_str);
     if (err != MW_ERR_NONE) {
         log_warn("MW: Cannot open UDP %s", src_port_str);
@@ -130,14 +130,17 @@ void comm_megawifi_init(void)
     if (err != MW_ERR_NONE) {
         return;
     }
+#if DEBUG_MEGAWIFI_INIT
+    log_info("MW: Control UDP port %u open", UDP_CONTROL_PORT);
+#endif
     err = listenOnUdpPort(CH_MIDI_PORT, UDP_MIDI_PORT);
     if (err != MW_ERR_NONE) {
         return;
     }
-    status = Listening;
 #if DEBUG_MEGAWIFI_INIT
-    log_info("MW: Listening on UDP %d", UDP_CONTROL_PORT);
+    log_info("MW: MIDI UDP port %u open", UDP_MIDI_PORT);
 #endif
+    status = Listening;
 }
 
 u8 comm_megawifi_read_ready(void)
@@ -206,6 +209,11 @@ static void recv_complete_cb(
 
     if (LSD_STAT_COMPLETE == stat) {
         struct mw_reuse_payload* udp = (struct mw_reuse_payload*)data;
+#if DEBUG_MEGAWIFI_INIT
+        char remote_ip_str[16] = {};
+        uint32_to_ip_str(udp->remote_ip, remote_ip_str);
+        log_info("MW: Remote=%s:%u", remote_ip_str, udp->remote_port);
+#endif
         persistRemoteEndpoint(ch, udp->remote_ip, udp->remote_port);
         processUdpData(ch, udp->payload, len);
     } else {
@@ -288,7 +296,7 @@ void comm_megawifi_send(u8 ch, char* data, u16 len)
 #if DEBUG_MEGAWIFI_SEND == 1
     char ip_buf[16];
     uint32_to_ip_str(remoteIp, ip_buf);
-    log_info("MW: Send IP=%s:%d L=%d C=%d", ip_buf, udp->remote_port, len, ch);
+    log_info("MW: Send IP=%s:%u L=%d C=%d", ip_buf, udp->remote_port, len, ch);
 #endif
 
     awaitingSend = true;
