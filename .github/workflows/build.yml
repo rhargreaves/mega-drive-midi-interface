@@ -15,6 +15,7 @@ jobs:
         env:
           CMOCKA_MESSAGE_OUTPUT: xml
           CMOCKA_XML_FILE: ../bin/TEST-cmocka.xml
+          ENABLE_SANITISE_CHECKS: 1
         run: |
           mkdir out
           ./docker-make all

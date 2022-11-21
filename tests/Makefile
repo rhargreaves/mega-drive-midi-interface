@@ -220,11 +220,15 @@ valgrind-system: $(SYSTEM_TESTS_TARGET)
 .PHONY: valgrind-system
 
 sanitise-unit: $(UNIT_TESTS_SANITISE_TARGET)
+ifeq ($(ENABLE_SANITISE_CHECKS),1)
 	$(GDB) ./$(UNIT_TESTS_SANITISE_TARGET)
+endif
 .PHONY: sanitise-unit
 
 sanitise-system: $(SYSTEM_TESTS_SANITISE_TARGET)
+ifeq ($(ENABLE_SANITISE_CHECKS),1)
 	$(GDB) ./$(SYSTEM_TESTS_SANITISE_TARGET)
+endif
 .PHONY: sanitise-system
 
 $(SRC_OBJ): | $(OBJ_DIR) $(CMOCKA_DIR)
