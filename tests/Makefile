@@ -21,7 +21,7 @@ INCLUDE_DIRS+=-I$(CMOCKA_DIR)/include
 
 CFLAGS=$(INCLUDE_DIRS) \
 	-DUNIT_TESTS \
-    -DMODULE_MEGAWIFI=1 \
+	-DMODULE_MEGAWIFI=1 \
 	-ggdb \
 	-O0 \
 	-Wall \
@@ -139,7 +139,7 @@ MD_MOCKS=SYS_setVIntCallback \
 	comm_demo_read \
 	comm_demo_ready \
 	comm_demo_write \
-    comm_demo_vsync \
+	comm_demo_vsync \
 	SYS_getCPULoad \
 	getFPS \
 	VDP_clearTextArea \
@@ -147,7 +147,7 @@ MD_MOCKS=SYS_setVIntCallback \
 	SYS_die \
 	mw_init \
 	mw_process \
-    lsd_process \
+	lsd_process \
 	mw_detect \
 	loop_init \
 	loop_func_add \
@@ -166,11 +166,11 @@ MD_MOCKS=SYS_setVIntCallback \
 	VDP_loadTileSet \
 	VDP_setTileMapXY \
 	VDP_drawImageEx \
-    JOY_init \
-    JOY_readJoypad \
-    JOY_update \
-    TSK_userSet \
-    mw_def_ap_cfg_get
+	JOY_init \
+	JOY_readJoypad \
+	JOY_update \
+	TSK_userSet \
+	mw_def_ap_cfg_get
 
 LDFLAGS=-ggdb -ffreestanding -lcmocka -L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src
 LDFLAGS+=$(foreach MOCK,$(MD_MOCKS),-Wl,--wrap=$(MOCK))
