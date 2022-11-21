@@ -15,6 +15,7 @@ docker run \
     -e BUILD \
     -e CMOCKA_MESSAGE_OUTPUT \
     -e CMOCKA_XML_FILE \
+    -e ENABLE_SANITISE_CHECKS \
     --rm \
     -v $(pwd)/out:/app/out \
     -i \
