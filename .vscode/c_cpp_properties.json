@@ -4,18 +4,17 @@
             "name": "Docker",
             "includePath": [
                 "${workspaceFolder}/src",
+                "${workspaceFolder}/res",
                 "${workspaceFolder}/../SGDK/inc",
                 "${workspaceFolder}/../SGDK/inc/ext",
                 "${workspaceFolder}/../SGDK/inc/ext/mw",
                 "${workspaceFolder}/../SGDK/res",
+                "${workspaceFolder}/tests/cmocka/include",
                 "${workspaceFolder}/tests/unit",
                 "${workspaceFolder}/tests/system",
                 "${workspaceFolder}/tests",
-                "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/",
-                "${workspaceFolder}/res",
-                "${workspaceFolder}/tests/cmocka/include"
+                "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/"
             ],
-            "compileCommands": "${workspaceFolder}/tests/cmocka/build/compile_commands.json",
             "defines": [
                 "DEBUG_EVENTS",
                 "DEBUG_TICKS",
@@ -27,7 +26,8 @@
             "cStandard": "c11",
             "cppStandard": "c++17",
             "intelliSenseMode": "gcc-x64",
-            "configurationProvider": "ms-vscode.makefile-tools"
+            "configurationProvider": "ms-vscode.cpptools",
+            "compilerPath": "${workspaceFolder}/utils/docker-gcc"
         }
     ],
     "version": 4

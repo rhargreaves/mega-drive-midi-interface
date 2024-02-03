@@ -4,7 +4,7 @@
     {
       "label": "Build",
       "type": "shell",
-      "command": "./docker-make clean all",
+      "command": "./docker-make all",
       "problemMatcher": ["$gcc"],
       "group": {
         "kind": "build",
