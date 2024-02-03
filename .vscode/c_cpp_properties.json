@@ -13,9 +13,9 @@
                 "${workspaceFolder}/tests",
                 "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/",
                 "${workspaceFolder}/res",
-                "/Users/Robert/Projects/cmocka-1.1.2/include"
+                "${workspaceFolder}/tests/cmocka/include"
             ],
-            "compileCommands": "",
+            "compileCommands": "${workspaceFolder}/tests/cmocka/build/compile_commands.json",
             "defines": [
                 "DEBUG_EVENTS",
                 "DEBUG_TICKS",
@@ -26,7 +26,8 @@
             ],
             "cStandard": "c11",
             "cppStandard": "c++17",
-            "intelliSenseMode": "gcc-x64"
+            "intelliSenseMode": "gcc-x64",
+            "configurationProvider": "ms-vscode.makefile-tools"
         }
     ],
     "version": 4
