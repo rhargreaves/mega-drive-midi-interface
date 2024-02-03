@@ -25,7 +25,7 @@
             ],
             "cStandard": "c11",
             "cppStandard": "c++17",
-            "intelliSenseMode": "gcc-x64",
+            "intelliSenseMode": "macos-gcc-arm64",
             "configurationProvider": "ms-vscode.cpptools",
             "compilerPath": "${workspaceFolder}/utils/docker-gcc"
         }
