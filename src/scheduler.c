@@ -27,13 +27,6 @@ void scheduler_init(void)
     ticks = 0;
     tickHandlersLength = 0;
     frameHandlersLength = 0;
-    scheduler_addTickHandler(*comm_megawifi_tick);
-    scheduler_addTickHandler(*midi_receiver_read_if_comm_ready);
-    scheduler_addFrameHandler(*midi_psg_tick);
-    scheduler_addFrameHandler(*ui_update);
-    scheduler_addFrameHandler(*everdrive_led_tick);
-    scheduler_addFrameHandler(*comm_megawifi_vsync);
-    scheduler_addFrameHandler(*comm_demo_vsync);
 }
 
 void scheduler_vsync(void)

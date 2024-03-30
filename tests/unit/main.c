@@ -260,7 +260,11 @@ int main(void)
 
         scheduler_test(test_scheduler_nothing_called_on_vsync),
         scheduler_test(test_scheduler_processes_frame_events_once_after_vsync),
-        scheduler_test(test_scheduler_tick_runs_midi_receiver),
+        scheduler_test(test_scheduler_registered_frame_handler_called_on_vsync),
+        scheduler_test(test_scheduler_registered_tick_handler_called),
+        scheduler_test(
+            test_scheduler_multiple_registered_frame_handlers_called_on_vsync),
+        scheduler_test(test_scheduler_multiple_registered_tick_handlers_called),
 
         applemidi_test(
             test_applemidi_parses_rtpmidi_packet_with_single_midi_event),
