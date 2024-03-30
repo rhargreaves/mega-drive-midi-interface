@@ -17,6 +17,23 @@
 
 void midi_receiver_read(void);
 
+static void init(void)
+{
+    expect_function_call(__wrap_scheduler_addTickHandler);
+    midi_receiver_init();
+}
+
+static int test_midi_receiver_setup(UNUSED void** state)
+{
+    init();
+    return 0;
+}
+
+static void test_midi_receiver_initialises(UNUSED void** state)
+{
+    init();
+}
+
 static void test_midi_receiver_read_passes_note_on_to_midi_processor(
     UNUSED void** state)
 {
@@ -128,8 +145,6 @@ static void test_midi_receiver_sets_pitch_bend(UNUSED void** state)
 
 static void test_midi_receiver_does_nothing_on_midi_clock(UNUSED void** state)
 {
-    midi_receiver_init();
-
     u8 status = STATUS_CLOCK;
     will_return(__wrap_comm_read, status);
 
@@ -139,8 +154,6 @@ static void test_midi_receiver_does_nothing_on_midi_clock(UNUSED void** state)
 static void test_midi_receiver_does_nothing_on_midi_start_midi(
     UNUSED void** state)
 {
-    midi_receiver_init();
-
     u8 status = STATUS_START;
     will_return(__wrap_comm_read, status);
 
@@ -149,8 +162,6 @@ static void test_midi_receiver_does_nothing_on_midi_start_midi(
 
 static void test_midi_receiver_swallows_midi_stop(UNUSED void** state)
 {
-    midi_receiver_init();
-
     u8 status = STATUS_STOP;
     will_return(__wrap_comm_read, status);
 
@@ -159,8 +170,6 @@ static void test_midi_receiver_swallows_midi_stop(UNUSED void** state)
 
 static void test_midi_receiver_swallows_midi_continue(UNUSED void** state)
 {
-    midi_receiver_init();
-
     u8 status = STATUS_CONTINUE;
     will_return(__wrap_comm_read, status);
 

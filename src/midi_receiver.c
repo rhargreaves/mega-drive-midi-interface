@@ -37,6 +37,7 @@ static void readSysEx(void);
 
 void midi_receiver_init(void)
 {
+    scheduler_addTickHandler(*midi_receiver_read_if_comm_ready);
 }
 
 void midi_receiver_read_if_comm_ready(void)

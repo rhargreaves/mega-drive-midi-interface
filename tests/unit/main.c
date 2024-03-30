@@ -28,30 +28,32 @@
 #define scheduler_test(test) cmocka_unit_test_setup(test, test_scheduler_setup)
 #define applemidi_test(test) cmocka_unit_test_setup(test, test_applemidi_setup)
 #define buffer_test(test) cmocka_unit_test_setup(test, test_buffer_setup)
+#define midi_receiver_test(test)                                               \
+    cmocka_unit_test_setup(test, test_midi_receiver_setup)
 
 int main(void)
 {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(
+        midi_receiver_test(
             test_midi_receiver_read_passes_note_on_to_midi_processor),
-        cmocka_unit_test(
+        midi_receiver_test(
             test_midi_receiver_read_passes_note_off_to_midi_processor),
-        cmocka_unit_test(test_midi_receiver_does_nothing_for_control_change),
-        cmocka_unit_test(
+        midi_receiver_test(test_midi_receiver_does_nothing_for_control_change),
+        midi_receiver_test(
             test_midi_receiver_sets_unknown_event_for_unknown_status),
-        cmocka_unit_test(
+        midi_receiver_test(
             test_midi_receiver_sets_unknown_event_for_unknown_system_message),
-        cmocka_unit_test(test_midi_receiver_sets_CC),
-        cmocka_unit_test(test_midi_receiver_sets_pitch_bend),
-        cmocka_unit_test(test_midi_receiver_does_nothing_on_midi_clock),
-        cmocka_unit_test(test_midi_receiver_does_nothing_on_midi_start_midi),
-        cmocka_unit_test(test_midi_receiver_swallows_midi_stop),
-        cmocka_unit_test(test_midi_receiver_swallows_midi_continue),
-        cmocka_unit_test(test_midi_receiver_does_nothing_on_midi_position),
-        cmocka_unit_test(test_midi_receiver_sets_midi_program),
-        cmocka_unit_test(test_midi_receiver_sends_sysex_to_midi_layer),
-        cmocka_unit_test(test_midi_receiver_handles_sysex_limits),
-        cmocka_unit_test(test_midi_receiver_sends_midi_reset),
+        midi_receiver_test(test_midi_receiver_sets_CC),
+        midi_receiver_test(test_midi_receiver_sets_pitch_bend),
+        midi_receiver_test(test_midi_receiver_does_nothing_on_midi_clock),
+        midi_receiver_test(test_midi_receiver_does_nothing_on_midi_start_midi),
+        midi_receiver_test(test_midi_receiver_swallows_midi_stop),
+        midi_receiver_test(test_midi_receiver_swallows_midi_continue),
+        midi_receiver_test(test_midi_receiver_does_nothing_on_midi_position),
+        midi_receiver_test(test_midi_receiver_sets_midi_program),
+        midi_receiver_test(test_midi_receiver_sends_sysex_to_midi_layer),
+        midi_receiver_test(test_midi_receiver_handles_sysex_limits),
+        midi_receiver_test(test_midi_receiver_sends_midi_reset),
 
         midi_test(test_midi_triggers_synth_note_on),
         midi_test(test_midi_triggers_synth_note_on_with_velocity),

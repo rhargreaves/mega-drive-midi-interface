@@ -15,7 +15,6 @@
 
 static void registerSchedulerHandlers()
 {
-    scheduler_addTickHandler(*midi_receiver_read_if_comm_ready);
     scheduler_addFrameHandler(*midi_psg_tick);
     scheduler_addFrameHandler(*ui_update);
     scheduler_addFrameHandler(*everdrive_led_tick);
