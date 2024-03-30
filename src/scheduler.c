@@ -11,8 +11,8 @@
 #define MAX_TICK_HANDLERS 3
 #define MAX_FRAME_HANDLERS 6
 
-static HanderFunc* tickHandlers[MAX_TICK_HANDLERS];
-static HanderFunc* frameHandlers[MAX_FRAME_HANDLERS];
+static HandlerFunc* tickHandlers[MAX_TICK_HANDLERS];
+static HandlerFunc* frameHandlers[MAX_FRAME_HANDLERS];
 
 static u16 previousFrame;
 static volatile u16 frame;
@@ -70,12 +70,12 @@ void scheduler_run(void)
     }
 }
 
-void scheduler_addTickHandler(HanderFunc* onTick)
+void scheduler_addTickHandler(HandlerFunc* onTick)
 {
     tickHandlers[tickHandlersLength++] = onTick;
 }
 
-void scheduler_addFrameHandler(HanderFunc* onFrame)
+void scheduler_addFrameHandler(HandlerFunc* onFrame)
 {
     frameHandlers[frameHandlersLength++] = onFrame;
 }
