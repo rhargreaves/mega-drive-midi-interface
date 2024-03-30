@@ -1,4 +1,5 @@
 #pragma once
+#include <stdint.h>
 #include <types.h>
 
 void comm_megawifi_init(void);

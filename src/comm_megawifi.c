@@ -10,6 +10,7 @@
 #include "memory.h"
 #include "ip_util.h"
 #include <task.h>
+#include "scheduler.h"
 
 #define UDP_CONTROL_PORT 5006
 #define UDP_MIDI_PORT (UDP_CONTROL_PORT + 1)
@@ -111,6 +112,8 @@ static void tasking_init(void)
 
 void comm_megawifi_init(void)
 {
+    scheduler_addTickHandler(*comm_megawifi_tick);
+
     status = NotDetected;
     enum mw_err err = mw_init(cmd_buf, MW_BUFLEN);
     if (err != MW_ERR_NONE) {

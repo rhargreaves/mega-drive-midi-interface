@@ -7,6 +7,7 @@
 #include <ext/mw/megawifi.h>
 #include "log.h"
 #include "synth.h"
+#include "scheduler.h"
 #include <vdp_bg.h>
 
 typedef enum mw_err mw_err;
@@ -167,6 +168,9 @@ mw_err __wrap_mw_sock_conn_wait(uint8_t ch, int tout_frames);
 
 void __wrap_midi_receiver_read_if_comm_ready(void);
 void __wrap_scheduler_tick(void);
+void __wrap_scheduler_addTickHandler(HandlerFunc* onTick);
+void __wrap_scheduler_addFrameHandler(HandlerFunc* onFrame);
+
 void __wrap_comm_megawifi_tick(void);
 void __wrap_comm_megawifi_send(u8 ch, char* data, u16 len);
 

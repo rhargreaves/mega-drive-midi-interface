@@ -1,4 +1,5 @@
 #pragma once
+#include <stdint.h>
 #include <ext/mw/megawifi.h>
 
 #define ERR_BASE 100
