@@ -63,7 +63,7 @@ static void expect_ip_log(void)
 
 static void megawifi_init(void)
 {
-    expect_function_call(__wrap_scheduler_addTickHandler);
+    expect_any(__wrap_scheduler_addTickHandler, onTick);
     expect_mw_init();
     expect_mw_detect();
     expect_ap_connection();

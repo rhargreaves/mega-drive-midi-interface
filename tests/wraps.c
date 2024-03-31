@@ -785,7 +785,7 @@ void __wrap_scheduler_tick(void)
 
 void __wrap_scheduler_addTickHandler(HandlerFunc* onTick)
 {
-    function_called();
+    check_expected(onTick);
 }
 
 void __wrap_scheduler_addFrameHandler(HandlerFunc* onFrame)

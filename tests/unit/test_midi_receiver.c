@@ -19,7 +19,7 @@ void midi_receiver_read(void);
 
 static void init(void)
 {
-    expect_function_call(__wrap_scheduler_addTickHandler);
+    expect_any(__wrap_scheduler_addTickHandler, onTick);
     midi_receiver_init();
 }
 
