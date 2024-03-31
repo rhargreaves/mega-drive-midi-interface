@@ -15,11 +15,11 @@
 
 static void registerSchedulerHandlers()
 {
-    scheduler_addFrameHandler(*midi_psg_tick);
-    scheduler_addFrameHandler(*ui_update);
-    scheduler_addFrameHandler(*everdrive_led_tick);
-    scheduler_addFrameHandler(*comm_megawifi_vsync);
-    scheduler_addFrameHandler(*comm_demo_vsync);
+    scheduler_addFrameHandler(midi_psg_tick);
+    scheduler_addFrameHandler(ui_update);
+    scheduler_addFrameHandler(everdrive_led_tick);
+    scheduler_addFrameHandler(comm_megawifi_vsync);
+    scheduler_addFrameHandler(comm_demo_vsync);
 }
 
 int main()
