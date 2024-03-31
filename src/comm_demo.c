@@ -4,6 +4,7 @@
 #include <sys.h>
 #include "midi_fm.h"
 #include "log.h"
+#include "scheduler.h"
 
 #define programChange 0xC0
 #define noteOnStatus 0x90
@@ -39,6 +40,7 @@ u8 track[] = {
 
 void comm_demo_init(void)
 {
+    scheduler_addFrameHandler(comm_demo_vsync);
     JOY_init();
     cursor = 0;
     wait = 0;

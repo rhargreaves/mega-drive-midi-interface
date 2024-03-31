@@ -113,6 +113,7 @@ static void tasking_init(void)
 void comm_megawifi_init(void)
 {
     scheduler_addTickHandler(comm_megawifi_tick);
+    scheduler_addFrameHandler(comm_megawifi_vsync);
 
     status = NotDetected;
     enum mw_err err = mw_init(cmd_buf, MW_BUFLEN);

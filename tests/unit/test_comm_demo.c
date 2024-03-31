@@ -8,6 +8,7 @@ extern void __real_comm_demo_init(void);
 
 static int test_comm_demo_setup(UNUSED void** state)
 {
+    expect_any(__wrap_scheduler_addFrameHandler, onFrame);
     __real_comm_demo_init();
     return 0;
 }

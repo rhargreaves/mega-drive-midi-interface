@@ -13,18 +13,11 @@
 #include <vdp.h>
 #include <dma.h>
 
-static void registerSchedulerHandlers()
-{
-    scheduler_addFrameHandler(comm_megawifi_vsync);
-    scheduler_addFrameHandler(comm_demo_vsync);
-}
-
 int main()
 {
     DMA_init();
     scheduler_init();
     everdrive_led_init();
-    registerSchedulerHandlers();
     log_init();
     comm_init();
     midi_init(M_BANK_0, P_BANK_0, ENVELOPES);
