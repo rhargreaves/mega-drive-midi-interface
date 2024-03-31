@@ -93,6 +93,7 @@ static Sprite* activitySprites[DEV_CHANS];
 
 void ui_init(void)
 {
+    scheduler_addFrameHandler(ui_update);
     SPR_init();
     VDP_setBackgroundColor(BG_COLOUR_INDEX);
     VDP_setPaletteColor(BG_COLOUR_INDEX, RGB24_TO_VDPCOLOR(0x202020));

@@ -1,4 +1,5 @@
 #include "everdrive_led.h"
+#include "scheduler.h"
 #include <stdbool.h>
 
 #define CTRL_LED_ON 0x1000
@@ -19,6 +20,11 @@ static void led_off(void)
 {
     REG_CTRL = CTRL_LED_OFF | CTRL_UNPROTECT;
     ledOn = false;
+}
+
+void everdrive_led_init(void)
+{
+    scheduler_addFrameHandler(everdrive_led_tick);
 }
 
 void everdrive_led_tick(void)

@@ -15,8 +15,6 @@
 
 static void registerSchedulerHandlers()
 {
-    scheduler_addFrameHandler(ui_update);
-    scheduler_addFrameHandler(everdrive_led_tick);
     scheduler_addFrameHandler(comm_megawifi_vsync);
     scheduler_addFrameHandler(comm_demo_vsync);
 }
@@ -25,6 +23,7 @@ int main()
 {
     DMA_init();
     scheduler_init();
+    everdrive_led_init();
     registerSchedulerHandlers();
     log_init();
     comm_init();

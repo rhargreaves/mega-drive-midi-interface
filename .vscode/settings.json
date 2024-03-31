@@ -26,6 +26,7 @@
         "ostream": "c",
         "array": "c",
         "utility": "c",
-        "everdrive_led.h": "c"
+        "everdrive_led.h": "c",
+        "comm.h": "c"
     }
 }
