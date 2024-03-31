@@ -6,7 +6,7 @@ VALGRIND=valgrind
 VFLAGS=--leak-check=full --trace-children=yes --error-exitcode=1
 
 ifeq ($(DEBUG),1)
-	GDB=gdbserver host:2345
+	GDB=gdbserver :2345
 else
 	GDB=
 endif
