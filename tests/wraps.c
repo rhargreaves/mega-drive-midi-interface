@@ -790,7 +790,7 @@ void __wrap_scheduler_addTickHandler(HandlerFunc* onTick)
 
 void __wrap_scheduler_addFrameHandler(HandlerFunc* onFrame)
 {
-    function_called();
+    check_expected(onFrame);
 }
 
 void __wrap_comm_megawifi_tick(void)

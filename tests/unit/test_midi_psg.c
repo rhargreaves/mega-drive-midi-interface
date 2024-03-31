@@ -349,7 +349,7 @@ static void test_midi_shifts_semitone_in_psg_envelope(UNUSED void** state)
 
         print_message("Shift: %d %d\n", i, envelopeStep);
 
-        expect_function_call(__wrap_scheduler_addFrameHandler);
+        expect_any(__wrap_scheduler_addFrameHandler, onFrame);
         midi_psg_init(envelopes);
 
         expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
@@ -374,7 +374,7 @@ static void test_midi_pitch_shift_handles_upper_limit_psg_envelope(
     const u8 envelope[] = { EEF_LOOP_START, 0x00, 0x10, EEF_END };
     const u8* envelopes[] = { envelope };
 
-    expect_function_call(__wrap_scheduler_addFrameHandler);
+    expect_any(__wrap_scheduler_addFrameHandler, onFrame);
     midi_psg_init(envelopes);
 
     expect_psg_tone(expectedPsgChan, expectedInitialTone);
@@ -394,7 +394,7 @@ static void test_midi_pitch_shift_handles_lower_limit_psg_envelope(
     const u8 envelope[] = { EEF_LOOP_START, 0x00, 0x80, EEF_END };
     const u8* envelopes[] = { envelope };
 
-    expect_function_call(__wrap_scheduler_addFrameHandler);
+    expect_any(__wrap_scheduler_addFrameHandler, onFrame);
     midi_psg_init(envelopes);
 
     expect_psg_tone(expectedPsgChan, expectedInitialTone);

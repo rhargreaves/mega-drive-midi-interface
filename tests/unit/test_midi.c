@@ -62,7 +62,7 @@ static const u8* TEST_ENVELOPES[MIDI_PROGRAMS] = { ENVELOPE_0, ENVELOPE_1,
 
 int test_midi_setup(UNUSED void** state)
 {
-    expect_function_call(__wrap_scheduler_addFrameHandler);
+    expect_any(__wrap_scheduler_addFrameHandler, onFrame);
 
     P_BANK_0[30] = &P_BANK_0_INST_30_CASTANETS;
     expect_any(__wrap_synth_init, defaultPreset);
@@ -156,7 +156,7 @@ void test_midi_hides_fm_parameter_ui(UNUSED void** state)
 void test_midi_reset_reinitialises_module(UNUSED void** state)
 {
     expect_any(__wrap_synth_init, defaultPreset);
-    expect_function_call(__wrap_scheduler_addFrameHandler);
+    expect_any(__wrap_scheduler_addFrameHandler, onFrame);
 
     __real_midi_reset();
 }
