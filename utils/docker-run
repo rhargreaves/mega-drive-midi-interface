@@ -18,6 +18,7 @@ docker run \
     -e ENABLE_SANITISE_CHECKS \
     --rm \
     -v $(pwd)/out:/app/out \
+    -v $(pwd)/tests/bin:/app/tests/bin \
     -i \
     $TTY_PARAM \
     $IMAGE_NAME \
