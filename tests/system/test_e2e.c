@@ -9,11 +9,13 @@
 #include "midi_receiver.h"
 #include "presets.h"
 #include "wraps.h"
+#include "scheduler.h"
 #include <cmocka.h>
 
 static int test_e2e_setup(void** state)
 {
     wraps_disable_checks();
+    scheduler_init();
     comm_reset_counts();
     comm_init();
     midi_init(M_BANK_0, P_BANK_0, ENVELOPES);

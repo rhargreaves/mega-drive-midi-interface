@@ -4,6 +4,7 @@
 #include "midi.h"
 #include "psg.h"
 #include "region.h"
+#include "scheduler.h"
 #include <memory.h>
 #include <psg.h>
 #include <stdbool.h>
@@ -70,6 +71,8 @@ static u16 effectiveTone(MidiPsgChannel* psgChan);
 
 void midi_psg_init(const u8** defaultEnvelopes)
 {
+    scheduler_addFrameHandler(midi_psg_tick);
+
     userDefinedEnvelopePtr = NULL;
     envelopes = defaultEnvelopes;
     for (u8 chan = 0; chan < MAX_PSG_CHANS; chan++) {
