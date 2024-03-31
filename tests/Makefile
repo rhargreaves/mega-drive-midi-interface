@@ -193,7 +193,7 @@ SYSTEM_TEST_OBJ=$(patsubst %.c,obj/%.o,$(SYSTEM_TEST_SRC))
 BIN_DIR=bin
 OBJ_DIR=obj
 
-CMOCKA_TAR=cmocka-1.1.2.tar.xz
+CMOCKA_TAR=cmocka-1.1.7.tar.xz
 CMOCKA_DIR=cmocka
 
 UNIT_TESTS_TARGET=$(BIN_DIR)/unit_tests
