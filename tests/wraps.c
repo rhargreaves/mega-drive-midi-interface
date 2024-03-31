@@ -649,7 +649,6 @@ void wraps_region_setIsPal(bool isPal)
 
 void __wrap_comm_megawifi_midiEmitCallback(u8 midiByte)
 {
-    print_message("MIDI Emit: %02X\n", midiByte);
     check_expected(midiByte);
 }
 
