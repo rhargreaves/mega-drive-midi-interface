@@ -267,6 +267,10 @@ int main(void)
         scheduler_test(
             test_scheduler_multiple_registered_frame_handlers_called_on_vsync),
         scheduler_test(test_scheduler_multiple_registered_tick_handlers_called),
+        scheduler_test(
+            test_scheduler_errors_if_too_many_frame_handlers_are_registered),
+        scheduler_test(
+            test_scheduler_errors_if_too_many_tick_handlers_are_registered),
 
         applemidi_test(
             test_applemidi_parses_rtpmidi_packet_with_single_midi_event),

@@ -5,6 +5,7 @@
 #include "midi_receiver.h"
 #include "comm_megawifi.h"
 #include "comm_demo.h"
+#include <sys.h>
 #include <stdint.h>
 #include <types.h>
 
@@ -72,10 +73,18 @@ void scheduler_run(void)
 
 void scheduler_addTickHandler(HandlerFunc* onTick)
 {
+    if (tickHandlersLength == MAX_TICK_HANDLERS) {
+        SYS_die("Too many tick handlers registered.");
+        return;
+    }
     tickHandlers[tickHandlersLength++] = onTick;
 }
 
 void scheduler_addFrameHandler(HandlerFunc* onFrame)
 {
+    if (frameHandlersLength == MAX_FRAME_HANDLERS) {
+        SYS_die("Too many frame handlers registered.");
+        return;
+    }
     frameHandlers[frameHandlersLength++] = onFrame;
 }

@@ -98,3 +98,25 @@ static void test_scheduler_multiple_registered_tick_handlers_called(
     expect_function_call(dummy_tick_handler_2);
     __real_scheduler_tick();
 }
+
+static void test_scheduler_errors_if_too_many_frame_handlers_are_registered(
+    UNUSED void** state)
+{
+    for (u16 i = 0; i < 6; i++) {
+        __real_scheduler_addFrameHandler(*dummy_frame_handler);
+    }
+
+    expect_any(__wrap_SYS_die, err);
+    __real_scheduler_addFrameHandler(*dummy_frame_handler);
+}
+
+static void test_scheduler_errors_if_too_many_tick_handlers_are_registered(
+    UNUSED void** state)
+{
+    for (u16 i = 0; i < 3; i++) {
+        __real_scheduler_addTickHandler(*dummy_tick_handler);
+    }
+
+    expect_any(__wrap_SYS_die, err);
+    __real_scheduler_addTickHandler(*dummy_tick_handler);
+}

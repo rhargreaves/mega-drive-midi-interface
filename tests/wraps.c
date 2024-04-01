@@ -668,7 +668,7 @@ mw_err __wrap_mediator_send_packet(u8 ch, char* data, u16 len)
 
 void __wrap_SYS_die(char* err)
 {
-    print_error("%s", err);
+    check_expected(err);
 }
 
 int __wrap_mw_init(char* cmd_buf, uint16_t buf_len)
