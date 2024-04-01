@@ -9,7 +9,5 @@ static void test_vstring_handles_variable_argument_list_correctly(
 
     v_sprintf(buffer, "%d %d", 1, 2);
 
-    print_message("%s", buffer);
-
     assert_memory_equal(buffer, "1 2", 4);
 }

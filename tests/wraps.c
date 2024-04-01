@@ -623,7 +623,6 @@ void __wrap_log_warn(const char* fmt, ...)
     if (!loggingChecks) {
         return;
     }
-    print_message("log_warn: %s", fmt);
     check_expected(fmt);
 }
 

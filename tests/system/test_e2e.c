@@ -115,39 +115,35 @@ test_psg_not_audible_if_midi_channel_volume_set_and_there_is_no_note_on_event(
 
 static void test_general_midi_reset_sysex_stops_all_notes(void** state)
 {
-    print_message("Playing note\n");
     const u8 noteOnStatus = 0x90;
     const u8 noteOnKey = 48;
     const u8 noteOnVelocity = 127;
 
+    // FM note
     stub_usb_receive_byte(noteOnStatus);
     stub_usb_receive_byte(noteOnKey);
     stub_usb_receive_byte(noteOnVelocity);
-
     expect_ym2612_write_channel(0, 0xA4, 0x1A);
     expect_ym2612_write_channel(0, 0xA0, 0x84);
     expect_ym2612_write_reg(0, 0x28, 0xF0);
-
     midi_receiver_read();
 
+    // PSG note
     stub_usb_receive_byte(noteOnStatus + MIN_PSG_CHAN);
     stub_usb_receive_byte(noteOnKey);
     stub_usb_receive_byte(noteOnVelocity);
-
     expect_value(__wrap_PSG_setTone, channel, 0);
     expect_any(__wrap_PSG_setTone, value);
     expect_value(__wrap_PSG_setEnvelope, channel, 0);
     expect_value(__wrap_PSG_setEnvelope, value, 0);
-
     midi_receiver_read();
 
-    print_message("Sending reset\n");
+    // Send General MIDI reset
     const u8 sysExGeneralMidiResetSequence[]
         = { 0xF0, 0x7E, 0x7F, 0x09, 0x01, 0xF7 };
     for (u16 i = 0; i < sizeof(sysExGeneralMidiResetSequence); i++) {
         stub_usb_receive_byte(sysExGeneralMidiResetSequence[i]);
     }
-
     expect_ym2612_write_reg(0, 0x28, 0x00);
     expect_ym2612_write_reg(0, 0x28, 0x01);
     expect_ym2612_write_reg(0, 0x28, 0x02);

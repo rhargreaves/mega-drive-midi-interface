@@ -298,7 +298,6 @@ static void test_applemidi_ignores_middle_sysex_segments(UNUSED void** state)
 
     for (u8 i = 0; i < 2; i++) {
         const u8 ending = endings[i];
-        print_message("Testing segment %d\n", i);
 
         char rtp_packet[] = { /* V P X CC M PT */ 0x80, 0x61,
             /* sequence number */ 0xe0, 0x19, /* timestamp */ 0x03, 0x31, 0xdd,

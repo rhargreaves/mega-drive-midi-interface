@@ -21,7 +21,6 @@ static void test_log_info_writes_to_log_buffer(UNUSED void** state)
     Log* log = __real_log_dequeue();
 
     assert_int_not_equal(log->msgLen, 0);
-    print_message("%s", &log->msg[0]);
     assert_string_equal("Test Message 1", log->msg);
 }
 
@@ -59,7 +58,6 @@ static void test_log_stores_multiple_logs_and_overwrites_older(
     }
 
     for (u8 i = 7; i <= 15; i++) {
-        print_message("Dequeuing log %d\n", i);
         Log* log = __real_log_dequeue();
 
         char expectedMsg[20];

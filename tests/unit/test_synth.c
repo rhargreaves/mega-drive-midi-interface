@@ -456,7 +456,6 @@ test_synth_applies_volume_modifier_to_output_operators_algorithms_0_to_3(
 
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         for (u8 algorithm = 0; algorithm < 4; algorithm++) {
-            print_message("Chan %d Algorithm %d\n", chan, algorithm);
             expect_ym2612_write_channel(chan, algorithmReg, algorithm);
             __real_synth_algorithm(chan, algorithm);
 
@@ -482,7 +481,6 @@ static void test_synth_applies_volume_modifier_to_output_operators_algorithm_4(
     const u8 algorithm = 4;
 
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
-        print_message("Chan %d Algorithm %d\n", chan, algorithm);
         expect_ym2612_write_channel(chan, algorithmReg, algorithm);
         __real_synth_algorithm(chan, algorithm);
 
@@ -504,7 +502,6 @@ test_synth_applies_volume_modifier_to_output_operators_algorithms_5_and_6(
 
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         for (u8 algorithm = 5; algorithm < 7; algorithm++) {
-            print_message("Chan %d Algorithm %d\n", chan, algorithm);
             expect_ym2612_write_channel(chan, algorithmReg, algorithm);
             __real_synth_algorithm(chan, algorithm);
 

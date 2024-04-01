@@ -163,8 +163,6 @@ static void test_midi_sets_psg_pitch_bend_down(UNUSED void** state)
 {
     for (int chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN; chan++) {
         u8 expectedPsgChan = chan - MIN_PSG_CHAN;
-        print_message("PSG Chan %d\n", expectedPsgChan);
-
         expect_psg_tone(expectedPsgChan, TONE_NTSC_C4);
         expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
         __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
@@ -178,8 +176,6 @@ static void test_midi_sets_psg_pitch_bend_up(UNUSED void** state)
 {
     for (int chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN; chan++) {
         u8 expectedPsgChan = chan - MIN_PSG_CHAN;
-        print_message("PSG Chan %d\n", expectedPsgChan);
-
         expect_psg_tone(expectedPsgChan, TONE_NTSC_C4);
         expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
         __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
@@ -193,8 +189,6 @@ static void test_midi_psg_pitch_bend_persists_after_tick(UNUSED void** state)
 {
     for (int chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN; chan++) {
         u8 expectedPsgChan = chan - MIN_PSG_CHAN;
-        print_message("PSG Chan %d\n", expectedPsgChan);
-
         expect_psg_tone(expectedPsgChan, TONE_NTSC_C4);
         expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
         __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
@@ -212,9 +206,6 @@ static void test_midi_plays_psg_envelope(UNUSED void** state)
     for (int chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN; chan++) {
 
         u8 expectedPsgChan = chan - MIN_PSG_CHAN;
-
-        print_message("PSG Chan %d\n", expectedPsgChan);
-
         __real_midi_program(chan, 1);
 
         expect_psg_tone(expectedPsgChan, TONE_NTSC_C4);
@@ -347,8 +338,6 @@ static void test_midi_shifts_semitone_in_psg_envelope(UNUSED void** state)
         const u8 envelope[] = { EEF_LOOP_START, 0x00, envelopeStep, EEF_END };
         const u8* envelopes[] = { envelope };
 
-        print_message("Shift: %d %d\n", i, envelopeStep);
-
         expect_any(__wrap_scheduler_addFrameHandler, onFrame);
         midi_psg_init(envelopes);
 
@@ -422,7 +411,6 @@ static void test_midi_loads_psg_envelope(UNUSED void** state)
 static void test_midi_psg_sets_busy_indicators(UNUSED void** state)
 {
     for (u8 chan = 0; chan < MAX_PSG_CHANS; chan++) {
-        print_message("Chan %d\n", chan);
         expect_psg_tone(chan, TONE_NTSC_C4);
         expect_psg_attenuation(chan, PSG_ATTENUATION_LOUDEST);
         __real_midi_note_on(

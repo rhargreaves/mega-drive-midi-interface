@@ -3,11 +3,9 @@
 static void test_midi_triggers_synth_note_on(UNUSED void** state)
 {
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
-        print_message("Chan %d\n", chan);
         expect_synth_pitch(chan, 4, SYNTH_NTSC_C);
         expect_synth_volume_any();
         expect_value(__wrap_synth_noteOn, channel, chan);
-
         __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
     }
 }
@@ -18,7 +16,6 @@ static void test_midi_triggers_synth_note_on_with_velocity(UNUSED void** state)
         expect_synth_pitch(chan, 4, SYNTH_NTSC_C);
         expect_synth_volume(chan, 63);
         expect_value(__wrap_synth_noteOn, channel, chan);
-
         __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME / 2);
     }
 }
@@ -88,16 +85,12 @@ static void test_midi_does_not_trigger_synth_note_on_out_of_bound_values(
 static void test_midi_triggers_synth_note_off(UNUSED void** state)
 {
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
-        print_message("Chan %d Note On\n", chan);
         expect_synth_pitch(chan, 4, SYNTH_NTSC_C);
         expect_synth_volume_any();
         expect_value(__wrap_synth_noteOn, channel, chan);
-
         __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
-        print_message("Chan %d Note Off\n", chan);
         expect_value(__wrap_synth_noteOff, channel, chan);
-
         __real_midi_note_off(chan, MIDI_PITCH_C4);
     }
 }
@@ -106,16 +99,12 @@ static void test_midi_triggers_synth_note_off_when_note_on_has_zero_velocity(
     UNUSED void** state)
 {
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
-        print_message("Chan %d Note On\n", chan);
         expect_synth_pitch(chan, 4, SYNTH_NTSC_C);
         expect_synth_volume_any();
         expect_value(__wrap_synth_noteOn, channel, chan);
-
         __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
-        print_message("Chan %d Note Off\n", chan);
         expect_value(__wrap_synth_noteOff, channel, chan);
-
         __real_midi_note_on(chan, MIDI_PITCH_C4, 0);
     }
 }
