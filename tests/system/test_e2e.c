@@ -45,7 +45,7 @@ static void test_polyphonic_midi_sent_to_separate_ym2612_channels(void** state)
 {
     const u8 noteOnStatus = 0x90;
     const u8 ccStatus = 0xB0;
-    const u8 ccPolyphonic = 80;
+    const u8 ccPolyphonic = 84;
     const u8 ccPolyphonicOnValue = 0x7F;
     const u8 noteOnKey1 = 48;
     const u8 noteOnKey2 = 49;
@@ -197,7 +197,7 @@ static void test_set_device_for_midi_channel_1_to_psg()
 {
     const u8 noteOnStatus = 0x90;
     const u8 ccStatus = 0xB0;
-    const u8 ccPolyphonic = 80;
+    const u8 ccPolyphonic = 84;
     const u8 ccPolyphonicOnValue = 0x7F;
     const u8 ccDeviceSelect = 86;
     const u8 ccDevicePsgValue = 64;
