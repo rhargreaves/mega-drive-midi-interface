@@ -5,6 +5,7 @@
 #include "memory.h"
 #include "midi_fm.h"
 #include "midi_psg.h"
+#include "midi_fm_sm.h"
 #include "midi_sender.h"
 #include "synth.h"
 #include "ui_fm.h"
@@ -43,6 +44,10 @@ static const VTable FM_VTable = { midi_fm_note_on, midi_fm_note_off,
     midi_fm_channel_volume, midi_fm_pitch_bend, midi_fm_program,
     midi_fm_all_notes_off, midi_fm_pan };
 
+static const VTable SpecialMode_VTable = { midi_fm_sm_note_on, midi_fm_sm_note_off,
+    midi_fm_sm_channel_volume, midi_fm_sm_pitch_bend, midi_fm_sm_program,
+    midi_fm_sm_all_notes_off, midi_fm_sm_pan };
+
 static MappingMode mappingModePref;
 static MidiChannel midiChannels[MIDI_CHANNELS];
 static bool dynamicMode;
@@ -74,9 +79,18 @@ static void initMidiChannel(u8 midiChan)
 static void initDeviceChannel(u8 devChan)
 {
     DeviceChannel* chan = &deviceChannels[devChan];
-    bool isFm = devChan < DEV_CHAN_MIN_PSG;
-    chan->number = isFm ? devChan : devChan - DEV_CHAN_MIN_PSG;
-    chan->ops = isFm ? &FM_VTable : &PSG_VTable;
+
+    if(devChan <= DEV_CHAN_MAX_FM) {
+        chan->number = devChan;
+        chan->ops = &FM_VTable;
+    } else if(devChan <= DEV_CHAN_MAX_PSG) {
+        chan->number = devChan - DEV_CHAN_MIN_PSG;
+        chan->ops = &PSG_VTable;
+    } else {
+        chan->number = devChan - DEV_CHAN_MIN_SPECIAL_MODE;
+        chan->ops = &SpecialMode_VTable;
+    }
+
     chan->noteOn = false;
     chan->midiChannel = devChan;
     chan->pitch = 0;

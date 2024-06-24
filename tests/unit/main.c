@@ -146,6 +146,7 @@ int main(void)
         midi_test(test_midi_switching_program_retains_pan_setting),
         midi_test(test_midi_enables_fm_special_mode),
         midi_test(test_midi_disables_fm_special_mode),
+        midi_test(test_midi_sets_pitch_of_special_mode_ch3_operator),
 
         midi_test(test_midi_sets_genmdm_stereo_mode),
         midi_test(test_midi_sysex_enables_dynamic_channel_mode),

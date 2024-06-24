@@ -20,7 +20,8 @@ int main(void)
         e2e_test(test_set_device_for_midi_channel_1_to_psg),
         e2e_test(test_pong_received_after_ping_sent),
         e2e_test(test_loads_psg_envelope),
-        e2e_test(test_enables_ch3_special_mode)
+        e2e_test(test_enables_ch3_special_mode),
+        e2e_test(test_sets_separate_ch3_operator_frequencies)
         // clang-format on
     };
 

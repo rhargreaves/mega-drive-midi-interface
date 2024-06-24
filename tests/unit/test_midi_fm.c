@@ -530,3 +530,15 @@ static void test_midi_disables_fm_special_mode(UNUSED void** state)
 
     __real_midi_cc(0, expectedController, expectedValue);
 }
+
+static void test_midi_sets_pitch_of_special_mode_ch3_operator(
+    UNUSED void** state)
+{
+    int chan = 10;
+
+    expect_value(__wrap_synth_specialModePitch, op, 0);
+    expect_value(__wrap_synth_specialModePitch, octave, 4);
+    expect_value(__wrap_synth_specialModePitch, freqNumber, SYNTH_NTSC_C);
+
+    __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
+}

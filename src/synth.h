@@ -85,3 +85,4 @@ const FmChannel* synth_channelParameters(u8 channel);
 const Global* synth_globalParameters();
 void synth_setParameterUpdateCallback(ParameterUpdatedCallback* cb);
 void synth_setCh3SpecialMode(bool enable);
+void synth_specialModePitch(u8 op, u8 octave, u16 freqNumber);

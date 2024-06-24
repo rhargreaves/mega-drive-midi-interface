@@ -290,3 +290,32 @@ static void test_enables_ch3_special_mode(void** state)
 
     midi_receiver_read();
 }
+
+static void test_sets_separate_ch3_operator_frequencies(void** state)
+{
+    const u8 status = 0xB0;
+    const u8 specialModeCC = 80;
+    const u8 specialModeEnable = 64;
+
+    stub_usb_receive_byte(status);
+    stub_usb_receive_byte(specialModeCC);
+    stub_usb_receive_byte(specialModeEnable);
+
+    expect_ym2612_write_reg(0, 0x27, 0x40);
+
+    midi_receiver_read();
+
+    const u8 op2MidiChannel = 10;
+    const u8 noteOnStatus = 0x90 + op2MidiChannel;
+    const u8 noteOnKey = 60;
+    const u8 noteOnVelocity = 127;
+
+    stub_usb_receive_byte(noteOnStatus);
+    stub_usb_receive_byte(noteOnKey);
+    stub_usb_receive_byte(noteOnVelocity);
+
+    expect_ym2612_write_channel(0, 0xAC, 0x22);
+    expect_ym2612_write_channel(0, 0xA8, 0x84);
+
+    midi_receiver_read();
+}

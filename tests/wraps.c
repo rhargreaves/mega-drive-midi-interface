@@ -215,6 +215,13 @@ void __wrap_synth_setCh3SpecialMode(bool enable)
     check_expected(enable);
 }
 
+void __wrap_synth_specialModePitch(u8 op, u8 octave, u16 freqNumber)
+{
+    check_expected(op);
+    check_expected(octave);
+    check_expected(freqNumber);
+}
+
 void __wrap_comm_write(u8 data)
 {
     check_expected(data);

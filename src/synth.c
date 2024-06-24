@@ -424,3 +424,9 @@ void synth_setCh3SpecialMode(bool enable)
     global.ch3SpecialMode = enable;
     writeSpecialModeReg();
 }
+
+void synth_specialModePitch(u8 op, u8 octave, u16 freqNumber)
+{
+    YM2612_writeReg(0, 0xAC, (freqNumber >> 8) | (octave << 3));
+    YM2612_writeReg(0, 0xA8, freqNumber);
+}
