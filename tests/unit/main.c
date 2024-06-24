@@ -202,6 +202,7 @@ int main(void)
         synth_test(test_synth_calls_callback_when_lfo_enable_changes),
         synth_test(test_synth_enables_ch3_special_mode),
         synth_test(test_synth_disables_ch3_special_mode),
+        synth_test(test_synth_sets_ch3_special_mode_operator_pitches),
 
         comm_test(test_comm_reads_from_serial_when_ready),
         comm_test(test_comm_reads_when_ready),

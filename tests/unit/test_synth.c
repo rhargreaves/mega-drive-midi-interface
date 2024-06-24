@@ -36,6 +36,7 @@ extern void __real_synth_volume(u8 channel, u8 volume);
 extern const FmChannel* __real_synth_channelParameters(u8 channel);
 extern const Global* __real_synth_globalParameters();
 extern void __real_synth_setCh3SpecialMode(bool enable);
+extern void __real_synth_specialModePitch(u8 op, u8 octave, u16 freqNumber);
 
 static bool updated = false;
 static u8 lastChan = -1;
@@ -590,4 +591,13 @@ static void test_synth_disables_ch3_special_mode(UNUSED void** state)
 {
     expect_ym2612_write_reg(0, 0x27, 0);
     __real_synth_setCh3SpecialMode(false);
+}
+
+static void test_synth_sets_ch3_special_mode_operator_pitches(
+    UNUSED void** state)
+{
+    expect_ym2612_write_reg(0, 0xAC, 0x22);
+    expect_ym2612_write_reg(0, 0xA8, 0x84);
+
+    __real_synth_specialModePitch(0, 4, SYNTH_NTSC_C);
 }
