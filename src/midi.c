@@ -822,7 +822,7 @@ void midi_cc(u8 chan, u8 controller, u8 value)
     case CC_ALL_SOUND_OFF:
         allNotesOff(chan);
         break;
-    case CC_POLYPHONIC_MODE:
+    case CC_GENMDM_POLYPHONIC_MODE:
         setPolyphonicMode(RANGE(value, 2) != 0);
         break;
     case CC_GENMDM_CH3_SPECIAL_MODE:
