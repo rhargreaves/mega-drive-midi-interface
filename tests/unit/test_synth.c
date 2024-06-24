@@ -596,8 +596,13 @@ static void test_synth_disables_ch3_special_mode(UNUSED void** state)
 static void test_synth_sets_ch3_special_mode_operator_pitches(
     UNUSED void** state)
 {
-    expect_ym2612_write_reg(0, 0xAC, 0x22);
-    expect_ym2612_write_reg(0, 0xA8, 0x84);
+    u8 upperRegs[] = { 0xAD, 0xAE, 0xAC };
+    u8 lowerRegs[] = { 0xA9, 0xAA, 0xA8 };
 
-    __real_synth_specialModePitch(0, 4, SYNTH_NTSC_C);
+    for (u8 op = 0; op < 3; op++) {
+        expect_ym2612_write_reg(0, upperRegs[op], 0x22);
+        expect_ym2612_write_reg(0, lowerRegs[op], 0x84);
+
+        __real_synth_specialModePitch(op, 4, SYNTH_NTSC_C);
+    }
 }

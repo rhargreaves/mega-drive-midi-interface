@@ -20,7 +20,7 @@ static u16 freqNumber(u8 pitch)
 
 void midi_fm_sm_note_on(u8 chan, u8 pitch, u8 velocity)
 {
-    synth_specialModePitch(0, octave(pitch), freqNumber(pitch));
+    synth_specialModePitch(chan, octave(pitch), freqNumber(pitch));
 }
 
 void midi_fm_sm_pitch_bend(u8 chan, u16 bend)

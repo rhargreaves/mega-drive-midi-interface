@@ -305,17 +305,24 @@ static void test_sets_separate_ch3_operator_frequencies(void** state)
 
     midi_receiver_read();
 
-    const u8 op2MidiChannel = 10;
-    const u8 noteOnStatus = 0x90 + op2MidiChannel;
-    const u8 noteOnKey = 60;
-    const u8 noteOnVelocity = 127;
+    for (u8 op = 0; op < 3; op++) {
+        u8 opMidiChannel = 10 + op;
+        const u8 noteOnStatus = 0x90 + opMidiChannel;
+        const u8 noteOnKey = 60;
+        const u8 noteOnVelocity = 127;
 
-    stub_usb_receive_byte(noteOnStatus);
-    stub_usb_receive_byte(noteOnKey);
-    stub_usb_receive_byte(noteOnVelocity);
+        stub_usb_receive_byte(noteOnStatus);
+        stub_usb_receive_byte(noteOnKey);
+        stub_usb_receive_byte(noteOnVelocity);
 
-    expect_ym2612_write_channel(0, 0xAC, 0x22);
-    expect_ym2612_write_channel(0, 0xA8, 0x84);
+        u8 upperRegs[] = { 0xAD, 0xAE, 0xAC };
+        u8 lowerRegs[] = { 0xA9, 0xAA, 0xA8 };
 
-    midi_receiver_read();
+        print_message("op = %d, reg = %x\n", op, upperRegs[op]);
+
+        expect_ym2612_write_reg(0, upperRegs[op], 0x22);
+        expect_ym2612_write_reg(0, lowerRegs[op], 0x84);
+
+        midi_receiver_read();
+    }
 }
