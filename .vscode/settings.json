@@ -27,6 +27,8 @@
         "array": "c",
         "utility": "c",
         "everdrive_led.h": "c",
-        "comm.h": "c"
+        "comm.h": "c",
+        "synth.h": "c",
+        "scheduler.h": "c"
     }
 }

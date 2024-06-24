@@ -262,7 +262,7 @@ $(SYSTEM_TESTS_SANITISE_TARGET): $(SRC_OBJ) $(SYSTEM_TEST_OBJ) $(COMMON_TEST_OBJ
 
 $(CMOCKA_DIR):
 	mkdir -p $@
-	tar -xf $(CMOCKA_TAR) -C $@ --strip-components 1
+	tar -xf $(CMOCKA_TAR) -C $@ --strip-components 1 --no-same-owner
 	mkdir -p $@/build
 	@(cd $@/build && cmake ../ && make -s)
 

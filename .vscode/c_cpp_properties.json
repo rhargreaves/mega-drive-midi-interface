@@ -5,23 +5,17 @@
             "includePath": [
                 "${workspaceFolder}/src",
                 "${workspaceFolder}/res",
-                "${workspaceFolder}/../SGDK/inc",
-                "${workspaceFolder}/../SGDK/inc/ext",
-                "${workspaceFolder}/../SGDK/inc/ext/mw",
-                "${workspaceFolder}/../SGDK/res",
                 "${workspaceFolder}/tests/cmocka/include",
                 "${workspaceFolder}/tests/unit",
                 "${workspaceFolder}/tests/system",
                 "${workspaceFolder}/tests",
-                "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/"
+                "/sgdk/inc/**",
+                "/sgdk/res"
             ],
             "defines": [
                 "DEBUG_EVENTS",
                 "DEBUG_TICKS",
                 "MODULE_MEGAWIFI=1"
-            ],
-            "macFrameworkPath": [
-                "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"
             ],
             "cStandard": "c11",
             "cppStandard": "c++17",
