@@ -825,6 +825,9 @@ void midi_cc(u8 chan, u8 controller, u8 value)
     case CC_POLYPHONIC_MODE:
         setPolyphonicMode(RANGE(value, 2) != 0);
         break;
+    case CC_GENMDM_CH3_SPECIAL_MODE:
+        synth_setCh3SpecialMode(RANGE(value, 2) != 0);
+        break;
     case CC_RESET_ALL_CONTROLLERS:
         resetAllControllers(chan);
         break;

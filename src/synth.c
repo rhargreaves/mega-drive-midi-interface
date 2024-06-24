@@ -1,11 +1,11 @@
 #include "synth.h"
 #include "bits.h"
 #include <memory.h>
-#include <stdbool.h>
 #include <z80_ctrl.h>
 #include <ym2612.h>
 
-static Global global = { .lfoEnable = 1, .lfoFrequency = 0 };
+static Global global
+    = { .lfoEnable = 1, .lfoFrequency = 0, .ch3SpecialMode = false };
 static FmChannel fmChannels[MAX_FM_CHANS];
 static u8 noteOn;
 static u8 volumes[MAX_FM_CHANS];
@@ -329,14 +329,14 @@ static void updateStereoAmsFms(u8 channel)
 static void updateOperatorMultipleAndDetune(u8 channel, u8 operator)
 {
     Operator* op = getOperator(channel, operator);
-    writeOperatorReg(channel, operator, 0x30, op->multiple +(op->detune << 4));
+    writeOperatorReg(channel, operator, 0x30, op->multiple + (op->detune << 4));
 }
 
 static void updateOperatorRateScalingAndAttackRate(u8 channel, u8 operator)
 {
     Operator* op = getOperator(channel, operator);
     writeOperatorReg(
-        channel, operator, 0x50, op->attackRate +(op->rateScaling << 6));
+        channel, operator, 0x50, op->attackRate + (op->rateScaling << 6));
 }
 
 static void updateOperatorAmplitudeModulationAndFirstDecayRate(
@@ -344,7 +344,7 @@ static void updateOperatorAmplitudeModulationAndFirstDecayRate(
 {
     Operator* op = getOperator(channel, operator);
     writeOperatorReg(channel, operator, 0x60,
-        op->firstDecayRate +(op->amplitudeModulation << 7));
+        op->firstDecayRate + (op->amplitudeModulation << 7));
 }
 
 static void updateOperatorSecondaryDecayRate(u8 channel, u8 operator)
@@ -358,7 +358,7 @@ static void updateOperatorReleaseRateAndSecondaryAmplitude(
 {
     Operator* op = getOperator(channel, operator);
     writeOperatorReg(channel, operator, 0x80,
-        op->releaseRate +(op->secondaryAmplitude << 4));
+        op->releaseRate + (op->secondaryAmplitude << 4));
 }
 
 static void updateOperatorSsgEg(u8 channel, u8 operator)
@@ -412,4 +412,11 @@ const Global* synth_globalParameters()
 void synth_setParameterUpdateCallback(ParameterUpdatedCallback* cb)
 {
     parameterUpdatedCallback = cb;
+}
+
+void synth_setCh3SpecialMode(bool enable)
+{
+    global.ch3SpecialMode = enable;
+
+    YM2612_writeReg(0, 0x27, (1 << 6));
 }

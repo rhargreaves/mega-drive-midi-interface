@@ -210,6 +210,11 @@ const Global* __wrap_synth_globalParameters()
     return NULL;
 }
 
+void __wrap_synth_setCh3SpecialMode(bool enable)
+{
+    check_expected(enable);
+}
+
 void __wrap_comm_write(u8 data)
 {
     check_expected(data);

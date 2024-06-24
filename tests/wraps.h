@@ -61,6 +61,8 @@ void __wrap_synth_preset(u8 channel, const FmChannel* preset);
 void __wrap_synth_volume(u8 channel, u8 volume);
 const FmChannel* __wrap_synth_channelParameters(u8 channel);
 const Global* __wrap_synth_globalParameters();
+void __wrap_synth_setCh3SpecialMode(bool enable);
+
 bool __wrap_comm_read_ready(void);
 u8 __wrap_comm_read(void);
 void __wrap_comm_write(u8 data);

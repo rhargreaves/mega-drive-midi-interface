@@ -144,6 +144,8 @@ int main(void)
         midi_test(
             test_midi_fm_note_on_percussion_channel_sets_percussion_preset),
         midi_test(test_midi_switching_program_retains_pan_setting),
+        midi_test(test_midi_sets_fm_special_mode),
+
         midi_test(test_midi_sets_genmdm_stereo_mode),
         midi_test(test_midi_sysex_enables_dynamic_channel_mode),
         midi_test(test_midi_sysex_sets_mapping_mode_to_auto),
@@ -196,6 +198,7 @@ int main(void)
         synth_test(test_synth_calls_callback_when_parameter_changes),
         synth_test(test_synth_calls_callback_when_lfo_freq_changes),
         synth_test(test_synth_calls_callback_when_lfo_enable_changes),
+        synth_test(test_synth_enables_ch3_special_mode),
 
         comm_test(test_comm_reads_from_serial_when_ready),
         comm_test(test_comm_reads_when_ready),

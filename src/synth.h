@@ -1,6 +1,7 @@
 #pragma once
 #include <stdint.h>
 #include <types.h>
+#include <stdbool.h>
 
 #define MAX_FM_OPERATORS 4
 #define MAX_FM_CHANS 6
@@ -44,6 +45,7 @@ typedef struct Global Global;
 struct Global {
     u8 lfoEnable;
     u8 lfoFrequency;
+    bool ch3SpecialMode;
 };
 
 typedef enum ParameterUpdated ParameterUpdated;
@@ -82,3 +84,4 @@ void synth_preset(u8 channel, const FmChannel* preset);
 const FmChannel* synth_channelParameters(u8 channel);
 const Global* synth_globalParameters();
 void synth_setParameterUpdateCallback(ParameterUpdatedCallback* cb);
+void synth_setCh3SpecialMode(bool enable);

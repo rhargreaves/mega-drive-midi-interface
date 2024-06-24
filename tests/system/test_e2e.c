@@ -275,3 +275,18 @@ static void test_loads_psg_envelope()
 
     midi_receiver_read();
 }
+
+static void test_enables_ch3_special_mode(void** state)
+{
+    const u8 status = 0xB0;
+    const u8 specialModeCC = 80;
+    const u8 specialModeEnable = 1;
+
+    stub_usb_receive_byte(status);
+    stub_usb_receive_byte(specialModeCC);
+    stub_usb_receive_byte(specialModeEnable);
+
+    expect_ym2612_write_reg(0, 0x27, 0x40);
+
+    midi_receiver_read();
+}
