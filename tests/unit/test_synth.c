@@ -582,6 +582,12 @@ static void test_synth_calls_callback_when_lfo_enable_changes(
 
 static void test_synth_enables_ch3_special_mode(UNUSED void** state)
 {
-    expect_ym2612_write_reg(0, 0x27, (1 << 6));
+    expect_ym2612_write_reg(0, 0x27, 0x40);
     __real_synth_setCh3SpecialMode(true);
+}
+
+static void test_synth_disables_ch3_special_mode(UNUSED void** state)
+{
+    expect_ym2612_write_reg(0, 0x27, 0);
+    __real_synth_setCh3SpecialMode(false);
 }

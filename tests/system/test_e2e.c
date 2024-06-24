@@ -280,7 +280,7 @@ static void test_enables_ch3_special_mode(void** state)
 {
     const u8 status = 0xB0;
     const u8 specialModeCC = 80;
-    const u8 specialModeEnable = 1;
+    const u8 specialModeEnable = 64;
 
     stub_usb_receive_byte(status);
     stub_usb_receive_byte(specialModeCC);

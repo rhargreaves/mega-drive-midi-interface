@@ -414,9 +414,13 @@ void synth_setParameterUpdateCallback(ParameterUpdatedCallback* cb)
     parameterUpdatedCallback = cb;
 }
 
+void writeSpecialModeReg(void)
+{
+    YM2612_writeReg(0, 0x27, global.ch3SpecialMode << 6);
+}
+
 void synth_setCh3SpecialMode(bool enable)
 {
     global.ch3SpecialMode = enable;
-
-    YM2612_writeReg(0, 0x27, (1 << 6));
+    writeSpecialModeReg();
 }

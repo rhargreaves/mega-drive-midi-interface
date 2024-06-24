@@ -511,12 +511,22 @@ static void test_midi_switching_program_retains_pan_setting(UNUSED void** state)
     __real_midi_program(chan, program);
 }
 
-static void test_midi_sets_fm_special_mode(UNUSED void** state)
+static void test_midi_enables_fm_special_mode(UNUSED void** state)
 {
     u8 expectedController = 80;
     u8 expectedValue = 64;
 
     expect_value(__wrap_synth_setCh3SpecialMode, enable, true);
+
+    __real_midi_cc(0, expectedController, expectedValue);
+}
+
+static void test_midi_disables_fm_special_mode(UNUSED void** state)
+{
+    u8 expectedController = 80;
+    u8 expectedValue = 0;
+
+    expect_value(__wrap_synth_setCh3SpecialMode, enable, false);
 
     __real_midi_cc(0, expectedController, expectedValue);
 }
