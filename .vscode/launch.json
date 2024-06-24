@@ -2,16 +2,62 @@
   "version": "0.2.0",
   "configurations": [
     {
-        "name": "Attach to unit tests",
-        "type": "lldb",
-        "request": "custom",
-        "targetCreateCommands": [
-            "target create ${workspaceFolder}/tests/bin/unit_tests"
-        ],
-        "processCreateCommands": [
-            "gdb-remote 10.211.55.2:2345"
-        ],
-        "sourceMap": { "/app" : "${workspaceFolder}" }
+      "name": "(gdb) Unit Test",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/tests/bin/unit_tests",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${fileDirname}",
+      "environment": [
+        {
+          "name": "LD_LIBRARY_PATH",
+          "value": "/workspaces/mega-drive-midi-interface/tests/cmocka/build/src/"
+        }
+      ],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        },
+        {
+          "description": "Set Disassembly Flavor to Intel",
+          "text": "-gdb-set disassembly-flavor intel",
+          "ignoreFailures": true
+        }
+      ]
+    },
+    {
+      "name": "(gdb) System Test",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/tests/bin/system_tests",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${fileDirname}",
+      "environment": [
+        {
+          "name": "LD_LIBRARY_PATH",
+          "value": "/workspaces/mega-drive-midi-interface/tests/cmocka/build/src/"
+        }
+      ],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        },
+        {
+          "description": "Set Disassembly Flavor to Intel",
+          "text": "-gdb-set disassembly-flavor intel",
+          "ignoreFailures": true
+        }
+      ]
     },
     {
       "type": "gdb",
