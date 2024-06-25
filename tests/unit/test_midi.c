@@ -152,9 +152,24 @@ void test_midi_hides_fm_parameter_ui(UNUSED void** state)
     __real_midi_cc(midiChan, cc, hide);
 }
 
-void test_midi_reset_reinitialises_module(UNUSED void** state)
+void test_midi_resets_fm_values_to_defaults(UNUSED void** state)
 {
+    for (u8 ch = 0; ch < 6; ch++) {
+        expect_value(__wrap_synth_volume, channel, ch);
+        expect_value(__wrap_synth_volume, volume, 60);
+
+        __real_midi_cc(ch, CC_VOLUME, 60);
+
+        DeviceChannel* chans = __real_midi_channel_mappings();
+        assert_int_equal(chans[ch].volume, 60);
+    }
+
     expect_any(__wrap_synth_init, defaultPreset);
+
+    for (u8 ch = 0; ch < 6; ch++) {
+        expect_value(__wrap_synth_volume, channel, ch);
+        expect_value(__wrap_synth_volume, volume, 127);
+    }
 
     __real_midi_reset();
 }
