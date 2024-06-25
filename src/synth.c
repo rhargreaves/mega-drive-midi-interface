@@ -427,16 +427,7 @@ void synth_setSpecialMode(bool enable)
 
 void synth_specialModePitch(u8 op, u8 octave, u16 freqNumber)
 {
-    u8 opOffset = op;
-    if (op == 0) {
-        opOffset = 1;
-    }
-    if (op == 1) {
-        opOffset = 2;
-    }
-    if (op == 2) {
-        opOffset = 0;
-    }
-    YM2612_writeReg(0, 0xAC + opOffset, (freqNumber >> 8) | (octave << 3));
-    YM2612_writeReg(0, 0xA8 + opOffset, freqNumber);
+    u8 offset = (op + 1) % 3;
+    YM2612_writeReg(0, 0xAC + offset, (freqNumber >> 8) | (octave << 3));
+    YM2612_writeReg(0, 0xA8 + offset, freqNumber);
 }

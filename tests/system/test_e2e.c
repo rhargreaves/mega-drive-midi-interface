@@ -315,10 +315,8 @@ static void test_sets_separate_ch3_operator_frequencies(void** state)
         stub_usb_receive_byte(noteOnKey);
         stub_usb_receive_byte(noteOnVelocity);
 
-        u8 upperRegs[] = { 0xAD, 0xAE, 0xAC };
-        u8 lowerRegs[] = { 0xA9, 0xAA, 0xA8 };
-
-        print_message("op = %d, reg = %x\n", op, upperRegs[op]);
+        const u8 upperRegs[] = { 0xAD, 0xAE, 0xAC };
+        const u8 lowerRegs[] = { 0xA9, 0xAA, 0xA8 };
 
         expect_ym2612_write_reg(0, upperRegs[op], 0x22);
         expect_ym2612_write_reg(0, lowerRegs[op], 0x84);
