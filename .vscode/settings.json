@@ -30,6 +30,7 @@
         "comm.h": "c",
         "synth.h": "c",
         "scheduler.h": "c",
-        "midi_psg.h": "c"
+        "midi_psg.h": "c",
+        "stdint.h": "c"
     }
 }
