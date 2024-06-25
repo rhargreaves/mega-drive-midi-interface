@@ -160,6 +160,7 @@ int main(void)
         midi_test(test_midi_shows_fm_parameter_ui),
         midi_test(test_midi_hides_fm_parameter_ui),
         midi_test(test_midi_resets_fm_values_to_defaults),
+        midi_test(test_midi_resets_psg_values_to_defaults),
 
         synth_test(test_synth_init_sets_initial_registers),
         synth_test(test_synth_sets_note_on_fm_reg_chan_0_to_2),

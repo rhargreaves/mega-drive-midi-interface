@@ -172,4 +172,28 @@ void test_midi_resets_fm_values_to_defaults(UNUSED void** state)
     }
 
     __real_midi_reset();
+
+    for (u8 ch = 0; ch < 6; ch++) {
+        DeviceChannel* chans = __real_midi_channel_mappings();
+        assert_int_equal(chans[ch].volume, 127);
+    }
+}
+
+void test_midi_resets_psg_values_to_defaults(UNUSED void** state)
+{
+    for (u8 ch = 6; ch < 10; ch++) {
+        __real_midi_cc(ch, CC_VOLUME, 60);
+
+        DeviceChannel* chans = __real_midi_channel_mappings();
+        assert_int_equal(chans[ch].volume, 60);
+    }
+
+    expect_any(__wrap_synth_init, defaultPreset);
+
+    __real_midi_reset();
+
+    for (u8 ch = 6; ch < 10; ch++) {
+        DeviceChannel* chans = __real_midi_channel_mappings();
+        assert_int_equal(chans[ch].volume, 127);
+    }
 }
