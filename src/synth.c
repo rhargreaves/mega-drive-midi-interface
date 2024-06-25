@@ -23,21 +23,22 @@ static const u8 VOLUME_TO_TOTAL_LEVELS[] = { 127, 122, 117, 113, 108, 104, 100,
     1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 static void updateChannel(u8 chan);
-static void updateGlobalLfo(void);
-static void updateAlgorithmAndFeedback(u8 channel);
-static void updateOperatorMultipleAndDetune(u8 channel, u8 op);
-static void updateOperatorRateScalingAndAttackRate(u8 channel, u8 operator);
-static void updateOperatorAmplitudeModulationAndFirstDecayRate(
+static void writeGlobalLfo(void);
+static void writeAlgorithmAndFeedback(u8 channel);
+static void writeOperatorMultipleAndDetune(u8 channel, u8 op);
+static void writeOperatorRateScalingAndAttackRate(u8 channel, u8 operator);
+static void writeOperatorAmplitudeModulationAndFirstDecayRate(
     u8 channel, u8 operator);
-static void updateOperatorReleaseRateAndSecondaryAmplitude(
+static void writeOperatorReleaseRateAndSecondaryAmplitude(
     u8 channel, u8 operator);
-static void updateOperatorTotalLevel(u8 channel, u8 operator);
-static void updateOperatorSecondaryDecayRate(u8 channel, u8 operator);
-static void updateOperatorSsgEg(u8 channel, u8 operator);
-static void updateStereoAmsFms(u8 channel);
+static void writeOperatorTotalLevel(u8 channel, u8 operator);
+static void writeOperatorSecondaryDecayRate(u8 channel, u8 operator);
+static void writeOperatorSsgEg(u8 channel, u8 operator);
+static void writeStereoAmsFms(u8 channel);
 static void writeChannelReg(u8 channel, u8 baseReg, u8 data);
 static void writeOperatorReg(u8 channel, u8 op, u8 baseReg, u8 data);
-static void updateOctaveAndFrequency(u8 channel);
+static void writeOctaveAndFrequency(u8 channel);
+static void writeSpecialModeReg(void);
 static u8 keyOnOffRegOffset(u8 channel);
 static FmChannel* fmChannel(u8 channel);
 static Operator* getOperator(u8 channel, u8 operator);
@@ -51,28 +52,28 @@ static void otherParameterUpdated(
 void synth_init(const FmChannel* initialPreset)
 {
     Z80_requestBus(TRUE);
-    YM2612_writeReg(0, 0x27, 0); // Ch 3 Normal
+    writeSpecialModeReg();
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         volumes[chan] = MAX_VOLUME;
         synth_noteOff(chan);
         memcpy(&fmChannels[chan], initialPreset, sizeof(FmChannel));
         updateChannel(chan);
     }
-    updateGlobalLfo();
+    writeGlobalLfo();
 }
 
 static void updateChannel(u8 chan)
 {
-    updateAlgorithmAndFeedback(chan);
-    updateStereoAmsFms(chan);
+    writeAlgorithmAndFeedback(chan);
+    writeStereoAmsFms(chan);
     for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
-        updateOperatorMultipleAndDetune(chan, op);
-        updateOperatorRateScalingAndAttackRate(chan, op);
-        updateOperatorAmplitudeModulationAndFirstDecayRate(chan, op);
-        updateOperatorSecondaryDecayRate(chan, op);
-        updateOperatorReleaseRateAndSecondaryAmplitude(chan, op);
-        updateOperatorTotalLevel(chan, op);
-        updateOperatorSsgEg(chan, op);
+        writeOperatorMultipleAndDetune(chan, op);
+        writeOperatorRateScalingAndAttackRate(chan, op);
+        writeOperatorAmplitudeModulationAndFirstDecayRate(chan, op);
+        writeOperatorSecondaryDecayRate(chan, op);
+        writeOperatorReleaseRateAndSecondaryAmplitude(chan, op);
+        writeOperatorTotalLevel(chan, op);
+        writeOperatorSsgEg(chan, op);
     }
 }
 
@@ -93,7 +94,7 @@ void synth_pitch(u8 channel, u8 octave, u16 freqNumber)
     FmChannel* chan = fmChannel(channel);
     chan->octave = octave;
     chan->freqNumber = freqNumber;
-    updateOctaveAndFrequency(channel);
+    writeOctaveAndFrequency(channel);
 }
 
 void synth_volume(u8 channel, u8 volume)
@@ -103,28 +104,28 @@ void synth_volume(u8 channel, u8 volume)
     }
     volumes[channel] = volume;
     for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
-        updateOperatorTotalLevel(channel, op);
+        writeOperatorTotalLevel(channel, op);
     }
 }
 
 void synth_stereo(u8 channel, u8 stereo)
 {
     fmChannel(channel)->stereo = stereo;
-    updateStereoAmsFms(channel);
+    writeStereoAmsFms(channel);
     channelParameterUpdated(channel);
 }
 
 void synth_algorithm(u8 channel, u8 algorithm)
 {
     fmChannel(channel)->algorithm = algorithm;
-    updateAlgorithmAndFeedback(channel);
+    writeAlgorithmAndFeedback(channel);
     channelParameterUpdated(channel);
 }
 
 void synth_feedback(u8 channel, u8 feedback)
 {
     fmChannel(channel)->feedback = feedback;
-    updateAlgorithmAndFeedback(channel);
+    writeAlgorithmAndFeedback(channel);
     channelParameterUpdated(channel);
 }
 
@@ -135,70 +136,70 @@ void synth_operatorTotalLevel(u8 channel, u8 op, u8 totalLevel)
         return;
     }
     oper->totalLevel = totalLevel;
-    updateOperatorTotalLevel(channel, op);
+    writeOperatorTotalLevel(channel, op);
     channelParameterUpdated(channel);
 }
 
 void synth_operatorMultiple(u8 channel, u8 op, u8 multiple)
 {
     getOperator(channel, op)->multiple = multiple;
-    updateOperatorMultipleAndDetune(channel, op);
+    writeOperatorMultipleAndDetune(channel, op);
     channelParameterUpdated(channel);
 }
 
 void synth_operatorDetune(u8 channel, u8 op, u8 detune)
 {
     getOperator(channel, op)->detune = detune;
-    updateOperatorMultipleAndDetune(channel, op);
+    writeOperatorMultipleAndDetune(channel, op);
     channelParameterUpdated(channel);
 }
 
 void synth_operatorRateScaling(u8 channel, u8 op, u8 rateScaling)
 {
     getOperator(channel, op)->rateScaling = rateScaling;
-    updateOperatorRateScalingAndAttackRate(channel, op);
+    writeOperatorRateScalingAndAttackRate(channel, op);
     channelParameterUpdated(channel);
 }
 
 void synth_operatorAttackRate(u8 channel, u8 op, u8 attackRate)
 {
     getOperator(channel, op)->attackRate = attackRate;
-    updateOperatorRateScalingAndAttackRate(channel, op);
+    writeOperatorRateScalingAndAttackRate(channel, op);
     channelParameterUpdated(channel);
 }
 
 void synth_operatorSecondDecayRate(u8 channel, u8 op, u8 secondDecayRate)
 {
     getOperator(channel, op)->secondaryDecayRate = secondDecayRate;
-    updateOperatorSecondaryDecayRate(channel, op);
+    writeOperatorSecondaryDecayRate(channel, op);
     channelParameterUpdated(channel);
 }
 
 void synth_operatorReleaseRate(u8 channel, u8 op, u8 releaseRate)
 {
     getOperator(channel, op)->releaseRate = releaseRate;
-    updateOperatorReleaseRateAndSecondaryAmplitude(channel, op);
+    writeOperatorReleaseRateAndSecondaryAmplitude(channel, op);
     channelParameterUpdated(channel);
 }
 
 void synth_operatorSsgEg(u8 channel, u8 op, u8 ssgEg)
 {
     getOperator(channel, op)->ssgEg = ssgEg;
-    updateOperatorSsgEg(channel, op);
+    writeOperatorSsgEg(channel, op);
     channelParameterUpdated(channel);
 }
 
 void synth_operatorSecondaryAmplitude(u8 channel, u8 op, u8 secondaryAmplitude)
 {
     getOperator(channel, op)->secondaryAmplitude = secondaryAmplitude;
-    updateOperatorReleaseRateAndSecondaryAmplitude(channel, op);
+    writeOperatorReleaseRateAndSecondaryAmplitude(channel, op);
     channelParameterUpdated(channel);
 }
 
 void synth_operatorFirstDecayRate(u8 channel, u8 op, u8 firstDecayRate)
 {
     getOperator(channel, op)->firstDecayRate = firstDecayRate;
-    updateOperatorAmplitudeModulationAndFirstDecayRate(channel, op);
+    writeOperatorAmplitudeModulationAndFirstDecayRate(channel, op);
     channelParameterUpdated(channel);
 }
 
@@ -206,35 +207,35 @@ void synth_operatorAmplitudeModulation(
     u8 channel, u8 op, u8 amplitudeModulation)
 {
     getOperator(channel, op)->amplitudeModulation = amplitudeModulation;
-    updateOperatorAmplitudeModulationAndFirstDecayRate(channel, op);
+    writeOperatorAmplitudeModulationAndFirstDecayRate(channel, op);
     channelParameterUpdated(channel);
 }
 
 void synth_enableLfo(u8 enable)
 {
     global.lfoEnable = enable;
-    updateGlobalLfo();
+    writeGlobalLfo();
     otherParameterUpdated(0, Lfo);
 }
 
 void synth_globalLfoFrequency(u8 freq)
 {
     global.lfoFrequency = freq;
-    updateGlobalLfo();
+    writeGlobalLfo();
     otherParameterUpdated(0, Lfo);
 }
 
 void synth_ams(u8 channel, u8 ams)
 {
     fmChannel(channel)->ams = ams;
-    updateStereoAmsFms(channel);
+    writeStereoAmsFms(channel);
     channelParameterUpdated(channel);
 }
 
 void synth_fms(u8 channel, u8 fms)
 {
     fmChannel(channel)->fms = fms;
-    updateStereoAmsFms(channel);
+    writeStereoAmsFms(channel);
     channelParameterUpdated(channel);
 }
 
@@ -300,12 +301,12 @@ static Operator* getOperator(u8 channel, u8 operator)
     return &fmChannel(channel)->operators[operator];
 }
 
-static void updateGlobalLfo(void)
+static void writeGlobalLfo(void)
 {
     YM2612_writeReg(0, 0x22, (global.lfoEnable << 3) | global.lfoFrequency);
 }
 
-static void updateOctaveAndFrequency(u8 channel)
+static void writeOctaveAndFrequency(u8 channel)
 {
     FmChannel* chan = fmChannel(channel);
     writeChannelReg(
@@ -313,33 +314,33 @@ static void updateOctaveAndFrequency(u8 channel)
     writeChannelReg(channel, 0xA0, chan->freqNumber);
 }
 
-static void updateAlgorithmAndFeedback(u8 channel)
+static void writeAlgorithmAndFeedback(u8 channel)
 {
     FmChannel* chan = fmChannel(channel);
     writeChannelReg(channel, 0xB0, (chan->feedback << 3) + chan->algorithm);
 }
 
-static void updateStereoAmsFms(u8 channel)
+static void writeStereoAmsFms(u8 channel)
 {
     FmChannel* chan = fmChannel(channel);
     writeChannelReg(
         channel, 0xB4, (chan->stereo << 6) + (chan->ams << 4) + chan->fms);
 }
 
-static void updateOperatorMultipleAndDetune(u8 channel, u8 operator)
+static void writeOperatorMultipleAndDetune(u8 channel, u8 operator)
 {
     Operator* op = getOperator(channel, operator);
     writeOperatorReg(channel, operator, 0x30, op->multiple + (op->detune << 4));
 }
 
-static void updateOperatorRateScalingAndAttackRate(u8 channel, u8 operator)
+static void writeOperatorRateScalingAndAttackRate(u8 channel, u8 operator)
 {
     Operator* op = getOperator(channel, operator);
     writeOperatorReg(
         channel, operator, 0x50, op->attackRate + (op->rateScaling << 6));
 }
 
-static void updateOperatorAmplitudeModulationAndFirstDecayRate(
+static void writeOperatorAmplitudeModulationAndFirstDecayRate(
     u8 channel, u8 operator)
 {
     Operator* op = getOperator(channel, operator);
@@ -347,13 +348,13 @@ static void updateOperatorAmplitudeModulationAndFirstDecayRate(
         op->firstDecayRate + (op->amplitudeModulation << 7));
 }
 
-static void updateOperatorSecondaryDecayRate(u8 channel, u8 operator)
+static void writeOperatorSecondaryDecayRate(u8 channel, u8 operator)
 {
     Operator* op = getOperator(channel, operator);
     writeOperatorReg(channel, operator, 0x70, op->secondaryDecayRate);
 }
 
-static void updateOperatorReleaseRateAndSecondaryAmplitude(
+static void writeOperatorReleaseRateAndSecondaryAmplitude(
     u8 channel, u8 operator)
 {
     Operator* op = getOperator(channel, operator);
@@ -361,13 +362,13 @@ static void updateOperatorReleaseRateAndSecondaryAmplitude(
         op->releaseRate + (op->secondaryAmplitude << 4));
 }
 
-static void updateOperatorSsgEg(u8 channel, u8 operator)
+static void writeOperatorSsgEg(u8 channel, u8 operator)
 {
     Operator* op = getOperator(channel, operator);
     writeOperatorReg(channel, operator, 0x90, op->ssgEg);
 }
 
-static void updateOperatorTotalLevel(u8 channel, u8 operator)
+static void writeOperatorTotalLevel(u8 channel, u8 operator)
 {
     Operator* op = getOperator(channel, operator);
     writeOperatorReg(channel, operator, 0x40,
@@ -414,7 +415,7 @@ void synth_setParameterUpdateCallback(ParameterUpdatedCallback* cb)
     parameterUpdatedCallback = cb;
 }
 
-void writeSpecialModeReg(void)
+static void writeSpecialModeReg(void)
 {
     YM2612_writeReg(0, 0x27, global.specialMode << 6);
 }
