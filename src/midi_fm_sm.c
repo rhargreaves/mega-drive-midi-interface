@@ -1,10 +1,10 @@
 #include "midi_fm_sm.h"
 #include "midi_fm.h"
 
-void midi_fm_sm_note_on(u8 chan, u8 pitch, u8 velocity)
+void midi_fm_sm_note_on(u8 op, u8 pitch, u8 velocity)
 {
     synth_specialModePitch(
-        chan, midi_fm_pitchToOctave(pitch), midi_fm_pitchToFreqNumber(pitch));
+        op, midi_fm_pitchToOctave(pitch), midi_fm_pitchToFreqNumber(pitch));
 }
 
 void midi_fm_sm_pitch_bend(u8 chan, u16 bend)
