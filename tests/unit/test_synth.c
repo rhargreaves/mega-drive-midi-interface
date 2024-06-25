@@ -596,8 +596,8 @@ static void test_synth_disables_ch3_special_mode(UNUSED void** state)
 static void test_synth_sets_ch3_special_mode_operator_pitches(
     UNUSED void** state)
 {
-    u8 upperRegs[] = { 0xAD, 0xAE, 0xAC };
-    u8 lowerRegs[] = { 0xA9, 0xAA, 0xA8 };
+    const u8 upperRegs[] = { 0xAD, 0xAE, 0xAC };
+    const u8 lowerRegs[] = { 0xA9, 0xAA, 0xA8 };
 
     for (u8 op = 0; op < 3; op++) {
         expect_ym2612_write_reg(0, upperRegs[op], 0x22);
@@ -605,4 +605,14 @@ static void test_synth_sets_ch3_special_mode_operator_pitches(
 
         __real_synth_specialModePitch(op, 4, SYNTH_NTSC_C);
     }
+}
+
+static void test_synth_handles_out_of_range_ch3_special_mode_operator(
+    UNUSED void** state)
+{
+    const u8 op = 3; // invalid op
+    expect_ym2612_write_reg(0, 0xAD, 0x22); // safely wrap to valid reg
+    expect_ym2612_write_reg(0, 0xA9, 0x84);
+
+    __real_synth_specialModePitch(op, 4, SYNTH_NTSC_C);
 }
