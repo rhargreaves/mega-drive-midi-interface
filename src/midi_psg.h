@@ -16,6 +16,7 @@
 #define MAX_ATTENUATION PSG_ATTENUATION_SILENCE
 
 void midi_psg_init(const u8** defaultEnvelopes);
+void midi_psg_reset(void);
 void midi_psg_note_on(u8 chan, u8 pitch, u8 velocity);
 void midi_psg_note_off(u8 chan, u8 pitch);
 void midi_psg_all_notes_off(u8 chan);

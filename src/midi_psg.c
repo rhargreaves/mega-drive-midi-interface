@@ -68,13 +68,18 @@ static void initEnvelope(MidiPsgChannel* psgChan);
 static void applyAttenuation(MidiPsgChannel* psgChan, u8 newAtt);
 static u16 envelopeTone(MidiPsgChannel* psgChan);
 static u16 effectiveTone(MidiPsgChannel* psgChan);
+void midi_psg_reset(void);
 
 void midi_psg_init(const u8** defaultEnvelopes)
 {
     scheduler_addFrameHandler(midi_psg_tick);
-
-    userDefinedEnvelopePtr = NULL;
     envelopes = defaultEnvelopes;
+    midi_psg_reset();
+}
+
+void midi_psg_reset(void)
+{
+    userDefinedEnvelopePtr = NULL;
     for (u8 chan = 0; chan < MAX_PSG_CHANS; chan++) {
         MidiPsgChannel* psgChan = psgChannel(chan);
         psgChan->attenuation = PSG_ATTENUATION_SILENCE;

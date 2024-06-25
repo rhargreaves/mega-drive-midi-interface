@@ -65,7 +65,6 @@ int test_midi_setup(UNUSED void** state)
     expect_any(__wrap_scheduler_addFrameHandler, onFrame);
 
     P_BANK_0[30] = &P_BANK_0_INST_30_CASTANETS;
-    expect_any(__wrap_synth_init, defaultPreset);
     wraps_disable_logging_checks();
     wraps_disable_checks();
     midi_init(M_BANK_0, P_BANK_0, TEST_ENVELOPES);
@@ -156,7 +155,6 @@ void test_midi_hides_fm_parameter_ui(UNUSED void** state)
 void test_midi_reset_reinitialises_module(UNUSED void** state)
 {
     expect_any(__wrap_synth_init, defaultPreset);
-    expect_any(__wrap_scheduler_addFrameHandler, onFrame);
 
     __real_midi_reset();
 }

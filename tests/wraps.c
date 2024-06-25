@@ -31,6 +31,8 @@ void wraps_enable_checks(void)
 
 void __wrap_synth_init(const FmChannel* defaultPreset)
 {
+    if (disableChecks)
+        return;
     check_expected(defaultPreset);
 }
 

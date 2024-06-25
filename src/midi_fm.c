@@ -25,6 +25,7 @@ static MidiFmChannel fmChannels[MAX_FM_CHANS];
 static u8 pitchIsOutOfRange(u8 pitch);
 static u8 effectiveVolume(MidiFmChannel* channelState);
 static void updatePan(u8 chan);
+void midi_fm_reset(void);
 
 static const FmChannel** presets;
 static const PercussionPreset** percussionPresets;
@@ -34,6 +35,11 @@ void midi_fm_init(const FmChannel** defaultPresets,
 {
     presets = defaultPresets;
     percussionPresets = defaultPercussionPresets;
+    midi_fm_reset();
+}
+
+void midi_fm_reset(void)
+{
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         MidiFmChannel* fmChan = &fmChannels[chan];
         fmChan->volume = MAX_MIDI_VOLUME;
