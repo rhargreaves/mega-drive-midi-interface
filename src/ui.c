@@ -89,7 +89,7 @@ static void print_mappings(void);
 static u16 loadPercentSum = 0;
 static bool commInited = false;
 
-static Sprite* activitySprites[DEV_CHANS];
+static Sprite* activitySprites[DEV_PHYSICAL_CHANS];
 
 void ui_init(void)
 {
@@ -111,7 +111,7 @@ void ui_init(void)
     print_routing_mode(midi_dynamic_mode());
     SYS_disableInts();
 
-    for (int i = 0; i < DEV_CHANS; i++) {
+    for (int i = 0; i < DEV_PHYSICAL_CHANS; i++) {
         Sprite* sprite = SPR_addSprite(&activity,
             fix32ToInt(FIX32(((i * CHAN_X_GAP) + 7) * 8)),
             fix32ToInt(FIX32((ACTIVITY_Y + 1) * 8)),
@@ -127,7 +127,7 @@ void ui_init(void)
 
 static void print_mappings(void)
 {
-    u8 midiChans[DEV_CHANS] = { 0 };
+    u8 midiChans[DEV_PHYSICAL_CHANS] = { 0 };
     populate_mappings(midiChans);
     print_mappings_if_dirty(midiChans);
 }
@@ -306,11 +306,12 @@ static u8 midi_chan_for_ui(DeviceChannel* mappings, u8 index)
 
 static void print_mappings_if_dirty(u8* midiChans)
 {
-    static u8 lastMidiChans[DEV_CHANS];
-    if (memcmp(lastMidiChans, midiChans, sizeof(u8) * DEV_CHANS) == 0) {
+    static u8 lastMidiChans[DEV_PHYSICAL_CHANS];
+    if (memcmp(lastMidiChans, midiChans, sizeof(u8) * DEV_PHYSICAL_CHANS)
+        == 0) {
         return;
     }
-    memcpy(lastMidiChans, midiChans, sizeof(u8) * DEV_CHANS);
+    memcpy(lastMidiChans, midiChans, sizeof(u8) * DEV_PHYSICAL_CHANS);
     for (u8 ch = 0; ch < 10; ch++) {
         draw_text(MIDI_CH_TEXT[midiChans[ch]], 5 + (ch * 3), MIDI_Y);
     }
@@ -319,7 +320,7 @@ static void print_mappings_if_dirty(u8* midiChans)
 static void populate_mappings(u8* midiChans)
 {
     DeviceChannel* chans = midi_channel_mappings();
-    for (u8 i = 0; i < DEV_CHANS; i++) {
+    for (u8 i = 0; i < DEV_PHYSICAL_CHANS; i++) {
         midiChans[i] = midi_chan_for_ui(chans, i);
     }
 }
