@@ -68,7 +68,7 @@ MOCKS=midi_process \
 	synth_volume \
 	synth_channelParameters \
 	synth_globalParameters \
-    synth_setCh3SpecialMode \
+    synth_setSpecialMode \
 	synth_specialModePitch \
 	fm_writeReg \
 	midi_note_off \

@@ -210,7 +210,7 @@ const Global* __wrap_synth_globalParameters()
     return NULL;
 }
 
-void __wrap_synth_setCh3SpecialMode(bool enable)
+void __wrap_synth_setSpecialMode(bool enable)
 {
     check_expected(enable);
 }

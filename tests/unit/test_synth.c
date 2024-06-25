@@ -35,7 +35,7 @@ extern void __real_synth_preset(u8 channel, const FmChannel* preset);
 extern void __real_synth_volume(u8 channel, u8 volume);
 extern const FmChannel* __real_synth_channelParameters(u8 channel);
 extern const Global* __real_synth_globalParameters();
-extern void __real_synth_setCh3SpecialMode(bool enable);
+extern void __real_synth_setSpecialMode(bool enable);
 extern void __real_synth_specialModePitch(u8 op, u8 octave, u16 freqNumber);
 
 static bool updated = false;
@@ -584,13 +584,13 @@ static void test_synth_calls_callback_when_lfo_enable_changes(
 static void test_synth_enables_ch3_special_mode(UNUSED void** state)
 {
     expect_ym2612_write_reg(0, 0x27, 0x40);
-    __real_synth_setCh3SpecialMode(true);
+    __real_synth_setSpecialMode(true);
 }
 
 static void test_synth_disables_ch3_special_mode(UNUSED void** state)
 {
     expect_ym2612_write_reg(0, 0x27, 0);
-    __real_synth_setCh3SpecialMode(false);
+    __real_synth_setSpecialMode(false);
 }
 
 static void test_synth_sets_ch3_special_mode_operator_pitches(

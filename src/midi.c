@@ -44,9 +44,9 @@ static const VTable FM_VTable = { midi_fm_note_on, midi_fm_note_off,
     midi_fm_channel_volume, midi_fm_pitch_bend, midi_fm_program,
     midi_fm_all_notes_off, midi_fm_pan };
 
-static const VTable SpecialMode_VTable = { midi_fm_sm_note_on, midi_fm_sm_note_off,
-    midi_fm_sm_channel_volume, midi_fm_sm_pitch_bend, midi_fm_sm_program,
-    midi_fm_sm_all_notes_off, midi_fm_sm_pan };
+static const VTable SpecialMode_VTable = { midi_fm_sm_note_on,
+    midi_fm_sm_note_off, midi_fm_sm_channel_volume, midi_fm_sm_pitch_bend,
+    midi_fm_sm_program, midi_fm_sm_all_notes_off, midi_fm_sm_pan };
 
 static MappingMode mappingModePref;
 static MidiChannel midiChannels[MIDI_CHANNELS];
@@ -80,10 +80,10 @@ static void initDeviceChannel(u8 devChan)
 {
     DeviceChannel* chan = &deviceChannels[devChan];
 
-    if(devChan <= DEV_CHAN_MAX_FM) {
+    if (devChan <= DEV_CHAN_MAX_FM) {
         chan->number = devChan;
         chan->ops = &FM_VTable;
-    } else if(devChan <= DEV_CHAN_MAX_PSG) {
+    } else if (devChan <= DEV_CHAN_MAX_PSG) {
         chan->number = devChan - DEV_CHAN_MIN_PSG;
         chan->ops = &PSG_VTable;
     } else {
@@ -840,7 +840,7 @@ void midi_cc(u8 chan, u8 controller, u8 value)
         setPolyphonicMode(RANGE(value, 2) != 0);
         break;
     case CC_GENMDM_CH3_SPECIAL_MODE:
-        synth_setCh3SpecialMode(RANGE(value, 2) != 0);
+        synth_setSpecialMode(RANGE(value, 2) != 0);
         break;
     case CC_RESET_ALL_CONTROLLERS:
         resetAllControllers(chan);

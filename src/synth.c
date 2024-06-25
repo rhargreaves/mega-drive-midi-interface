@@ -5,7 +5,7 @@
 #include <ym2612.h>
 
 static Global global
-    = { .lfoEnable = 1, .lfoFrequency = 0, .ch3SpecialMode = false };
+    = { .lfoEnable = 1, .lfoFrequency = 0, .specialMode = false };
 static FmChannel fmChannels[MAX_FM_CHANS];
 static u8 noteOn;
 static u8 volumes[MAX_FM_CHANS];
@@ -416,12 +416,12 @@ void synth_setParameterUpdateCallback(ParameterUpdatedCallback* cb)
 
 void writeSpecialModeReg(void)
 {
-    YM2612_writeReg(0, 0x27, global.ch3SpecialMode << 6);
+    YM2612_writeReg(0, 0x27, global.specialMode << 6);
 }
 
-void synth_setCh3SpecialMode(bool enable)
+void synth_setSpecialMode(bool enable)
 {
-    global.ch3SpecialMode = enable;
+    global.specialMode = enable;
     writeSpecialModeReg();
 }
 

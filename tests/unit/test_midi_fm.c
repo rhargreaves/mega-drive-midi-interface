@@ -516,7 +516,7 @@ static void test_midi_enables_fm_special_mode(UNUSED void** state)
     u8 expectedController = 80;
     u8 expectedValue = 64;
 
-    expect_value(__wrap_synth_setCh3SpecialMode, enable, true);
+    expect_value(__wrap_synth_setSpecialMode, enable, true);
 
     __real_midi_cc(0, expectedController, expectedValue);
 }
@@ -526,7 +526,7 @@ static void test_midi_disables_fm_special_mode(UNUSED void** state)
     u8 expectedController = 80;
     u8 expectedValue = 0;
 
-    expect_value(__wrap_synth_setCh3SpecialMode, enable, false);
+    expect_value(__wrap_synth_setSpecialMode, enable, false);
 
     __real_midi_cc(0, expectedController, expectedValue);
 }
