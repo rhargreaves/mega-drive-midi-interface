@@ -17,11 +17,9 @@
 #define LENGTH_OF(x) (sizeof(x) / sizeof(x[0]))
 
 typedef enum DeviceSelect DeviceSelect;
-
 enum DeviceSelect { Auto, FM, PSG_Tone, PSG_Noise };
 
 typedef struct MidiChannel MidiChannel;
-
 struct MidiChannel {
     u8 volume;
     u8 program;
@@ -31,10 +29,7 @@ struct MidiChannel {
 };
 
 typedef enum MappingMode MappingMode;
-
 enum MappingMode { MappingMode_Static, MappingMode_Dynamic, MappingMode_Auto };
-
-static DeviceChannel deviceChannels[DEV_CHANS];
 
 static const VTable PSG_VTable = { midi_psg_note_on, midi_psg_note_off,
     midi_psg_channel_volume, midi_psg_pitch_bend, midi_psg_program,
@@ -48,7 +43,12 @@ static const VTable SpecialMode_VTable = { midi_fm_sm_note_on,
     midi_fm_sm_note_off, midi_fm_sm_channel_volume, midi_fm_sm_pitch_bend,
     midi_fm_sm_program, midi_fm_sm_all_notes_off, midi_fm_sm_pan };
 
+static const u8** defaultEnvelopes;
+static const FmChannel** defaultPresets;
+static const PercussionPreset** defaultPercussionPresets;
+
 static MappingMode mappingModePref;
+static DeviceChannel deviceChannels[DEV_CHANS];
 static MidiChannel midiChannels[MIDI_CHANNELS];
 static bool dynamicMode;
 static bool disableNonGeneralMidiCCs;
@@ -65,6 +65,30 @@ static void setOperatorTotalLevel(u8 chan, u8 op, u8 value);
 static void updateDeviceChannelFromAssociatedMidiChannel(
     DeviceChannel* devChan);
 static DeviceChannel* deviceChannelByMidiChannel(u8 midiChannel);
+static void initAllDeviceChannels(void);
+static void resetAllState(void);
+static void initMidiChannel(u8 midiChan);
+static void initDeviceChannel(u8 devChan);
+
+static void init(void)
+{
+    midi_psg_init(defaultEnvelopes);
+    midi_fm_init(defaultPresets, defaultPercussionPresets);
+    mappingModePref = MappingMode_Auto;
+    dynamicMode = false;
+    disableNonGeneralMidiCCs = false;
+    stickToDeviceType = false;
+    resetAllState();
+}
+
+static void resetAllState(void)
+{
+    for (u8 i = 0; i < MIDI_CHANNELS; i++) {
+        initMidiChannel(i);
+    }
+    initAllDeviceChannels();
+    applyDynamicMode();
+}
 
 static void initMidiChannel(u8 midiChan)
 {
@@ -74,6 +98,13 @@ static void initMidiChannel(u8 midiChan)
     chan->volume = MAX_MIDI_VOLUME;
     chan->pitchBend = DEFAULT_MIDI_PITCH_BEND;
     chan->deviceSelect = Auto;
+}
+
+static void initAllDeviceChannels(void)
+{
+    for (u16 i = 0; i < DEV_CHANS; i++) {
+        initDeviceChannel(i);
+    }
 }
 
 static void initDeviceChannel(u8 devChan)
@@ -96,37 +127,6 @@ static void initDeviceChannel(u8 devChan)
     chan->pitch = 0;
     chan->pitchBend = DEFAULT_MIDI_PITCH_BEND;
     updateDeviceChannelFromAssociatedMidiChannel(chan);
-}
-
-static void initAllDeviceChannels(void)
-{
-    for (u16 i = 0; i < DEV_CHANS; i++) {
-        initDeviceChannel(i);
-    }
-}
-
-static void resetAllState(void)
-{
-    for (u8 i = 0; i < MIDI_CHANNELS; i++) {
-        initMidiChannel(i);
-    }
-    initAllDeviceChannels();
-    applyDynamicMode();
-}
-
-static const u8** defaultEnvelopes;
-static const FmChannel** defaultPresets;
-static const PercussionPreset** defaultPercussionPresets;
-
-static void init(void)
-{
-    midi_psg_init(defaultEnvelopes);
-    midi_fm_init(defaultPresets, defaultPercussionPresets);
-    mappingModePref = MappingMode_Auto;
-    dynamicMode = false;
-    disableNonGeneralMidiCCs = false;
-    stickToDeviceType = false;
-    resetAllState();
 }
 
 void midi_init(const FmChannel** presets,
