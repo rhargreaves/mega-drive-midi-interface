@@ -10,3 +10,4 @@ out/
 .vscode/*.log
 *.swp
 res/*.s
+src/boot/sega.s
