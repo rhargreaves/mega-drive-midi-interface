@@ -13,6 +13,7 @@
                 "/sgdk/res"
             ],
             "defines": [
+                "DEBUG",
                 "DEBUG_EVENTS",
                 "DEBUG_TICKS",
                 "MODULE_MEGAWIFI=1"

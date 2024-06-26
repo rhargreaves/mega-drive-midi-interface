@@ -79,16 +79,3 @@ u8 regOpIndex(u8 op);
         expect_value(__wrap_comm_megawifi_midiEmitCallback, midiByte, mb1);    \
         expect_value(__wrap_comm_megawifi_midiEmitCallback, midiByte, mb2);    \
     }
-
-#define expect_ym2612_write_reg(part_, reg_, data_)                            \
-    {                                                                          \
-        expect_value(__wrap_YM2612_writeReg, part, part_);                     \
-        expect_value(__wrap_YM2612_writeReg, reg, reg_);                       \
-        expect_value(__wrap_YM2612_writeReg, data, data_);                     \
-    }
-
-#define expect_ym2612_write_operator(chan, op, baseReg, data)                  \
-    {                                                                          \
-        expect_ym2612_write_reg(REG_PART(chan),                                \
-            ((baseReg) + REG_OFFSET(chan) + (regOpIndex(op) * 4)), data);      \
-    }

@@ -29,15 +29,13 @@ void expect_ym2612_write_reg_any_data(u8 part, u8 reg)
 
 u8 regOpIndex(u8 op)
 {
-    u8 regOpIndex;
     if (op == 1) {
-        regOpIndex = 2;
+        return 2;
     } else if (op == 2) {
-        regOpIndex = 1;
+        return 1;
     } else {
-        regOpIndex = op;
+        return op;
     }
-    return regOpIndex;
 }
 
 void expect_ym2612_write_operator_any_data(u8 chan, u8 op, u8 baseReg)
@@ -46,11 +44,6 @@ void expect_ym2612_write_operator_any_data(u8 chan, u8 op, u8 baseReg)
     expect_value(__wrap_YM2612_writeReg, reg,
         baseReg + REG_OFFSET(chan) + (regOpIndex(op) * 4));
     expect_any(__wrap_YM2612_writeReg, data);
-}
-
-void expect_ym2612_write_channel(u8 chan, u8 baseReg, u8 data)
-{
-    expect_ym2612_write_reg(REG_PART(chan), baseReg + REG_OFFSET(chan), data);
 }
 
 void expect_ym2612_write_channel_any_data(u8 chan, u8 baseReg)
@@ -83,4 +76,29 @@ void expect_synth_volume_any(void)
 {
     expect_any(__wrap_synth_volume, channel);
     expect_any(__wrap_synth_volume, volume);
+}
+
+void expect_ym2612_write_operator(u8 chan, u8 op, u8 baseReg, u8 data)
+{
+    u8 part = REG_PART(chan);
+    u8 reg = baseReg + REG_OFFSET(chan) + (regOpIndex(op) * 4);
+
+    expect_ym2612_write_reg(part, reg, data);
+}
+
+void expect_ym2612_write_reg(u8 part, u8 reg, u8 data)
+{
+#ifdef DEBUG
+    print_message("expect: YM2612_writeReg(part=%d, reg=0x%X, data=0x%X)\n",
+        part, reg, data);
+#endif
+    expect_value(__wrap_YM2612_writeReg, part, part);
+    expect_value(__wrap_YM2612_writeReg, reg, reg);
+    expect_value(__wrap_YM2612_writeReg, data, data);
+}
+
+void expect_ym2612_write_channel(u8 chan, u8 baseReg, u8 data)
+{
+    expect_ym2612_write_reg(
+        REG_PART(chan), ((baseReg) + REG_OFFSET(chan)), data);
 }

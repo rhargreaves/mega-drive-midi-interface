@@ -3,6 +3,7 @@
 #include <memory.h>
 #include <z80_ctrl.h>
 #include <ym2612.h>
+#include "debug.h"
 
 static Global global
     = { .lfoEnable = 1, .lfoFrequency = 0, .specialMode = false };
@@ -267,7 +268,12 @@ static void channelParameterUpdated(u8 channel)
 
 static void writeChannelReg(u8 channel, u8 baseReg, u8 data)
 {
-    YM2612_writeReg(channel > 2 ? 1 : 0, baseReg + (channel % 3), data);
+    u8 part = channel > 2 ? 1 : 0;
+    u8 reg = baseReg + (channel % 3);
+
+    debug_message("call: YM2612_writeReg(part=%d, reg=0x%X, data=0x%X)\n", part,
+        reg, data);
+    YM2612_writeReg(part, reg, data);
 }
 
 static u8 regOperatorIndex(u8 op)
@@ -435,6 +441,9 @@ void synth_specialModePitch(u8 op, u8 octave, u16 freqNumber)
 void synth_specialModeVolume(u8 operator, u8 volume)
 {
     Operator* op = getOperator(CH_SPECIAL_MODE, operator);
+    if (!isOutputOperator(fmChannel(CH_SPECIAL_MODE)->algorithm, operator)) {
+        return;
+    }
 
     u8 logarithmicVolume = 0x7F - VOLUME_TO_TOTAL_LEVELS[volume];
     u8 inverseTotalLevel = 0x7F - op->totalLevel;
