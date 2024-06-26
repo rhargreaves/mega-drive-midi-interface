@@ -325,11 +325,9 @@ static void test_sets_separate_ch3_operator_frequencies(void** state)
         stub_usb_receive_byte(noteOnStatus);
         stub_usb_receive_byte(noteOnKey);
         stub_usb_receive_byte(noteOnVelocity);
-
         expect_ym2612_write_reg(0, upperRegs[op], 0x22);
         expect_ym2612_write_reg(0, lowerRegs[op], 0x84);
         expect_ym2612_write_operator(CH_SPECIAL_MODE, op, 0x40, tlValues[op]);
-
         midi_receiver_read();
     }
 }

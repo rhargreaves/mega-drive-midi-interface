@@ -619,27 +619,6 @@ static void test_synth_handles_out_of_range_ch3_special_mode_operator(
     __real_synth_specialModePitch(op, 4, SYNTH_NTSC_C);
 }
 
-static void test_synth_sets_ch3_special_mode_operator_total_level(
-    UNUSED void** state)
-{
-    // const u8 baseReg = 0x40;
-    // const u8 chan = CH_SPECIAL_MODE;
-
-    // for (u8 op = 0; op <= 2; op++) {
-    //     print_message("setup op = %d\n", op);
-    //     expect_ym2612_write_operator(chan, op, baseReg, 2);
-    //     __real_synth_operatorTotalLevel(CH_SPECIAL_MODE, op, 2);
-
-    //     print_message("expect op = %d\n", op);
-    //     expect_ym2612_write_operator(chan, op, baseReg, 12);
-    //     __real_synth_specialModeVolume(op, 60);
-    // }
-}
-
-// alg 0 - 3 = op 4 only
-// alg 4 = ops 2 and 4
-// alg 5 & 6 = ops 2, 3 & 4
-// alg 7 = ops 1, 2, 3, 4
 static void synth_sets_ch3_special_mode_op_tl_only_if_output_operator(int alg)
 {
     const u8 baseReg = 0x40;
@@ -649,11 +628,57 @@ static void synth_sets_ch3_special_mode_op_tl_only_if_output_operator(int alg)
     __real_synth_algorithm(chan, alg);
 
     for (u8 op = 0; op <= 2; op++) {
-        expect_ym2612_write_operator(chan, op, baseReg, 2);
-        __real_synth_operatorTotalLevel(chan, op, 2);
+        switch (alg) {
+        case 0:
+        case 1:
+        case 2:
+        case 3: {
+            expect_ym2612_write_operator(chan, op, baseReg, 2);
+            __real_synth_operatorTotalLevel(chan, op, 2);
 
-        // expect nothing to happen
-        __real_synth_specialModeVolume(op, 60);
+            // expect nothing to happen
+            __real_synth_specialModeVolume(op, 60);
+            break;
+        }
+        case 4: {
+            expect_ym2612_write_operator(chan, op, baseReg, 2);
+            __real_synth_operatorTotalLevel(chan, op, 2);
+
+            if (op == 0 || op == 2) {
+                // expect nothing to happen
+                __real_synth_specialModeVolume(op, 60);
+            } else {
+                // set TL
+                expect_ym2612_write_operator(chan, op, baseReg, 14);
+                __real_synth_specialModeVolume(op, 60);
+            }
+            break;
+        }
+        case 5:
+        case 6: {
+            expect_ym2612_write_operator(chan, op, baseReg, 2);
+            __real_synth_operatorTotalLevel(chan, op, 2);
+
+            if (op == 0) {
+                // expect nothing to happen
+                __real_synth_specialModeVolume(op, 60);
+            } else {
+                // set TL
+                expect_ym2612_write_operator(chan, op, baseReg, 14);
+                __real_synth_specialModeVolume(op, 60);
+            }
+            break;
+        }
+        case 7: {
+            expect_ym2612_write_operator(chan, op, baseReg, 2);
+            __real_synth_operatorTotalLevel(chan, op, 2);
+
+            // set TL
+            expect_ym2612_write_operator(chan, op, baseReg, 14);
+            __real_synth_specialModeVolume(op, 60);
+            break;
+        }
+        }
     }
 }
 
@@ -689,62 +714,26 @@ static void
 test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_4(
     UNUSED void** state)
 {
-    const u8 alg = 4;
-    const u8 baseReg = 0x40;
-    const u8 chan = CH_SPECIAL_MODE;
-
-    expect_ym2612_write_channel(chan, 0xB0, alg);
-    __real_synth_algorithm(chan, alg);
-
-    for (u8 op = 0; op <= 2; op++) {
-        print_message("op %d\n", op);
-        expect_ym2612_write_operator(chan, op, baseReg, 2);
-        __real_synth_operatorTotalLevel(chan, op, 2);
-
-        if (op == 0 || op == 2) {
-            // expect nothing to happen
-            __real_synth_specialModeVolume(op, 60);
-        } else {
-            // set tl
-            expect_ym2612_write_operator(chan, op, baseReg, 14);
-            __real_synth_specialModeVolume(op, 60);
-        }
-    }
+    synth_sets_ch3_special_mode_op_tl_only_if_output_operator(4);
 }
 
 static void
 test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_5(
     UNUSED void** state)
 {
-    const u8 alg = 4;
-    const u8 baseReg = 0x40;
-    const u8 chan = CH_SPECIAL_MODE;
-
-    expect_ym2612_write_channel(chan, 0xB0, alg);
-    __real_synth_algorithm(chan, alg);
-
-    for (u8 op = 0; op <= 2; op++) {
-        print_message("op %d\n", op);
-        expect_ym2612_write_operator(chan, op, baseReg, 2);
-        __real_synth_operatorTotalLevel(chan, op, 2);
-
-        if (op == 0 || op == 2) {
-            // expect nothing to happen
-            __real_synth_specialModeVolume(op, 60);
-        } else {
-            // set tl
-            expect_ym2612_write_operator(chan, op, baseReg, 14);
-            __real_synth_specialModeVolume(op, 60);
-        }
-    }
+    synth_sets_ch3_special_mode_op_tl_only_if_output_operator(5);
 }
 
-// for (u8 op = 0; op < 3; op++) {
-//     print_message("setup op = %d\n", op);
-//     expect_ym2612_write_operator(chan, op, baseReg, 0);
-//     __real_synth_operatorTotalLevel(chan, op, 0);
+static void
+test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_6(
+    UNUSED void** state)
+{
+    synth_sets_ch3_special_mode_op_tl_only_if_output_operator(6);
+}
 
-//     print_message("expect op = %d\n", op);
-//     expect_ym2612_write_operator(chan, op, baseReg, 12);
-//     __real_synth_specialModeVolume(op, 60);
-// }
+static void
+test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_7(
+    UNUSED void** state)
+{
+    synth_sets_ch3_special_mode_op_tl_only_if_output_operator(7);
+}

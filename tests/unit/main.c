@@ -207,7 +207,6 @@ int main(void)
         synth_test(test_synth_disables_ch3_special_mode),
         synth_test(test_synth_sets_ch3_special_mode_operator_pitches),
         synth_test(test_synth_handles_out_of_range_ch3_special_mode_operator),
-        synth_test(test_synth_sets_ch3_special_mode_operator_total_level),
         synth_test(
             test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_0),
         synth_test(
@@ -218,6 +217,12 @@ int main(void)
             test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_3),
         synth_test(
             test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_4),
+        synth_test(
+            test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_5),
+        synth_test(
+            test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_6),
+        synth_test(
+            test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_7),
 
         comm_test(test_comm_reads_from_serial_when_ready),
         comm_test(test_comm_reads_when_ready),
