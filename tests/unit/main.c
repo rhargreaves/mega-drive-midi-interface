@@ -147,6 +147,7 @@ int main(void)
         midi_test(test_midi_enables_fm_special_mode),
         midi_test(test_midi_disables_fm_special_mode),
         midi_test(test_midi_sets_pitch_of_special_mode_ch3_operator),
+        midi_test(test_midi_sets_volume_of_special_mode_ch3_operator),
 
         midi_test(test_midi_sets_genmdm_stereo_mode),
         midi_test(test_midi_sysex_enables_dynamic_channel_mode),
@@ -205,6 +206,7 @@ int main(void)
         synth_test(test_synth_disables_ch3_special_mode),
         synth_test(test_synth_sets_ch3_special_mode_operator_pitches),
         synth_test(test_synth_handles_out_of_range_ch3_special_mode_operator),
+        synth_test(test_synth_sets_ch3_special_mode_operator_total_level),
 
         comm_test(test_comm_reads_from_serial_when_ready),
         comm_test(test_comm_reads_when_ready),

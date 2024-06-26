@@ -70,6 +70,7 @@ MOCKS=midi_process \
 	synth_globalParameters \
     synth_setSpecialMode \
 	synth_specialModePitch \
+	synth_specialModeVolume \
 	fm_writeReg \
 	midi_note_off \
 	midi_note_on \

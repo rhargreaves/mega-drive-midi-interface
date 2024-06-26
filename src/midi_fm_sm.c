@@ -5,6 +5,7 @@ void midi_fm_sm_note_on(u8 op, u8 pitch, u8 velocity)
 {
     synth_specialModePitch(
         op, midi_fm_pitchToOctave(pitch), midi_fm_pitchToFreqNumber(pitch));
+    synth_specialModeVolume(op, velocity);
 }
 
 void midi_fm_sm_pitch_bend(u8 chan, u16 bend)

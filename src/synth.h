@@ -7,6 +7,8 @@
 #define MAX_FM_CHANS 6
 #define FM_ALGORITHMS 8
 
+#define CH_SPECIAL_MODE 2
+
 #define STEREO_MODE_CENTRE 3
 #define STEREO_MODE_RIGHT 1
 #define STEREO_MODE_LEFT 2
@@ -86,3 +88,4 @@ const Global* synth_globalParameters();
 void synth_setParameterUpdateCallback(ParameterUpdatedCallback* cb);
 void synth_setSpecialMode(bool enable);
 void synth_specialModePitch(u8 op, u8 octave, u16 freqNumber);
+void synth_specialModeVolume(u8 op, u8 volume);

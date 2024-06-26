@@ -317,9 +317,12 @@ static void test_sets_separate_ch3_operator_frequencies(void** state)
 
         const u8 upperRegs[] = { 0xAD, 0xAE, 0xAC };
         const u8 lowerRegs[] = { 0xA9, 0xAA, 0xA8 };
+        const u8 tlRegs[] = { 0x42, 0x4A, 0x46 };
+        const u8 tlValues[] = { 0x27, 0x04, 0x24 };
 
         expect_ym2612_write_reg(0, upperRegs[op], 0x22);
         expect_ym2612_write_reg(0, lowerRegs[op], 0x84);
+        expect_ym2612_write_reg(0, tlRegs[op], tlValues[op]);
 
         midi_receiver_read();
     }

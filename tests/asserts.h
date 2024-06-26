@@ -17,6 +17,10 @@ void expect_synth_pitch_any(void);
 void expect_synth_pitch(u8 channel, u8 octave, u16 freqNumber);
 void expect_synth_volume_any(void);
 void expect_synth_volume(u8 channel, u8 volume);
+u8 regOpIndex(u8 op);
+
+#define REG_PART(chan) (chan < 3 ? 0 : 1)
+#define REG_OFFSET(chan) (chan % 3)
 
 #define expect_log_info(f)                                                     \
     {                                                                          \
@@ -74,4 +78,17 @@ void expect_synth_volume(u8 channel, u8 volume);
     {                                                                          \
         expect_value(__wrap_comm_megawifi_midiEmitCallback, midiByte, mb1);    \
         expect_value(__wrap_comm_megawifi_midiEmitCallback, midiByte, mb2);    \
+    }
+
+#define expect_ym2612_write_reg(part_, reg_, data_)                            \
+    {                                                                          \
+        expect_value(__wrap_YM2612_writeReg, part, part_);                     \
+        expect_value(__wrap_YM2612_writeReg, reg, reg_);                       \
+        expect_value(__wrap_YM2612_writeReg, data, data_);                     \
+    }
+
+#define expect_ym2612_write_operator(chan, op, baseReg, data)                  \
+    {                                                                          \
+        expect_ym2612_write_reg(REG_PART(chan),                                \
+            ((baseReg) + REG_OFFSET(chan) + (regOpIndex(op) * 4)), data);      \
     }

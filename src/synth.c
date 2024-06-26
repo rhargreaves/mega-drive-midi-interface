@@ -432,3 +432,17 @@ void synth_specialModePitch(u8 op, u8 octave, u16 freqNumber)
     YM2612_writeReg(0, 0xAC + offset, (freqNumber >> 8) | (octave << 3));
     YM2612_writeReg(0, 0xA8 + offset, freqNumber);
 }
+
+void synth_specialModeVolume(u8 operator, u8 volume)
+{
+    Operator* op = getOperator(CH_SPECIAL_MODE, operator);
+
+    u8 logarithmicVolume = 0x7F - VOLUME_TO_TOTAL_LEVELS[volume];
+    u8 inverseTotalLevel = 0x7F - op->totalLevel;
+    u8 inverseNewTotalLevel
+        = (u16)inverseTotalLevel * (u16)logarithmicVolume / (u16)0x7F;
+    u8 newTotalLevel = 0x7F - inverseNewTotalLevel;
+
+    writeOperatorReg(CH_SPECIAL_MODE, operator, 0x40,
+        effectiveTotalLevel(CH_SPECIAL_MODE, operator, newTotalLevel));
+}

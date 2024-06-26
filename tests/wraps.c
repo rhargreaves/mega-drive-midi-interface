@@ -224,6 +224,12 @@ void __wrap_synth_specialModePitch(u8 op, u8 octave, u16 freqNumber)
     check_expected(freqNumber);
 }
 
+void __wrap_synth_specialModeVolume(u8 op, u8 volume)
+{
+    check_expected(op);
+    check_expected(volume);
+}
+
 void __wrap_comm_write(u8 data)
 {
     check_expected(data);
