@@ -1,6 +1,10 @@
 #include "cmocka_inc.h"
 #include "comm.h"
 
+#define expect_value_with_pos(function, parameter, value, file, line)          \
+    _expect_value(#function, #parameter, file, line,                           \
+        cast_to_largest_integral_type(value), 1)
+
 void stub_usb_receive_byte(u8 value)
 {
     will_return(__wrap_comm_everdrive_read_ready, 1);
@@ -78,27 +82,30 @@ void expect_synth_volume_any(void)
     expect_any(__wrap_synth_volume, volume);
 }
 
-void expect_ym2612_write_operator(u8 chan, u8 op, u8 baseReg, u8 data)
-{
-    u8 part = REG_PART(chan);
-    u8 reg = baseReg + REG_OFFSET(chan) + (regOpIndex(op) * 4);
-
-    expect_ym2612_write_reg(part, reg, data);
-}
-
-void expect_ym2612_write_reg(u8 part, u8 reg, u8 data)
+void _expect_ym2612_write_reg(
+    u8 part, u8 reg, u8 data, const char* const file, const int line)
 {
 #ifdef DEBUG
     print_message("expect: YM2612_writeReg(part=%d, reg=0x%X, data=0x%X)\n",
         part, reg, data);
 #endif
-    expect_value(__wrap_YM2612_writeReg, part, part);
-    expect_value(__wrap_YM2612_writeReg, reg, reg);
-    expect_value(__wrap_YM2612_writeReg, data, data);
+    expect_value_with_pos(__wrap_YM2612_writeReg, part, part, file, line);
+    expect_value_with_pos(__wrap_YM2612_writeReg, reg, reg, file, line);
+    expect_value_with_pos(__wrap_YM2612_writeReg, data, data, file, line);
 }
 
-void expect_ym2612_write_channel(u8 chan, u8 baseReg, u8 data)
+void _expect_ym2612_write_operator(
+    u8 chan, u8 op, u8 baseReg, u8 data, const char* const file, const int line)
 {
-    expect_ym2612_write_reg(
-        REG_PART(chan), ((baseReg) + REG_OFFSET(chan)), data);
+    u8 part = REG_PART(chan);
+    u8 reg = baseReg + REG_OFFSET(chan) + (regOpIndex(op) * 4);
+
+    _expect_ym2612_write_reg(part, reg, data, file, line);
+}
+
+void _expect_ym2612_write_channel(
+    u8 chan, u8 baseReg, u8 data, const char* const file, const int line)
+{
+    _expect_ym2612_write_reg(
+        REG_PART(chan), ((baseReg) + REG_OFFSET(chan)), data, file, line);
 }
