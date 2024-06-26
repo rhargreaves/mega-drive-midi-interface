@@ -628,27 +628,25 @@ static void synth_sets_ch3_special_mode_op_tl_only_if_output_operator(int alg)
     __real_synth_algorithm(chan, alg);
 
     for (u8 op = 0; op <= 2; op++) {
+        // set initial TL
+        expect_ym2612_write_operator(chan, op, baseReg, 2);
+        __real_synth_operatorTotalLevel(chan, op, 2);
+
         switch (alg) {
         case 0:
         case 1:
         case 2:
         case 3: {
-            expect_ym2612_write_operator(chan, op, baseReg, 2);
-            __real_synth_operatorTotalLevel(chan, op, 2);
-
             // expect nothing to happen
             __real_synth_specialModeVolume(op, 60);
             break;
         }
         case 4: {
-            expect_ym2612_write_operator(chan, op, baseReg, 2);
-            __real_synth_operatorTotalLevel(chan, op, 2);
-
             if (op == 0 || op == 2) {
                 // expect nothing to happen
                 __real_synth_specialModeVolume(op, 60);
             } else {
-                // set TL
+                // set volume
                 expect_ym2612_write_operator(chan, op, baseReg, 14);
                 __real_synth_specialModeVolume(op, 60);
             }
@@ -656,24 +654,18 @@ static void synth_sets_ch3_special_mode_op_tl_only_if_output_operator(int alg)
         }
         case 5:
         case 6: {
-            expect_ym2612_write_operator(chan, op, baseReg, 2);
-            __real_synth_operatorTotalLevel(chan, op, 2);
-
             if (op == 0) {
                 // expect nothing to happen
                 __real_synth_specialModeVolume(op, 60);
             } else {
-                // set TL
+                // set volume
                 expect_ym2612_write_operator(chan, op, baseReg, 14);
                 __real_synth_specialModeVolume(op, 60);
             }
             break;
         }
         case 7: {
-            expect_ym2612_write_operator(chan, op, baseReg, 2);
-            __real_synth_operatorTotalLevel(chan, op, 2);
-
-            // set TL
+            // set volume
             expect_ym2612_write_operator(chan, op, baseReg, 14);
             __real_synth_specialModeVolume(op, 60);
             break;
