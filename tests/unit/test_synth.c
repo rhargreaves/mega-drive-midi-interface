@@ -247,7 +247,7 @@ static void test_synth_sets_operator_release_rate_and_secondary_amplitude(
     UNUSED void** state)
 {
     const u8 baseReg = 0x80;
-    u8 secondaryAmplitude = 16;
+    u8 secondaryAmplitude = 15;
     u8 releaseRate = 4;
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
