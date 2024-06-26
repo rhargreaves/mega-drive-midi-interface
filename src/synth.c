@@ -429,6 +429,7 @@ void synth_setSpecialMode(bool enable)
 {
     global.specialMode = enable;
     writeSpecialModeReg();
+    otherParameterUpdated(0, SpecialMode);
 }
 
 void synth_specialModePitch(u8 op, u8 octave, u16 freqNumber)

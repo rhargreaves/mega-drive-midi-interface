@@ -203,6 +203,7 @@ int main(void)
         synth_test(test_synth_calls_callback_when_parameter_changes),
         synth_test(test_synth_calls_callback_when_lfo_freq_changes),
         synth_test(test_synth_calls_callback_when_lfo_enable_changes),
+        synth_test(test_synth_calls_callback_when_special_mode_changes),
         synth_test(test_synth_enables_ch3_special_mode),
         synth_test(test_synth_disables_ch3_special_mode),
         synth_test(test_synth_sets_ch3_special_mode_operator_pitches),

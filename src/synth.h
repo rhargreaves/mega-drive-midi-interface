@@ -52,7 +52,7 @@ struct Global {
 
 typedef enum ParameterUpdated ParameterUpdated;
 
-enum ParameterUpdated { Channel, Lfo };
+enum ParameterUpdated { Channel, Lfo, SpecialMode };
 
 typedef void ParameterUpdatedCallback(
     u8 fmChan, ParameterUpdated parameterUpdated);

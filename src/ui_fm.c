@@ -71,7 +71,8 @@ static void initAlgorithmSprites(void)
 
 static void synthParameterUpdated(u8 fmChan, ParameterUpdated parameterUpdated)
 {
-    if (fmChan == chanParasFmChan || parameterUpdated == Lfo) {
+    if (fmChan == chanParasFmChan || parameterUpdated == Lfo
+        || parameterUpdated == SpecialMode) {
         synthParameterValuesDirty = true;
     }
 }
@@ -94,12 +95,16 @@ static void printChannelParameterHeadings(void)
 
     ui_draw_text("MIDI", FM_HEADING_X, BASE_Y + 3);
     ui_draw_text("FM", FM_HEADING_X + 8, BASE_Y + 3);
+
     ui_draw_text("Alg", FM_HEADING_X, BASE_Y + 5);
     ui_draw_text("Fb", FM_HEADING_X, BASE_Y + 6);
-    ui_draw_text("LFO", FM_HEADING_X, BASE_Y + 9);
-    ui_draw_text("AMS", FM_HEADING_X, BASE_Y + 10);
-    ui_draw_text("FMS", FM_HEADING_X, BASE_Y + 11);
-    ui_draw_text("Pan", FM_HEADING_X, BASE_Y + 12);
+    ui_draw_text("Pan", FM_HEADING_X, BASE_Y + 7);
+    ui_draw_text("FMS", FM_HEADING_X, BASE_Y + 8);
+    ui_draw_text("AMS", FM_HEADING_X, BASE_Y + 9);
+
+    ui_draw_text("LFO", FM_HEADING_X, BASE_Y + 11);
+    ui_draw_text("Ch3", FM_HEADING_X, BASE_Y + 12);
+
     VDP_setTextPalette(PAL0);
 }
 
@@ -153,6 +158,16 @@ static const char* lfoEnableText(u8 lfoEnable)
     }
 }
 
+static const char* ch3SpecialModeText(u8 enabled)
+{
+    switch (enabled) {
+    case true:
+        return "Special";
+    default:
+        return "Normal ";
+    }
+}
+
 static const char* lfoFreqText(u8 lfoFreq)
 {
     static const char TEXT[][8] = { "3.98Hz", "5.56Hz", "6.02Hz", "6.37Hz",
@@ -189,6 +204,17 @@ static const char* formatNum(u8 value)
 
 static bool updateFmValue(u8* last, const u8* current, bool forceRefresh,
     FormatTextFunc formatFunc, u8 x, u8 y)
+{
+    if (*last != *current || forceRefresh) {
+        ui_draw_text(formatFunc(*current), x, y);
+        *last = *current;
+        return true;
+    }
+    return false;
+}
+
+static bool updateFmValueBool(bool* last, const bool* current,
+    bool forceRefresh, FormatTextFunc formatFunc, u8 x, u8 y)
 {
     if (*last != *current || forceRefresh) {
         ui_draw_text(formatFunc(*current), x, y);
@@ -253,22 +279,27 @@ static void updateFmValues(void)
         chanNumber, COL1_VALUE_X + 1, BASE_Y + 3);
     updateFmValue(&lastChanParasFmChan, &chanParasFmChan, forceRefresh,
         chanNumber, COL2_VALUE_X, BASE_Y + 3);
+
     if (updateFmValue(&lastChannel.algorithm, &channel->algorithm, forceRefresh,
             formatNum, COL1_VALUE_X, BASE_Y + 5)) {
         updateAlgorithmDiagram(channel->algorithm);
     }
     updateFmValue(&lastChannel.feedback, &channel->feedback, forceRefresh,
         formatNum, COL1_VALUE_X, BASE_Y + 6);
-    updateFmValue(&lastGlobal.lfoEnable, &global->lfoEnable, forceRefresh,
-        lfoEnableText, COL1_VALUE_X, BASE_Y + 9);
-    updateFmValue(&lastGlobal.lfoFrequency, &global->lfoFrequency, forceRefresh,
-        lfoFreqText, COL1_VALUE_X + 4, BASE_Y + 9);
-    updateFmValue(&lastChannel.ams, &channel->ams, forceRefresh, amsText,
-        COL1_VALUE_X, BASE_Y + 10);
-    updateFmValue(&lastChannel.fms, &channel->fms, forceRefresh, fmsText,
-        COL1_VALUE_X, BASE_Y + 11);
     updateFmValue(&lastChannel.stereo, &channel->stereo, forceRefresh,
-        stereoText, COL1_VALUE_X, BASE_Y + 12);
+        stereoText, COL1_VALUE_X, BASE_Y + 7);
+    updateFmValue(&lastChannel.fms, &channel->fms, forceRefresh, fmsText,
+        COL1_VALUE_X, BASE_Y + 8);
+    updateFmValue(&lastChannel.ams, &channel->ams, forceRefresh, amsText,
+        COL1_VALUE_X, BASE_Y + 9);
+
+    updateFmValue(&lastGlobal.lfoEnable, &global->lfoEnable, forceRefresh,
+        lfoEnableText, COL1_VALUE_X, BASE_Y + 11);
+    updateFmValue(&lastGlobal.lfoFrequency, &global->lfoFrequency, forceRefresh,
+        lfoFreqText, COL1_VALUE_X + 4, BASE_Y + 11);
+    updateFmValueBool(&lastGlobal.specialMode, &global->specialMode,
+        forceRefresh, ch3SpecialModeText, COL1_VALUE_X, BASE_Y + 12);
+
     updateOpValues(channel, forceRefresh);
     forceRefresh = false;
 }

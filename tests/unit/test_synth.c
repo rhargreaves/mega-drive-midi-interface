@@ -583,6 +583,18 @@ static void test_synth_calls_callback_when_lfo_enable_changes(
     assert_int_equal(lastParameterUpdated, Lfo);
 }
 
+static void test_synth_calls_callback_when_special_mode_changes(
+    UNUSED void** state)
+{
+    synth_setParameterUpdateCallback(&updateCallback);
+
+    expect_ym2612_write_reg_any_data(0, 0x27);
+    __real_synth_setSpecialMode(true);
+
+    assert_true(updated);
+    assert_int_equal(lastParameterUpdated, SpecialMode);
+}
+
 static void test_synth_enables_ch3_special_mode(UNUSED void** state)
 {
     expect_ym2612_write_reg(0, 0x27, 0x40);
