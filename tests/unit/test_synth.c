@@ -50,11 +50,11 @@ static void set_initial_registers()
     expect_any_count(__wrap_YM2612_writeReg, reg, count);
     expect_any_count(__wrap_YM2612_writeReg, data, count);
 
-    const FmChannel M_BANK_0_INST_0_GRANDPIANO = { 2, 0, 3, 0, 0, 0, 0,
-        { { 1, 0, 26, 1, 7, 0, 7, 4, 1, 39, 0 },
-            { 4, 6, 24, 1, 9, 0, 6, 9, 7, 36, 0 },
-            { 2, 7, 31, 3, 23, 0, 9, 15, 1, 4, 0 },
-            { 1, 3, 27, 2, 4, 0, 10, 4, 6, 2, 0 } } };
+    const FmChannel M_BANK_0_INST_0_GRANDPIANO = { 0, 0, 3, 0, 0, 0, 0,
+        { { 1, 0, 26, 1, 7, 0, 7, 4, 1, 35, 0 },
+            { 4, 6, 24, 1, 9, 0, 6, 9, 7, 35, 0 },
+            { 2, 7, 31, 3, 23, 0, 9, 15, 1, 35, 0 },
+            { 1, 3, 27, 2, 4, 0, 10, 4, 6, 35, 0 } } };
 
     __real_synth_init(&M_BANK_0_INST_0_GRANDPIANO);
 }
@@ -142,7 +142,7 @@ static void test_synth_sets_algorithm(UNUSED void** state)
 
 static void test_synth_sets_feedback(UNUSED void** state)
 {
-    const u8 defaultAlgorithm = 2;
+    const u8 defaultAlgorithm = 0;
     const u8 feedback = 1;
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         expect_ym2612_write_channel(
@@ -459,16 +459,17 @@ test_synth_applies_volume_modifier_to_output_operators_algorithms_0_to_3(
 
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         for (u8 algorithm = 0; algorithm < 4; algorithm++) {
+            print_message("chan %d, alg %d setup\n", chan, algorithm);
             expect_ym2612_write_channel(chan, algorithmReg, algorithm);
             __real_synth_algorithm(chan, algorithm);
 
             if (algorithm == 0) {
                 /* Operator values are not re-applied for algorithms 1-3 due
                 to unnecessary YM2612 writing optimisation */
-                expect_ym2612_write_operator(chan, 0, totalLevelReg, 0x27);
-                expect_ym2612_write_operator(chan, 1, totalLevelReg, 0x24);
-                expect_ym2612_write_operator(chan, 2, totalLevelReg, 0x4);
-                expect_ym2612_write_operator(chan, 3, totalLevelReg, 0x28);
+                expect_ym2612_write_operator(chan, 0, totalLevelReg, 0x23);
+                expect_ym2612_write_operator(chan, 1, totalLevelReg, 0x23);
+                expect_ym2612_write_operator(chan, 2, totalLevelReg, 0x23);
+                expect_ym2612_write_operator(chan, 3, totalLevelReg, 0x3f);
             }
             __real_synth_volume(chan, loudestVolume / 4);
         }
@@ -487,10 +488,10 @@ static void test_synth_applies_volume_modifier_to_output_operators_algorithm_4(
         expect_ym2612_write_channel(chan, algorithmReg, algorithm);
         __real_synth_algorithm(chan, algorithm);
 
-        expect_ym2612_write_operator(chan, 0, totalLevelReg, 0x27);
-        expect_ym2612_write_operator(chan, 1, totalLevelReg, 0x24);
-        expect_ym2612_write_operator(chan, 2, totalLevelReg, 0x29);
-        expect_ym2612_write_operator(chan, 3, totalLevelReg, 0x28);
+        expect_ym2612_write_operator(chan, 0, totalLevelReg, 0x23);
+        expect_ym2612_write_operator(chan, 1, totalLevelReg, 0x3f);
+        expect_ym2612_write_operator(chan, 2, totalLevelReg, 0x23);
+        expect_ym2612_write_operator(chan, 3, totalLevelReg, 0x3f);
         __real_synth_volume(chan, loudestVolume / 4);
     }
 }
@@ -511,10 +512,10 @@ test_synth_applies_volume_modifier_to_output_operators_algorithms_5_and_6(
             if (algorithm == 5) {
                 /* Operator values are not re-applied for algorithms 1-3 due
                 to unnecessary YM2612 writing optimisation */
-                expect_ym2612_write_operator(chan, 0, totalLevelReg, 0x27);
-                expect_ym2612_write_operator(chan, 1, totalLevelReg, 0x40);
-                expect_ym2612_write_operator(chan, 2, totalLevelReg, 0x29);
-                expect_ym2612_write_operator(chan, 3, totalLevelReg, 0x28);
+                expect_ym2612_write_operator(chan, 0, totalLevelReg, 0x23);
+                expect_ym2612_write_operator(chan, 1, totalLevelReg, 0x3f);
+                expect_ym2612_write_operator(chan, 2, totalLevelReg, 0x3f);
+                expect_ym2612_write_operator(chan, 3, totalLevelReg, 0x3f);
             }
             __real_synth_volume(chan, loudestVolume / 4);
         }

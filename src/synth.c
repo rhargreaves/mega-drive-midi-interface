@@ -382,12 +382,11 @@ static u8 effectiveTotalLevel(u8 channel, u8 operator, u8 totalLevel)
         : totalLevel;
 }
 
-static bool isOutputOperator(u8 algorithm, u8 operator)
+static bool isOutputOperator(u8 algorithm, u8 op)
 {
-    return (algorithm < 4 && operator== 3)
-        || (algorithm == 4 && (operator== 2 || operator== 3))
-        || ((algorithm == 5 || algorithm == 6) && operator> 0)
-        || algorithm == 7;
+    return (algorithm < 4 && op == 3)
+        || (algorithm == 4 && (op == 1 || op == 3))
+        || ((algorithm == 5 || algorithm == 6) && op > 0) || algorithm == 7;
 }
 
 static u8 volumeAdjustedTotalLevel(u8 channel, u8 totalLevel)
