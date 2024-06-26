@@ -32,6 +32,13 @@
         "scheduler.h": "c",
         "midi_psg.h": "c",
         "stdint.h": "c",
-        "types.h": "c"
+        "types.h": "c",
+        "memory.h": "c",
+        "stdbool.h": "c",
+        "bits.h": "c",
+        "midi_sender.h": "c",
+        "log.h": "c",
+        "vstring.h": "c",
+        "stdarg.h": "c"
     }
 }
