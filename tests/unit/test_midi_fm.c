@@ -564,3 +564,20 @@ static void test_midi_sets_volume_of_special_mode_ch3_operator(
         __real_midi_note_on(midiChannel, MIDI_PITCH_C4, 64);
     }
 }
+
+static void test_midi_pitch_bends_special_mode_operator(UNUSED void** state)
+{
+    int chan = 10;
+
+    expect_value(__wrap_synth_specialModePitch, op, 0);
+    expect_value(__wrap_synth_specialModePitch, octave, 4);
+    expect_value(__wrap_synth_specialModePitch, freqNumber, SYNTH_NTSC_C);
+    expect_value(__wrap_synth_specialModeVolume, op, 0);
+    expect_value(__wrap_synth_specialModeVolume, volume, MAX_MIDI_VOLUME);
+    __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
+
+    expect_value(__wrap_synth_specialModePitch, op, 0);
+    expect_value(__wrap_synth_specialModePitch, octave, 4);
+    expect_value(__wrap_synth_specialModePitch, freqNumber, 862);
+    __real_midi_pitch_bend(chan, 0x6000);
+}

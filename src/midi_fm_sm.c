@@ -1,15 +1,24 @@
 #include "midi_fm_sm.h"
 #include "midi_fm.h"
+#include "midi.h"
+
+static u8 currentPitch = 0;
 
 void midi_fm_sm_note_on(u8 op, u8 pitch, u8 velocity)
 {
     synth_specialModePitch(
         op, midi_fm_pitchToOctave(pitch), midi_fm_pitchToFreqNumber(pitch));
     synth_specialModeVolume(op, velocity);
+    currentPitch = pitch;
 }
 
-void midi_fm_sm_pitch_bend(u8 chan, u16 bend)
+void midi_fm_sm_pitch_bend(u8 op, u16 bend)
 {
+    u16 freq = midi_fm_pitchToFreqNumber(currentPitch);
+    s16 bendRelative = bend - MIDI_PITCH_BEND_CENTRE;
+    freq = freq + (bendRelative / 75);
+
+    synth_specialModePitch(op, midi_fm_pitchToOctave(currentPitch), freq);
 }
 
 // no-ops

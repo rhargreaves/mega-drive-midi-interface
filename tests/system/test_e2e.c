@@ -241,3 +241,26 @@ static void test_sets_separate_ch3_operator_frequencies(void** state)
         midi_receiver_read();
     }
 }
+
+static void test_pitch_bends_ch3_special_mode_operators(void** state)
+{
+    stub_usb_receive_cc(
+        TEST_MIDI_CHANNEL_1, TEST_CC_SPECIAL_MODE, TEST_SPECIAL_MODE_ON);
+    expect_ym2612_write_reg(0, 0x27, 0x40);
+    midi_receiver_read();
+
+    stub_usb_receive_cc(TEST_MIDI_CHANNEL_3, TEST_CC_ALGORITHM, 0x7F); // alg 7
+    expect_ym2612_write_reg(0, 0xB2, 0x7);
+    midi_receiver_read();
+
+    stub_usb_receive_note_on(TEST_MIDI_CHANNEL_11, 60, 120);
+    expect_ym2612_write_reg(0, 0xAD, 0x22);
+    expect_ym2612_write_reg(0, 0xA9, 0x84);
+    expect_ym2612_write_operator_any_data(CH_SPECIAL_MODE, 0, 0x40);
+    midi_receiver_read();
+
+    stub_usb_receive_pitch_bend(TEST_MIDI_CHANNEL_11, 0x4000);
+    expect_ym2612_write_reg(0, 0xAD, 0x22);
+    expect_ym2612_write_reg(0, 0xA9, 0xF1);
+    midi_receiver_read();
+}

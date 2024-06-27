@@ -22,7 +22,8 @@ int main(void)
         e2e_test(test_pong_received_after_ping_sent),
         e2e_test(test_loads_psg_envelope),
         e2e_test(test_enables_ch3_special_mode),
-        e2e_test(test_sets_separate_ch3_operator_frequencies)
+        e2e_test(test_sets_separate_ch3_operator_frequencies),
+        e2e_test(test_pitch_bends_ch3_special_mode_operators)
         // clang-format on
     };
 

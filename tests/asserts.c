@@ -25,6 +25,16 @@ void stub_usb_receive_note_on(u8 chan, u8 key, u8 velocity)
     stub_usb_receive_byte(velocity);
 }
 
+void stub_usb_receive_pitch_bend(u8 chan, u16 bend)
+{
+    u8 lower = bend & 0x007F;
+    u8 upper = bend >> 7;
+
+    stub_usb_receive_byte(0xE0 + chan);
+    stub_usb_receive_byte(lower);
+    stub_usb_receive_byte(upper);
+}
+
 void expect_usb_sent_byte(u8 value)
 {
     will_return(__wrap_comm_everdrive_write_ready, 1);
