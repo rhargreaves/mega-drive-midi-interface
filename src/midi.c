@@ -92,6 +92,7 @@ static void reset(void)
 {
     midi_psg_reset();
     midi_fm_reset();
+    midi_fm_sm_reset();
     mappingModePref = MappingMode_Auto;
     dynamicMode = false;
     disableNonGeneralMidiCCs = false;
