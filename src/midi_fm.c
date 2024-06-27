@@ -26,6 +26,7 @@ static MidiFmChannel fmChannels[MAX_FM_CHANS];
 static u8 pitchIsOutOfRange(u8 pitch);
 static u8 effectiveVolume(MidiFmChannel* channelState);
 static void updatePan(u8 chan);
+static u16 pitchToFreq(u8 pitch);
 void midi_fm_reset(void);
 
 static const FmChannel** presets;
@@ -86,7 +87,7 @@ void midi_fm_channel_volume(u8 chan, u8 volume)
 
 u16 midi_fm_pitchAndPitchBendToFreqNum(u8 pitch, u16 pitchBend)
 {
-    u16 freq = midi_fm_pitchToFreqNumber(pitch);
+    u16 freq = pitchToFreq(pitch);
     s16 bendRelative = pitchBend - MIDI_PITCH_BEND_CENTRE;
     return freq + (bendRelative / 75);
 }
@@ -141,7 +142,7 @@ u8 midi_fm_pitchToOctave(u8 pitch)
     return (pitch - MIN_MIDI_PITCH) / SEMITONES;
 }
 
-u16 midi_fm_pitchToFreqNumber(u8 pitch)
+static u16 pitchToFreq(u8 pitch)
 {
     return FREQS[((u8)(pitch - MIN_MIDI_PITCH)) % SEMITONES];
 }
