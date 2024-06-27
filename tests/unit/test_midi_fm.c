@@ -601,6 +601,29 @@ static void test_midi_pitch_bends_special_mode_operator(UNUSED void** state)
     __real_midi_pitch_bend(chan, 0x6000);
 }
 
+static void test_midi_pitch_bends_special_mode_op_independent_of_other_ops(
+    UNUSED void** state)
+{
+    expect_value(__wrap_synth_specialModePitch, op, 0);
+    expect_value(__wrap_synth_specialModePitch, octave, 4);
+    expect_value(__wrap_synth_specialModePitch, freqNumber, SYNTH_NTSC_C);
+    expect_value(__wrap_synth_specialModeVolume, op, 0);
+    expect_value(__wrap_synth_specialModeVolume, volume, MAX_MIDI_VOLUME);
+    __real_midi_note_on(10, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
+
+    expect_value(__wrap_synth_specialModePitch, op, 0);
+    expect_value(__wrap_synth_specialModePitch, octave, 4);
+    expect_value(__wrap_synth_specialModePitch, freqNumber, 862);
+    __real_midi_pitch_bend(10, 0x6000);
+
+    expect_value(__wrap_synth_specialModePitch, op, 1);
+    expect_value(__wrap_synth_specialModePitch, octave, 4);
+    expect_value(__wrap_synth_specialModePitch, freqNumber, SYNTH_NTSC_C);
+    expect_value(__wrap_synth_specialModeVolume, op, 1);
+    expect_value(__wrap_synth_specialModeVolume, volume, MAX_MIDI_VOLUME);
+    __real_midi_note_on(11, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
+}
+
 static void test_midi_persists_pitch_bends_for_special_mode_op_between_notes(
     UNUSED void** state)
 {

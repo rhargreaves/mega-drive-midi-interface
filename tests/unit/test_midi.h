@@ -18,7 +18,7 @@
 #define TONE_NTSC_DS4 380
 #define TONE_NTSC_A2 1016
 
-#define SYNTH_NTSC_C 644
+#define SYNTH_NTSC_C 0x284
 #define SYNTH_NTSC_AS 1146
 #define SYNTH_PAL_C 649
 

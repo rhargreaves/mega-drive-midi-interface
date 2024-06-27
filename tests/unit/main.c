@@ -152,6 +152,8 @@ int main(void)
         midi_test(test_midi_sets_volume_of_special_mode_ch3_operator),
         midi_test(test_midi_pitch_bends_special_mode_operator),
         midi_test(
+            test_midi_pitch_bends_special_mode_op_independent_of_other_ops),
+        midi_test(
             test_midi_persists_pitch_bends_for_special_mode_op_between_notes),
 
         midi_test(test_midi_sets_genmdm_stereo_mode),
