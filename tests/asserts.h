@@ -19,6 +19,8 @@ void expect_synth_volume_any(void);
 void expect_synth_volume(u8 channel, u8 volume);
 u8 regOpIndex(u8 op);
 
+void _expect_synth_pitch(u8 channel, u8 octave, u16 freqNumber,
+    const char* const file, const int line);
 void _expect_ym2612_write_reg(
     u8 part, u8 reg, u8 data, const char* const file, const int line);
 void _expect_ym2612_write_channel(
@@ -86,6 +88,9 @@ void _expect_ym2612_write_operator(u8 chan, u8 op, u8 baseReg, u8 data,
         expect_value(__wrap_comm_megawifi_midiEmitCallback, midiByte, mb1);    \
         expect_value(__wrap_comm_megawifi_midiEmitCallback, midiByte, mb2);    \
     }
+
+#define expect_synth_pitch(channel, octave, freqNumber)                        \
+    _expect_synth_pitch(channel, octave, freqNumber, __FILE__, __LINE__)
 
 #define expect_ym2612_write_operator(chan, op, baseReg, data)                  \
     _expect_ym2612_write_operator(chan, op, baseReg, data, __FILE__, __LINE__)

@@ -87,11 +87,13 @@ void expect_synth_pitch_any(void)
     expect_any(__wrap_synth_pitch, freqNumber);
 }
 
-void expect_synth_pitch(u8 channel, u8 octave, u16 freqNumber)
+void _expect_synth_pitch(u8 channel, u8 octave, u16 freqNumber,
+    const char* const file, const int line)
 {
-    expect_value(__wrap_synth_pitch, channel, channel);
-    expect_value(__wrap_synth_pitch, octave, octave);
-    expect_value(__wrap_synth_pitch, freqNumber, freqNumber);
+    expect_value_with_pos(__wrap_synth_pitch, channel, channel, file, line);
+    expect_value_with_pos(__wrap_synth_pitch, octave, octave, file, line);
+    expect_value_with_pos(
+        __wrap_synth_pitch, freqNumber, freqNumber, file, line);
 }
 
 void expect_synth_volume(u8 channel, u8 volume)
