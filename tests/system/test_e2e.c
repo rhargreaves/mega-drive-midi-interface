@@ -12,19 +12,22 @@
 #include "scheduler.h"
 #include <cmocka.h>
 
-static const u8 ccVolume = 0x7;
-static const u8 algorithmCC = 14;
-static const u8 specialModeCC = 80;
-static const u8 specialModeEnable = 64;
-static const u8 ccPolyphonic = 84;
-static const u8 ccPolyphonicOnValue = 0x7F;
-static const u8 ccDeviceSelect = 86;
-static const u8 ccDevicePsgValue = 64;
+static const u8 TEST_CC_VOLUME = 0x7;
+static const u8 TEST_CC_ALGORITHM = 14;
+static const u8 TEST_CC_SPECIAL_MODE = 80;
+static const u8 TEST_CC_POLYPHONIC = 84;
+static const u8 TEST_CC_DEVICE_SELECT = 86;
 
-static const u8 psgMidiChannel1 = 6;
+static const u8 TEST_POLYPHONIC_ON = 0x7F;
+static const u8 TEST_SPECIAL_MODE_ON = 64;
+static const u8 TEST_DEVICE_SELECT_PSG = 64;
+static const u8 TEST_MIDI_CHANNEL_PSG_1 = 6;
+static const u8 TEST_MIDI_CHANNEL_1 = 0;
+static const u8 TEST_MIDI_CHANNEL_3 = 2;
+static const u8 TEST_MIDI_CHANNEL_11 = 10;
 
-static const u8 MAX_VOLUME = 127;
-static const u8 MAX_VELOCITY = 127;
+static const u8 TEST_VOLUME_MAX = 127;
+static const u8 TEST_VELOCITY_MAX = 127;
 
 static int test_e2e_setup(void** state)
 {
@@ -39,7 +42,7 @@ static int test_e2e_setup(void** state)
 
 static void test_midi_note_on_event_sent_to_ym2612(void** state)
 {
-    stub_usb_receive_note_on(0, 48, 127);
+    stub_usb_receive_note_on(TEST_MIDI_CHANNEL_1, 48, 127);
     expect_ym2612_write_channel(0, 0xA4, 0x1A);
     expect_ym2612_write_channel(0, 0xA0, 0x84);
     expect_ym2612_write_reg(0, 0x28, 0xF0);
@@ -48,19 +51,17 @@ static void test_midi_note_on_event_sent_to_ym2612(void** state)
 
 static void test_polyphonic_midi_sent_to_separate_ym2612_channels(void** state)
 {
-    const u8 noteOnKey1 = 48;
-    const u8 noteOnKey2 = 49;
-
-    stub_usb_receive_cc(0, ccPolyphonic, ccPolyphonicOnValue);
+    stub_usb_receive_cc(
+        TEST_MIDI_CHANNEL_1, TEST_CC_POLYPHONIC, TEST_POLYPHONIC_ON);
     midi_receiver_read();
 
-    stub_usb_receive_note_on(0, noteOnKey1, MAX_VELOCITY);
+    stub_usb_receive_note_on(TEST_MIDI_CHANNEL_1, 48, TEST_VELOCITY_MAX);
     expect_ym2612_write_channel(0, 0xA4, 0x1A);
     expect_ym2612_write_channel(0, 0xA0, 0x84);
     expect_ym2612_write_reg(0, 0x28, 0xF0);
     midi_receiver_read();
 
-    stub_usb_receive_note_on(0, noteOnKey2, MAX_VELOCITY);
+    stub_usb_receive_note_on(TEST_MIDI_CHANNEL_1, 49, TEST_VELOCITY_MAX);
     expect_ym2612_write_channel(1, 0xA4, 0x1A);
     expect_ym2612_write_channel(1, 0xA0, 0xA9);
     expect_ym2612_write_reg(0, 0x28, 0xF1);
@@ -70,7 +71,7 @@ static void test_polyphonic_midi_sent_to_separate_ym2612_channels(void** state)
 
 static void test_psg_audible_if_note_on_event_triggered(void** state)
 {
-    stub_usb_receive_note_on(psgMidiChannel1, 60, MAX_VELOCITY);
+    stub_usb_receive_note_on(TEST_MIDI_CHANNEL_PSG_1, 60, TEST_VELOCITY_MAX);
     expect_any(__wrap_PSG_setTone, channel);
     expect_any(__wrap_PSG_setTone, value);
     expect_any(__wrap_PSG_setEnvelope, channel);
@@ -82,7 +83,8 @@ static void
 test_psg_not_audible_if_midi_channel_volume_set_and_there_is_no_note_on_event(
     void** state)
 {
-    stub_usb_receive_cc(psgMidiChannel1, ccVolume, MAX_VOLUME);
+    stub_usb_receive_cc(
+        TEST_MIDI_CHANNEL_PSG_1, TEST_CC_VOLUME, TEST_VOLUME_MAX);
     midi_receiver_read();
 }
 
@@ -91,14 +93,15 @@ static void test_general_midi_reset_sysex_stops_all_notes(void** state)
     const u8 noteOnKey = 48;
 
     // FM note
-    stub_usb_receive_note_on(0, noteOnKey, MAX_VELOCITY);
+    stub_usb_receive_note_on(TEST_MIDI_CHANNEL_1, noteOnKey, TEST_VELOCITY_MAX);
     expect_ym2612_write_channel(0, 0xA4, 0x1A);
     expect_ym2612_write_channel(0, 0xA0, 0x84);
     expect_ym2612_write_reg(0, 0x28, 0xF0);
     midi_receiver_read();
 
     // PSG note
-    stub_usb_receive_note_on(MIN_PSG_CHAN, noteOnKey, MAX_VELOCITY);
+    stub_usb_receive_note_on(
+        TEST_MIDI_CHANNEL_PSG_1, noteOnKey, TEST_VELOCITY_MAX);
     expect_value(__wrap_PSG_setTone, channel, 0);
     expect_any(__wrap_PSG_setTone, value);
     expect_value(__wrap_PSG_setEnvelope, channel, 0);
@@ -134,18 +137,17 @@ static void remapChannel(u8 midiChannel, u8 deviceChannel)
 
 static void test_remap_midi_channel_1_to_psg_channel_1()
 {
-    const u8 MIDI_CHANNEL_1 = 0;
     const u8 MIDI_CHANNEL_UNASSIGNED = 0x7F;
-    const u8 PSG_TONE_1 = 0x06;
-    const u8 FM_CHAN_1 = 0;
+    const u8 DEVICE_PSG_1 = 0x06;
+    const u8 DEVICE_FM_1 = 0;
 
-    remapChannel(MIDI_CHANNEL_UNASSIGNED, FM_CHAN_1);
+    remapChannel(MIDI_CHANNEL_UNASSIGNED, DEVICE_FM_1);
     midi_receiver_read();
 
-    remapChannel(MIDI_CHANNEL_1, PSG_TONE_1);
+    remapChannel(TEST_MIDI_CHANNEL_1, DEVICE_PSG_1);
     midi_receiver_read();
 
-    stub_usb_receive_note_on(0, 48, MAX_VELOCITY);
+    stub_usb_receive_note_on(TEST_MIDI_CHANNEL_1, 48, TEST_VELOCITY_MAX);
     expect_value(__wrap_PSG_setTone, channel, 0);
     expect_any(__wrap_PSG_setTone, value);
     expect_value(__wrap_PSG_setEnvelope, channel, 0);
@@ -155,13 +157,15 @@ static void test_remap_midi_channel_1_to_psg_channel_1()
 
 static void test_set_device_for_midi_channel_1_to_psg()
 {
-    stub_usb_receive_cc(0, ccPolyphonic, ccPolyphonicOnValue);
+    stub_usb_receive_cc(
+        TEST_MIDI_CHANNEL_1, TEST_CC_POLYPHONIC, TEST_POLYPHONIC_ON);
     midi_receiver_read();
 
-    stub_usb_receive_cc(0, ccDeviceSelect, ccDevicePsgValue);
+    stub_usb_receive_cc(
+        TEST_MIDI_CHANNEL_1, TEST_CC_DEVICE_SELECT, TEST_DEVICE_SELECT_PSG);
     midi_receiver_read();
 
-    stub_usb_receive_note_on(0, 48, MAX_VELOCITY);
+    stub_usb_receive_note_on(TEST_MIDI_CHANNEL_1, 48, TEST_VELOCITY_MAX);
     expect_value(__wrap_PSG_setTone, channel, 0);
     expect_any(__wrap_PSG_setTone, value);
     expect_value(__wrap_PSG_setEnvelope, channel, 0);
@@ -198,7 +202,7 @@ static void test_loads_psg_envelope()
     }
     midi_receiver_read();
 
-    stub_usb_receive_note_on(6, 60, MAX_VELOCITY);
+    stub_usb_receive_note_on(TEST_MIDI_CHANNEL_PSG_1, 60, TEST_VELOCITY_MAX);
     expect_value(__wrap_PSG_setTone, channel, 0);
     expect_value(__wrap_PSG_setTone, value, 0x17c);
     expect_value(__wrap_PSG_setEnvelope, channel, 0);
@@ -208,18 +212,20 @@ static void test_loads_psg_envelope()
 
 static void test_enables_ch3_special_mode(void** state)
 {
-    stub_usb_receive_cc(0, specialModeCC, specialModeEnable);
+    stub_usb_receive_cc(
+        TEST_MIDI_CHANNEL_1, TEST_CC_SPECIAL_MODE, TEST_SPECIAL_MODE_ON);
     expect_ym2612_write_reg(0, 0x27, 0x40);
     midi_receiver_read();
 }
 
 static void test_sets_separate_ch3_operator_frequencies(void** state)
 {
-    stub_usb_receive_cc(0, specialModeCC, specialModeEnable);
+    stub_usb_receive_cc(
+        TEST_MIDI_CHANNEL_1, TEST_CC_SPECIAL_MODE, TEST_SPECIAL_MODE_ON);
     expect_ym2612_write_reg(0, 0x27, 0x40);
     midi_receiver_read();
 
-    stub_usb_receive_cc(2, algorithmCC, 0x7F); // alg 7
+    stub_usb_receive_cc(TEST_MIDI_CHANNEL_3, TEST_CC_ALGORITHM, 0x7F); // alg 7
     expect_ym2612_write_reg(0, 0xB2, 0x7);
     midi_receiver_read();
 
@@ -228,7 +234,7 @@ static void test_sets_separate_ch3_operator_frequencies(void** state)
     const u8 tlValues[] = { 0x27, 0x04, 0x24 };
 
     for (u8 op = 0; op < 3; op++) {
-        stub_usb_receive_note_on(10 + op, 60, 120);
+        stub_usb_receive_note_on(TEST_MIDI_CHANNEL_11 + op, 60, 120);
         expect_ym2612_write_reg(0, upperRegs[op], 0x22);
         expect_ym2612_write_reg(0, lowerRegs[op], 0x84);
         expect_ym2612_write_operator(CH_SPECIAL_MODE, op, 0x40, tlValues[op]);
