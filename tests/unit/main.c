@@ -98,6 +98,7 @@ int main(void)
         midi_test(test_midi_channel_volume_sets_psg_attenuation),
         midi_test(test_midi_channel_volume_sets_psg_attenuation_2),
         midi_test(test_midi_sets_synth_pitch_bend),
+        midi_test(test_midi_persists_pitch_bend_between_notes),
         midi_test(test_midi_sets_psg_pitch_bend_down),
         midi_test(test_midi_sets_psg_pitch_bend_up),
         midi_test(test_midi_psg_pitch_bend_persists_after_tick),

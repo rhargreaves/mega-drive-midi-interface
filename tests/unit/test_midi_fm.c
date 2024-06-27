@@ -452,6 +452,25 @@ static void test_midi_sets_synth_pitch_bend(UNUSED void** state)
     }
 }
 
+static void test_midi_persists_pitch_bend_between_notes(UNUSED void** state)
+{
+    for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
+        print_message("chan %d\n", chan);
+        expect_synth_pitch(chan, 4, SYNTH_NTSC_C);
+        expect_synth_volume_any();
+        expect_value(__wrap_synth_noteOn, channel, chan);
+        __real_midi_note_on(chan, 60, MAX_MIDI_VOLUME);
+
+        expect_synth_pitch(chan, 4, 0x225);
+        __real_midi_pitch_bend(chan, 1000);
+
+        expect_synth_pitch(chan, 4, 0x225);
+        expect_synth_volume_any();
+        expect_value(__wrap_synth_noteOn, channel, chan);
+        __real_midi_note_on(chan, 60, MAX_MIDI_VOLUME);
+    }
+}
+
 static void remap_midi_channel(u8 midiChannel, u8 deviceChannel)
 {
     u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,

@@ -368,7 +368,6 @@ static void test_midi_dynamic_maintains_pan_on_remapping(UNUSED void** state)
 static void test_midi_dynamic_maintains_pitch_bend_on_remapping(
     UNUSED void** state)
 {
-    /* Buggy behaviour characterisation */
     const u16 midi_bend = 0x3000;
 
     // Note 1
@@ -383,8 +382,7 @@ static void test_midi_dynamic_maintains_pitch_bend_on_remapping(
 
     // Note 2
     expect_synth_pitch(1, 7, 0x295);
-    expect_synth_pitch(1, 7,
-        0x25f); // defaults back as pitch bend not taken into consideration on
+    expect_synth_pitch(1, 7, 0x295); // triggered when pitch bend "copied"
     // note on
     expect_synth_volume(1, MAX_MIDI_VOLUME);
     expect_value(__wrap_synth_noteOn, channel, 1);
