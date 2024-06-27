@@ -278,35 +278,25 @@ static void test_loads_psg_envelope()
 
 static void test_enables_ch3_special_mode(void** state)
 {
-    const u8 status = 0xB0;
     const u8 specialModeCC = 80;
     const u8 specialModeEnable = 64;
 
-    stub_usb_receive_byte(status);
-    stub_usb_receive_byte(specialModeCC);
-    stub_usb_receive_byte(specialModeEnable);
-
+    stub_usb_receive_cc(0, specialModeCC, specialModeEnable);
     expect_ym2612_write_reg(0, 0x27, 0x40);
-
     midi_receiver_read();
 }
 
 static void test_sets_separate_ch3_operator_frequencies(void** state)
 {
-    const u8 status = 0xB2;
     const u8 specialModeCC = 80;
     const u8 specialModeEnable = 64;
     const u8 algorithmCC = 14;
 
-    stub_usb_receive_byte(status);
-    stub_usb_receive_byte(specialModeCC);
-    stub_usb_receive_byte(specialModeEnable);
+    stub_usb_receive_cc(0, specialModeCC, specialModeEnable);
     expect_ym2612_write_reg(0, 0x27, 0x40);
     midi_receiver_read();
 
-    stub_usb_receive_byte(status);
-    stub_usb_receive_byte(algorithmCC);
-    stub_usb_receive_byte(0x7F); // alg 7
+    stub_usb_receive_cc(2, algorithmCC, 0x7F); // alg 7
     expect_ym2612_write_reg(0, 0xB2, 0x7);
     midi_receiver_read();
 
@@ -315,16 +305,7 @@ static void test_sets_separate_ch3_operator_frequencies(void** state)
     const u8 tlValues[] = { 0x27, 0x04, 0x24 };
 
     for (u8 op = 0; op < 3; op++) {
-        print_message("op %d\n", op);
-        u8 opMidiChannel = 10 + op;
-
-        const u8 noteOnStatus = 0x90 + opMidiChannel;
-        const u8 noteOnKey = 60;
-        const u8 noteOnVelocity = 120;
-
-        stub_usb_receive_byte(noteOnStatus);
-        stub_usb_receive_byte(noteOnKey);
-        stub_usb_receive_byte(noteOnVelocity);
+        stub_usb_receive_note_on(10 + op, 60, 120);
         expect_ym2612_write_reg(0, upperRegs[op], 0x22);
         expect_ym2612_write_reg(0, lowerRegs[op], 0x84);
         expect_ym2612_write_operator(CH_SPECIAL_MODE, op, 0x40, tlValues[op]);

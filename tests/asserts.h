@@ -6,6 +6,8 @@
 
 void expect_usb_sent_byte(u8 value);
 void stub_usb_receive_byte(u8 value);
+void stub_usb_receive_cc(u8 chan, u8 cc, u8 value);
+void stub_usb_receive_note_on(u8 chan, u8 key, u8 velocity);
 void stub_comm_read_returns_midi_event(u8 status, u8 data, u8 data2);
 void expect_ym2612_write_reg_any_data(u8 part, u8 reg);
 void expect_ym2612_write_operator_any_data(u8 chan, u8 op, u8 baseReg);
