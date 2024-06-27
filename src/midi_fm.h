@@ -27,3 +27,4 @@ void midi_fm_all_notes_off(u8 chan);
 void midi_fm_percussive(u8 chan, bool enabled);
 u8 midi_fm_pitchToOctave(u8 pitch);
 u16 midi_fm_pitchToFreqNumber(u8 pitch);
+u16 midi_fm_pitchAndPitchBendToFreqNum(u8 pitch, u16 pitchBend);

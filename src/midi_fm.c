@@ -27,7 +27,6 @@ static u8 pitchIsOutOfRange(u8 pitch);
 static u8 effectiveVolume(MidiFmChannel* channelState);
 static void updatePan(u8 chan);
 void midi_fm_reset(void);
-static u16 effectiveFreq(MidiFmChannel* fmChan);
 
 static const FmChannel** presets;
 static const PercussionPreset** percussionPresets;
@@ -67,9 +66,8 @@ void midi_fm_note_on(u8 chan, u8 pitch, u8 velocity)
     fmChan->velocity = velocity;
     synth_volume(chan, effectiveVolume(fmChan));
     fmChan->pitch = pitch;
-
-    u16 freq = effectiveFreq(fmChan);
-    synth_pitch(chan, midi_fm_pitchToOctave(fmChan->pitch), freq);
+    synth_pitch(chan, midi_fm_pitchToOctave(fmChan->pitch),
+        midi_fm_pitchAndPitchBendToFreqNum(fmChan->pitch, fmChan->pitchBend));
     synth_noteOn(chan);
 }
 
@@ -86,10 +84,10 @@ void midi_fm_channel_volume(u8 chan, u8 volume)
     synth_volume(chan, effectiveVolume(fmChan));
 }
 
-static u16 effectiveFreq(MidiFmChannel* fmChan)
+u16 midi_fm_pitchAndPitchBendToFreqNum(u8 pitch, u16 pitchBend)
 {
-    u16 freq = midi_fm_pitchToFreqNumber(fmChan->pitch);
-    s16 bendRelative = fmChan->pitchBend - MIDI_PITCH_BEND_CENTRE;
+    u16 freq = midi_fm_pitchToFreqNumber(pitch);
+    s16 bendRelative = pitchBend - MIDI_PITCH_BEND_CENTRE;
     return freq + (bendRelative / 75);
 }
 
@@ -97,8 +95,8 @@ void midi_fm_pitch_bend(u8 chan, u16 bend)
 {
     MidiFmChannel* fmChan = &fmChannels[chan];
     fmChan->pitchBend = bend;
-    u16 freq = effectiveFreq(fmChan);
-    synth_pitch(chan, midi_fm_pitchToOctave(fmChan->pitch), freq);
+    synth_pitch(chan, midi_fm_pitchToOctave(fmChan->pitch),
+        midi_fm_pitchAndPitchBendToFreqNum(fmChan->pitch, fmChan->pitchBend));
 }
 
 void midi_fm_program(u8 chan, u8 program)
