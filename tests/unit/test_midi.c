@@ -116,6 +116,15 @@ void test_midi_ignores_sustain_pedal_cc(UNUSED void** state)
     __real_midi_cc(0, cc, 1);
 }
 
+void test_midi_ignores_expression_cc(UNUSED void** state)
+{
+    wraps_enable_logging_checks();
+
+    u8 cc = 11;
+
+    __real_midi_cc(0, cc, 1);
+}
+
 void test_midi_ignores_sysex_nrpn_ccs(UNUSED void** state)
 {
     wraps_enable_logging_checks();

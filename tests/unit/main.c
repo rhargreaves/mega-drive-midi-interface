@@ -134,6 +134,7 @@ int main(void)
         midi_test(test_midi_unsets_polyphonic_mode),
         midi_test(test_midi_sets_unknown_CC),
         midi_test(test_midi_ignores_sustain_pedal_cc),
+        midi_test(test_midi_ignores_expression_cc),
         midi_test(test_midi_ignores_sysex_nrpn_ccs),
         midi_test(test_midi_polyphonic_mode_sends_CCs_to_all_FM_channels),
         midi_test(test_midi_set_overflow_flag_on_polyphony_breach),
