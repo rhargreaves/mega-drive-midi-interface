@@ -486,6 +486,24 @@ static void test_midi_pitch_bends_up_an_octave(UNUSED void** state)
     }
 }
 
+static void test_midi_pitch_bends_up_an_octave_upper_freq_limit(
+    UNUSED void** state)
+{
+    const u8 MIDI_PITCH_AS4 = 70;
+    const u16 SYNTH_FREQ_AS4 = 1146;
+    const u16 SYNTH_FREQ_C3 = 1286;
+
+    for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
+        expect_synth_pitch(chan, 4, SYNTH_FREQ_AS4);
+        expect_synth_volume_any();
+        expect_value(__wrap_synth_noteOn, channel, chan);
+        __real_midi_note_on(chan, MIDI_PITCH_AS4, MAX_MIDI_VOLUME);
+
+        expect_synth_pitch(chan, 4, SYNTH_FREQ_C3);
+        __real_midi_pitch_bend(chan, MIDI_PITCH_BEND_MAX); // up 2 st
+    }
+}
+
 static void test_midi_persists_pitch_bend_between_notes(UNUSED void** state)
 {
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {

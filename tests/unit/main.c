@@ -100,6 +100,7 @@ int main(void)
         midi_test(test_midi_sets_synth_pitch_bend),
         midi_test(test_midi_pitch_bends_down_an_octave),
         midi_test(test_midi_pitch_bends_up_an_octave),
+        midi_test(test_midi_pitch_bends_up_an_octave_upper_freq_limit),
         midi_test(test_midi_persists_pitch_bend_between_notes),
         midi_test(test_midi_sets_psg_pitch_bend_down),
         midi_test(test_midi_sets_psg_pitch_bend_up),
