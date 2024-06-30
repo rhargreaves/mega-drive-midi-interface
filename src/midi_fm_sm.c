@@ -18,7 +18,7 @@ void midi_fm_sm_note_on(u8 op, u8 pitch, u8 velocity)
     SpecialModeOperator* smOp = &smOperators[op];
     smOp->pitch = pitch;
     synth_specialModePitch(op, midi_fm_pitchToOctave(smOp->pitch),
-        midi_fm_pitchAndPitchBendToFreqNum(smOp->pitch, smOp->pitchBend));
+        midi_fm_pitchToFreqNum(smOp->pitch, smOp->pitchBend));
     synth_specialModeVolume(op, velocity);
 }
 
@@ -27,7 +27,7 @@ void midi_fm_sm_pitch_bend(u8 op, u16 bend)
     SpecialModeOperator* smOp = &smOperators[op];
     smOp->pitchBend = bend;
     synth_specialModePitch(op, midi_fm_pitchToOctave(smOp->pitch),
-        midi_fm_pitchAndPitchBendToFreqNum(smOp->pitch, smOp->pitchBend));
+        midi_fm_pitchToFreqNum(smOp->pitch, smOp->pitchBend));
 }
 
 void midi_fm_sm_reset(void)
