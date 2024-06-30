@@ -98,25 +98,21 @@ u16 midi_fm_pitchAndPitchBendToFreqNum(u8 pitch, u16 pitchBend)
         return freq;
     }
     s16 bendRelative = pitchBend - MIDI_PITCH_BEND_CENTRE;
+    s16 approxFreqDelta;
     if (bendRelative < 0) {
         // bend down
-        u16 lowerBoundFreq
+        u16 boundFreq
             = pitchToFreq(pitch, -GENERAL_MIDI_PITCH_BEND_SEMITONE_RANGE);
-        u16 approxFreqDelta
-            = (u16)(((u32)(freq - lowerBoundFreq) * (u32)(bendRelative * -1))
-                / (u32)DEFAULT_MIDI_PITCH_BEND);
-        u16 approxFreq = freq - approxFreqDelta;
-        return approxFreq;
+        approxFreqDelta
+            = (((freq - boundFreq) * bendRelative) / DEFAULT_MIDI_PITCH_BEND);
     } else {
         // bend up
-        u16 upperBoundFreq
+        u16 boundFreq
             = pitchToFreq(pitch, GENERAL_MIDI_PITCH_BEND_SEMITONE_RANGE);
-        u16 approxFreqDelta
-            = (u16)(((u32)(upperBoundFreq - freq) * (u32)(bendRelative))
-                / (u32)DEFAULT_MIDI_PITCH_BEND);
-        u16 approxFreq = freq + approxFreqDelta;
-        return approxFreq;
+        approxFreqDelta
+            = (((boundFreq - freq) * bendRelative) / DEFAULT_MIDI_PITCH_BEND);
     }
+    return freq + approxFreqDelta;
 }
 void midi_fm_pitch_bend(u8 chan, u16 bend)
 {
