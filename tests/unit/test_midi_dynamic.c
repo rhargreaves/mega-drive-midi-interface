@@ -377,12 +377,12 @@ static void test_midi_dynamic_maintains_pitch_bend_on_remapping(
     __real_midi_note_on(0, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
 
     // Set bend
-    expect_synth_pitch(0, 6, 0x4b0);
+    expect_synth_pitch(0, 6, 0x4c0);
     __real_midi_pitch_bend(0, midi_bend);
 
     // Note 2
-    expect_synth_pitch(1, 7, 0x295);
-    expect_synth_pitch(1, 7, 0x295); // triggered when pitch bend "copied"
+    expect_synth_pitch(1, 7, 0x284);
+    expect_synth_pitch(1, 7, 0x284); // triggered when pitch bend "copied"
     // note on
     expect_synth_volume(1, MAX_MIDI_VOLUME);
     expect_value(__wrap_synth_noteOn, channel, 1);

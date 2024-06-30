@@ -261,6 +261,6 @@ static void test_pitch_bends_ch3_special_mode_operators(void** state)
 
     stub_usb_receive_pitch_bend(TEST_MIDI_CHANNEL_11, 0x4000);
     expect_ym2612_write_reg(0, 0xAD, 0x22);
-    expect_ym2612_write_reg(0, 0xA9, 0xF1);
+    expect_ym2612_write_reg(0, 0xA9, 0xD2);
     midi_receiver_read();
 }

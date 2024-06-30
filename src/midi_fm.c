@@ -5,10 +5,16 @@
 
 static const u8 SEMITONES = 12;
 static const u16 FREQS[] = {
+    // Lower Pitch Bends (-2 st)
+    541, 573,
+    // Normal Range
     607, // B
     644, 681, 722, 765, 810, 858, 910, 964, 1021, 1081,
-    1146 // A#
+    1146, // A#
+    // Upper Pitch Bends (+2 st)
+    1214, 1286
 };
+static const u8 FREQ_NORMAL_RANGE_OFFSET = 2;
 
 typedef struct MidiFmChannel MidiFmChannel;
 
@@ -26,7 +32,7 @@ static MidiFmChannel fmChannels[MAX_FM_CHANS];
 static u8 pitchIsOutOfRange(u8 pitch);
 static u8 effectiveVolume(MidiFmChannel* channelState);
 static void updatePan(u8 chan);
-static u16 pitchToFreq(u8 pitch);
+static u16 pitchToFreq(u8 pitch, s16 offset);
 void midi_fm_reset(void);
 
 static const FmChannel** presets;
@@ -87,11 +93,31 @@ void midi_fm_channel_volume(u8 chan, u8 volume)
 
 u16 midi_fm_pitchAndPitchBendToFreqNum(u8 pitch, u16 pitchBend)
 {
-    u16 freq = pitchToFreq(pitch);
+    u16 freq = pitchToFreq(pitch, 0);
+    if (pitchBend == MIDI_PITCH_BEND_CENTRE) {
+        return freq;
+    }
     s16 bendRelative = pitchBend - MIDI_PITCH_BEND_CENTRE;
-    return freq + (bendRelative / 75);
+    if (bendRelative < 0) {
+        // bend down
+        u16 lowerBoundFreq
+            = pitchToFreq(pitch, -GENERAL_MIDI_PITCH_BEND_SEMITONE_RANGE);
+        u16 approxFreqDelta
+            = (u16)(((u32)(freq - lowerBoundFreq) * (u32)(bendRelative * -1))
+                / (u32)DEFAULT_MIDI_PITCH_BEND);
+        u16 approxFreq = freq - approxFreqDelta;
+        return approxFreq;
+    } else {
+        // bend up
+        u16 upperBoundFreq
+            = pitchToFreq(pitch, GENERAL_MIDI_PITCH_BEND_SEMITONE_RANGE);
+        u16 approxFreqDelta
+            = (u16)(((u32)(upperBoundFreq - freq) * (u32)(bendRelative))
+                / (u32)DEFAULT_MIDI_PITCH_BEND);
+        u16 approxFreq = freq + approxFreqDelta;
+        return approxFreq;
+    }
 }
-
 void midi_fm_pitch_bend(u8 chan, u16 bend)
 {
     MidiFmChannel* fmChan = &fmChannels[chan];
@@ -142,9 +168,12 @@ u8 midi_fm_pitchToOctave(u8 pitch)
     return (pitch - MIN_MIDI_PITCH) / SEMITONES;
 }
 
-static u16 pitchToFreq(u8 pitch)
+static u16 pitchToFreq(u8 pitch, s16 offset)
 {
-    return FREQS[((u8)(pitch - MIN_MIDI_PITCH)) % SEMITONES];
+    u16 index = FREQ_NORMAL_RANGE_OFFSET
+        + ((u8)(pitch - MIN_MIDI_PITCH) % SEMITONES) + offset;
+    u16 freq = FREQS[index];
+    return freq;
 }
 
 static u8 pitchIsOutOfRange(u8 pitch)
