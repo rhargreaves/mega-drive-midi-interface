@@ -1,0 +1,5 @@
+#!/bin/bash
+set -euo pipefail
+. $(dirname $0)/set-var
+sendmidi dev "$MDMI_MIDI_PORT" hex syx 00 22 77 08 02 08 00 00
+sendmidi dev "$MDMI_MIDI_PORT" hex syx 00 22 77 08 02 08 0F 00
