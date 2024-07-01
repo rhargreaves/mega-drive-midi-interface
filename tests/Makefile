@@ -71,6 +71,7 @@ MOCKS=midi_process \
     synth_setSpecialMode \
 	synth_specialModePitch \
 	synth_specialModeVolume \
+	synth_directWriteYm2612 \
 	fm_writeReg \
 	midi_note_off \
 	midi_note_on \

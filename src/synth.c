@@ -455,3 +455,8 @@ void synth_specialModeVolume(u8 operator, u8 volume)
     writeOperatorReg(CH_SPECIAL_MODE, operator, 0x40,
         effectiveTotalLevel(CH_SPECIAL_MODE, operator, newTotalLevel));
 }
+
+void synth_directWriteYm2612(u8 part, u8 reg, u8 data)
+{
+    YM2612_writeReg(part, reg, data);
+}

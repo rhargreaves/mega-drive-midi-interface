@@ -230,6 +230,13 @@ void __wrap_synth_specialModeVolume(u8 op, u8 volume)
     check_expected(volume);
 }
 
+void __wrap_synth_directWriteYm2612(u8 part, u8 reg, u8 data)
+{
+    check_expected(part);
+    check_expected(reg);
+    check_expected(data);
+}
+
 void __wrap_comm_write(u8 data)
 {
     check_expected(data);

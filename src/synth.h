@@ -89,3 +89,4 @@ void synth_setParameterUpdateCallback(ParameterUpdatedCallback* cb);
 void synth_setSpecialMode(bool enable);
 void synth_specialModePitch(u8 op, u8 octave, u16 freqNumber);
 void synth_specialModeVolume(u8 op, u8 volume);
+void synth_directWriteYm2612(u8 part, u8 reg, u8 data);

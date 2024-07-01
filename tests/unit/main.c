@@ -167,6 +167,8 @@ int main(void)
         midi_test(test_midi_sysex_loads_psg_envelope),
         midi_test(test_midi_sysex_inverts_total_level_values),
         midi_test(test_midi_sysex_sets_original_total_level_values),
+        midi_test(test_midi_sysex_writes_directly_to_ym2612_regs_part_0),
+        midi_test(test_midi_sysex_writes_directly_to_ym2612_regs_part_1),
         midi_test(
             test_midi_sets_all_channel_mappings_when_setting_polyphonic_mode),
         midi_test(test_midi_shows_fm_parameter_ui),

@@ -576,6 +576,14 @@ static void handleCustomSysEx(const u8* data, u16 length)
     case SYSEX_COMMAND_LOAD_PSG_ENVELOPE:
         loadPsgEnvelope(data, length);
         break;
+    case SYSEX_COMMAND_WRITE_YM2612_REG_PART_0:
+        synth_directWriteYm2612(
+            0, data[0] << 4 | data[1], data[2] << 4 | data[3]);
+        break;
+    case SYSEX_COMMAND_WRITE_YM2612_REG_PART_1:
+        synth_directWriteYm2612(
+            1, data[0] << 4 | data[1], data[2] << 4 | data[3]);
+        break;
     }
 }
 

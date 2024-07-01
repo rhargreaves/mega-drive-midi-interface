@@ -264,3 +264,14 @@ static void test_pitch_bends_ch3_special_mode_operators(void** state)
     expect_ym2612_write_reg(0, 0xA9, 0xD2);
     midi_receiver_read();
 }
+
+static void test_write_directly_to_ym2612_regs_via_sysex(void** state)
+{
+    const u8 sysExSeq[]
+        = { 0xF0, 0x00, 0x22, 0x77, 0x08, 0x0B, 0x01, 0x01, 0x02, 0xF7 };
+    for (u16 i = 0; i < sizeof(sysExSeq); i++) {
+        stub_usb_receive_byte(sysExSeq[i]);
+    }
+    expect_ym2612_write_reg(0, 0xB1, 0x12);
+    midi_receiver_read();
+}
