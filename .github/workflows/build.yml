@@ -17,12 +17,7 @@ jobs:
           CMOCKA_XML_FILE: ../bin/TEST-cmocka.xml
           ENABLE_SANITISE_CHECKS: 1
         run: |
-          mkdir out
-          ./docker-make all
-          mv out/rom.bin out/rom_standard.bin
-          rm -f out/rom_head.o out/rom_head.bin out/rom.out out/rom.bin
-          ./docker-make ROM_TYPE=MEGAWIFI release
-          mv out/rom.bin out/rom_megawifi.bin
+          ./.github/workflows/make-release-roms
       - name: Report test results
         uses: ashley-taylor/junit-report-annotations-action@1.3
         if: always()
