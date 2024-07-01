@@ -42,7 +42,7 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: ${{ github.ref }}
-          draft: false
+          draft: true
           prerelease: false
       - name: Add Standard ROM to release
         id: upload_standard_rom
