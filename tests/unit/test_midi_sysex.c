@@ -280,3 +280,21 @@ static void test_midi_sysex_writes_directly_to_ym2612_regs_part_1(
     expect_value(__wrap_synth_directWriteYm2612, data, 0x12);
     __real_midi_sysex(sequence, sizeof(sequence));
 }
+
+static void test_midi_sysex_ignores_incorrect_length_ym2612_direct_writes(
+    UNUSED void** state)
+{
+    const u8 badSeq1[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
+        SYSEX_MANU_ID, SYSEX_COMMAND_WRITE_YM2612_REG_PART_0, 0x0B, 0x01, 0x01,
+        0x02, 0x02 };
+    __real_midi_sysex(badSeq1, sizeof(badSeq1));
+
+    const u8 badSeq2[]
+        = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+              SYSEX_COMMAND_WRITE_YM2612_REG_PART_0, 0x0B, 0x01, 0x01 };
+    __real_midi_sysex(badSeq2, sizeof(badSeq2));
+
+    const u8 badSeq3[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
+        SYSEX_MANU_ID, SYSEX_COMMAND_WRITE_YM2612_REG_PART_0 };
+    __real_midi_sysex(badSeq3, sizeof(badSeq3));
+}

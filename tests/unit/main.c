@@ -170,6 +170,8 @@ int main(void)
         midi_test(test_midi_sysex_writes_directly_to_ym2612_regs_part_0),
         midi_test(test_midi_sysex_writes_directly_to_ym2612_regs_part_1),
         midi_test(
+            test_midi_sysex_ignores_incorrect_length_ym2612_direct_writes),
+        midi_test(
             test_midi_sets_all_channel_mappings_when_setting_polyphonic_mode),
         midi_test(test_midi_shows_fm_parameter_ui),
         midi_test(test_midi_hides_fm_parameter_ui),

@@ -538,6 +538,15 @@ static void incrementSysExCursor(const u8** data, u16* length, u8 value)
     (*length) -= value;
 }
 
+static void directWriteYm2612(u8 part, const u8* data, u16 length)
+{
+    if (length != 4) {
+        return;
+    }
+    synth_directWriteYm2612(
+        part, data[0] << 4 | data[1], data[2] << 4 | data[3]);
+}
+
 static void handleCustomSysEx(const u8* data, u16 length)
 {
     u8 command = *data;
@@ -577,12 +586,10 @@ static void handleCustomSysEx(const u8* data, u16 length)
         loadPsgEnvelope(data, length);
         break;
     case SYSEX_COMMAND_WRITE_YM2612_REG_PART_0:
-        synth_directWriteYm2612(
-            0, data[0] << 4 | data[1], data[2] << 4 | data[3]);
+        directWriteYm2612(0, data, length);
         break;
     case SYSEX_COMMAND_WRITE_YM2612_REG_PART_1:
-        synth_directWriteYm2612(
-            1, data[0] << 4 | data[1], data[2] << 4 | data[3]);
+        directWriteYm2612(1, data, length);
         break;
     }
 }
