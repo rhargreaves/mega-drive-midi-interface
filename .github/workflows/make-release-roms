@@ -2,10 +2,7 @@
 set -euxo pipefail
 
 ./docker-make clean all
-mv out/rom.bin /tmp/rom_standard.bin
+mv out/rom.bin out/rom_standard.bin
 
 ./docker-make clean all ROM_TYPE=MEGAWIFI
-mv out/rom.bin /tmp/rom_megawifi.bin
-
-mv /tmp/rom_standard.bin out/
-mv /tmp/rom_megawifi.bin out/
+mv out/rom.bin out/rom_megawifi.bin
