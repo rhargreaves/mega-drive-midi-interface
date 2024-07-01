@@ -1,8 +1,12 @@
 #!/bin/bash
 set -euxo pipefail
 
+export BUILD=$(git describe --tags --abbrev=0)
+
 ./docker-make clean all
 mv out/rom.bin out/rom_standard.bin
 
 ./docker-make clean all ROM_TYPE=MEGAWIFI
 mv out/rom.bin out/rom_megawifi.bin
+
+echo $BUILD > out/version.txt
