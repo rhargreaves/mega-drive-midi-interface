@@ -25,9 +25,6 @@ res/samples:
 	unzip temp.zip -d res/samples
 	rm temp.zip
 
-cleanres: cleantmp
-	$(RM) -f $(RES_DEP) $(RES_DEPS)
-
 release: FLAGS= $(DEFAULT_FLAGS) -O3 -fuse-linker-plugin -fno-web -fno-gcse \
 	-fno-unit-at-a-time -fomit-frame-pointer $(LTO_FLAGS)
 release: LIBMD= $(LIB)/libmd.a

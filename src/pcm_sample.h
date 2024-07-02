@@ -1,5 +1,5 @@
-#include "samples.h"
 #include <types.h>
+#include "samples.h"
 
 typedef struct PcmSample PcmSample;
 
