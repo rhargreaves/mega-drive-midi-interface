@@ -6,7 +6,9 @@ RUN apt-get -y update && \
     cmake \
     gdb \
     gdbserver \
-    valgrind
+    valgrind \
+    wget \
+    unzip
 WORKDIR /app
 COPY tests/cmocka-*.tar.xz /app/tests/
 COPY tests/Makefile /app/tests/Makefile

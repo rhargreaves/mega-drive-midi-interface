@@ -11,3 +11,4 @@ out/
 *.swp
 res/*.s
 src/boot/sega.s
+res/samples/*
