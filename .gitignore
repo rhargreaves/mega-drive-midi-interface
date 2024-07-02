@@ -12,3 +12,4 @@ out/
 res/*.s
 src/boot/sega.s
 res/samples/*
+res/*.h
