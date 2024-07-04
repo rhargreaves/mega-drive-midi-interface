@@ -40,5 +40,9 @@
         "log.h": "c",
         "vstring.h": "c",
         "stdarg.h": "c"
+    },
+    "[makefile]": {
+        "editor.insertSpaces": false,
+        "editor.detectIndentation": false
     }
 }
