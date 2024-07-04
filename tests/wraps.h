@@ -201,3 +201,6 @@ void __wrap_JOY_init(void);
 void __wrap_TSK_userSet(VoidCallback* task);
 
 int16_t __wrap_mw_def_ap_cfg_get(void);
+
+void __wrap_SND_startPlay_PCM(const u8* sample, const u32 len, const u8 rate,
+    const u8 pan, const u8 loop);

@@ -6,6 +6,7 @@
 #include "midi_fm.h"
 #include "midi_psg.h"
 #include "midi_fm_sm.h"
+#include "midi_dac.h"
 #include "midi_sender.h"
 #include "synth.h"
 #include "ui_fm.h"
@@ -42,6 +43,10 @@ static const VTable FM_VTable = { midi_fm_note_on, midi_fm_note_off,
 static const VTable SpecialMode_VTable = { midi_fm_sm_note_on,
     midi_fm_sm_note_off, midi_fm_sm_channel_volume, midi_fm_sm_pitch_bend,
     midi_fm_sm_program, midi_fm_sm_all_notes_off, midi_fm_sm_pan };
+
+static const VTable DAC_VTable = { midi_dac_note_on, midi_dac_note_off,
+    midi_dac_channel_volume, midi_dac_pitch_bend, midi_dac_program,
+    midi_dac_all_notes_off, midi_dac_pan };
 
 static const u8** defaultEnvelopes;
 static const FmChannel** defaultPresets;
@@ -136,9 +141,12 @@ static void initDeviceChannel(u8 devChan)
     } else if (devChan <= DEV_CHAN_MAX_PSG) {
         chan->number = devChan - DEV_CHAN_MIN_PSG;
         chan->ops = &PSG_VTable;
-    } else {
+    } else if (devChan <= DEV_CHAN_MAX_SPECIAL_MODE) {
         chan->number = devChan - DEV_CHAN_MIN_SPECIAL_MODE;
         chan->ops = &SpecialMode_VTable;
+    } else {
+        chan->number = DEV_CHAN_DAC;
+        chan->ops = &DAC_VTable;
     }
 
     chan->noteOn = false;

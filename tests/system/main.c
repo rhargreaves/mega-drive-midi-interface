@@ -24,7 +24,8 @@ int main(void)
         e2e_test(test_enables_ch3_special_mode),
         e2e_test(test_sets_separate_ch3_operator_frequencies),
         e2e_test(test_pitch_bends_ch3_special_mode_operators),
-        e2e_test(test_write_directly_to_ym2612_regs_via_sysex)
+        e2e_test(test_write_directly_to_ym2612_regs_via_sysex),
+        e2e_test(test_plays_pcm_sample)
         // clang-format on
     };
 

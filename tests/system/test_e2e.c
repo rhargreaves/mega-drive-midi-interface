@@ -24,6 +24,7 @@ static const u8 TEST_DEVICE_SELECT_PSG = 64;
 static const u8 TEST_MIDI_CHANNEL_PSG_1 = 6;
 static const u8 TEST_MIDI_CHANNEL_1 = 0;
 static const u8 TEST_MIDI_CHANNEL_3 = 2;
+static const u8 TEST_MIDI_CHANNEL_6 = 5;
 static const u8 TEST_MIDI_CHANNEL_11 = 10;
 
 static const u8 TEST_VOLUME_MAX = 127;
@@ -273,5 +274,26 @@ static void test_write_directly_to_ym2612_regs_via_sysex(void** state)
         stub_usb_receive_byte(sysExSeq[i]);
     }
     expect_ym2612_write_reg(0, 0xB1, 0x12);
+    midi_receiver_read();
+}
+
+static void test_plays_pcm_sample(void** state)
+{
+    const u8 MIDI_CHANNEL_UNASSIGNED = 0x7F;
+    const u8 DEVICE_FM_6 = 5;
+    const u8 DEVICE_PCM = 13;
+
+    remapChannel(MIDI_CHANNEL_UNASSIGNED, DEVICE_FM_6);
+    midi_receiver_read();
+
+    remapChannel(TEST_MIDI_CHANNEL_6, DEVICE_PCM);
+    midi_receiver_read();
+
+    stub_usb_receive_note_on(TEST_MIDI_CHANNEL_6, 60, TEST_VOLUME_MAX);
+    expect_any(__wrap_SND_startPlay_PCM, sample);
+    expect_any(__wrap_SND_startPlay_PCM, len);
+    expect_value(__wrap_SND_startPlay_PCM, rate, 1);
+    expect_value(__wrap_SND_startPlay_PCM, pan, 0xC0);
+    expect_value(__wrap_SND_startPlay_PCM, loop, 0);
     midi_receiver_read();
 }

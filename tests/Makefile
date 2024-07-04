@@ -177,7 +177,8 @@ MD_MOCKS=SYS_setVIntCallback \
 	JOY_readJoypad \
 	JOY_update \
 	TSK_userSet \
-	mw_def_ap_cfg_get
+	mw_def_ap_cfg_get \
+	SND_startPlay_PCM
 
 LDFLAGS=-ggdb -ffreestanding -lcmocka -L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src
 LDFLAGS+=$(foreach MOCK,$(MD_MOCKS),-Wl,--wrap=$(MOCK))
