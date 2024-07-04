@@ -65,6 +65,7 @@ void __wrap_synth_setSpecialMode(bool enable);
 void __wrap_synth_specialModePitch(u8 op, u8 octave, u16 freqNumber);
 void __wrap_synth_specialModeVolume(u8 op, u8 volume);
 void __wrap_synth_directWriteYm2612(u8 part, u8 reg, u8 data);
+void __wrap_synth_enableDac(bool enable);
 
 bool __wrap_comm_read_ready(void);
 u8 __wrap_comm_read(void);

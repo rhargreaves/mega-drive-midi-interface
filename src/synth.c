@@ -460,3 +460,8 @@ void synth_directWriteYm2612(u8 part, u8 reg, u8 data)
 {
     YM2612_writeReg(part, reg, data);
 }
+
+void synth_enableDac(bool enable)
+{
+    YM2612_writeReg(0, 0x2B, enable ? 0x80 : 0);
+}

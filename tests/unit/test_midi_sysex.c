@@ -195,7 +195,7 @@ static void test_midi_sysex_disables_fm_parameter_CCs(UNUSED void** state)
         CC_GENMDM_RATE_SCALING_OP1, CC_GENMDM_RELEASE_RATE_OP4,
         CC_GENMDM_AMPLITUDE_MODULATION_OP1, CC_GENMDM_STEREO,
         CC_GENMDM_SSG_EG_OP1, CC_GENMDM_SSG_EG_OP4,
-        CC_GENMDM_GLOBAL_LFO_FREQUENCY };
+        CC_GENMDM_GLOBAL_LFO_FREQUENCY, CC_GENMDM_ENABLE_DAC };
 
     for (u16 i = 0; i < sizeof(nonGeneralMidiCCs) / sizeof(u8); i++) {
         u8 cc = nonGeneralMidiCCs[i];

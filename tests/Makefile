@@ -68,10 +68,11 @@ MOCKS=midi_process \
 	synth_volume \
 	synth_channelParameters \
 	synth_globalParameters \
-    synth_setSpecialMode \
+	synth_setSpecialMode \
 	synth_specialModePitch \
 	synth_specialModeVolume \
 	synth_directWriteYm2612 \
+	synth_enableDac \
 	fm_writeReg \
 	midi_note_off \
 	midi_note_on \

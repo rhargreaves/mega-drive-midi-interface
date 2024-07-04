@@ -38,6 +38,7 @@ extern const Global* __real_synth_globalParameters();
 extern void __real_synth_setSpecialMode(bool enable);
 extern void __real_synth_specialModePitch(u8 op, u8 octave, u16 freqNumber);
 extern void __real_synth_specialModeVolume(u8 op, u8 volume);
+extern void __real_synth_enableDac(bool enable);
 
 static bool updated = false;
 static u8 lastChan = -1;
@@ -740,4 +741,18 @@ test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_7(
     UNUSED void** state)
 {
     synth_sets_ch3_special_mode_op_tl_only_if_output_operator(7);
+}
+
+static void test_synth_enables_dac(UNUSED void** state)
+{
+    expect_ym2612_write_reg(0, 0x2B, 0x80);
+
+    __real_synth_enableDac(true);
+}
+
+static void test_synth_disables_dac(UNUSED void** state)
+{
+    expect_ym2612_write_reg(0, 0x2B, 0);
+
+    __real_synth_enableDac(false);
 }

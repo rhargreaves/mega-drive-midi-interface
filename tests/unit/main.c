@@ -12,12 +12,14 @@
 #include "test_midi_psg.c"
 #include "test_midi_receiver.c"
 #include "test_midi_sysex.c"
+#include "test_midi_pcm.c"
 #include "test_scheduler.c"
 #include "test_synth.c"
 #include "test_vstring.c"
 #include "test_buffer.c"
 
 #define midi_test(test) cmocka_unit_test_setup(test, test_midi_setup)
+#define midi_pcm_test(test) cmocka_unit_test_setup(test, test_midi_setup)
 #define dynamic_midi_test(test)                                                \
     cmocka_unit_test_setup(test, test_dynamic_midi_setup)
 #define synth_test(test) cmocka_unit_test_setup(test, test_synth_setup)
@@ -35,6 +37,7 @@
 int main(void)
 {
     const struct CMUnitTest tests[] = {
+        // clang-format off
         midi_receiver_test(
             test_midi_receiver_read_passes_note_on_to_midi_processor),
         midi_receiver_test(
@@ -178,6 +181,9 @@ int main(void)
         midi_test(test_midi_resets_fm_values_to_defaults),
         midi_test(test_midi_resets_psg_values_to_defaults),
 
+        midi_pcm_test(test_midi_enables_dac),
+        midi_pcm_test(test_midi_disables_dac),
+
         synth_test(test_synth_init_sets_initial_registers),
         synth_test(test_synth_sets_note_on_fm_reg_chan_0_to_2),
         synth_test(test_synth_sets_note_on_fm_reg_chan_3_to_5),
@@ -238,6 +244,8 @@ int main(void)
             test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_6),
         synth_test(
             test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_7),
+        synth_test(test_synth_enables_dac),
+        synth_test(test_synth_disables_dac),
 
         comm_test(test_comm_reads_from_serial_when_ready),
         comm_test(test_comm_reads_when_ready),
@@ -351,6 +359,7 @@ int main(void)
         buffer_test(test_buffer_available_returns_correct_value_when_full),
         buffer_test(test_buffer_returns_cannot_write_if_full),
         buffer_test(test_buffer_returns_can_write_if_empty)
+        // clang-format on
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);

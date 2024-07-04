@@ -818,6 +818,11 @@ static void setFmChanParameter(DeviceChannel* devChan, u8 controller, u8 value)
             break;
         synth_stereo(devChan->number, RANGE(value, 4));
         break;
+    case CC_GENMDM_ENABLE_DAC:
+        if (isIgnoringNonGeneralMidiCCs())
+            break;
+        synth_enableDac(RANGE(value, 2));
+        break;
     case CC_EXPRESSION:
     case CC_SUSTAIN_PEDAL:
     case CC_DATA_ENTRY_LSB:

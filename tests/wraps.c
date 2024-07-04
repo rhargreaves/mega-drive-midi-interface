@@ -237,6 +237,11 @@ void __wrap_synth_directWriteYm2612(u8 part, u8 reg, u8 data)
     check_expected(data);
 }
 
+void __wrap_synth_enableDac(bool enable)
+{
+    check_expected(enable);
+}
+
 void __wrap_comm_write(u8 data)
 {
     check_expected(data);
