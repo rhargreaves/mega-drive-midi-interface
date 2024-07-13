@@ -185,7 +185,6 @@ enum lsd_status __wrap_lsd_recv(
 enum lsd_status __wrap_lsd_send(
     uint8_t ch, const char* data, int16_t len, void* ctx, lsd_send_cb send_cb);
 
-void __wrap_Z80_requestBus(bool wait);
 void __wrap_SYS_doVBlankProcessEx(VBlankProcessTime processTime);
 
 void __wrap_VDP_setTileMapXY(VDPPlane plane, u16 tile, u16 x, u16 y);
@@ -204,3 +203,8 @@ int16_t __wrap_mw_def_ap_cfg_get(void);
 
 void __wrap_SND_startPlay_PCM(const u8* sample, const u32 len, const u8 rate,
     const u8 pan, const u8 loop);
+
+void __wrap_Z80_loadDriver(const u16 driver, const bool waitReady);
+void __wrap_Z80_requestBus(bool wait);
+bool __wrap_Z80_getAndRequestBus(bool wait);
+void __wrap_Z80_releaseBus();

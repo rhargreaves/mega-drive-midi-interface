@@ -178,7 +178,11 @@ MD_MOCKS=SYS_setVIntCallback \
 	JOY_update \
 	TSK_userSet \
 	mw_def_ap_cfg_get \
-	SND_startPlay_PCM
+	SND_startPlay_PCM \
+	Z80_loadDriver \
+	Z80_releaseBus \
+	Z80_requestBus \
+	Z80_getAndRequestBus
 
 LDFLAGS=-ggdb -ffreestanding -lcmocka -L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src
 LDFLAGS+=$(foreach MOCK,$(MD_MOCKS),-Wl,--wrap=$(MOCK))

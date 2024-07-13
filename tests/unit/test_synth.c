@@ -46,17 +46,22 @@ static ParameterUpdated lastParameterUpdated = -1;
 
 static void set_initial_registers()
 {
+    expect_value(__wrap_Z80_loadDriver, driver, 1);
+    expect_value(__wrap_Z80_loadDriver, waitReady, true);
+    expect_value(__wrap_Z80_requestBus, wait, TRUE);
+
     const u16 count = 188;
     expect_any_count(__wrap_YM2612_writeReg, part, count);
     expect_any_count(__wrap_YM2612_writeReg, reg, count);
     expect_any_count(__wrap_YM2612_writeReg, data, count);
+
+    expect_function_call(__wrap_Z80_releaseBus);
 
     const FmChannel M_BANK_0_INST_0_GRANDPIANO = { 0, 0, 3, 0, 0, 0, 0,
         { { 1, 0, 26, 1, 7, 0, 7, 4, 1, 35, 0 },
             { 4, 6, 24, 1, 9, 0, 6, 9, 7, 35, 0 },
             { 2, 7, 31, 3, 23, 0, 9, 15, 1, 35, 0 },
             { 1, 3, 27, 2, 4, 0, 10, 4, 6, 35, 0 } } };
-
     __real_synth_init(&M_BANK_0_INST_0_GRANDPIANO);
 }
 

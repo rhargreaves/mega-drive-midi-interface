@@ -861,10 +861,6 @@ enum lsd_status __wrap_lsd_send(
     return mock_type(enum lsd_status);
 }
 
-void __wrap_Z80_requestBus(bool wait)
-{
-}
-
 void __wrap_SYS_doVBlankProcessEx(VBlankProcessTime processTime)
 {
 }
@@ -915,4 +911,35 @@ void __wrap_SND_startPlay_PCM(
     check_expected(rate);
     check_expected(pan);
     check_expected(loop);
+}
+
+void __wrap_Z80_loadDriver(const u16 driver, const bool waitReady)
+{
+    if (disableChecks)
+        return;
+    check_expected(driver);
+    check_expected(waitReady);
+}
+
+void __wrap_Z80_requestBus(bool wait)
+{
+    if (disableChecks)
+        return;
+    check_expected(wait);
+}
+
+bool __wrap_Z80_getAndRequestBus(bool wait)
+{
+    if (disableChecks)
+        return false;
+    check_expected(wait);
+
+    return mock_type(bool);
+}
+
+void __wrap_Z80_releaseBus()
+{
+    if (disableChecks)
+        return;
+    function_called();
 }
