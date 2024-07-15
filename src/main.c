@@ -15,7 +15,6 @@
 
 int main()
 {
-    DMA_init();
     scheduler_init();
     everdrive_led_init();
     log_init();
