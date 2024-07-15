@@ -53,7 +53,7 @@ static void writeRegSafe(u8 part, u8 reg, u8 data);
 
 void synth_init(const FmChannel* initialPreset)
 {
-    Z80_loadDriver(Z80_DRIVER_PCM, true);
+    // Z80_loadDriver(Z80_DRIVER_PCM, true);
     Z80_requestBus(TRUE);
     writeSpecialModeReg();
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {

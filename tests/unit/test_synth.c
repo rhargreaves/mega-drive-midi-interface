@@ -45,10 +45,8 @@ static bool updated = false;
 static u8 lastChan = -1;
 static ParameterUpdated lastParameterUpdated = -1;
 
-static void set_initial_registers()
+static void set_initial_registers(void)
 {
-    expect_value(__wrap_Z80_loadDriver, driver, 1);
-    expect_value(__wrap_Z80_loadDriver, waitReady, true);
     expect_value(__wrap_Z80_requestBus, wait, TRUE);
 
     const u16 count = 188;
@@ -70,9 +68,16 @@ static void set_initial_registers()
     __real_synth_init(&M_BANK_0_INST_0_GRANDPIANO);
 }
 
+static void loads_pcm_driver(void)
+{
+    expect_value(__wrap_Z80_loadDriver, driver, 1);
+    expect_value(__wrap_Z80_loadDriver, waitReady, true);
+}
+
 static int test_synth_setup(UNUSED void** state)
 {
     updated = false;
+    // loads_pcm_driver();
     set_initial_registers();
     return 0;
 }
