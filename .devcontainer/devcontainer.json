@@ -13,7 +13,6 @@
         }
     },
     "postCreateCommand": {
-        "editorconfig": "apt -y install npm nodejs && npm install -g editorconfig",
-        "git": "apt -y install git && git config --global --add safe.directory /workspaces/mega-drive-midi-interface"
+        "editorconfig": "apt -y install npm nodejs && npm install -g editorconfig"
     }
 }
