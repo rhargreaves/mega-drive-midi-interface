@@ -932,6 +932,7 @@ bool __wrap_Z80_getAndRequestBus(bool wait)
 {
     if (disableChecks)
         return false;
+
     check_expected(wait);
 
     return mock_type(bool);
@@ -941,5 +942,11 @@ void __wrap_Z80_releaseBus()
 {
     if (disableChecks)
         return;
+
     function_called();
+}
+
+bool __wrap_SYS_doVBlankProcess()
+{
+    return mock_type(bool);
 }

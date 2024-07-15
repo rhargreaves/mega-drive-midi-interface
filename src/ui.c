@@ -70,6 +70,7 @@ static const char MIDI_HEADER[] = "MIDI";
 static const char MIDI_CH_TEXT[17][3] = { " -", " 1", " 2", " 3", " 4", " 5",
     " 6", " 7", " 8", " 9", "10", "11", "12", "13", "14", "15", "16" };
 
+static void init_activity_leds(void);
 static void init_load(void);
 static void print_channels(void);
 static void print_header(void);
@@ -109,8 +110,13 @@ void ui_init(void)
     print_mappings();
     init_routing_mode_tiles();
     print_routing_mode(midi_dynamic_mode());
-    SYS_disableInts();
+    init_activity_leds();
+    ui_fm_init();
+}
 
+static void init_activity_leds(void)
+{
+    SYS_disableInts();
     for (int i = 0; i < DEV_PHYSICAL_CHANS; i++) {
         Sprite* sprite = SPR_addSprite(&activity,
             fix32ToInt(FIX32(((i * CHAN_X_GAP) + 7) * 8)),
@@ -119,10 +125,9 @@ void ui_init(void)
         SPR_setVisibility(sprite, VISIBLE);
         activitySprites[i] = sprite;
     }
-
     SPR_update();
     SYS_enableInts();
-    ui_fm_init();
+    SYS_doVBlankProcess();
 }
 
 static void print_mappings(void)

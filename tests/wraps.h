@@ -208,3 +208,4 @@ void __wrap_Z80_loadDriver(const u16 driver, const bool waitReady);
 void __wrap_Z80_requestBus(bool wait);
 bool __wrap_Z80_getAndRequestBus(bool wait);
 void __wrap_Z80_releaseBus();
+bool __wrap_SYS_doVBlankProcess();
