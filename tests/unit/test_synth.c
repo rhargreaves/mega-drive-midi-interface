@@ -39,6 +39,7 @@ extern void __real_synth_setSpecialMode(bool enable);
 extern void __real_synth_specialModePitch(u8 op, u8 octave, u16 freqNumber);
 extern void __real_synth_specialModeVolume(u8 op, u8 volume);
 extern void __real_synth_enableDac(bool enable);
+extern void __real_synth_directWriteYm2612(u8 part, u8 reg, u8 data);
 
 static bool updated = false;
 static u8 lastChan = -1;
@@ -51,9 +52,13 @@ static void set_initial_registers()
     expect_value(__wrap_Z80_requestBus, wait, TRUE);
 
     const u16 count = 188;
-    expect_any_count(__wrap_YM2612_writeReg, part, count);
-    expect_any_count(__wrap_YM2612_writeReg, reg, count);
-    expect_any_count(__wrap_YM2612_writeReg, data, count);
+    for (u16 i = 0; i < count; i++) {
+        expect_value(__wrap_Z80_getAndRequestBus, wait, TRUE);
+        will_return(__wrap_Z80_getAndRequestBus, true);
+        expect_any(__wrap_YM2612_writeReg, part);
+        expect_any(__wrap_YM2612_writeReg, reg);
+        expect_any(__wrap_YM2612_writeReg, data);
+    }
 
     expect_function_call(__wrap_Z80_releaseBus);
 
@@ -760,4 +765,31 @@ static void test_synth_disables_dac(UNUSED void** state)
     expect_ym2612_write_reg(0, 0x2B, 0);
 
     __real_synth_enableDac(false);
+}
+
+static void test_requests_Z80_bus_if_not_already_taken(UNUSED void** state)
+{
+    expect_value(__wrap_Z80_getAndRequestBus, wait, TRUE);
+    will_return(__wrap_Z80_getAndRequestBus, false);
+
+    expect_value(__wrap_YM2612_writeReg, part, 0);
+    expect_value(__wrap_YM2612_writeReg, reg, 0x2B);
+    expect_value(__wrap_YM2612_writeReg, data, 0);
+
+    expect_function_call(__wrap_Z80_releaseBus);
+
+    __real_synth_directWriteYm2612(0, 0x2B, 0);
+}
+
+static void test_does_not_release_Z80_bus_when_taken_prior_to_call(
+    UNUSED void** state)
+{
+    expect_value(__wrap_Z80_getAndRequestBus, wait, TRUE);
+    will_return(__wrap_Z80_getAndRequestBus, true);
+
+    expect_value(__wrap_YM2612_writeReg, part, 0);
+    expect_value(__wrap_YM2612_writeReg, reg, 0x2B);
+    expect_value(__wrap_YM2612_writeReg, data, 0);
+
+    __real_synth_directWriteYm2612(0, 0x2B, 0);
 }

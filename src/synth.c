@@ -49,6 +49,7 @@ static u8 volumeAdjustedTotalLevel(u8 channel, u8 totalLevel);
 static void channelParameterUpdated(u8 channel);
 static void otherParameterUpdated(
     u8 channel, ParameterUpdated parameterUpdated);
+static void writeRegSafe(u8 part, u8 reg, u8 data);
 
 void synth_init(const FmChannel* initialPreset)
 {
@@ -82,13 +83,13 @@ static void updateChannel(u8 chan)
 
 void synth_noteOn(u8 channel)
 {
-    YM2612_writeReg(0, 0x28, 0xF0 + keyOnOffRegOffset(channel));
+    writeRegSafe(0, 0x28, 0xF0 + keyOnOffRegOffset(channel));
     SET_BIT(noteOn, channel);
 }
 
 void synth_noteOff(u8 channel)
 {
-    YM2612_writeReg(0, 0x28, keyOnOffRegOffset(channel));
+    writeRegSafe(0, 0x28, keyOnOffRegOffset(channel));
     CLEAR_BIT(noteOn, channel);
 }
 
@@ -272,10 +273,7 @@ static void writeChannelReg(u8 channel, u8 baseReg, u8 data)
 {
     u8 part = channel > 2 ? 1 : 0;
     u8 reg = baseReg + (channel % 3);
-
-    debug_message("call: YM2612_writeReg(part=%d, reg=0x%X, data=0x%X)\n", part,
-        reg, data);
-    YM2612_writeReg(part, reg, data);
+    writeRegSafe(part, reg, data);
 }
 
 static u8 regOperatorIndex(u8 op)
@@ -311,7 +309,7 @@ static Operator* getOperator(u8 channel, u8 operator)
 
 static void writeGlobalLfo(void)
 {
-    YM2612_writeReg(0, 0x22, (global.lfoEnable << 3) | global.lfoFrequency);
+    writeRegSafe(0, 0x22, (global.lfoEnable << 3) | global.lfoFrequency);
 }
 
 static void writeOctaveAndFrequency(u8 channel)
@@ -424,7 +422,7 @@ void synth_setParameterUpdateCallback(ParameterUpdatedCallback* cb)
 
 static void writeSpecialModeReg(void)
 {
-    YM2612_writeReg(0, 0x27, global.specialMode << 6);
+    writeRegSafe(0, 0x27, global.specialMode << 6);
 }
 
 void synth_setSpecialMode(bool enable)
@@ -437,8 +435,8 @@ void synth_setSpecialMode(bool enable)
 void synth_specialModePitch(u8 op, u8 octave, u16 freqNumber)
 {
     u8 offset = (op + 1) % 3;
-    YM2612_writeReg(0, 0xAC + offset, (freqNumber >> 8) | (octave << 3));
-    YM2612_writeReg(0, 0xA8 + offset, freqNumber);
+    writeRegSafe(0, 0xAC + offset, (freqNumber >> 8) | (octave << 3));
+    writeRegSafe(0, 0xA8 + offset, freqNumber);
 }
 
 void synth_specialModeVolume(u8 operator, u8 volume)
@@ -460,10 +458,22 @@ void synth_specialModeVolume(u8 operator, u8 volume)
 
 void synth_directWriteYm2612(u8 part, u8 reg, u8 data)
 {
-    YM2612_writeReg(part, reg, data);
+    writeRegSafe(part, reg, data);
 }
 
 void synth_enableDac(bool enable)
 {
-    YM2612_writeReg(0, 0x2B, enable ? 0x80 : 0);
+    writeRegSafe(0, 0x2B, enable ? 0x80 : 0);
+}
+
+static void writeRegSafe(u8 part, u8 reg, u8 data)
+{
+    debug_message("call: YM2612_writeReg(part=%d, reg=0x%X, data=0x%X)\n", part,
+        reg, data);
+
+    bool takenAlready = Z80_getAndRequestBus(TRUE);
+    YM2612_writeReg(part, reg, data);
+    if (!takenAlready) {
+        Z80_releaseBus();
+    }
 }

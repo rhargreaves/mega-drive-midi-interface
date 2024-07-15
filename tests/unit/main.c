@@ -246,6 +246,8 @@ int main(void)
             test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_7),
         synth_test(test_synth_enables_dac),
         synth_test(test_synth_disables_dac),
+        synth_test(test_requests_Z80_bus_if_not_already_taken),
+        synth_test(test_does_not_release_Z80_bus_when_taken_prior_to_call),
 
         comm_test(test_comm_reads_from_serial_when_ready),
         comm_test(test_comm_reads_when_ready),
