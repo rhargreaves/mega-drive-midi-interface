@@ -3,12 +3,14 @@ USER root
 RUN apt-get -y update && \
     apt-get -y install \
     build-essential \
+    git \
     cmake \
     gdb \
     gdbserver \
     valgrind \
     wget \
-    unzip
+    unzip && \
+    git config --global --add safe.directory "*"
 WORKDIR /app
 COPY tests/cmocka-*.tar.xz /app/tests/
 COPY tests/Makefile /app/tests/Makefile

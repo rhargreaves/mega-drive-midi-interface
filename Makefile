@@ -1,5 +1,6 @@
 SGDK=/sgdk
 MAKE=make
+BUILD?=$(shell git rev-parse --short HEAD)
 
 all: release out/rom.s test
 
