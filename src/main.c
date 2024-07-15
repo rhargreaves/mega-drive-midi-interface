@@ -18,10 +18,10 @@ int main()
     scheduler_init();
     everdrive_led_init();
     log_init();
-    comm_init();
     midi_init(M_BANK_0, P_BANK_0, ENVELOPES);
-    midi_receiver_init();
     ui_init();
+    comm_init();
+    midi_receiver_init();
     SYS_setVIntAligned(false);
     SYS_setVIntCallback(scheduler_vsync);
     scheduler_run();
