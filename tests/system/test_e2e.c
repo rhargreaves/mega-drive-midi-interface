@@ -297,3 +297,46 @@ static void test_plays_pcm_sample(void** state)
     expect_value(__wrap_SND_startPlay_PCM, loop, 0);
     midi_receiver_read();
 }
+
+static void test_midi_last_note_played_priority_respected_on_fm(void** state)
+{
+    stub_usb_receive_note_on(TEST_MIDI_CHANNEL_1, 48, 127);
+    expect_ym2612_write_channel(0, 0xA4, 0x1A);
+    expect_ym2612_write_channel(0, 0xA0, 0x84);
+    expect_ym2612_write_reg(0, 0x28, 0xF0);
+    midi_receiver_read();
+
+    stub_usb_receive_note_on(TEST_MIDI_CHANNEL_1, 50, 127);
+    expect_ym2612_write_channel(0, 0xA4, 0x1A);
+    expect_ym2612_write_channel(0, 0xA0, 0xD2);
+    expect_ym2612_write_reg(0, 0x28, 0xF0);
+    midi_receiver_read();
+
+    stub_usb_receive_note_off(TEST_MIDI_CHANNEL_1, 50);
+    expect_ym2612_write_channel(0, 0xA4, 0x1A);
+    expect_ym2612_write_channel(0, 0xA0, 0x84);
+    expect_ym2612_write_reg(0, 0x28, 0xF0);
+    midi_receiver_read();
+}
+
+static void test_midi_last_note_played_cleared_when_released_on_fm(void** state)
+{
+    stub_usb_receive_note_on(TEST_MIDI_CHANNEL_1, 48, 127);
+    expect_ym2612_write_channel(0, 0xA4, 0x1A);
+    expect_ym2612_write_channel(0, 0xA0, 0x84);
+    expect_ym2612_write_reg(0, 0x28, 0xF0);
+    midi_receiver_read();
+
+    stub_usb_receive_note_on(TEST_MIDI_CHANNEL_1, 50, 127);
+    expect_ym2612_write_channel(0, 0xA4, 0x1A);
+    expect_ym2612_write_channel(0, 0xA0, 0xD2);
+    expect_ym2612_write_reg(0, 0x28, 0xF0);
+    midi_receiver_read();
+
+    stub_usb_receive_note_off(TEST_MIDI_CHANNEL_1, 48);
+    midi_receiver_read();
+
+    stub_usb_receive_note_off(TEST_MIDI_CHANNEL_1, 50);
+    expect_ym2612_write_reg(0, 0x28, 0x0);
+    midi_receiver_read();
+}

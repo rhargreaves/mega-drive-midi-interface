@@ -25,7 +25,9 @@ int main(void)
         e2e_test(test_sets_separate_ch3_operator_frequencies),
         e2e_test(test_pitch_bends_ch3_special_mode_operators),
         e2e_test(test_write_directly_to_ym2612_regs_via_sysex),
-        e2e_test(test_plays_pcm_sample)
+        e2e_test(test_plays_pcm_sample),
+        e2e_test(test_midi_last_note_played_priority_respected_on_fm),
+        e2e_test(test_midi_last_note_played_cleared_when_released_on_fm)
         // clang-format on
     };
 

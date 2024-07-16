@@ -25,6 +25,13 @@ void stub_usb_receive_note_on(u8 chan, u8 key, u8 velocity)
     stub_usb_receive_byte(velocity);
 }
 
+void stub_usb_receive_note_off(u8 chan, u8 key)
+{
+    stub_usb_receive_byte(0x80 + chan);
+    stub_usb_receive_byte(key);
+    stub_usb_receive_byte(0);
+}
+
 void stub_usb_receive_pitch_bend(u8 chan, u16 bend)
 {
     u8 lower = bend & 0x007F;
