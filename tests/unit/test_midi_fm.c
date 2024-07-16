@@ -713,6 +713,16 @@ static void test_midi_note_priority_respected_for_multiple_notes(
     expect_value(__wrap_synth_noteOn, channel, 0);
     __real_midi_note_on(0, MIDI_PITCH_CS4, MAX_MIDI_VOLUME);
 
+    expect_synth_pitch(0, 6, 0x47a);
+    expect_synth_volume_any();
+    expect_value(__wrap_synth_noteOn, channel, 0);
+    __real_midi_note_on(0, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
+
+    expect_synth_pitch(0, 4, 0x2a9);
+    expect_synth_volume_any();
+    expect_value(__wrap_synth_noteOn, channel, 0);
+    __real_midi_note_off(0, MIDI_PITCH_AS6);
+
     expect_synth_pitch(0, 4, 0x284);
     expect_synth_volume_any();
     expect_value(__wrap_synth_noteOn, channel, 0);

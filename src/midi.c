@@ -17,6 +17,8 @@
 #define CHANNEL_UNASSIGNED 0xFF
 #define LENGTH_OF(x) (sizeof(x) / sizeof(x[0]))
 
+#define NOTE_PRIORITY_LENGTH 3
+
 typedef enum DeviceSelect DeviceSelect;
 enum DeviceSelect { Auto, FM, PSG_Tone, PSG_Noise };
 
@@ -27,8 +29,7 @@ struct MidiChannel {
     u8 pan;
     u16 pitchBend;
     u8 prevVelocity;
-    u8 prevPitch;
-    u8 pitch;
+    u8 notePriority[NOTE_PRIORITY_LENGTH];
     DeviceSelect deviceSelect;
 };
 
@@ -125,8 +126,7 @@ static void initMidiChannel(u8 midiChan)
     chan->volume = MAX_MIDI_VOLUME;
     chan->pitchBend = DEFAULT_MIDI_PITCH_BEND;
     chan->prevVelocity = 0;
-    chan->pitch = 0;
-    chan->prevPitch = 0;
+    memset(chan->notePriority, 0, NOTE_PRIORITY_LENGTH);
     chan->deviceSelect = Auto;
 }
 
@@ -396,6 +396,40 @@ static DeviceChannel* findSuitableDeviceChannel(u8 midiChan)
                        : deviceChannelByMidiChannel(midiChan);
 }
 
+// 0      1      2     3
+// Oldest -> Most Recent
+static void notePriorityPush(u8* notePriority, u8 pitch)
+{
+    for (u8 i = 0; i < NOTE_PRIORITY_LENGTH; i++) {
+        if (notePriority[i] == 0) {
+            notePriority[i] = pitch;
+            return;
+        }
+    }
+}
+
+static u8 notePriorityPop(u8* notePriority)
+{
+    for (s16 i = NOTE_PRIORITY_LENGTH - 1; i >= 0; i--) {
+        if (notePriority[i] != 0) {
+            u8 pitch = notePriority[i];
+            notePriority[i] = 0;
+            return pitch;
+        }
+    }
+    return 0;
+}
+
+static void notePriorityRemove(u8* notePriority, u8 pitch)
+{
+    for (s16 i = NOTE_PRIORITY_LENGTH - 1; i >= 0; i--) {
+        if (notePriority[i] == pitch) {
+            notePriority[i] = 0;
+            return;
+        }
+    }
+}
+
 void midi_note_on(u8 chan, u8 pitch, u8 velocity)
 {
     if (velocity == MIN_MIDI_VELOCITY) {
@@ -413,10 +447,7 @@ void midi_note_on(u8 chan, u8 pitch, u8 velocity)
 
     if (!dynamicMode) {
         MidiChannel* midiChannel = &midiChannels[chan];
-        if (midiChannel->pitch != 0) {
-            midiChannel->prevPitch = midiChannel->pitch;
-        }
-        midiChannel->pitch = pitch;
+        notePriorityPush(midiChannel->notePriority, pitch);
         midiChannel->prevVelocity = velocity;
     }
 
@@ -430,25 +461,21 @@ void midi_note_on(u8 chan, u8 pitch, u8 velocity)
 void midi_note_off(u8 chan, u8 pitch)
 {
     MidiChannel* midiChannel = &midiChannels[chan];
+    notePriorityRemove(midiChannel->notePriority, pitch);
+
     DeviceChannel* devChan;
     while ((devChan = findChannelPlayingNote(chan, pitch)) != NULL) {
-        if (!dynamicMode && midiChannel->prevPitch != 0) {
-            devChan->pitch = midiChannel->prevPitch;
+        u8 nextMostRecentPitch = notePriorityPop(midiChannel->notePriority);
+        if (!dynamicMode && nextMostRecentPitch != 0) {
+            devChan->pitch = nextMostRecentPitch;
             devChan->noteOn = true;
-            devChan->ops->noteOn(devChan->number, midiChannel->prevPitch,
+            devChan->ops->noteOn(devChan->number, nextMostRecentPitch,
                 midiChannel->prevVelocity);
-            midiChannel->pitch = midiChannel->prevPitch;
-            midiChannel->prevPitch = 0;
         } else {
             devChan->noteOn = false;
             devChan->pitch = 0;
             devChan->ops->noteOff(devChan->number, pitch);
-            midiChannel->pitch = 0;
         }
-    }
-
-    if (midiChannel->prevPitch == pitch) {
-        midiChannel->prevPitch = 0;
     }
 }
 
