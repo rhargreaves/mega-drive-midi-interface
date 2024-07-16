@@ -1,0 +1,3 @@
+#!/bin/bash
+
+/Users/robert/Projects/mega-drive/MEGA-PRO/megalink/bin/megalink "$@"
