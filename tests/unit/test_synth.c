@@ -2,6 +2,7 @@
 
 #include "synth.h"
 #include "test_midi.h"
+#include "z80_ctrl.h"
 #include <stdbool.h>
 
 extern void __real_synth_init(const FmChannel* defaultPreset);
@@ -70,7 +71,7 @@ static void set_initial_registers(void)
 
 static void loads_pcm_driver(void)
 {
-    expect_value(__wrap_Z80_loadDriver, driver, 1);
+    expect_value(__wrap_Z80_loadDriver, driver, Z80_DRIVER_PCM);
     expect_value(__wrap_Z80_loadDriver, waitReady, true);
 }
 
@@ -84,6 +85,7 @@ static int test_synth_setup(UNUSED void** state)
 
 static void test_synth_init_sets_initial_registers(UNUSED void** state)
 {
+    // loads_pcm_driver();
     set_initial_registers();
 }
 
