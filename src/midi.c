@@ -26,6 +26,7 @@ struct MidiChannel {
     u8 program;
     u8 pan;
     u16 pitchBend;
+    u8 prevVelocity;
     u8 prevPitch;
     u8 pitch;
     DeviceSelect deviceSelect;
@@ -123,6 +124,7 @@ static void initMidiChannel(u8 midiChan)
     chan->pan = DEFAULT_MIDI_PAN;
     chan->volume = MAX_MIDI_VOLUME;
     chan->pitchBend = DEFAULT_MIDI_PITCH_BEND;
+    chan->prevVelocity = 0;
     chan->pitch = 0;
     chan->prevPitch = 0;
     chan->deviceSelect = Auto;
@@ -415,6 +417,7 @@ void midi_note_on(u8 chan, u8 pitch, u8 velocity)
             midiChannel->prevPitch = midiChannel->pitch;
         }
         midiChannel->pitch = pitch;
+        midiChannel->prevVelocity = velocity;
     }
 
     devChan->midiChannel = chan;
@@ -433,7 +436,7 @@ void midi_note_off(u8 chan, u8 pitch)
             devChan->pitch = midiChannel->prevPitch;
             devChan->noteOn = true;
             devChan->ops->noteOn(devChan->number, midiChannel->prevPitch,
-                127); // TODO: Remember velocity!
+                midiChannel->prevVelocity);
             midiChannel->pitch = midiChannel->prevPitch;
             midiChannel->prevPitch = 0;
         } else {

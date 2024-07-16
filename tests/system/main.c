@@ -27,7 +27,8 @@ int main(void)
         e2e_test(test_write_directly_to_ym2612_regs_via_sysex),
         e2e_test(test_plays_pcm_sample),
         e2e_test(test_midi_last_note_played_priority_respected_on_fm),
-        e2e_test(test_midi_last_note_played_cleared_when_released_on_fm)
+        e2e_test(test_midi_last_note_played_cleared_when_released_on_fm),
+        e2e_test(test_midi_last_note_played_remembers_velocity_on_fm)
         // clang-format on
     };
 
