@@ -4,5 +4,5 @@ SERIAL_PORT=/dev/cu.usbserial-A105J2JO
 SCRIPT_DIR="$(dirname $0)"
 
 $SCRIPT_DIR/../docker-make
-$SCRIPT_DIR/upload-everdrive-x7 bin/out.bin
+$SCRIPT_DIR/upload-everdrive-x7 out/rom.bin
 $SCRIPT_DIR/run-serialmidi-x7
