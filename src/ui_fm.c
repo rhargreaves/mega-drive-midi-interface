@@ -135,13 +135,13 @@ static const char* stereoText(u8 stereo)
 {
     switch (stereo) {
     case 0:
-        return "  ";
+        return "Mute";
     case 1:
-        return "R ";
+        return "R   ";
     case 2:
-        return "L ";
+        return "L   ";
     default:
-        return "LR";
+        return "LR  ";
     }
 }
 
