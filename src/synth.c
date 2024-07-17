@@ -37,7 +37,6 @@ static void writeOperatorReg(u8 channel, u8 op, u8 baseReg, u8 data);
 static void writeOctaveAndFrequency(u8 channel);
 static void writeSpecialModeReg(void);
 static u8 keyOnOffRegOffset(u8 channel);
-static FmChannel* fmChannel(u8 channel);
 static Operator* getOperator(u8 channel, u8 operator);
 static u8 effectiveTotalLevel(u8 channel, u8 operator, u8 totalLevel);
 static bool isOutputOperator(u8 algorithm, u8 operator);
@@ -90,7 +89,7 @@ void synth_noteOff(u8 channel)
 
 void synth_pitch(u8 channel, u8 octave, u16 freqNumber)
 {
-    FmChannel* chan = fmChannel(channel);
+    FmChannel* chan = &fmChannels[channel];
     chan->octave = octave;
     chan->freqNumber = freqNumber;
     writeOctaveAndFrequency(channel);
@@ -109,21 +108,21 @@ void synth_volume(u8 channel, u8 volume)
 
 void synth_stereo(u8 channel, u8 stereo)
 {
-    fmChannel(channel)->stereo = stereo;
+    fmChannels[channel].stereo = stereo;
     writeStereoAmsFms(channel);
     channelParameterUpdated(channel);
 }
 
 void synth_algorithm(u8 channel, u8 algorithm)
 {
-    fmChannel(channel)->algorithm = algorithm;
+    fmChannels[channel].algorithm = algorithm;
     writeAlgorithmAndFeedback(channel);
     channelParameterUpdated(channel);
 }
 
 void synth_feedback(u8 channel, u8 feedback)
 {
-    fmChannel(channel)->feedback = feedback;
+    fmChannels[channel].feedback = feedback;
     writeAlgorithmAndFeedback(channel);
     channelParameterUpdated(channel);
 }
@@ -225,14 +224,14 @@ void synth_globalLfoFrequency(u8 freq)
 
 void synth_ams(u8 channel, u8 ams)
 {
-    fmChannel(channel)->ams = ams;
+    fmChannels[channel].ams = ams;
     writeStereoAmsFms(channel);
     channelParameterUpdated(channel);
 }
 
 void synth_fms(u8 channel, u8 fms)
 {
-    fmChannel(channel)->fms = fms;
+    fmChannels[channel].fms = fms;
     writeStereoAmsFms(channel);
     channelParameterUpdated(channel);
 }
@@ -294,14 +293,9 @@ static u8 keyOnOffRegOffset(u8 channel)
     return (channel < 3) ? channel : (channel + 1);
 }
 
-static FmChannel* fmChannel(u8 channel)
-{
-    return &fmChannels[channel];
-}
-
 static Operator* getOperator(u8 channel, u8 operator)
 {
-    return &fmChannel(channel)->operators[operator];
+    return &fmChannels[channel].operators[operator];
 }
 
 static void writeGlobalLfo(void)
@@ -311,20 +305,20 @@ static void writeGlobalLfo(void)
 
 static void writeOctaveAndFrequency(u8 channel)
 {
-    FmChannel* chan = fmChannel(channel);
+    FmChannel* chan = &fmChannels[channel];
     writeChannelReg(channel, 0xA4, (chan->freqNumber >> 8) | (chan->octave << 3));
     writeChannelReg(channel, 0xA0, chan->freqNumber);
 }
 
 static void writeAlgorithmAndFeedback(u8 channel)
 {
-    FmChannel* chan = fmChannel(channel);
+    FmChannel* chan = &fmChannels[channel];
     writeChannelReg(channel, 0xB0, (chan->feedback << 3) + chan->algorithm);
 }
 
 static void writeStereoAmsFms(u8 channel)
 {
-    FmChannel* chan = fmChannel(channel);
+    FmChannel* chan = &fmChannels[channel];
     writeChannelReg(channel, 0xB4, (chan->stereo << 6) + (chan->ams << 4) + chan->fms);
 }
 
@@ -373,7 +367,7 @@ static void writeOperatorTotalLevel(u8 channel, u8 operator)
 
 static u8 effectiveTotalLevel(u8 channel, u8 operator, u8 totalLevel)
 {
-    return isOutputOperator(fmChannel(channel)->algorithm, operator)
+    return isOutputOperator(fmChannels[channel].algorithm, operator)
         ? volumeAdjustedTotalLevel(channel, totalLevel)
         : totalLevel;
 }
@@ -395,7 +389,7 @@ static u8 volumeAdjustedTotalLevel(u8 channel, u8 totalLevel)
 
 const FmChannel* synth_channelParameters(u8 channel)
 {
-    return fmChannel(channel);
+    return &fmChannels[channel];
 }
 
 const Global* synth_globalParameters()
@@ -430,7 +424,7 @@ void synth_specialModePitch(u8 op, u8 octave, u16 freqNumber)
 void synth_specialModeVolume(u8 operator, u8 volume)
 {
     Operator* op = getOperator(CH_SPECIAL_MODE, operator);
-    if (!isOutputOperator(fmChannel(CH_SPECIAL_MODE)->algorithm, operator)) {
+    if (!isOutputOperator(fmChannels[CH_SPECIAL_MODE].algorithm, operator)) {
         return;
     }
 
