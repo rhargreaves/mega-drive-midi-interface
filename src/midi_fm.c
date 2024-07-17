@@ -38,8 +38,8 @@ void midi_fm_reset(void);
 static const FmChannel** presets;
 static const PercussionPreset** percussionPresets;
 
-void midi_fm_init(const FmChannel** defaultPresets,
-    const PercussionPreset** defaultPercussionPresets)
+void midi_fm_init(
+    const FmChannel** defaultPresets, const PercussionPreset** defaultPercussionPresets)
 {
     presets = defaultPresets;
     percussionPresets = defaultPercussionPresets;
@@ -101,16 +101,12 @@ u16 midi_fm_pitchToFreqNum(u8 pitch, u16 pitchBend)
     s16 approxFreqDelta;
     if (bendRelative < 0) {
         // bend down
-        u16 boundFreq
-            = lookupFreqNum(pitch, -GENERAL_MIDI_PITCH_BEND_SEMITONE_RANGE);
-        approxFreqDelta
-            = (((freq - boundFreq) * bendRelative) / DEFAULT_MIDI_PITCH_BEND);
+        u16 boundFreq = lookupFreqNum(pitch, -GENERAL_MIDI_PITCH_BEND_SEMITONE_RANGE);
+        approxFreqDelta = (((freq - boundFreq) * bendRelative) / DEFAULT_MIDI_PITCH_BEND);
     } else {
         // bend up
-        u16 boundFreq
-            = lookupFreqNum(pitch, GENERAL_MIDI_PITCH_BEND_SEMITONE_RANGE);
-        approxFreqDelta
-            = (((boundFreq - freq) * bendRelative) / DEFAULT_MIDI_PITCH_BEND);
+        u16 boundFreq = lookupFreqNum(pitch, GENERAL_MIDI_PITCH_BEND_SEMITONE_RANGE);
+        approxFreqDelta = (((boundFreq - freq) * bendRelative) / DEFAULT_MIDI_PITCH_BEND);
     }
     return freq + approxFreqDelta;
 }
@@ -166,8 +162,7 @@ u8 midi_fm_pitchToOctave(u8 pitch)
 
 static u16 lookupFreqNum(u8 pitch, s16 offset)
 {
-    u16 index = FREQ_NORMAL_RANGE_OFFSET
-        + ((u8)(pitch - MIN_MIDI_PITCH) % SEMITONES) + offset;
+    u16 index = FREQ_NORMAL_RANGE_OFFSET + ((u8)(pitch - MIN_MIDI_PITCH) % SEMITONES) + offset;
     u16 freq = FREQS[index];
     return freq;
 }

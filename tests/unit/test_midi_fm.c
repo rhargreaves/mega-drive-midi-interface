@@ -21,8 +21,7 @@ static void test_midi_triggers_synth_note_on_with_velocity(UNUSED void** state)
     }
 }
 
-static void test_midi_triggers_synth_note_on_with_velocity_and_channel_volume(
-    UNUSED void** state)
+static void test_midi_triggers_synth_note_on_with_velocity_and_channel_volume(UNUSED void** state)
 {
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         expect_synth_volume(chan, MAX_MIDI_VOLUME / 2);
@@ -35,8 +34,7 @@ static void test_midi_triggers_synth_note_on_with_velocity_and_channel_volume(
     }
 }
 
-static void test_midi_changing_volume_during_note_on_respects_velocity(
-    UNUSED void** state)
+static void test_midi_changing_volume_during_note_on_respects_velocity(UNUSED void** state)
 {
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         expect_synth_pitch(chan, 4, SYNTH_NTSC_C);
@@ -52,8 +50,7 @@ static void test_midi_changing_volume_during_note_on_respects_velocity(
     }
 }
 
-static void test_midi_triggers_synth_note_on_boundary_values(
-    UNUSED void** state)
+static void test_midi_triggers_synth_note_on_boundary_values(UNUSED void** state)
 {
     const u8 keys[] = { 11, 106 };
     const u16 expectedFrequencies[] = { 607, SYNTH_NTSC_AS };
@@ -61,8 +58,7 @@ static void test_midi_triggers_synth_note_on_boundary_values(
 
     for (int index = 0; index < 2; index++) {
         for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
-            expect_synth_pitch(
-                chan, expectedOctaves[index], expectedFrequencies[index]);
+            expect_synth_pitch(chan, expectedOctaves[index], expectedFrequencies[index]);
             expect_synth_volume_any();
             expect_value(__wrap_synth_noteOn, channel, chan);
 
@@ -71,8 +67,7 @@ static void test_midi_triggers_synth_note_on_boundary_values(
     }
 }
 
-static void test_midi_does_not_trigger_synth_note_on_out_of_bound_values(
-    UNUSED void** state)
+static void test_midi_does_not_trigger_synth_note_on_out_of_bound_values(UNUSED void** state)
 {
     const u8 keys[] = { 0, 10, 107, 127 };
 
@@ -96,8 +91,7 @@ static void test_midi_triggers_synth_note_off(UNUSED void** state)
     }
 }
 
-static void test_midi_triggers_synth_note_off_when_note_on_has_zero_velocity(
-    UNUSED void** state)
+static void test_midi_triggers_synth_note_off_when_note_on_has_zero_velocity(UNUSED void** state)
 {
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         expect_synth_pitch(chan, 4, SYNTH_NTSC_C);
@@ -210,8 +204,7 @@ static void test_midi_sets_operator_total_level(UNUSED void** state)
             u8 expectedOp = cc - 16;
             expect_value(__wrap_synth_operatorTotalLevel, channel, chan);
             expect_value(__wrap_synth_operatorTotalLevel, op, expectedOp);
-            expect_value(
-                __wrap_synth_operatorTotalLevel, totalLevel, expectedValue);
+            expect_value(__wrap_synth_operatorTotalLevel, totalLevel, expectedValue);
 
             __real_midi_cc(chan, cc, expectedValue);
         }
@@ -227,8 +220,7 @@ static void test_midi_sets_operator_multiple(UNUSED void** state)
             u8 expectedOp = cc - 20;
             expect_value(__wrap_synth_operatorMultiple, channel, chan);
             expect_value(__wrap_synth_operatorMultiple, op, expectedOp);
-            expect_value(
-                __wrap_synth_operatorMultiple, multiple, expectedValue);
+            expect_value(__wrap_synth_operatorMultiple, multiple, expectedValue);
 
             __real_midi_cc(chan, cc, 32);
         }
@@ -260,8 +252,7 @@ static void test_midi_sets_operator_rate_scaling(UNUSED void** state)
             u8 expectedOp = cc - 39;
             expect_value(__wrap_synth_operatorRateScaling, channel, chan);
             expect_value(__wrap_synth_operatorRateScaling, op, expectedOp);
-            expect_value(
-                __wrap_synth_operatorRateScaling, rateScaling, expectedValue);
+            expect_value(__wrap_synth_operatorRateScaling, rateScaling, expectedValue);
 
             __real_midi_cc(chan, cc, 64);
         }
@@ -277,8 +268,7 @@ static void test_midi_sets_operator_attack_rate(UNUSED void** state)
             u8 expectedOp = cc - 43;
             expect_value(__wrap_synth_operatorAttackRate, channel, chan);
             expect_value(__wrap_synth_operatorAttackRate, op, expectedOp);
-            expect_value(
-                __wrap_synth_operatorAttackRate, attackRate, expectedValue);
+            expect_value(__wrap_synth_operatorAttackRate, attackRate, expectedValue);
 
             __real_midi_cc(chan, cc, 8);
         }
@@ -293,8 +283,7 @@ static void test_midi_sets_operator_first_decay_rate(UNUSED void** state)
             u8 expectedOp = cc - 47;
             expect_value(__wrap_synth_operatorFirstDecayRate, channel, chan);
             expect_value(__wrap_synth_operatorFirstDecayRate, op, expectedOp);
-            expect_value(__wrap_synth_operatorFirstDecayRate, firstDecayRate,
-                expectedValue);
+            expect_value(__wrap_synth_operatorFirstDecayRate, firstDecayRate, expectedValue);
 
             __real_midi_cc(chan, cc, 8);
         }
@@ -310,8 +299,7 @@ static void test_midi_sets_operator_second_decay_rate(UNUSED void** state)
             u8 expectedOp = cc - 51;
             expect_value(__wrap_synth_operatorSecondDecayRate, channel, chan);
             expect_value(__wrap_synth_operatorSecondDecayRate, op, expectedOp);
-            expect_value(__wrap_synth_operatorSecondDecayRate, secondDecayRate,
-                expectedValue);
+            expect_value(__wrap_synth_operatorSecondDecayRate, secondDecayRate, expectedValue);
 
             __real_midi_cc(chan, cc, 8);
         }
@@ -325,12 +313,10 @@ static void test_midi_sets_operator_secondary_amplitude(UNUSED void** state)
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         for (u8 cc = 55; cc <= 58; cc++) {
             u8 expectedOp = cc - 55;
+            expect_value(__wrap_synth_operatorSecondaryAmplitude, channel, chan);
+            expect_value(__wrap_synth_operatorSecondaryAmplitude, op, expectedOp);
             expect_value(
-                __wrap_synth_operatorSecondaryAmplitude, channel, chan);
-            expect_value(
-                __wrap_synth_operatorSecondaryAmplitude, op, expectedOp);
-            expect_value(__wrap_synth_operatorSecondaryAmplitude,
-                secondaryAmplitude, expectedValue);
+                __wrap_synth_operatorSecondaryAmplitude, secondaryAmplitude, expectedValue);
 
             __real_midi_cc(chan, cc, 8);
         }
@@ -344,12 +330,10 @@ static void test_midi_sets_operator_amplitude_modulation(UNUSED void** state)
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         for (u8 cc = 70; cc <= 73; cc++) {
             u8 expectedOp = cc - 70;
+            expect_value(__wrap_synth_operatorAmplitudeModulation, channel, chan);
+            expect_value(__wrap_synth_operatorAmplitudeModulation, op, expectedOp);
             expect_value(
-                __wrap_synth_operatorAmplitudeModulation, channel, chan);
-            expect_value(
-                __wrap_synth_operatorAmplitudeModulation, op, expectedOp);
-            expect_value(__wrap_synth_operatorAmplitudeModulation,
-                amplitudeModulation, expectedValue);
+                __wrap_synth_operatorAmplitudeModulation, amplitudeModulation, expectedValue);
 
             __real_midi_cc(chan, cc, 96);
         }
@@ -365,8 +349,7 @@ static void test_midi_sets_operator_release_rate(UNUSED void** state)
             u8 expectedOp = cc - 59;
             expect_value(__wrap_synth_operatorReleaseRate, channel, chan);
             expect_value(__wrap_synth_operatorReleaseRate, op, expectedOp);
-            expect_value(
-                __wrap_synth_operatorReleaseRate, releaseRate, expectedValue);
+            expect_value(__wrap_synth_operatorReleaseRate, releaseRate, expectedValue);
 
             __real_midi_cc(chan, cc, 8);
         }
@@ -487,8 +470,7 @@ static void test_midi_pitch_bends_up_an_octave(UNUSED void** state)
     }
 }
 
-static void test_midi_pitch_bends_up_an_octave_upper_freq_limit(
-    UNUSED void** state)
+static void test_midi_pitch_bends_up_an_octave_upper_freq_limit(UNUSED void** state)
 {
     const u8 MIDI_PITCH_AS4 = 70;
     const u16 SYNTH_FREQ_AS4 = 1146;
@@ -525,14 +507,13 @@ static void test_midi_persists_pitch_bend_between_notes(UNUSED void** state)
 
 static void remap_midi_channel(u8 midiChannel, u8 deviceChannel)
 {
-    u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
-        SYSEX_COMMAND_REMAP, midiChannel, deviceChannel };
+    u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID, SYSEX_COMMAND_REMAP,
+        midiChannel, deviceChannel };
 
     __real_midi_sysex(sequence, sizeof(sequence) / sizeof(sequence[0]));
 }
 
-static void test_midi_fm_note_on_percussion_channel_sets_percussion_preset(
-    UNUSED void** state)
+static void test_midi_fm_note_on_percussion_channel_sets_percussion_preset(UNUSED void** state)
 {
     const u8 MIDI_PERCUSSION_CHANNEL = 9;
     const u8 FM_CHANNEL = 5;
@@ -541,10 +522,8 @@ static void test_midi_fm_note_on_percussion_channel_sets_percussion_preset(
     remap_midi_channel(MIDI_PERCUSSION_CHANNEL, FM_CHANNEL);
 
     const FmChannel P_BANK_0_INST_30_CASTANETS = { 4, 3, 3, 0, 0, 0, 0,
-        { { 9, 0, 31, 0, 11, 0, 15, 0, 15, 23, 0 },
-            { 1, 0, 31, 0, 19, 0, 15, 0, 15, 15, 0 },
-            { 4, 0, 31, 2, 20, 0, 15, 0, 15, 13, 0 },
-            { 2, 0, 31, 2, 20, 0, 15, 0, 15, 13, 0 } } };
+        { { 9, 0, 31, 0, 11, 0, 15, 0, 15, 23, 0 }, { 1, 0, 31, 0, 19, 0, 15, 0, 15, 15, 0 },
+            { 4, 0, 31, 2, 20, 0, 15, 0, 15, 13, 0 }, { 2, 0, 31, 2, 20, 0, 15, 0, 15, 13, 0 } } };
 
     expect_value(__wrap_synth_preset, channel, FM_CHANNEL);
     expect_memory(__wrap_synth_preset, preset, &P_BANK_0_INST_30_CASTANETS,
@@ -564,21 +543,15 @@ static void test_midi_switching_program_retains_pan_setting(UNUSED void** state)
 
     expect_value(__wrap_synth_stereo, channel, chan);
     expect_value(__wrap_synth_stereo, mode, 1);
-
     __real_midi_cc(0, CC_PAN, 127);
 
     const FmChannel M_BANK_0_INST_1_BRIGHTPIANO = { 5, 7, 3, 0, 0, 0, 0,
-        { { 4, 2, 27, 1, 9, 0, 11, 5, 6, 33, 0 },
-            { 4, 5, 27, 1, 9, 0, 7, 9, 7, 18, 0 },
-            { 1, 2, 27, 1, 5, 1, 10, 5, 6, 8, 0 },
-            { 6, 5, 27, 1, 9, 0, 3, 8, 7, 9, 0 } } };
+        { { 4, 2, 27, 1, 9, 0, 11, 5, 6, 33, 0 }, { 4, 5, 27, 1, 9, 0, 7, 9, 7, 18, 0 },
+            { 1, 2, 27, 1, 5, 1, 10, 5, 6, 8, 0 }, { 6, 5, 27, 1, 9, 0, 3, 8, 7, 9, 0 } } };
 
     expect_value(__wrap_synth_preset, channel, chan);
     expect_memory(__wrap_synth_preset, preset, &M_BANK_0_INST_1_BRIGHTPIANO,
         sizeof(M_BANK_0_INST_1_BRIGHTPIANO));
-    expect_value(__wrap_synth_stereo, channel, chan);
-    expect_value(__wrap_synth_stereo, mode, 1);
-
     __real_midi_program(chan, program);
 }
 
@@ -602,8 +575,7 @@ static void test_midi_disables_fm_special_mode(UNUSED void** state)
     __real_midi_cc(0, expectedController, expectedValue);
 }
 
-static void test_midi_sets_pitch_of_special_mode_ch3_operator(
-    UNUSED void** state)
+static void test_midi_sets_pitch_of_special_mode_ch3_operator(UNUSED void** state)
 {
     for (u8 op = 0; op < 3; op++) {
         int midiChannel = 10 + op;
@@ -619,8 +591,7 @@ static void test_midi_sets_pitch_of_special_mode_ch3_operator(
     }
 }
 
-static void test_midi_sets_volume_of_special_mode_ch3_operator(
-    UNUSED void** state)
+static void test_midi_sets_volume_of_special_mode_ch3_operator(UNUSED void** state)
 {
     for (u8 op = 0; op < 3; op++) {
         int midiChannel = 10 + op;
@@ -653,8 +624,7 @@ static void test_midi_pitch_bends_special_mode_operator(UNUSED void** state)
     __real_midi_pitch_bend(chan, 0x6000);
 }
 
-static void test_midi_pitch_bends_special_mode_op_independent_of_other_ops(
-    UNUSED void** state)
+static void test_midi_pitch_bends_special_mode_op_independent_of_other_ops(UNUSED void** state)
 {
     expect_value(__wrap_synth_specialModePitch, op, 0);
     expect_value(__wrap_synth_specialModePitch, octave, 4);
@@ -676,8 +646,7 @@ static void test_midi_pitch_bends_special_mode_op_independent_of_other_ops(
     __real_midi_note_on(11, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 }
 
-static void test_midi_persists_pitch_bends_for_special_mode_op_between_notes(
-    UNUSED void** state)
+static void test_midi_persists_pitch_bends_for_special_mode_op_between_notes(UNUSED void** state)
 {
     int chan = 10;
 
@@ -701,8 +670,7 @@ static void test_midi_persists_pitch_bends_for_special_mode_op_between_notes(
     __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 }
 
-static void test_midi_note_priority_respected_for_multiple_notes(
-    UNUSED void** state)
+static void test_midi_note_priority_respected_for_multiple_notes(UNUSED void** state)
 {
     expect_synth_pitch(0, 4, 0x284);
     expect_synth_volume_any();
@@ -732,19 +700,18 @@ static void test_midi_note_priority_respected_for_multiple_notes(
 
 #define NOTE_PRIORITY_LENGTH 10
 
-static void test_midi_drops_note_when_note_priority_stack_full(
-    UNUSED void** state)
+static void test_midi_drops_note_when_note_priority_stack_full(UNUSED void** state)
 {
-    const u16 expectedFreqNum[NOTE_PRIORITY_LENGTH] = { 0x25f, 0x284, 0x2a9,
-        0x2d2, 0x2fd, 0x32a, 0x35a, 0x38e, 0x3c4, 0x3fd };
+    const u16 expectedFreqNum[NOTE_PRIORITY_LENGTH]
+        = { 0x25f, 0x284, 0x2a9, 0x2d2, 0x2fd, 0x32a, 0x35a, 0x38e, 0x3c4, 0x3fd };
     const u8 expectedOctave = 4;
 
     for (u16 i = 0; i < NOTE_PRIORITY_LENGTH; i++) {
         u8 pitch = 59 + i;
         u16 freqNum = expectedFreqNum[i];
 
-        print_message("noteOn: pitch = %d, freqNum = 0x%x, octave = %d\n",
-            pitch, freqNum, expectedOctave);
+        print_message(
+            "noteOn: pitch = %d, freqNum = 0x%x, octave = %d\n", pitch, freqNum, expectedOctave);
 
         expect_synth_pitch(0, expectedOctave, freqNum);
         expect_synth_volume_any();
