@@ -730,16 +730,16 @@ static void test_midi_note_priority_respected_for_multiple_notes(
     __real_midi_note_off(0, MIDI_PITCH_CS4);
 }
 
-#define NOTE_PRIORITY_OVERFLOW_LENGTH 10
+#define NOTE_PRIORITY_LENGTH 10
 
 static void test_midi_drops_note_when_note_priority_stack_full(
     UNUSED void** state)
 {
-    const u16 expectedFreqNum[NOTE_PRIORITY_OVERFLOW_LENGTH] = { 0x25f, 0x284,
-        0x2a9, 0x2d2, 0x2fd, 0x32a, 0x35a, 0x38e, 0x3c4, 0x3fd };
+    const u16 expectedFreqNum[NOTE_PRIORITY_LENGTH] = { 0x25f, 0x284, 0x2a9,
+        0x2d2, 0x2fd, 0x32a, 0x35a, 0x38e, 0x3c4, 0x3fd };
     const u8 expectedOctave = 4;
 
-    for (u16 i = 0; i < NOTE_PRIORITY_OVERFLOW_LENGTH; i++) {
+    for (u16 i = 0; i < NOTE_PRIORITY_LENGTH; i++) {
         u8 pitch = 59 + i;
         u16 freqNum = expectedFreqNum[i];
 
