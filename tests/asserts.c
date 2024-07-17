@@ -1,11 +1,10 @@
 #include "cmocka_inc.h"
 #include "comm.h"
 
-#define expect_value_with_pos(function, parameter, value, file, line)          \
-    _expect_value(#function, #parameter, file, line,                           \
-        cast_to_largest_integral_type(value), 1)
+#define expect_value_with_pos(function, parameter, value, file, line)                              \
+    _expect_value(#function, #parameter, file, line, cast_to_largest_integral_type(value), 1)
 
-#define expect_any_with_pos(function, parameter, file, line)                   \
+#define expect_any_with_pos(function, parameter, file, line)                                       \
     _expect_any(#function, #parameter, file, line, 1)
 
 void stub_usb_receive_byte(u8 value)
@@ -75,12 +74,10 @@ u8 regOpIndex(u8 op)
     }
 }
 
-void _expect_ym2612_write_reg_any_data(
-    u8 part, u8 reg, const char* const file, const int line)
+void _expect_ym2612_write_reg_any_data(u8 part, u8 reg, const char* const file, const int line)
 {
 #ifdef DEBUG
-    print_message(
-        "expect: YM2612_writeReg(part=%d, reg=0x%X, data=*)\n", part, reg);
+    print_message("expect: YM2612_writeReg(part=%d, reg=0x%X, data=*)\n", part, reg);
 #endif
     expect_value(__wrap_Z80_getAndRequestBus, wait, TRUE);
     will_return(__wrap_Z80_getAndRequestBus, false);
@@ -96,8 +93,7 @@ void expect_ym2612_write_operator_any_data(u8 chan, u8 op, u8 baseReg)
     will_return(__wrap_Z80_getAndRequestBus, false);
 
     expect_value(__wrap_YM2612_writeReg, part, REG_PART(chan));
-    expect_value(__wrap_YM2612_writeReg, reg,
-        baseReg + REG_OFFSET(chan) + (regOpIndex(op) * 4));
+    expect_value(__wrap_YM2612_writeReg, reg, baseReg + REG_OFFSET(chan) + (regOpIndex(op) * 4));
     expect_any(__wrap_YM2612_writeReg, data);
 
     expect_function_call(__wrap_Z80_releaseBus);
@@ -110,13 +106,12 @@ void expect_synth_pitch_any(void)
     expect_any(__wrap_synth_pitch, freqNumber);
 }
 
-void _expect_synth_pitch(u8 channel, u8 octave, u16 freqNumber,
-    const char* const file, const int line)
+void _expect_synth_pitch(
+    u8 channel, u8 octave, u16 freqNumber, const char* const file, const int line)
 {
     expect_value_with_pos(__wrap_synth_pitch, channel, channel, file, line);
     expect_value_with_pos(__wrap_synth_pitch, octave, octave, file, line);
-    expect_value_with_pos(
-        __wrap_synth_pitch, freqNumber, freqNumber, file, line);
+    expect_value_with_pos(__wrap_synth_pitch, freqNumber, freqNumber, file, line);
 }
 
 void expect_synth_volume(u8 channel, u8 volume)
@@ -131,12 +126,10 @@ void expect_synth_volume_any(void)
     expect_any(__wrap_synth_volume, volume);
 }
 
-void _expect_ym2612_write_reg(
-    u8 part, u8 reg, u8 data, const char* const file, const int line)
+void _expect_ym2612_write_reg(u8 part, u8 reg, u8 data, const char* const file, const int line)
 {
 #ifdef DEBUG
-    print_message("expect: YM2612_writeReg(part=%d, reg=0x%X, data=0x%X)\n",
-        part, reg, data);
+    print_message("expect: YM2612_writeReg(part=%d, reg=0x%X, data=0x%X)\n", part, reg, data);
 #endif
     expect_value(__wrap_Z80_getAndRequestBus, wait, TRUE);
     will_return(__wrap_Z80_getAndRequestBus, false);
@@ -158,13 +151,11 @@ void _expect_ym2612_write_operator(
 void _expect_ym2612_write_channel(
     u8 chan, u8 baseReg, u8 data, const char* const file, const int line)
 {
-    _expect_ym2612_write_reg(
-        REG_PART(chan), ((baseReg) + REG_OFFSET(chan)), data, file, line);
+    _expect_ym2612_write_reg(REG_PART(chan), ((baseReg) + REG_OFFSET(chan)), data, file, line);
 }
 
 void _expect_ym2612_write_channel_any_data(
     u8 chan, u8 baseReg, const char* const file, const int line)
 {
-    _expect_ym2612_write_reg_any_data(
-        REG_PART(chan), baseReg + REG_OFFSET(chan), file, line);
+    _expect_ym2612_write_reg_any_data(REG_PART(chan), baseReg + REG_OFFSET(chan), file, line);
 }

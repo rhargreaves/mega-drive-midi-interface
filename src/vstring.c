@@ -205,7 +205,8 @@ static u16 uint16ToStr(u16 value, char* str, u16 minsize)
     }
 
     // pad with '0'
-    while (dst != str) *--dst = '0';
+    while (dst != str)
+        *--dst = '0';
 
     return length;
 }
@@ -250,7 +251,8 @@ void v_intToHex(u32 value, char* str, u16 minsize)
         cnt = maxsize;
 
     dst = str;
-    while (cnt--) *dst++ = *src++;
+    while (cnt--)
+        *dst++ = *src++;
     *dst = 0;
 }
 
@@ -268,14 +270,14 @@ void v_fix32ToStr(fix32 value, char* str, u16 numdec)
     *dst++ = '.';
 
     // get fractional part
-    const u16 frac
-        = (((u16)fix32Frac(v)) * (u16)1000) / ((u16)1 << FIX32_FRAC_BITS);
+    const u16 frac = (((u16)fix32Frac(v)) * (u16)1000) / ((u16)1 << FIX32_FRAC_BITS);
     u16 len = uint16ToStr(frac, dst, 1);
 
     if (len < numdec) {
         // need to add ending '0'
         dst += len;
-        while (len++ < numdec) *dst++ = '0';
+        while (len++ < numdec)
+            *dst++ = '0';
         // mark end here
         *dst = 0;
     } else
@@ -296,14 +298,14 @@ void v_fix16ToStr(fix16 value, char* str, u16 numdec)
     *dst++ = '.';
 
     // get fractional part
-    const u16 frac
-        = (((u16)fix16Frac(v)) * (u16)1000) / ((u16)1 << FIX16_FRAC_BITS);
+    const u16 frac = (((u16)fix16Frac(v)) * (u16)1000) / ((u16)1 << FIX16_FRAC_BITS);
     u16 len = uint16ToStr(frac, dst, 1);
 
     if (len < numdec) {
         // need to add ending '0'
         dst += len;
-        while (len++ < numdec) *dst++ = '0';
+        while (len++ < numdec)
+            *dst++ = '0';
         // mark end here
         *dst = 0;
     } else
@@ -329,7 +331,8 @@ static u16 skip_atoi(const char** s)
 {
     u16 i = 0;
 
-    while (isdigit(**s)) i = (i * 10) + *((*s)++) - '0';
+    while (isdigit(**s))
+        i = (i * 10) + *((*s)++) - '0';
 
     return i;
 }
@@ -436,11 +439,13 @@ u16 v_vsprintf(char* buf, const char* fmt, va_list args)
         switch (*fmt) {
         case 'c':
             if (!left_align)
-                while (--field_width > 0) *str++ = ' ';
+                while (--field_width > 0)
+                    *str++ = ' ';
 
             *str++ = (unsigned char)va_arg(args, int);
 
-            while (--field_width > 0) *str++ = ' ';
+            while (--field_width > 0)
+                *str++ = ' ';
 
             continue;
 
@@ -453,11 +458,14 @@ u16 v_vsprintf(char* buf, const char* fmt, va_list args)
             len = v_strnlen(s, precision);
 
             if (!left_align)
-                while (len < field_width--) *str++ = ' ';
+                while (len < field_width--)
+                    *str++ = ' ';
 
-            for (i = 0; i < len; ++i) *str++ = *s++;
+            for (i = 0; i < len; ++i)
+                *str++ = *s++;
 
-            while (len < field_width--) *str++ = ' ';
+            while (len < field_width--)
+                *str++ = ' ';
 
             continue;
 
@@ -562,15 +570,19 @@ u16 v_vsprintf(char* buf, const char* fmt, va_list args)
 
         if (!left_align) {
             if (zero_pad) {
-                while (len < field_width--) *str++ = '0';
+                while (len < field_width--)
+                    *str++ = '0';
             } else {
-                while (len < field_width--) *str++ = ' ';
+                while (len < field_width--)
+                    *str++ = ' ';
             }
         }
 
-        for (i = 0; i < len; ++i) *str++ = *s++;
+        for (i = 0; i < len; ++i)
+            *str++ = *s++;
 
-        while (len < field_width--) *str++ = ' ';
+        while (len < field_width--)
+            *str++ = ' ';
     }
 
     *str = '\0';

@@ -17,26 +17,23 @@
 #define PITCH_SHIFTS 7
 #define NUM_TONES (128 - MIN_MIDI_KEY)
 
-static const u16 TONES_NTSC[NUM_TONES] = { 1016, 959, 905, 855, 807, 761, 719,
-    678, 640, 604, 570, 538, 508, 479, 452, 427, 403, 380, 359, 339, 320, 302,
-    285, 269, 254, 239, 226, 213, 201, 190, 179, 169, 160, 151, 142, 134, 127,
-    119, 113, 106, 100, 95, 89, 84, 80, 75, 71, 67, 63, 59, 56, 53, 50, 47, 44,
-    42, 40, 37, 35, 33, 31, 29, 28, 26, 25, 23, 22, 21, 20, 18, 17, 16, 15, 14,
-    14, 13, 12, 11, 11, 10, 10, 9, 8 };
+static const u16 TONES_NTSC[NUM_TONES] = { 1016, 959, 905, 855, 807, 761, 719, 678, 640, 604, 570,
+    538, 508, 479, 452, 427, 403, 380, 359, 339, 320, 302, 285, 269, 254, 239, 226, 213, 201, 190,
+    179, 169, 160, 151, 142, 134, 127, 119, 113, 106, 100, 95, 89, 84, 80, 75, 71, 67, 63, 59, 56,
+    53, 50, 47, 44, 42, 40, 37, 35, 33, 31, 29, 28, 26, 25, 23, 22, 21, 20, 18, 17, 16, 15, 14, 14,
+    13, 12, 11, 11, 10, 10, 9, 8 };
 
-static const u16 TONES_PAL[NUM_TONES] = { 1007, 951, 897, 847, 799, 754, 712,
-    672, 634, 599, 565, 533, 503, 475, 448, 423, 399, 377, 356, 336, 317, 299,
-    282, 266, 251, 237, 224, 211, 199, 188, 178, 168, 158, 149, 141, 133, 125,
-    118, 112, 105, 99, 94, 89, 84, 79, 74, 70, 66, 62, 59, 56, 52, 49, 47, 44,
-    42, 39, 37, 35, 33, 31, 29, 28, 26, 24, 23, 22, 21, 19, 18, 17, 16, 15, 14,
-    14, 13, 12, 11, 11, 10, 9, 9, 8 };
+static const u16 TONES_PAL[NUM_TONES] = { 1007, 951, 897, 847, 799, 754, 712, 672, 634, 599, 565,
+    533, 503, 475, 448, 423, 399, 377, 356, 336, 317, 299, 282, 266, 251, 237, 224, 211, 199, 188,
+    178, 168, 158, 149, 141, 133, 125, 118, 112, 105, 99, 94, 89, 84, 79, 74, 70, 66, 62, 59, 56,
+    52, 49, 47, 44, 42, 39, 37, 35, 33, 31, 29, 28, 26, 24, 23, 22, 21, 19, 18, 17, 16, 15, 14, 14,
+    13, 12, 11, 11, 10, 9, 9, 8 };
 
-static const u8 ATTENUATIONS[] = { 15, 14, 14, 14, 13, 13, 13, 13, 12, 12, 12,
-    11, 11, 11, 11, 10, 10, 10, 10, 9, 9, 9, 9, 9, 8, 8, 8, 8, 8, 7, 7, 7, 7, 7,
-    7, 6, 6, 6, 6, 6, 6, 5, 5, 5, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3,
-    3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-    2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+static const u8 ATTENUATIONS[] = { 15, 14, 14, 14, 13, 13, 13, 13, 12, 12, 12, 11, 11, 11, 11, 10,
+    10, 10, 10, 9, 9, 9, 9, 9, 8, 8, 8, 8, 8, 7, 7, 7, 7, 7, 7, 6, 6, 6, 6, 6, 6, 5, 5, 5, 5, 5, 5,
+    5, 5, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+    2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 typedef struct MidiPsgChannel MidiPsgChannel;
 
@@ -97,16 +94,14 @@ void midi_psg_reset(void)
 
 static void initEnvelope(MidiPsgChannel* psgChan)
 {
-    psgChan->envelopeStep = userDefinedEnvelopePtr != NULL
-        ? userDefinedEnvelopePtr
-        : envelopes[psgChan->envelope];
+    psgChan->envelopeStep
+        = userDefinedEnvelopePtr != NULL ? userDefinedEnvelopePtr : envelopes[psgChan->envelope];
     psgChan->envelopeLoopStart = NULL;
 }
 
 static u8 effectiveAttenuation(MidiPsgChannel* psgChan)
 {
-    u8 att
-        = ATTENUATIONS[(psgChan->volume * psgChan->velocity) / MAX_MIDI_VOLUME];
+    u8 att = ATTENUATIONS[(psgChan->volume * psgChan->velocity) / MAX_MIDI_VOLUME];
     u8 invAtt = MAX_ATTENUATION - att;
     u8 envAtt = *psgChan->envelopeStep & 0x0F;
     u8 invEnvAtt = MAX_ATTENUATION - envAtt;
@@ -136,18 +131,14 @@ static u16 envelopeTone(MidiPsgChannel* psgChan)
     u8 shiftIndex = shift - 1;
     if (shift < 0x5) {
         u16 nextTone = toneForMidiKey(psgChan->key + 1);
-        return freq
-            - ((freq - nextTone) * PITCH_SHIFT_TABLE[shiftIndex]) / DIVISOR;
+        return freq - ((freq - nextTone) * PITCH_SHIFT_TABLE[shiftIndex]) / DIVISOR;
     } else if (shift < 0x8) {
         return toneForMidiKey(psgChan->key + KEY_SHIFT_TABLE[shiftIndex]);
     } else if (shift < 0xC) {
         u16 prevFreq = toneForMidiKey(psgChan->key - 1);
-        return freq
-            + ((prevFreq - freq) * PITCH_SHIFT_TABLE[shiftIndex - 0x07])
-            / DIVISOR;
+        return freq + ((prevFreq - freq) * PITCH_SHIFT_TABLE[shiftIndex - 0x07]) / DIVISOR;
     } else {
-        return toneForMidiKey(
-            psgChan->key - KEY_SHIFT_TABLE[shiftIndex - 0x07]);
+        return toneForMidiKey(psgChan->key - KEY_SHIFT_TABLE[shiftIndex - 0x07]);
     }
 }
 
@@ -157,16 +148,14 @@ static u16 pitchBentTone(MidiPsgChannel* psgChan, u16 baseTone)
         return baseTone;
     } else if (psgChan->pitchBend < MIDI_PITCH_BEND_CENTRE) {
         // bending down
-        u16 prevTone = toneForMidiKey(
-            psgChan->key - GENERAL_MIDI_PITCH_BEND_SEMITONE_RANGE);
+        u16 prevTone = toneForMidiKey(psgChan->key - GENERAL_MIDI_PITCH_BEND_SEMITONE_RANGE);
         // prev tone is higher
         u16 diff = prevTone - baseTone;
         u16 bend = MIDI_PITCH_BEND_CENTRE - psgChan->pitchBend;
         return baseTone + (u32)((diff * bend) / MIDI_PITCH_BEND_CENTRE);
     } else {
         // bending up
-        u16 nextTone = toneForMidiKey(
-            psgChan->key + GENERAL_MIDI_PITCH_BEND_SEMITONE_RANGE);
+        u16 nextTone = toneForMidiKey(psgChan->key + GENERAL_MIDI_PITCH_BEND_SEMITONE_RANGE);
         // next tone is lower
         u16 diff = baseTone - nextTone;
         u16 bend = psgChan->pitchBend - MIDI_PITCH_BEND_CENTRE;
@@ -207,8 +196,7 @@ static void applyEnvelopeStep(MidiPsgChannel* psgChan)
         psgChan->envelopeStep++;
         psgChan->envelopeLoopStart = psgChan->envelopeStep;
     }
-    if (*psgChan->envelopeStep == EEF_LOOP_END
-        && psgChan->envelopeLoopStart != NULL) {
+    if (*psgChan->envelopeStep == EEF_LOOP_END && psgChan->envelopeLoopStart != NULL) {
         psgChan->envelopeStep++;
         if (!psgChan->noteReleased) {
             psgChan->envelopeStep = psgChan->envelopeLoopStart;

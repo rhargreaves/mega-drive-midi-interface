@@ -28,24 +28,21 @@ struct CommVTable {
     void (*write)(u8 data);
 };
 
-static const CommVTable Demo_VTable = { comm_demo_init, comm_demo_read_ready,
-    comm_demo_read, comm_demo_write_ready, comm_demo_write };
+static const CommVTable Demo_VTable = { comm_demo_init, comm_demo_read_ready, comm_demo_read,
+    comm_demo_write_ready, comm_demo_write };
 
-static const CommVTable Everdrive_VTable
-    = { comm_everdrive_init, comm_everdrive_read_ready, comm_everdrive_read,
-          comm_everdrive_write_ready, comm_everdrive_write };
+static const CommVTable Everdrive_VTable = { comm_everdrive_init, comm_everdrive_read_ready,
+    comm_everdrive_read, comm_everdrive_write_ready, comm_everdrive_write };
 
-static const CommVTable EverdrivePro_VTable = { comm_everdrive_pro_init,
-    comm_everdrive_pro_read_ready, comm_everdrive_pro_read,
-    comm_everdrive_pro_write_ready, comm_everdrive_pro_write };
+static const CommVTable EverdrivePro_VTable
+    = { comm_everdrive_pro_init, comm_everdrive_pro_read_ready, comm_everdrive_pro_read,
+          comm_everdrive_pro_write_ready, comm_everdrive_pro_write };
 
-static const CommVTable Serial_VTable
-    = { comm_serial_init, comm_serial_read_ready, comm_serial_read,
-          comm_serial_write_ready, comm_serial_write };
+static const CommVTable Serial_VTable = { comm_serial_init, comm_serial_read_ready,
+    comm_serial_read, comm_serial_write_ready, comm_serial_write };
 
-static const CommVTable Megawifi_VTable
-    = { comm_megawifi_init, comm_megawifi_read_ready, comm_megawifi_read,
-          comm_megawifi_write_ready, comm_megawifi_write };
+static const CommVTable Megawifi_VTable = { comm_megawifi_init, comm_megawifi_read_ready,
+    comm_megawifi_read, comm_megawifi_write_ready, comm_megawifi_write };
 
 static const CommVTable* commTypes[] = {
 #if COMM_EVERDRIVE_X7 == 1

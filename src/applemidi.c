@@ -5,8 +5,7 @@
 #include "comm_megawifi.h"
 #include "settings.h"
 
-static enum mw_err unpackInvitation(
-    char* buffer, u16 length, AppleMidiExchangePacket* invite);
+static enum mw_err unpackInvitation(char* buffer, u16 length, AppleMidiExchangePacket* invite);
 static void sendInviteResponse(u8 ch, AppleMidiExchangePacket* invite);
 
 static enum mw_err processInvitation(u8 ch, char* buffer, u16 length)
@@ -24,8 +23,7 @@ static enum mw_err processInvitation(u8 ch, char* buffer, u16 length)
     return MW_ERR_NONE;
 }
 
-static enum mw_err unpackInvitation(
-    char* buffer, u16 length, AppleMidiExchangePacket* invite)
+static enum mw_err unpackInvitation(char* buffer, u16 length, AppleMidiExchangePacket* invite)
 {
     if (length < APPLE_MIDI_EXCH_PKT_MIN_LEN) {
         return ERR_APPLE_MIDI_EXCH_PKT_TOO_SMALL;
@@ -84,8 +82,7 @@ static enum mw_err unpackTimestampSync(
     return MW_ERR_NONE;
 }
 
-static void packTimestampSync(
-    AppleMidiTimeSyncPacket* timeSyncPacket, char* buffer, u16* length)
+static void packTimestampSync(AppleMidiTimeSyncPacket* timeSyncPacket, char* buffer, u16* length)
 {
     *length = 0;
     while (*length < TIMESYNC_PKT_LEN) {
@@ -185,12 +182,10 @@ u16 applemidi_lastSequenceNumber(void)
 
 enum mw_err applemidi_sendReceiverFeedback(void)
 {
-    char receiverFeedbackPacket[RECEIVER_FEEDBACK_PACKET_LENGTH]
-        = { 0xFF, 0xFF, 'R', 'S', (u8)(MEGADRIVE_SSRC >> 24),
-              (u8)(MEGADRIVE_SSRC >> 16), (u8)(MEGADRIVE_SSRC >> 8),
-              (u8)MEGADRIVE_SSRC, (u8)(lastSeqNum >> 8), (u8)lastSeqNum, 0, 0 };
+    char receiverFeedbackPacket[RECEIVER_FEEDBACK_PACKET_LENGTH] = { 0xFF, 0xFF, 'R', 'S',
+        (u8)(MEGADRIVE_SSRC >> 24), (u8)(MEGADRIVE_SSRC >> 16), (u8)(MEGADRIVE_SSRC >> 8),
+        (u8)MEGADRIVE_SSRC, (u8)(lastSeqNum >> 8), (u8)lastSeqNum, 0, 0 };
 
-    comm_megawifi_send(CH_CONTROL_PORT, receiverFeedbackPacket,
-        RECEIVER_FEEDBACK_PACKET_LENGTH);
+    comm_megawifi_send(CH_CONTROL_PORT, receiverFeedbackPacket, RECEIVER_FEEDBACK_PACKET_LENGTH);
     return MW_ERR_NONE;
 }

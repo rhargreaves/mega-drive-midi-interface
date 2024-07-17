@@ -16,18 +16,14 @@ extern void __real_SYS_enableInts(void);
 
 void __wrap_SYS_disableInts(void)
 {
-    VDP_setReg(
-        VDP_MODE_REG_1, VDP_getReg(VDP_MODE_REG_1) & ~VDP_IE1_ENABLE_HINT);
-    VDP_setReg(
-        VDP_MODE_REG_2, VDP_getReg(VDP_MODE_REG_2) & ~VDP_IE0_ENABLE_VINT);
+    VDP_setReg(VDP_MODE_REG_1, VDP_getReg(VDP_MODE_REG_1) & ~VDP_IE1_ENABLE_HINT);
+    VDP_setReg(VDP_MODE_REG_2, VDP_getReg(VDP_MODE_REG_2) & ~VDP_IE0_ENABLE_VINT);
 }
 
 void __wrap_SYS_enableInts(void)
 {
-    VDP_setReg(
-        VDP_MODE_REG_1, VDP_getReg(VDP_MODE_REG_1) | VDP_IE1_ENABLE_HINT);
-    VDP_setReg(
-        VDP_MODE_REG_2, VDP_getReg(VDP_MODE_REG_2) | VDP_IE0_ENABLE_VINT);
+    VDP_setReg(VDP_MODE_REG_1, VDP_getReg(VDP_MODE_REG_1) | VDP_IE1_ENABLE_HINT);
+    VDP_setReg(VDP_MODE_REG_2, VDP_getReg(VDP_MODE_REG_2) | VDP_IE0_ENABLE_VINT);
 }
 
 void __wrap_JOY_update()

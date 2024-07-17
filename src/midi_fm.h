@@ -14,8 +14,8 @@ struct PercussionPreset {
     u8 key;
 };
 
-void midi_fm_init(const FmChannel** defaultPresets,
-    const PercussionPreset** defaultPercussionPresets);
+void midi_fm_init(
+    const FmChannel** defaultPresets, const PercussionPreset** defaultPercussionPresets);
 void midi_fm_reset(void);
 void midi_fm_note_on(u8 chan, u8 pitch, u8 velocity);
 void midi_fm_note_off(u8 chan, u8 pitch);

@@ -21,8 +21,7 @@ static const char* str_to_uint8(const char* str, uint8_t* result)
     // lower than 256
     case 3:
         if ((str[0] > '2')
-            || ((str[0] == '2')
-                && ((str[1] > '5') || ((str[1] == '5') && (str[2] > '5')))))
+            || ((str[0] == '2') && ((str[1] > '5') || ((str[1] == '5') && (str[2] > '5')))))
             return NULL;
         else {
             *result = ((*str) - '0') * 100;

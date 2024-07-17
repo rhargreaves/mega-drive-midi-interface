@@ -2,8 +2,8 @@
 
 static void remapChannel(u8 midiChannel, u8 deviceChannel)
 {
-    const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
-        SYSEX_MANU_ID, SYSEX_COMMAND_REMAP, midiChannel, deviceChannel };
+    const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_REMAP, midiChannel, deviceChannel };
 
     __real_midi_sysex(sequence, sizeof(sequence));
 }
@@ -30,12 +30,10 @@ static void test_midi_sysex_sends_all_notes_off(UNUSED void** state)
     expect_psg_attenuation(2, PSG_ATTENUATION_SILENCE);
     expect_psg_attenuation(3, PSG_ATTENUATION_SILENCE);
 
-    __real_midi_sysex(
-        sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
+    __real_midi_sysex(sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
 }
 
-static void test_midi_sysex_general_midi_reset_resets_synth_volume(
-    UNUSED void** state)
+static void test_midi_sysex_general_midi_reset_resets_synth_volume(UNUSED void** state)
 {
     const u8 sysExGeneralMidiResetSequence[] = { 0x7E, 0x7F, 0x09, 0x01 };
 
@@ -53,16 +51,14 @@ static void test_midi_sysex_general_midi_reset_resets_synth_volume(
     expect_value(__wrap_synth_noteOff, channel, 3);
     expect_value(__wrap_synth_noteOff, channel, 4);
     expect_value(__wrap_synth_noteOff, channel, 5);
-    __real_midi_sysex(
-        sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
+    __real_midi_sysex(sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
 }
 
 static void test_midi_sysex_ignores_unknown_sysex(UNUSED void** state)
 {
     const u8 sysExGeneralMidiResetSequence[] = { 0x12 };
 
-    __real_midi_sysex(
-        sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
+    __real_midi_sysex(sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
 }
 
 static void test_midi_sysex_remaps_midi_channel_to_psg(UNUSED void** state)
@@ -115,11 +111,10 @@ static void test_midi_sysex_does_nothing_for_empty_payload(UNUSED void** state)
     __real_midi_sysex(seq, length);
 }
 
-static void test_midi_sysex_handles_incomplete_channel_mapping_command(
-    UNUSED void** state)
+static void test_midi_sysex_handles_incomplete_channel_mapping_command(UNUSED void** state)
 {
-    const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
-        SYSEX_MANU_ID, SYSEX_COMMAND_REMAP };
+    const u8 sequence[]
+        = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID, SYSEX_COMMAND_REMAP };
 
     __real_midi_sysex(sequence, 4);
 }
@@ -162,8 +157,7 @@ static void test_midi_sysex_sets_mapping_mode_to_auto(UNUSED void** state)
     __real_midi_sysex(sequence, sizeof(sequence));
 
     const u8 sysExGeneralMidiResetSequence[] = { 0x7E, 0x7F, 0x09, 0x01 };
-    __real_midi_sysex(
-        sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
+    __real_midi_sysex(sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
 
     // Initial note
     expect_synth_pitch(0, 4, 0x284);
@@ -190,12 +184,11 @@ static void test_midi_sysex_disables_fm_parameter_CCs(UNUSED void** state)
 
     __real_midi_sysex(sequence, sizeof(sequence));
 
-    const u8 nonGeneralMidiCCs[] = { CC_GENMDM_FM_ALGORITHM,
-        CC_GENMDM_FM_FEEDBACK, CC_GENMDM_TOTAL_LEVEL_OP1, CC_GENMDM_DETUNE_OP4,
-        CC_GENMDM_RATE_SCALING_OP1, CC_GENMDM_RELEASE_RATE_OP4,
-        CC_GENMDM_AMPLITUDE_MODULATION_OP1, CC_GENMDM_STEREO,
-        CC_GENMDM_SSG_EG_OP1, CC_GENMDM_SSG_EG_OP4,
-        CC_GENMDM_GLOBAL_LFO_FREQUENCY, CC_GENMDM_ENABLE_DAC };
+    const u8 nonGeneralMidiCCs[]
+        = { CC_GENMDM_FM_ALGORITHM, CC_GENMDM_FM_FEEDBACK, CC_GENMDM_TOTAL_LEVEL_OP1,
+              CC_GENMDM_DETUNE_OP4, CC_GENMDM_RATE_SCALING_OP1, CC_GENMDM_RELEASE_RATE_OP4,
+              CC_GENMDM_AMPLITUDE_MODULATION_OP1, CC_GENMDM_STEREO, CC_GENMDM_SSG_EG_OP1,
+              CC_GENMDM_SSG_EG_OP4, CC_GENMDM_GLOBAL_LFO_FREQUENCY, CC_GENMDM_ENABLE_DAC };
 
     for (u16 i = 0; i < sizeof(nonGeneralMidiCCs) / sizeof(u8); i++) {
         u8 cc = nonGeneralMidiCCs[i];
@@ -207,8 +200,8 @@ static void test_midi_sysex_loads_psg_envelope(UNUSED void** state)
 {
     wraps_enable_logging_checks();
 
-    const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
-        SYSEX_MANU_ID, SYSEX_COMMAND_LOAD_PSG_ENVELOPE, 0x01, 0x01 };
+    const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_LOAD_PSG_ENVELOPE, 0x01, 0x01 };
 
     const u8 eef[] = { 0x11, EEF_END };
     const u8 eefLength = sizeof(eef) / sizeof(u8);
@@ -222,8 +215,8 @@ static void test_midi_sysex_loads_psg_envelope(UNUSED void** state)
 
 static void test_midi_sysex_inverts_total_level_values(UNUSED void** state)
 {
-    const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
-        SYSEX_MANU_ID, SYSEX_COMMAND_INVERT_TOTAL_LEVEL, 0x01 };
+    const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_INVERT_TOTAL_LEVEL, 0x01 };
 
     __real_midi_sysex(sequence, sizeof(sequence));
 
@@ -233,11 +226,10 @@ static void test_midi_sysex_inverts_total_level_values(UNUSED void** state)
     __real_midi_cc(0, CC_GENMDM_TOTAL_LEVEL_OP1, 1);
 }
 
-static void test_midi_sysex_sets_original_total_level_values(
-    UNUSED void** state)
+static void test_midi_sysex_sets_original_total_level_values(UNUSED void** state)
 {
-    const u8 invert_sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
-        SYSEX_MANU_ID, SYSEX_COMMAND_INVERT_TOTAL_LEVEL, 0x01 };
+    const u8 invert_sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_INVERT_TOTAL_LEVEL, 0x01 };
 
     __real_midi_sysex(invert_sequence, sizeof(invert_sequence));
     expect_value(__wrap_synth_operatorTotalLevel, channel, 0);
@@ -245,8 +237,8 @@ static void test_midi_sysex_sets_original_total_level_values(
     expect_value(__wrap_synth_operatorTotalLevel, totalLevel, 126);
     __real_midi_cc(0, CC_GENMDM_TOTAL_LEVEL_OP1, 1);
 
-    const u8 original_sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
-        SYSEX_MANU_ID, SYSEX_COMMAND_INVERT_TOTAL_LEVEL, 0x00 };
+    const u8 original_sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_INVERT_TOTAL_LEVEL, 0x00 };
 
     __real_midi_sysex(original_sequence, sizeof(original_sequence));
     expect_value(__wrap_synth_operatorTotalLevel, channel, 0);
@@ -255,12 +247,10 @@ static void test_midi_sysex_sets_original_total_level_values(
     __real_midi_cc(0, CC_GENMDM_TOTAL_LEVEL_OP1, 126);
 }
 
-static void test_midi_sysex_writes_directly_to_ym2612_regs_part_0(
-    UNUSED void** state)
+static void test_midi_sysex_writes_directly_to_ym2612_regs_part_0(UNUSED void** state)
 {
-    const u8 sequence[]
-        = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
-              SYSEX_COMMAND_WRITE_YM2612_REG_PART_0, 0x0B, 0x01, 0x01, 0x02 };
+    const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_WRITE_YM2612_REG_PART_0, 0x0B, 0x01, 0x01, 0x02 };
 
     expect_value(__wrap_synth_directWriteYm2612, part, 0);
     expect_value(__wrap_synth_directWriteYm2612, reg, 0xB1);
@@ -268,12 +258,10 @@ static void test_midi_sysex_writes_directly_to_ym2612_regs_part_0(
     __real_midi_sysex(sequence, sizeof(sequence));
 }
 
-static void test_midi_sysex_writes_directly_to_ym2612_regs_part_1(
-    UNUSED void** state)
+static void test_midi_sysex_writes_directly_to_ym2612_regs_part_1(UNUSED void** state)
 {
-    const u8 sequence[]
-        = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
-              SYSEX_COMMAND_WRITE_YM2612_REG_PART_1, 0x0B, 0x01, 0x01, 0x02 };
+    const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_WRITE_YM2612_REG_PART_1, 0x0B, 0x01, 0x01, 0x02 };
 
     expect_value(__wrap_synth_directWriteYm2612, part, 1);
     expect_value(__wrap_synth_directWriteYm2612, reg, 0xB1);
@@ -281,20 +269,17 @@ static void test_midi_sysex_writes_directly_to_ym2612_regs_part_1(
     __real_midi_sysex(sequence, sizeof(sequence));
 }
 
-static void test_midi_sysex_ignores_incorrect_length_ym2612_direct_writes(
-    UNUSED void** state)
+static void test_midi_sysex_ignores_incorrect_length_ym2612_direct_writes(UNUSED void** state)
 {
-    const u8 badSeq1[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
-        SYSEX_MANU_ID, SYSEX_COMMAND_WRITE_YM2612_REG_PART_0, 0x0B, 0x01, 0x01,
-        0x02, 0x02 };
+    const u8 badSeq1[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_WRITE_YM2612_REG_PART_0, 0x0B, 0x01, 0x01, 0x02, 0x02 };
     __real_midi_sysex(badSeq1, sizeof(badSeq1));
 
-    const u8 badSeq2[]
-        = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
-              SYSEX_COMMAND_WRITE_YM2612_REG_PART_0, 0x0B, 0x01, 0x01 };
+    const u8 badSeq2[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_WRITE_YM2612_REG_PART_0, 0x0B, 0x01, 0x01 };
     __real_midi_sysex(badSeq2, sizeof(badSeq2));
 
-    const u8 badSeq3[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
-        SYSEX_MANU_ID, SYSEX_COMMAND_WRITE_YM2612_REG_PART_0 };
+    const u8 badSeq3[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_WRITE_YM2612_REG_PART_0 };
     __real_midi_sysex(badSeq3, sizeof(badSeq3));
 }

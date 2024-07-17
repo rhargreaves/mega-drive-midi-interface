@@ -26,8 +26,8 @@ static u16 twelveBitMidiLength(u8* commandSection)
 
 static u8 bytesToEmit(u8 status)
 {
-    if (STATUS_UPPER(status) == 0xC || STATUS_UPPER(status) == 0xD
-        || status == 0xF1 || status == 0xF3) {
+    if (STATUS_UPPER(status) == 0xC || STATUS_UPPER(status) == 0xD || status == 0xF1
+        || status == 0xF3) {
         return 1;
     } else {
         return 2;
@@ -73,15 +73,14 @@ static bool isFinalDeltaByte(u8 value)
     return !CHECK_BIT(value, 7);
 }
 
-enum mw_err rtpmidi_processRtpMidiPacket(
-    char* buffer, u16 length, u16* lastSeqNum)
+enum mw_err rtpmidi_processRtpMidiPacket(char* buffer, u16 length, u16* lastSeqNum)
 {
     (void)length; // TODO: Probably shouldn't ignore length...
     u16 seqNum = sequenceNumber(buffer);
     u8* commandSection = (u8*)&buffer[RTP_MIDI_HEADER_LEN];
     bool longHeader = isLongHeader(commandSection);
-    u16 midiLength = longHeader ? twelveBitMidiLength(commandSection)
-                                : fourBitMidiLength(commandSection);
+    u16 midiLength
+        = longHeader ? twelveBitMidiLength(commandSection) : fourBitMidiLength(commandSection);
     u8* midiStart = &commandSection[longHeader ? 2 : 1];
     u8* midiEnd = midiStart + (midiLength - 1);
     u8 status = 0;

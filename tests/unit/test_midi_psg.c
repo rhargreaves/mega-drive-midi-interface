@@ -22,8 +22,7 @@ static void test_midi_triggers_psg_note_on(UNUSED void** state)
     }
 }
 
-static void test_midi_uses_PAL_tones_if_system_is_in_that_region(
-    UNUSED void** state)
+static void test_midi_uses_PAL_tones_if_system_is_in_that_region(UNUSED void** state)
 {
     u8 chan = MIN_PSG_CHAN;
     u8 expectedPsgChan = chan - MIN_PSG_CHAN;
@@ -49,8 +48,7 @@ static void test_midi_triggers_psg_note_on_with_velocity(UNUSED void** state)
     __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME / 2);
 }
 
-static void test_midi_triggers_psg_note_on_with_velocity_and_channel_volume(
-    UNUSED void** state)
+static void test_midi_triggers_psg_note_on_with_velocity_and_channel_volume(UNUSED void** state)
 {
     u8 chan = MIN_PSG_CHAN;
     u8 expectedPsgChan = chan - MIN_PSG_CHAN;
@@ -63,8 +61,7 @@ static void test_midi_triggers_psg_note_on_with_velocity_and_channel_volume(
     __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME / 2);
 }
 
-static void test_midi_changing_volume_during_psg_note_on_respects_velocity(
-    UNUSED void** state)
+static void test_midi_changing_volume_during_psg_note_on_respects_velocity(UNUSED void** state)
 {
     u8 chan = MIN_PSG_CHAN;
     u8 expectedPsgChan = chan - MIN_PSG_CHAN;
@@ -105,8 +102,7 @@ static void test_midi_drops_psg_key_below_45(UNUSED void** state)
     }
 }
 
-static void
-test_midi_triggers_psg_note_off_and_volume_change_does_not_cause_psg_channel_to_play(
+static void test_midi_triggers_psg_note_off_and_volume_change_does_not_cause_psg_channel_to_play(
     UNUSED void** state)
 {
     u8 midiKey = MIDI_PITCH_C4;
@@ -124,8 +120,7 @@ test_midi_triggers_psg_note_off_and_volume_change_does_not_cause_psg_channel_to_
     }
 }
 
-static void test_midi_psg_note_off_only_triggered_if_specific_note_is_on(
-    UNUSED void** state)
+static void test_midi_psg_note_off_only_triggered_if_specific_note_is_on(UNUSED void** state)
 {
     u8 chan = MIN_PSG_CHAN;
 
@@ -258,8 +253,7 @@ static void test_midi_loops_psg_envelope(UNUSED void** state)
     __real_midi_psg_tick();
 }
 
-static void test_midi_psg_envelope_with_only_end_flag_is_silent(
-    UNUSED void** state)
+static void test_midi_psg_envelope_with_only_end_flag_is_silent(UNUSED void** state)
 {
     u8 chan = MIN_PSG_CHAN;
 
@@ -269,8 +263,7 @@ static void test_midi_psg_envelope_with_only_end_flag_is_silent(
     __real_midi_psg_tick();
 }
 
-static void
-test_midi_psg_envelope_with_loop_end_continues_playing_after_note_off(
+static void test_midi_psg_envelope_with_loop_end_continues_playing_after_note_off(
     UNUSED void** state)
 {
     u8 chan = MIN_PSG_CHAN;
@@ -292,8 +285,7 @@ test_midi_psg_envelope_with_loop_end_continues_playing_after_note_off(
     __real_midi_psg_tick();
 }
 
-static void
-test_midi_psg_envelope_with_loop_end_resets_release_note_after_note_silenced(
+static void test_midi_psg_envelope_with_loop_end_resets_release_note_after_note_silenced(
     UNUSED void** state)
 {
     u8 chan = MIN_PSG_CHAN;
@@ -355,8 +347,7 @@ static void test_midi_shifts_semitone_in_psg_envelope(UNUSED void** state)
     }
 }
 
-static void test_midi_pitch_shift_handles_upper_limit_psg_envelope(
-    UNUSED void** state)
+static void test_midi_pitch_shift_handles_upper_limit_psg_envelope(UNUSED void** state)
 {
     const u8 chan = MIN_PSG_CHAN;
     const u8 expectedPsgChan = 0;
@@ -375,8 +366,7 @@ static void test_midi_pitch_shift_handles_upper_limit_psg_envelope(
     __real_midi_psg_tick();
 }
 
-static void test_midi_pitch_shift_handles_lower_limit_psg_envelope(
-    UNUSED void** state)
+static void test_midi_pitch_shift_handles_lower_limit_psg_envelope(UNUSED void** state)
 {
     const u8 chan = MIN_PSG_CHAN;
     const u8 expectedPsgChan = 0;
@@ -415,8 +405,7 @@ static void test_midi_psg_sets_busy_indicators(UNUSED void** state)
     for (u8 chan = 0; chan < MAX_PSG_CHANS; chan++) {
         expect_psg_tone(chan, TONE_NTSC_C4);
         expect_psg_attenuation(chan, PSG_ATTENUATION_LOUDEST);
-        __real_midi_note_on(
-            chan + MIN_PSG_CHAN, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
+        __real_midi_note_on(chan + MIN_PSG_CHAN, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
     }
 
     for (u8 chan = 0; chan < MAX_PSG_CHANS; chan += 2) {

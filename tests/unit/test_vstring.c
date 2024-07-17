@@ -2,8 +2,7 @@
 
 #include "vstring.h"
 
-static void test_vstring_handles_variable_argument_list_correctly(
-    UNUSED void** state)
+static void test_vstring_handles_variable_argument_list_correctly(UNUSED void** state)
 {
     char buffer[10];
 

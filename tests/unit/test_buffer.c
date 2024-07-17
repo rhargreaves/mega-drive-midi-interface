@@ -24,8 +24,7 @@ static void test_buffer_reads_and_writes_single_byte(UNUSED void** state)
     assert_int_equal(buffer_read(), expectedData);
 }
 
-static void test_buffer_reads_and_writes_circularly_over_capacity(
-    UNUSED void** state)
+static void test_buffer_reads_and_writes_circularly_over_capacity(UNUSED void** state)
 {
     const u16 chunkSize = BUFFER_SIZE / 2;
 
@@ -75,14 +74,12 @@ static void test_buffer_available_returns_correct_value(UNUSED void** state)
     assert_int_equal(buffer_available(), chunkSize);
 }
 
-static void test_buffer_available_returns_correct_value_when_empty(
-    UNUSED void** state)
+static void test_buffer_available_returns_correct_value_when_empty(UNUSED void** state)
 {
     assert_int_equal(buffer_available(), BUFFER_SIZE);
 }
 
-static void test_buffer_available_returns_correct_value_when_full(
-    UNUSED void** state)
+static void test_buffer_available_returns_correct_value_when_full(UNUSED void** state)
 {
     for (u16 i = 0; i < BUFFER_SIZE; i++) {
         buffer_write(0x00);

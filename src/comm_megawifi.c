@@ -35,8 +35,7 @@ static bool awaitingSend = false;
 
 static MegaWifiStatus status;
 
-static void recv_complete_cb(
-    enum lsd_status stat, uint8_t ch, char* data, uint16_t len, void* ctx);
+static void recv_complete_cb(enum lsd_status stat, uint8_t ch, char* data, uint16_t len, void* ctx);
 
 static enum mw_err associateAp(void)
 {
@@ -206,8 +205,7 @@ static void restoreRemoteEndpoint(u8 ch, u32* ip, u16* port)
     *port = (ch == CH_CONTROL_PORT) ? remoteControlPort : remoteMidiPort;
 }
 
-static void recv_complete_cb(
-    enum lsd_status stat, uint8_t ch, char* data, uint16_t len, void* ctx)
+static void recv_complete_cb(enum lsd_status stat, uint8_t ch, char* data, uint16_t len, void* ctx)
 {
     (void)ctx;
 
@@ -261,8 +259,7 @@ void comm_megawifi_tick(void)
 
     awaitingRecv = true;
     struct mw_reuse_payload* pkt = (struct mw_reuse_payload* const)recvBuffer;
-    enum lsd_status stat
-        = mw_udp_reuse_recv(pkt, MW_BUFLEN, NULL, recv_complete_cb);
+    enum lsd_status stat = mw_udp_reuse_recv(pkt, MW_BUFLEN, NULL, recv_complete_cb);
     if (stat < 0) {
         log_warn("MW: mw_udp_reuse_recv() = %d", stat);
         awaitingRecv = false;
@@ -304,8 +301,8 @@ void comm_megawifi_send(u8 ch, char* data, u16 len)
 #endif
 
     awaitingSend = true;
-    enum lsd_status stat = mw_udp_reuse_send(
-        ch, udp, len + REUSE_PAYLOAD_HEADER_LEN, NULL, send_complete_cb);
+    enum lsd_status stat
+        = mw_udp_reuse_send(ch, udp, len + REUSE_PAYLOAD_HEADER_LEN, NULL, send_complete_cb);
     if (stat < 0) {
         log_warn("MW: mw_udp_reuse_send() = %d", stat);
         awaitingSend = false;

@@ -5,8 +5,7 @@
 #define CMD_USB_WR 0x22
 
 #define REG_FIFO_DATA *((vu16*)0xA130D0) // fifo data register
-#define REG_FIFO_STAT                                                          \
-    *((vu16*)0xA130D2) // fifo status register. shows if fifo can be readed.
+#define REG_FIFO_STAT *((vu16*)0xA130D2) // fifo status register. shows if fifo can be readed.
 #define REG_SYS_STAT *((vu16*)0xA130D4)
 
 #define FIFO_CPU_RXF 0x8000 // fifo flags. system cpu can read

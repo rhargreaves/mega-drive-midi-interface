@@ -16,13 +16,13 @@ static int test_comm_megawifi_setup(UNUSED void** state)
     return 0;
 }
 
-#define expect_udp_port_open(c, s_port)                                        \
-    do {                                                                       \
-        expect_value(__wrap_mw_udp_set, ch, c);                                \
-        expect_value(__wrap_mw_udp_set, dst_addr, NULL);                       \
-        expect_value(__wrap_mw_udp_set, dst_port, NULL);                       \
-        expect_memory(__wrap_mw_udp_set, src_port, s_port, sizeof(s_port));    \
-        will_return(__wrap_mw_udp_set, MW_ERR_NONE);                           \
+#define expect_udp_port_open(c, s_port)                                                            \
+    do {                                                                                           \
+        expect_value(__wrap_mw_udp_set, ch, c);                                                    \
+        expect_value(__wrap_mw_udp_set, dst_addr, NULL);                                           \
+        expect_value(__wrap_mw_udp_set, dst_port, NULL);                                           \
+        expect_memory(__wrap_mw_udp_set, src_port, s_port, sizeof(s_port));                        \
+        will_return(__wrap_mw_udp_set, MW_ERR_NONE);                                               \
     } while (0)
 
 static void expect_mw_init(void)

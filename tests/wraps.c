@@ -156,16 +156,14 @@ void __wrap_synth_operatorSecondDecayRate(u8 channel, u8 op, u8 secondDecayRate)
     check_expected(secondDecayRate);
 }
 
-void __wrap_synth_operatorSecondaryAmplitude(
-    u8 channel, u8 op, u8 secondaryAmplitude)
+void __wrap_synth_operatorSecondaryAmplitude(u8 channel, u8 op, u8 secondaryAmplitude)
 {
     check_expected(channel);
     check_expected(op);
     check_expected(secondaryAmplitude);
 }
 
-void __wrap_synth_operatorAmplitudeModulation(
-    u8 channel, u8 op, u8 amplitudeModulation)
+void __wrap_synth_operatorAmplitudeModulation(u8 channel, u8 op, u8 amplitudeModulation)
 {
     check_expected(channel);
     check_expected(op);
@@ -462,8 +460,7 @@ void __wrap_PSG_setTone(u8 channel, u16 value)
     check_expected(value);
 }
 
-Sprite* __wrap_SPR_addSprite(
-    const SpriteDefinition* spriteDef, s16 x, s16 y, u16 attribut)
+Sprite* __wrap_SPR_addSprite(const SpriteDefinition* spriteDef, s16 x, s16 y, u16 attribut)
 {
     return mock_type(Sprite*);
 }
@@ -783,8 +780,8 @@ mw_err __wrap_mw_ip_current(struct mw_ip_cfg** ip)
     return mock_type(mw_err);
 }
 
-mw_err __wrap_mw_udp_set(uint8_t ch, const char* dst_addr, const char* dst_port,
-    const char* src_port)
+mw_err __wrap_mw_udp_set(
+    uint8_t ch, const char* dst_addr, const char* dst_port, const char* src_port)
 {
     if (disableChecks)
         return MW_ERR_NONE;
@@ -836,8 +833,7 @@ void __wrap_comm_megawifi_send(u8 ch, char* data, u16 len)
     check_expected(len);
 }
 
-enum lsd_status __wrap_lsd_recv(
-    char* buf, int16_t len, void* ctx, lsd_recv_cb recv_cb)
+enum lsd_status __wrap_lsd_recv(char* buf, int16_t len, void* ctx, lsd_recv_cb recv_cb)
 {
     if (disableChecks)
         return 0;
@@ -874,8 +870,8 @@ u16 __wrap_VDP_loadTileSet(const TileSet* tileset, u16 index, TransferMethod tm)
     return 0;
 }
 
-u16 __wrap_VDP_drawImageEx(VDPPlane plane, const Image* image, u16 basetile,
-    u16 x, u16 y, u16 loadpal, bool dma)
+u16 __wrap_VDP_drawImageEx(
+    VDPPlane plane, const Image* image, u16 basetile, u16 x, u16 y, u16 loadpal, bool dma)
 {
     return 0;
 }

@@ -37,8 +37,8 @@ static void updateFmValues(void);
 static void initAlgorithmSprites(void);
 static void updateFmValuesIfChanSelected(void);
 static void synthParameterUpdated(u8 fmChan, ParameterUpdated parameterUpdated);
-static bool updateFmValue(u8* last, const u8* current, bool forceRefresh,
-    FormatTextFunc formatFunc, u8 x, u8 y);
+static bool updateFmValue(
+    u8* last, const u8* current, bool forceRefresh, FormatTextFunc formatFunc, u8 x, u8 y);
 
 void ui_fm_init(void)
 {
@@ -53,26 +53,23 @@ void ui_fm_update(void)
 
 static void initAlgorithmSprites(void)
 {
-    const SpriteDefinition* algors[] = { &algor_0, &algor_1, &algor_2, &algor_3,
-        &algor_4, &algor_5, &algor_6, &algor_7 };
+    const SpriteDefinition* algors[]
+        = { &algor_0, &algor_1, &algor_2, &algor_3, &algor_4, &algor_5, &algor_6, &algor_7 };
 
     for (int i = 0; i < FM_ALGORITHMS; i++) {
         const SpriteDefinition* algor = algors[i];
         Sprite* sprite = SPR_addSprite(algor, fix32ToInt(FIX32(9 * 8)),
-            fix32ToInt(FIX32((BASE_Y + 6) * 8)),
-            TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+            fix32ToInt(FIX32((BASE_Y + 6) * 8)), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
         SPR_setVisibility(sprite, HIDDEN);
         algorSprites[i] = sprite;
     }
 
-    VDP_setPaletteColors(
-        (PAL0 * 16), activity.palette->data, activity.palette->length);
+    VDP_setPaletteColors((PAL0 * 16), activity.palette->data, activity.palette->length);
 }
 
 static void synthParameterUpdated(u8 fmChan, ParameterUpdated parameterUpdated)
 {
-    if (fmChan == chanParasFmChan || parameterUpdated == Lfo
-        || parameterUpdated == SpecialMode) {
+    if (fmChan == chanParasFmChan || parameterUpdated == Lfo || parameterUpdated == SpecialMode) {
         synthParameterValuesDirty = true;
     }
 }
@@ -170,8 +167,8 @@ static const char* ch3SpecialModeText(u8 enabled)
 
 static const char* lfoFreqText(u8 lfoFreq)
 {
-    static const char TEXT[][8] = { "3.98Hz", "5.56Hz", "6.02Hz", "6.37Hz",
-        "6.88Hz", "9.63Hz", "48.1Hz", "72.2Hz" };
+    static const char TEXT[][8]
+        = { "3.98Hz", "5.56Hz", "6.02Hz", "6.37Hz", "6.88Hz", "9.63Hz", "48.1Hz", "72.2Hz" };
     return TEXT[lfoFreq];
 }
 
@@ -202,8 +199,8 @@ static const char* formatNum(u8 value)
     return buffer;
 }
 
-static bool updateFmValue(u8* last, const u8* current, bool forceRefresh,
-    FormatTextFunc formatFunc, u8 x, u8 y)
+static bool updateFmValue(
+    u8* last, const u8* current, bool forceRefresh, FormatTextFunc formatFunc, u8 x, u8 y)
 {
     if (*last != *current || forceRefresh) {
         ui_draw_text(formatFunc(*current), x, y);
@@ -213,8 +210,8 @@ static bool updateFmValue(u8* last, const u8* current, bool forceRefresh,
     return false;
 }
 
-static bool updateFmValueBool(bool* last, const bool* current,
-    bool forceRefresh, FormatTextFunc formatFunc, u8 x, u8 y)
+static bool updateFmValueBool(
+    bool* last, const bool* current, bool forceRefresh, FormatTextFunc formatFunc, u8 x, u8 y)
 {
     if (*last != *current || forceRefresh) {
         ui_draw_text(formatFunc(*current), x, y);
@@ -224,8 +221,7 @@ static bool updateFmValueBool(bool* last, const bool* current,
     return false;
 }
 
-static void updateOpValue(
-    u8* last, const u8* current, bool forceRefresh, u8 op, u8 line)
+static void updateOpValue(u8* last, const u8* current, bool forceRefresh, u8 op, u8 line)
 {
     const u8 OP_VALUE_X = OP_HEADING_X + 4;
     const u8 OP_VALUE_GAP = 4;
@@ -244,25 +240,19 @@ static void updateOpValues(const FmChannel* channel, bool forceRefresh)
         const Operator* oper = &channel->operators[op];
         Operator* lastOper = &lastChannel.operators[op];
 
-        updateOpValue(
-            &lastOper->totalLevel, &oper->totalLevel, forceRefresh, op, 4);
-        updateOpValue(
-            &lastOper->attackRate, &oper->attackRate, forceRefresh, op, 5);
-        updateOpValue(
-            &lastOper->multiple, &oper->multiple, forceRefresh, op, 6);
+        updateOpValue(&lastOper->totalLevel, &oper->totalLevel, forceRefresh, op, 4);
+        updateOpValue(&lastOper->attackRate, &oper->attackRate, forceRefresh, op, 5);
+        updateOpValue(&lastOper->multiple, &oper->multiple, forceRefresh, op, 6);
         updateOpValue(&lastOper->detune, &oper->detune, forceRefresh, op, 7);
+        updateOpValue(&lastOper->rateScaling, &oper->rateScaling, forceRefresh, op, 8);
         updateOpValue(
-            &lastOper->rateScaling, &oper->rateScaling, forceRefresh, op, 8);
-        updateOpValue(&lastOper->amplitudeModulation,
-            &oper->amplitudeModulation, forceRefresh, op, 9);
-        updateOpValue(&lastOper->firstDecayRate, &oper->firstDecayRate,
-            forceRefresh, op, 10);
-        updateOpValue(&lastOper->secondaryDecayRate, &oper->secondaryDecayRate,
-            forceRefresh, op, 11);
-        updateOpValue(&lastOper->secondaryAmplitude, &oper->secondaryAmplitude,
-            forceRefresh, op, 12);
+            &lastOper->amplitudeModulation, &oper->amplitudeModulation, forceRefresh, op, 9);
+        updateOpValue(&lastOper->firstDecayRate, &oper->firstDecayRate, forceRefresh, op, 10);
         updateOpValue(
-            &lastOper->releaseRate, &oper->releaseRate, forceRefresh, op, 13);
+            &lastOper->secondaryDecayRate, &oper->secondaryDecayRate, forceRefresh, op, 11);
+        updateOpValue(
+            &lastOper->secondaryAmplitude, &oper->secondaryAmplitude, forceRefresh, op, 12);
+        updateOpValue(&lastOper->releaseRate, &oper->releaseRate, forceRefresh, op, 13);
         updateOpValue(&lastOper->ssgEg, &oper->ssgEg, forceRefresh, op, 14);
     }
 }
@@ -275,30 +265,28 @@ static void updateFmValues(void)
     const u8 COL1_VALUE_X = FM_HEADING_X + 4;
     const u8 COL2_VALUE_X = FM_HEADING_X + 11;
 
-    updateFmValue(&lastChanParasMidiChannel, &chanParasMidiChan, forceRefresh,
-        chanNumber, COL1_VALUE_X + 1, BASE_Y + 3);
-    updateFmValue(&lastChanParasFmChan, &chanParasFmChan, forceRefresh,
-        chanNumber, COL2_VALUE_X, BASE_Y + 3);
+    updateFmValue(&lastChanParasMidiChannel, &chanParasMidiChan, forceRefresh, chanNumber,
+        COL1_VALUE_X + 1, BASE_Y + 3);
+    updateFmValue(
+        &lastChanParasFmChan, &chanParasFmChan, forceRefresh, chanNumber, COL2_VALUE_X, BASE_Y + 3);
 
-    if (updateFmValue(&lastChannel.algorithm, &channel->algorithm, forceRefresh,
-            formatNum, COL1_VALUE_X, BASE_Y + 5)) {
+    if (updateFmValue(&lastChannel.algorithm, &channel->algorithm, forceRefresh, formatNum,
+            COL1_VALUE_X, BASE_Y + 5)) {
         updateAlgorithmDiagram(channel->algorithm);
     }
-    updateFmValue(&lastChannel.feedback, &channel->feedback, forceRefresh,
-        formatNum, COL1_VALUE_X, BASE_Y + 6);
-    updateFmValue(&lastChannel.stereo, &channel->stereo, forceRefresh,
-        stereoText, COL1_VALUE_X, BASE_Y + 7);
-    updateFmValue(&lastChannel.fms, &channel->fms, forceRefresh, fmsText,
-        COL1_VALUE_X, BASE_Y + 8);
-    updateFmValue(&lastChannel.ams, &channel->ams, forceRefresh, amsText,
-        COL1_VALUE_X, BASE_Y + 9);
+    updateFmValue(&lastChannel.feedback, &channel->feedback, forceRefresh, formatNum, COL1_VALUE_X,
+        BASE_Y + 6);
+    updateFmValue(
+        &lastChannel.stereo, &channel->stereo, forceRefresh, stereoText, COL1_VALUE_X, BASE_Y + 7);
+    updateFmValue(&lastChannel.fms, &channel->fms, forceRefresh, fmsText, COL1_VALUE_X, BASE_Y + 8);
+    updateFmValue(&lastChannel.ams, &channel->ams, forceRefresh, amsText, COL1_VALUE_X, BASE_Y + 9);
 
-    updateFmValue(&lastGlobal.lfoEnable, &global->lfoEnable, forceRefresh,
-        lfoEnableText, COL1_VALUE_X, BASE_Y + 11);
-    updateFmValue(&lastGlobal.lfoFrequency, &global->lfoFrequency, forceRefresh,
-        lfoFreqText, COL1_VALUE_X + 4, BASE_Y + 11);
-    updateFmValueBool(&lastGlobal.specialMode, &global->specialMode,
-        forceRefresh, ch3SpecialModeText, COL1_VALUE_X, BASE_Y + 12);
+    updateFmValue(&lastGlobal.lfoEnable, &global->lfoEnable, forceRefresh, lfoEnableText,
+        COL1_VALUE_X, BASE_Y + 11);
+    updateFmValue(&lastGlobal.lfoFrequency, &global->lfoFrequency, forceRefresh, lfoFreqText,
+        COL1_VALUE_X + 4, BASE_Y + 11);
+    updateFmValueBool(&lastGlobal.specialMode, &global->specialMode, forceRefresh,
+        ch3SpecialModeText, COL1_VALUE_X, BASE_Y + 12);
 
     updateOpValues(channel, forceRefresh);
     forceRefresh = false;

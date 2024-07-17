@@ -50,8 +50,7 @@ static void test_log_stores_two_logs(UNUSED void** state)
     assert_string_equal("Test Message 2", log2->msg);
 }
 
-static void test_log_stores_multiple_logs_and_overwrites_older(
-    UNUSED void** state)
+static void test_log_stores_multiple_logs_and_overwrites_older(UNUSED void** state)
 {
     for (u8 i = 1; i <= 15; i++) {
         __real_log_info("Test Message %d", i);
@@ -66,8 +65,7 @@ static void test_log_stores_multiple_logs_and_overwrites_older(
     }
 }
 
-static void
-test_log_returns_null_when_no_more_logs_are_available_to_be_dequeued(
+static void test_log_returns_null_when_no_more_logs_are_available_to_be_dequeued(
     UNUSED void** state)
 {
     __real_log_info("Test Message %d", 1);

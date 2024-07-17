@@ -24,8 +24,7 @@
 
 #define APPLE_MIDI_SIGNATURE 0xFFFF
 
-#define PACK_BIG_ENDIAN                                                        \
-    __attribute__((packed, scalar_storage_order("big-endian")))
+#define PACK_BIG_ENDIAN __attribute__((packed, scalar_storage_order("big-endian")))
 
 union PACK_BIG_ENDIAN AppleMidiTimeSyncPacket {
     u8 byte[TIMESYNC_PKT_LEN];

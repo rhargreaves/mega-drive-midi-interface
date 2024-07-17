@@ -49,12 +49,9 @@ void __wrap_synth_operatorDetune(u8 channel, u8 op, u8 detune);
 void __wrap_synth_operatorRateScaling(u8 channel, u8 op, u8 rateScaling);
 void __wrap_synth_operatorAttackRate(u8 channel, u8 op, u8 attackRate);
 void __wrap_synth_operatorFirstDecayRate(u8 channel, u8 op, u8 firstDecayRate);
-void __wrap_synth_operatorSecondDecayRate(
-    u8 channel, u8 op, u8 secondDecayRate);
-void __wrap_synth_operatorSecondaryAmplitude(
-    u8 channel, u8 op, u8 secondaryAmplitude);
-void __wrap_synth_operatorAmplitudeModulation(
-    u8 channel, u8 op, u8 amplitudeModulation);
+void __wrap_synth_operatorSecondDecayRate(u8 channel, u8 op, u8 secondDecayRate);
+void __wrap_synth_operatorSecondaryAmplitude(u8 channel, u8 op, u8 secondaryAmplitude);
+void __wrap_synth_operatorAmplitudeModulation(u8 channel, u8 op, u8 amplitudeModulation);
 void __wrap_synth_operatorReleaseRate(u8 channel, u8 op, u8 releaseRate);
 void __wrap_synth_operatorSsgEg(u8 channel, u8 op, u8 ssgEg);
 void __wrap_synth_preset(u8 channel, const FmChannel* preset);
@@ -98,8 +95,7 @@ void __wrap_VDP_setTextPalette(u16 palette);
 void __wrap_VDP_clearText(u16 x, u16 y, u16 w);
 void __wrap_PSG_setEnvelope(u8 channel, u8 value);
 void __wrap_PSG_setTone(u8 channel, u16 value);
-Sprite* __wrap_SPR_addSprite(
-    const SpriteDefinition* spriteDef, s16 x, s16 y, u16 attribut);
+Sprite* __wrap_SPR_addSprite(const SpriteDefinition* spriteDef, s16 x, s16 y, u16 attribut);
 void __wrap_SPR_update();
 void __wrap_SYS_disableInts();
 void __wrap_SYS_enableInts();
@@ -168,8 +164,8 @@ mw_err __wrap_mw_ap_assoc(uint8_t slot);
 mw_err __wrap_mw_ap_assoc_wait(int tout_frames);
 mw_err __wrap_mw_ip_current(struct mw_ip_cfg** ip);
 void mock_ip_cfg(u32 ip_addr);
-mw_err __wrap_mw_udp_set(uint8_t ch, const char* dst_addr, const char* dst_port,
-    const char* src_port);
+mw_err __wrap_mw_udp_set(
+    uint8_t ch, const char* dst_addr, const char* dst_port, const char* src_port);
 mw_err __wrap_mw_sock_conn_wait(uint8_t ch, int tout_frames);
 
 void __wrap_midi_receiver_read_if_comm_ready(void);
@@ -180,18 +176,16 @@ void __wrap_scheduler_addFrameHandler(HandlerFunc* onFrame);
 void __wrap_comm_megawifi_tick(void);
 void __wrap_comm_megawifi_send(u8 ch, char* data, u16 len);
 
-enum lsd_status __wrap_lsd_recv(
-    char* buf, int16_t len, void* ctx, lsd_recv_cb recv_cb);
+enum lsd_status __wrap_lsd_recv(char* buf, int16_t len, void* ctx, lsd_recv_cb recv_cb);
 enum lsd_status __wrap_lsd_send(
     uint8_t ch, const char* data, int16_t len, void* ctx, lsd_send_cb send_cb);
 
 void __wrap_SYS_doVBlankProcessEx(VBlankProcessTime processTime);
 
 void __wrap_VDP_setTileMapXY(VDPPlane plane, u16 tile, u16 x, u16 y);
-u16 __wrap_VDP_loadTileSet(
-    const TileSet* tileset, u16 index, TransferMethod tm);
-u16 __wrap_VDP_drawImageEx(VDPPlane plane, const Image* image, u16 basetile,
-    u16 x, u16 y, u16 loadpal, bool dma);
+u16 __wrap_VDP_loadTileSet(const TileSet* tileset, u16 index, TransferMethod tm);
+u16 __wrap_VDP_drawImageEx(
+    VDPPlane plane, const Image* image, u16 basetile, u16 x, u16 y, u16 loadpal, bool dma);
 
 void __wrap_JOY_update(void);
 u16 __wrap_JOY_readJoypad(u16 joy);
@@ -201,8 +195,8 @@ void __wrap_TSK_userSet(VoidCallback* task);
 
 int16_t __wrap_mw_def_ap_cfg_get(void);
 
-void __wrap_SND_startPlay_PCM(const u8* sample, const u32 len, const u8 rate,
-    const u8 pan, const u8 loop);
+void __wrap_SND_startPlay_PCM(
+    const u8* sample, const u32 len, const u8 rate, const u8 pan, const u8 loop);
 
 void __wrap_Z80_loadDriver(const u16 driver, const bool waitReady);
 void __wrap_Z80_requestBus(bool wait);

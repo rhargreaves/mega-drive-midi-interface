@@ -67,8 +67,8 @@
 static const char HEADER[] = "Mega Drive MIDI Interface";
 static const char CHAN_HEADER[] = "Ch.   1  2  3  4  5  6  1  2  3  4";
 static const char MIDI_HEADER[] = "MIDI";
-static const char MIDI_CH_TEXT[17][3] = { " -", " 1", " 2", " 3", " 4", " 5",
-    " 6", " 7", " 8", " 9", "10", "11", "12", "13", "14", "15", "16" };
+static const char MIDI_CH_TEXT[17][3] = { " -", " 1", " 2", " 3", " 4", " 5", " 6", " 7", " 8",
+    " 9", "10", "11", "12", "13", "14", "15", "16" };
 
 static void init_activity_leds(void);
 static void init_load(void);
@@ -98,10 +98,8 @@ void ui_init(void)
     SPR_init();
     VDP_setBackgroundColor(BG_COLOUR_INDEX);
     VDP_setPaletteColor(BG_COLOUR_INDEX, RGB24_TO_VDPCOLOR(0x202020));
-    VDP_setPaletteColor(
-        PALETTE_INDEX(PAL1, FONT_COLOUR_INDEX), RGB24_TO_VDPCOLOR(0xFFFF00));
-    VDP_setPaletteColor(
-        PALETTE_INDEX(PAL3, FONT_COLOUR_INDEX), RGB24_TO_VDPCOLOR(0x808080));
+    VDP_setPaletteColor(PALETTE_INDEX(PAL1, FONT_COLOUR_INDEX), RGB24_TO_VDPCOLOR(0xFFFF00));
+    VDP_setPaletteColor(PALETTE_INDEX(PAL3, FONT_COLOUR_INDEX), RGB24_TO_VDPCOLOR(0x808080));
     print_header();
     print_channels();
     update_load();
@@ -118,10 +116,8 @@ static void init_activity_leds(void)
 {
     SYS_disableInts();
     for (int i = 0; i < DEV_PHYSICAL_CHANS; i++) {
-        Sprite* sprite = SPR_addSprite(&activity,
-            fix32ToInt(FIX32(((i * CHAN_X_GAP) + 7) * 8)),
-            fix32ToInt(FIX32((ACTIVITY_Y + 1) * 8)),
-            TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+        Sprite* sprite = SPR_addSprite(&activity, fix32ToInt(FIX32(((i * CHAN_X_GAP) + 7) * 8)),
+            fix32ToInt(FIX32((ACTIVITY_Y + 1) * 8)), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
         SPR_setVisibility(sprite, VISIBLE);
         activitySprites[i] = sprite;
     }
@@ -142,8 +138,7 @@ static u8 logCurrentY = 0;
 
 static void clear_log_area(void)
 {
-    VDP_clearTextArea(
-        MARGIN_X, LOG_Y + MARGIN_Y, MAX_EFFECTIVE_X, MAX_LOG_LINES);
+    VDP_clearTextArea(MARGIN_X, LOG_Y + MARGIN_Y, MAX_EFFECTIVE_X, MAX_LOG_LINES);
     logCurrentY = 0;
 }
 
@@ -246,8 +241,7 @@ static void draw_text(const char* text, u16 x, u16 y)
 
 static void set_tile(u16 tileIndex, u16 x, u16 y)
 {
-    VDP_setTileMapXY(
-        BG_A, TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, tileIndex), x, y);
+    VDP_setTileMapXY(BG_A, TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, tileIndex), x, y);
 }
 
 static void print_header(void)
@@ -263,8 +257,7 @@ static void print_header(void)
     set_tile(TILE_BORDERS_H_LINE_INDEX, 11, DEVICE_Y);
 
     VDP_drawImageEx(BG_A, &img_device_fm,
-        TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_DEVICE_FM_INDEX), 12,
-        DEVICE_Y, FALSE, FALSE);
+        TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_DEVICE_FM_INDEX), 12, DEVICE_Y, FALSE, FALSE);
 
     set_tile(TILE_BORDERS_H_LINE_INDEX, 18, DEVICE_Y);
     set_tile(TILE_BORDERS_H_LINE_INDEX, 19, DEVICE_Y);
@@ -277,8 +270,7 @@ static void print_header(void)
     set_tile(TILE_BORDERS_H_LINE_INDEX, 27, DEVICE_Y);
 
     VDP_drawImageEx(BG_A, &img_device_psg,
-        TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_DEVICE_PSG_INDEX), 28,
-        DEVICE_Y, FALSE, FALSE);
+        TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_DEVICE_PSG_INDEX), 28, DEVICE_Y, FALSE, FALSE);
 
     set_tile(TILE_BORDERS_H_LINE_INDEX, 32, DEVICE_Y);
     set_tile(TILE_BORDERS_H_LINE_INDEX, 33, DEVICE_Y);
@@ -312,8 +304,7 @@ static u8 midi_chan_for_ui(DeviceChannel* mappings, u8 index)
 static void print_mappings_if_dirty(u8* midiChans)
 {
     static u8 lastMidiChans[DEV_PHYSICAL_CHANS];
-    if (memcmp(lastMidiChans, midiChans, sizeof(u8) * DEV_PHYSICAL_CHANS)
-        == 0) {
+    if (memcmp(lastMidiChans, midiChans, sizeof(u8) * DEV_PHYSICAL_CHANS) == 0) {
         return;
     }
     memcpy(lastMidiChans, midiChans, sizeof(u8) * DEV_PHYSICAL_CHANS);
@@ -340,9 +331,8 @@ static void print_chan_activity(u16 busy)
 
 static void print_megawifi_info(void)
 {
-    const Image* MW_IMAGES[]
-        = { &img_megawifi_not_detected, &img_megawifi_detected,
-              &img_megawifi_listening, &img_megawifi_connected };
+    const Image* MW_IMAGES[] = { &img_megawifi_not_detected, &img_megawifi_detected,
+        &img_megawifi_listening, &img_megawifi_connected };
     u16 index = 0;
     switch (comm_megawifi_status()) {
     case NotDetected:
@@ -360,8 +350,8 @@ static void print_megawifi_info(void)
     }
 
     VDP_drawImageEx(BG_A, MW_IMAGES[index],
-        TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_MEGAWIFI_STATUS_INDEX), 17,
-        MAX_EFFECTIVE_Y + 1, FALSE, FALSE);
+        TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_MEGAWIFI_STATUS_INDEX), 17, MAX_EFFECTIVE_Y + 1,
+        FALSE, FALSE);
 }
 
 static void print_comm_mode(void)
@@ -369,9 +359,8 @@ static void print_comm_mode(void)
     if (commInited) {
         return;
     }
-    const Image* MODES_IMAGES[]
-        = { &img_comm_waiting, &img_comm_ed_usb, &img_comm_ed_pro_usb,
-              &img_comm_serial, &img_comm_megawifi, &img_comm_demo, 0 };
+    const Image* MODES_IMAGES[] = { &img_comm_waiting, &img_comm_ed_usb, &img_comm_ed_pro_usb,
+        &img_comm_serial, &img_comm_megawifi, &img_comm_demo, 0 };
     u16 index;
     switch (comm_mode()) {
     case Discovery:
@@ -402,8 +391,8 @@ static void print_comm_mode(void)
         break;
     }
     VDP_drawImageEx(BG_A, MODES_IMAGES[index],
-        TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_IMAGES_INDEX), 9,
-        MAX_EFFECTIVE_Y + 1, FALSE, FALSE);
+        TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_IMAGES_INDEX), 9, MAX_EFFECTIVE_Y + 1, FALSE,
+        FALSE);
 
     if (settings_is_megawifi_rom()) {
         print_megawifi_info();
@@ -433,8 +422,7 @@ static void print_load_text(u16 percent)
 
 static void update_load(void)
 {
-    u16 percent = loadPercentSum
-        / (FRAMES_BEFORE_UPDATE_LOAD / FRAMES_BEFORE_UPDATE_LOAD_PERCENT);
+    u16 percent = loadPercentSum / (FRAMES_BEFORE_UPDATE_LOAD / FRAMES_BEFORE_UPDATE_LOAD_PERCENT);
     loadPercentSum = 0;
 
     s16 led_level = percent == 0 ? 0 : (percent / (100 / LED_TILE_COUNT)) + 1;
@@ -461,8 +449,7 @@ static void init_routing_mode_tiles(void)
 
 static void print_routing_mode(bool enabled)
 {
-    VDP_loadTileSet(
-        enabled ? &ts_dynamic : &ts_static, TILE_ROUTING_INDEX, DMA);
+    VDP_loadTileSet(enabled ? &ts_dynamic : &ts_static, TILE_ROUTING_INDEX, DMA);
 }
 
 static void print_routing_mode_if_needed(void)

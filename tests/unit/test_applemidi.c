@@ -6,13 +6,11 @@ static int test_applemidi_setup(UNUSED void** state)
     return 0;
 }
 
-static void test_applemidi_parses_rtpmidi_packet_with_single_midi_event(
-    UNUSED void** state)
+static void test_applemidi_parses_rtpmidi_packet_with_single_midi_event(UNUSED void** state)
 {
-    char rtp_packet[1024]
-        = { /* V P X CC M PT */ 0x80, 0x61, /* sequence number */ 0x8c, 0x24,
-              /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67,
-              0xe1, 0x08, /* MIDI command section */ 0x03, 0x90, 0x48, 0x6f };
+    char rtp_packet[1024] = { /* V P X CC M PT */ 0x80, 0x61, /* sequence number */ 0x8c, 0x24,
+        /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1, 0x08,
+        /* MIDI command section */ 0x03, 0x90, 0x48, 0x6f };
 
     size_t len = sizeof(rtp_packet);
 
@@ -24,8 +22,7 @@ static void test_applemidi_parses_rtpmidi_packet_with_single_midi_event(
     assert_int_equal(err, MW_ERR_NONE);
 }
 
-static void test_applemidi_parses_rtpmidi_packet_with_single_2_byte_midi_event(
-    UNUSED void** state)
+static void test_applemidi_parses_rtpmidi_packet_with_single_2_byte_midi_event(UNUSED void** state)
 {
     const u8 statuses[] = { 0xC0, 0xD0, 0xF1, 0xF3 };
 
@@ -33,8 +30,8 @@ static void test_applemidi_parses_rtpmidi_packet_with_single_2_byte_midi_event(
         u8 status = statuses[i];
         char rtp_packet[1024] = { /* V P X CC M PT */ 0x80, 0x61,
             /* sequence number */ 0x8c, 0x24,
-            /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1,
-            0x08, /* MIDI command section */ 0x02, status, 0x01 };
+            /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1, 0x08,
+            /* MIDI command section */ 0x02, status, 0x01 };
         size_t len = sizeof(rtp_packet);
 
         expect_midi_emit(status);
@@ -45,8 +42,7 @@ static void test_applemidi_parses_rtpmidi_packet_with_single_2_byte_midi_event(
     }
 }
 
-static void
-test_applemidi_parses_rtpmidi_packet_with_multiple_2_byte_midi_events(
+static void test_applemidi_parses_rtpmidi_packet_with_multiple_2_byte_midi_events(
     UNUSED void** state)
 {
     const u8 statuses[] = { 0xC0, 0xD0, 0xF1, 0xF3 };
@@ -55,9 +51,8 @@ test_applemidi_parses_rtpmidi_packet_with_multiple_2_byte_midi_events(
         u8 status = statuses[i];
         char rtp_packet[1024] = { /* V P X CC M PT */ 0x80, 0x61,
             /* sequence number */ 0x8c, 0x24,
-            /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1,
-            0x08, /* MIDI command section */ 0x05, status, 0x01, 0x00, status,
-            0x01 };
+            /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1, 0x08,
+            /* MIDI command section */ 0x05, status, 0x01, 0x00, status, 0x01 };
         size_t len = sizeof(rtp_packet);
 
         expect_midi_emit(status);
@@ -70,14 +65,13 @@ test_applemidi_parses_rtpmidi_packet_with_multiple_2_byte_midi_events(
     }
 }
 
-static void
-test_applemidi_parses_rtpmidi_packet_with_single_midi_event_long_header(
+static void test_applemidi_parses_rtpmidi_packet_with_single_midi_event_long_header(
     UNUSED void** state)
 {
     char rtp_packet[1024] = { /* V P X CC M PT */ 0x80, 0x61,
         /* sequence number */ 0x8c, 0x24,
-        /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1,
-        0x08, /* MIDI command section */ 0xC0, 0x03, 0x90, 0x48, 0x6f };
+        /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1, 0x08,
+        /* MIDI command section */ 0xC0, 0x03, 0x90, 0x48, 0x6f };
 
     size_t len = sizeof(rtp_packet);
 
@@ -89,14 +83,11 @@ test_applemidi_parses_rtpmidi_packet_with_single_midi_event_long_header(
     assert_int_equal(err, MW_ERR_NONE);
 }
 
-static void test_applemidi_parses_rtpmidi_packet_with_two_midi_events(
-    UNUSED void** state)
+static void test_applemidi_parses_rtpmidi_packet_with_two_midi_events(UNUSED void** state)
 {
-    char rtp_packet[1024]
-        = { /* V P X CC M PT */ 0x80, 0x61, /* sequence number */ 0x8c, 0x24,
-              /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67,
-              0xe1, 0x08, /* MIDI command section */ 0x06, 0x90, 0x48, 0x6f,
-              0x00, 0x51, 0x7c };
+    char rtp_packet[1024] = { /* V P X CC M PT */ 0x80, 0x61, /* sequence number */ 0x8c, 0x24,
+        /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1, 0x08,
+        /* MIDI command section */ 0x06, 0x90, 0x48, 0x6f, 0x00, 0x51, 0x7c };
 
     size_t len = sizeof(rtp_packet);
 
@@ -112,14 +103,11 @@ static void test_applemidi_parses_rtpmidi_packet_with_two_midi_events(
     assert_int_equal(err, MW_ERR_NONE);
 }
 
-static void test_applemidi_parses_rtpmidi_packet_with_multiple_midi_events(
-    UNUSED void** state)
+static void test_applemidi_parses_rtpmidi_packet_with_multiple_midi_events(UNUSED void** state)
 {
-    char rtp_packet[1024]
-        = { /* V P X CC M PT */ 0x80, 0x61, /* sequence number */ 0x8c, 0x24,
-              /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67,
-              0xe1, 0x08, /* MIDI command section */ 0x09, 0x90, 0x48, 0x6f,
-              0x00, 0x51, 0x6f, 0x00, 0x48, 0x6f };
+    char rtp_packet[1024] = { /* V P X CC M PT */ 0x80, 0x61, /* sequence number */ 0x8c, 0x24,
+        /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1, 0x08,
+        /* MIDI command section */ 0x09, 0x90, 0x48, 0x6f, 0x00, 0x51, 0x6f, 0x00, 0x48, 0x6f };
 
     size_t len = sizeof(rtp_packet);
 
@@ -143,8 +131,8 @@ static void test_applemidi_parses_rtpmidi_packet_with_sysex(UNUSED void** state)
 {
     char rtpPacket[1024] = { /* V P X CC M PT */ 0x80, 0x61,
         /* sequence number */ 0x8c, 0x24,
-        /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1,
-        0x08, /* MIDI command section */ 0x05, 0xF0, 0x12, 0x34, 0x56, 0xF7 };
+        /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1, 0x08,
+        /* MIDI command section */ 0x05, 0xF0, 0x12, 0x34, 0x56, 0xF7 };
 
     size_t len = sizeof(rtpPacket);
 
@@ -158,13 +146,12 @@ static void test_applemidi_parses_rtpmidi_packet_with_sysex(UNUSED void** state)
     assert_int_equal(err, MW_ERR_NONE);
 }
 
-static void test_applemidi_parses_rtpmidi_packet_with_sysex_ending_with_F0(
-    UNUSED void** state)
+static void test_applemidi_parses_rtpmidi_packet_with_sysex_ending_with_F0(UNUSED void** state)
 {
     char rtpPacket[1024] = { /* V P X CC M PT */ 0x80, 0x61,
         /* sequence number */ 0x8c, 0x24,
-        /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1,
-        0x08, /* MIDI command section */ 0x05, 0xF0, 0x12, 0x34, 0x56, 0xF0 };
+        /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1, 0x08,
+        /* MIDI command section */ 0x05, 0xF0, 0x12, 0x34, 0x56, 0xF0 };
 
     size_t len = sizeof(rtpPacket);
 
@@ -178,14 +165,12 @@ static void test_applemidi_parses_rtpmidi_packet_with_sysex_ending_with_F0(
     assert_int_equal(err, MW_ERR_NONE);
 }
 
-static void test_applemidi_parses_rtpmidi_packet_with_sysex_with_0xF7_at_end(
-    UNUSED void** state)
+static void test_applemidi_parses_rtpmidi_packet_with_sysex_with_0xF7_at_end(UNUSED void** state)
 {
     char rtpPacket[1024] = { /* V P X CC M PT */ 0x80, 0x61,
         /* sequence number */ 0x8c, 0x24,
-        /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1,
-        0x08, /* MIDI command section */ 0x05, 0xF0, 0x12, 0x34, 0x56, 0xF7,
-        0xF7 };
+        /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1, 0x08,
+        /* MIDI command section */ 0x05, 0xF0, 0x12, 0x34, 0x56, 0xF7, 0xF7 };
 
     size_t len = sizeof(rtpPacket);
 
@@ -199,15 +184,13 @@ static void test_applemidi_parses_rtpmidi_packet_with_sysex_with_0xF7_at_end(
     assert_int_equal(err, MW_ERR_NONE);
 }
 
-static void
-test_applemidi_parses_rtpmidi_packet_with_multiple_different_midi_events(
+static void test_applemidi_parses_rtpmidi_packet_with_multiple_different_midi_events(
     UNUSED void** state)
 {
-    char rtp_packet[1024]
-        = { /* V P X CC M PT */ 0x80, 0x61, /* sequence number */ 0x8c, 0x24,
-              /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67,
-              0xe1, 0x08, /* MIDI command section */ 0x0A, 0x90, 0x48, 0x6f,
-              0x00, 0x51, 0x6f, 0x00, 0x80, 0x48, 0x6f };
+    char rtp_packet[1024] = { /* V P X CC M PT */ 0x80, 0x61, /* sequence number */ 0x8c, 0x24,
+        /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1, 0x08,
+        /* MIDI command section */ 0x0A, 0x90, 0x48, 0x6f, 0x00, 0x51, 0x6f, 0x00, 0x80, 0x48,
+        0x6f };
 
     size_t len = sizeof(rtp_packet);
 
@@ -227,13 +210,11 @@ test_applemidi_parses_rtpmidi_packet_with_multiple_different_midi_events(
     assert_int_equal(err, MW_ERR_NONE);
 }
 
-static void test_applemidi_parses_rtpmidi_packet_with_system_reset(
-    UNUSED void** state)
+static void test_applemidi_parses_rtpmidi_packet_with_system_reset(UNUSED void** state)
 {
-    char rtp_packet[1024]
-        = { /* V P X CC M PT */ 0x80, 0x61, /* sequence number */ 0x8c, 0x24,
-              /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67,
-              0xe1, 0x08, /* MIDI command section */ 0x01, 0xff };
+    char rtp_packet[1024] = { /* V P X CC M PT */ 0x80, 0x61, /* sequence number */ 0x8c, 0x24,
+        /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1, 0x08,
+        /* MIDI command section */ 0x01, 0xff };
 
     size_t len = sizeof(rtp_packet);
     expect_midi_emit(0xff);
@@ -242,25 +223,23 @@ static void test_applemidi_parses_rtpmidi_packet_with_system_reset(
     assert_int_equal(err, MW_ERR_NONE);
 }
 
-static void test_applemidi_parses_notes_sysex_cc_in_one_packet(
-    UNUSED void** state)
+static void test_applemidi_parses_notes_sysex_cc_in_one_packet(UNUSED void** state)
 {
     char rtp_packet[] = { /* V P X CC M PT */ 0x80, 0x61,
-        /* sequence number */ 0xe0, 0x19, /* timestamp */ 0x03, 0x31, 0xdd,
-        0x6d, /* SSRC */ 0x09, 0x0f, 0x92, 0xe9,
-        /* MIDI command section */ 0xc0, 0x61, /* cmds */ 0xb0, 0x00, 0x00,
-        0x00, /* | */ 0xc0, 0x00, 0x00, /* | */ 0xf7, 0x00, 0xf0, 0x01,
+        /* sequence number */ 0xe0, 0x19, /* timestamp */ 0x03, 0x31, 0xdd, 0x6d, /* SSRC */ 0x09,
+        0x0f, 0x92, 0xe9,
+        /* MIDI command section */ 0xc0, 0x61, /* cmds */ 0xb0, 0x00, 0x00, 0x00, /* | */ 0xc0,
+        0x00, 0x00, /* | */ 0xf7, 0x00, 0xf0, 0x01,
         /* | */ 0xb0, 0x00, 0x00, 0x00, /* | */ 0xb1, 0x5d, 0x00, 0x06,
-        /* | */ 0xb3, 0x00, 0x00, 0x00, /* A */ 0xc3, 0x00, 0x00, /* | */ 0xf7,
-        0x00, 0xf0, 0x01, /* | */ 0xb3, 0x00, 0x00, 0x05, /* | */ 0xb4, 0x00,
-        0x00, 0x00, /* | */ 0xc4, 0x00, 0x00, /* | */ 0xf7, 0x00, 0xf0, 0x01,
+        /* | */ 0xb3, 0x00, 0x00, 0x00, /* A */ 0xc3, 0x00, 0x00, /* | */ 0xf7, 0x00, 0xf0, 0x01,
+        /* | */ 0xb3, 0x00, 0x00, 0x05, /* | */ 0xb4, 0x00, 0x00, 0x00, /* | */ 0xc4, 0x00, 0x00,
+        /* | */ 0xf7, 0x00, 0xf0, 0x01,
         /* | */ 0xb4, 0x00, 0x00, 0x05, /* | */ 0xb5, 0x00, 0x00, 0x00,
-        /* | */ 0xc5, 0x00, 0x00, /* | */ 0xf7, 0x00, 0xf0, 0x01, /* B */ 0xb5,
-        0x00, 0x00, 0x04, /* | */ 0xb6, 0x00, 0x00, 0x01, /* | */ 0xc6, 0x00,
-        0x00, /* | */ 0xf7, 0x00, 0xf0, 0x00, /* | */ 0xb6, 0x00, 0x00,
-        0x04, /* | */
-        0xb7, 0x00, 0x00, 0x00, /* | */ 0xc7, 0x00, 0x00, /* | */ 0xf7, 0x00,
-        0xf0, 0x01, /* | */ 0xb7, 0x00, 0x00, 0x00, /* | */ 0xe9, 0x00, 0x00 };
+        /* | */ 0xc5, 0x00, 0x00, /* | */ 0xf7, 0x00, 0xf0, 0x01, /* B */ 0xb5, 0x00, 0x00, 0x04,
+        /* | */ 0xb6, 0x00, 0x00, 0x01, /* | */ 0xc6, 0x00, 0x00, /* | */ 0xf7, 0x00, 0xf0, 0x00,
+        /* | */ 0xb6, 0x00, 0x00, 0x04, /* | */
+        0xb7, 0x00, 0x00, 0x00, /* | */ 0xc7, 0x00, 0x00, /* | */ 0xf7, 0x00, 0xf0, 0x01,
+        /* | */ 0xb7, 0x00, 0x00, 0x00, /* | */ 0xe9, 0x00, 0x00 };
 
     size_t len = sizeof(rtp_packet);
 
@@ -300,10 +279,10 @@ static void test_applemidi_ignores_middle_sysex_segments(UNUSED void** state)
         const u8 ending = endings[i];
 
         char rtp_packet[] = { /* V P X CC M PT */ 0x80, 0x61,
-            /* sequence number */ 0xe0, 0x19, /* timestamp */ 0x03, 0x31, 0xdd,
-            0x6d, /* SSRC */ 0x09, 0x0f, 0x92, 0xe9,
-            /* MIDI command section */ 0xc0, cmd_length, /* cmds */ 0x90, 0x60,
-            0x61, 0x00, /* | */ 0xF7, 0x00, ending, 0x01,
+            /* sequence number */ 0xe0, 0x19, /* timestamp */ 0x03, 0x31, 0xdd, 0x6d,
+            /* SSRC */ 0x09, 0x0f, 0x92, 0xe9,
+            /* MIDI command section */ 0xc0, cmd_length, /* cmds */ 0x90, 0x60, 0x61, 0x00,
+            /* | */ 0xF7, 0x00, ending, 0x01,
             /* | */ 0x90, 0x60, 0x61 };
 
         size_t len = sizeof(rtp_packet);
@@ -316,15 +295,14 @@ static void test_applemidi_ignores_middle_sysex_segments(UNUSED void** state)
     }
 }
 
-static void test_applemidi_processes_multiple_sysex_segments(
-    UNUSED void** state)
+static void test_applemidi_processes_multiple_sysex_segments(UNUSED void** state)
 {
     const u8 cmd_length = 12;
     char rtp_packet[] = { /* V P X CC M PT */ 0x80, 0x61,
-        /* sequence number */ 0xe0, 0x19, /* timestamp */ 0x03, 0x31, 0xdd,
-        0x6d, /* SSRC */ 0x09, 0x0f, 0x92, 0xe9,
-        /* MIDI command section */ 0xc0, cmd_length, /* cmds */ 0xF0, 0x00,
-        0xF7, 0x00, /* | */ 0xF0, 0x01, 0xF7, 0x01,
+        /* sequence number */ 0xe0, 0x19, /* timestamp */ 0x03, 0x31, 0xdd, 0x6d, /* SSRC */ 0x09,
+        0x0f, 0x92, 0xe9,
+        /* MIDI command section */ 0xc0, cmd_length, /* cmds */ 0xF0, 0x00, 0xF7, 0x00,
+        /* | */ 0xF0, 0x01, 0xF7, 0x01,
         /* | */ 0xF0, 0x02, 0xF7, 0x00 };
 
     size_t len = sizeof(rtp_packet);
@@ -340,16 +318,15 @@ static void test_applemidi_processes_multiple_sysex_segments(
 static void test_applemidi_processes_ccs(UNUSED void** state)
 {
     char rtp_packet[] = { /* V P X CC M PT */ 0x80, 0x61,
-        /* sequence number */ 0xf3, 0x86, /* timestamp */ 0x08, 0xbe, 0x9f,
-        0x2b, /* SSRC */ 0x09, 0x0f, 0x92, 0xe9,
-        /* MIDI command section */ 0xc0, 0x34, /* cmds */ 0xb1, 0x00, 0x00,
-        0x00, /* | */ 0xc1, 0x00, 0x00, /* | */ 0xf7, 0x00, 0xf0, 0x01,
-        /* | */ 0xb1, 0x00, 0x00, 0x07, /* | */ 0xc1, 0x0b, 0x00, /* | */ 0xf7,
-        0x00, 0xf0, 0x00, /* | */ 0xb1, 0x5d, 0x14, 0x00, /* | */ 0x5b, 0x64,
-        0x07, /* | */ 0x07, 0x69, 0x00, /* | */ 0x0b, 0x7f, 0x00, /* A */ 0x64,
-        0x01, 0x00, /* | */ 0x65, 0x00, 0x00, /* | */ 0x06, 0x20, 0x00,
-        /* | */ 0x26, 0x08, 0x00, /* | */ 0x64, 0x00, 0x00, /* | */ 0x65,
-        0x00 };
+        /* sequence number */ 0xf3, 0x86, /* timestamp */ 0x08, 0xbe, 0x9f, 0x2b, /* SSRC */ 0x09,
+        0x0f, 0x92, 0xe9,
+        /* MIDI command section */ 0xc0, 0x34, /* cmds */ 0xb1, 0x00, 0x00, 0x00, /* | */ 0xc1,
+        0x00, 0x00, /* | */ 0xf7, 0x00, 0xf0, 0x01,
+        /* | */ 0xb1, 0x00, 0x00, 0x07, /* | */ 0xc1, 0x0b, 0x00, /* | */ 0xf7, 0x00, 0xf0, 0x00,
+        /* | */ 0xb1, 0x5d, 0x14, 0x00, /* | */ 0x5b, 0x64, 0x07, /* | */ 0x07, 0x69, 0x00,
+        /* | */ 0x0b, 0x7f, 0x00, /* A */ 0x64, 0x01, 0x00, /* | */ 0x65, 0x00, 0x00, /* | */ 0x06,
+        0x20, 0x00,
+        /* | */ 0x26, 0x08, 0x00, /* | */ 0x64, 0x00, 0x00, /* | */ 0x65, 0x00 };
 
     size_t len = sizeof(rtp_packet);
 
@@ -377,8 +354,8 @@ static void test_applemidi_sets_last_sequence_number(UNUSED void** state)
 {
     char rtp_packet[1024] = { /* V P X CC M PT */ 0x80, 0x61,
         /* sequence number */ 0x8c, 0x24,
-        /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1,
-        0x08, /* MIDI command section */ 0xC0, 0x03, 0x90, 0x48, 0x6f };
+        /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1, 0x08,
+        /* MIDI command section */ 0xC0, 0x03, 0x90, 0x48, 0x6f };
 
     size_t len = sizeof(rtp_packet);
 
@@ -397,8 +374,8 @@ static void test_applemidi_sends_receiver_feedback(UNUSED void** state)
 {
     char rtp_packet[1024] = { /* V P X CC M PT */ 0x80, 0x61,
         /* sequence number */ 0x00, 0x01,
-        /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1,
-        0x08, /* MIDI command section */ 0xC0, 0x03, 0x90, 0x48, 0x6f };
+        /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1, 0x08,
+        /* MIDI command section */ 0xC0, 0x03, 0x90, 0x48, 0x6f };
 
     size_t len = sizeof(rtp_packet);
 
@@ -413,10 +390,9 @@ static void test_applemidi_sends_receiver_feedback(UNUSED void** state)
         /* SSRC */ 0x9E, 0x91, 0x51, 0x50, /* sequence number */
         0x00, 0x01, 0x00, 0x00 };
     expect_value(__wrap_comm_megawifi_send, ch, CH_CONTROL_PORT);
-    expect_memory(__wrap_comm_megawifi_send, data, receiverFeedbackPacket,
-        sizeof(receiverFeedbackPacket));
-    expect_value(
-        __wrap_comm_megawifi_send, len, sizeof(receiverFeedbackPacket));
+    expect_memory(
+        __wrap_comm_megawifi_send, data, receiverFeedbackPacket, sizeof(receiverFeedbackPacket));
+    expect_value(__wrap_comm_megawifi_send, len, sizeof(receiverFeedbackPacket));
 
     err = applemidi_sendReceiverFeedback();
     assert_int_equal(err, MW_ERR_NONE);
@@ -427,8 +403,8 @@ static void test_applemidi_does_not_read_beyond_length(UNUSED void** state)
     u8 length = 4;
     char rtp_packet[1024] = { /* V P X CC M PT */ 0x80, 0x61,
         /* sequence number */ 0x8c, 0x24,
-        /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1,
-        0x08, /* MIDI command section */ 0xC0, length, 0xF0, 0x01, 0xF7, 0x00,
+        /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1, 0x08,
+        /* MIDI command section */ 0xC0, length, 0xF0, 0x01, 0xF7, 0x00,
         /* should not emit this byte */ 0x00 };
 
     size_t len = sizeof(rtp_packet);
