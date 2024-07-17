@@ -106,6 +106,7 @@ int main(void)
         midi_test(test_midi_pitch_bends_up_an_octave_upper_freq_limit),
         midi_test(test_midi_persists_pitch_bend_between_notes),
         midi_test(test_midi_note_priority_respected_for_multiple_notes),
+        midi_test(test_midi_note_priority_removes_oldest_when_full),
 
         midi_test(test_midi_sets_psg_pitch_bend_down),
         midi_test(test_midi_sets_psg_pitch_bend_up),

@@ -728,3 +728,39 @@ static void test_midi_note_priority_respected_for_multiple_notes(
     expect_value(__wrap_synth_noteOn, channel, 0);
     __real_midi_note_off(0, MIDI_PITCH_CS4);
 }
+
+#define NOTE_PRIORITY_OVERFLOW_LENGTH 11
+
+static void test_midi_note_priority_removes_oldest_when_full(
+    UNUSED void** state)
+{
+    const u16 expectedFreqNum[NOTE_PRIORITY_OVERFLOW_LENGTH] = { 0x284, 0x2a9,
+        0x2d2, 0x2fd, 0x32a, 0x35a, 0x38e, 0x3c4, 0x3fd, 0x439, 0x47a };
+    const u8 expectedOctave = 4;
+
+    for (u16 i = 0; i < NOTE_PRIORITY_OVERFLOW_LENGTH; i++) {
+        u8 pitch = 60 + i;
+        u16 freqNum = expectedFreqNum[i];
+
+        print_message("noteOn: pitch = %d, freqNum = 0x%x, octave = %d\n",
+            pitch, freqNum, expectedOctave);
+
+        expect_synth_pitch(0, expectedOctave, freqNum);
+        expect_synth_volume_any();
+        expect_value(__wrap_synth_noteOn, channel, 0);
+        __real_midi_note_on(0, pitch, MAX_MIDI_VOLUME);
+    }
+
+    for (s16 i = NOTE_PRIORITY_OVERFLOW_LENGTH - 1; i >= 1; i--) {
+        u8 pitch = 60 + i;
+        u16 freqNum = expectedFreqNum[i - 1];
+
+        print_message("noteOff: pitch = %d, freqNum = 0x%x, octave = %d\n",
+            pitch, freqNum, expectedOctave);
+
+        expect_synth_pitch(0, expectedOctave, freqNum);
+        expect_synth_volume_any();
+        expect_value(__wrap_synth_noteOn, channel, 0);
+        __real_midi_note_off(0, pitch);
+    }
+}
