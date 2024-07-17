@@ -24,7 +24,7 @@ static const u8 VOLUME_TO_TOTAL_LEVELS[] = { 127, 122, 117, 113, 108, 104, 100, 
 static void updateChannel(u8 chan);
 static void writeGlobalLfo(void);
 static void writeAlgorithmAndFeedback(u8 channel);
-static void writeOperatorMultipleAndDetune(u8 channel, u8 op);
+static void writeOperatorMultipleAndDetune(u8 channel, u8 operator);
 static void writeOperatorRateScalingAndAttackRate(u8 channel, u8 operator);
 static void writeOperatorAmplitudeModulationAndFirstDecayRate(u8 channel, u8 operator);
 static void writeOperatorReleaseRateAndSecondaryAmplitude(u8 channel, u8 operator);
@@ -39,7 +39,7 @@ static void writeSpecialModeReg(void);
 static u8 keyOnOffRegOffset(u8 channel);
 static Operator* getOperator(u8 channel, u8 operator);
 static u8 effectiveTotalLevel(u8 channel, u8 operator, u8 totalLevel);
-static bool isOutputOperator(u8 algorithm, u8 operator);
+static bool isOutputOperator(u8 algorithm, u8 op);
 static u8 volumeAdjustedTotalLevel(u8 channel, u8 totalLevel);
 static void channelParameterUpdated(u8 channel);
 static void otherParameterUpdated(u8 channel, ParameterUpdated parameterUpdated);
