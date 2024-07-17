@@ -12,11 +12,7 @@ void note_priority_init(NotePriorityStack* notePriority)
 void note_priority_push(NotePriorityStack* notePriority, u8 pitch)
 {
     if (notePriority->top == NOTE_PRIORITY_LENGTH - 1) {
-        // rewrite array, evicting oldest item
-        for (u16 i = 0; i < notePriority->top; i++) {
-            notePriority->slot[i] = notePriority->slot[i + 1];
-        }
-        notePriority->top--;
+        return;
     }
     notePriority->slot[++notePriority->top] = pitch;
 }
@@ -42,4 +38,9 @@ void note_priority_remove(NotePriorityStack* notePriority, u8 pitch)
         }
     }
     notePriority->top = writeCursor;
+}
+
+bool note_priority_isFull(NotePriorityStack* notePriority)
+{
+    return notePriority->top == NOTE_PRIORITY_LENGTH - 1;
 }

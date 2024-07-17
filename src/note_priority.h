@@ -1,5 +1,6 @@
 #pragma once
 #include <types.h>
+#include <stdbool.h>
 
 #define NOTE_PRIORITY_LENGTH 10
 
@@ -12,3 +13,4 @@ void note_priority_init(NotePriorityStack* notePriority);
 void note_priority_push(NotePriorityStack* notePriority, u8 pitch);
 u8 note_priority_pop(NotePriorityStack* notePriority);
 void note_priority_remove(NotePriorityStack* notePriority, u8 pitch);
+bool note_priority_isFull(NotePriorityStack* notePriority);

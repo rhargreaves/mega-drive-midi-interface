@@ -350,6 +350,8 @@ static void test_midi_shifts_semitone_in_psg_envelope(UNUSED void** state)
 
         expect_psg_tone(expectedPsgChan, expectedInitialTone);
         __real_midi_psg_tick();
+
+        __real_midi_note_off(chan, MIDI_PITCH_C4);
     }
 }
 

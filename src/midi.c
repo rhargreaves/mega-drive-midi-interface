@@ -412,6 +412,10 @@ void midi_note_on(u8 chan, u8 pitch, u8 velocity)
 
     if (!dynamicMode) {
         MidiChannel* midiChannel = &midiChannels[chan];
+        if (note_priority_isFull(&midiChannel->notePriority)) {
+            log_warn("Ch %d: Note priority stack full", chan + 1);
+            return;
+        }
         note_priority_push(&midiChannel->notePriority, pitch);
         midiChannel->prevVelocity = velocity;
     }

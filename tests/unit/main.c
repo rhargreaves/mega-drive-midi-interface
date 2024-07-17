@@ -109,7 +109,7 @@ int main(void)
         midi_test(test_midi_pitch_bends_up_an_octave_upper_freq_limit),
         midi_test(test_midi_persists_pitch_bend_between_notes),
         midi_test(test_midi_note_priority_respected_for_multiple_notes),
-        midi_test(test_midi_note_priority_removes_oldest_when_full),
+        midi_test(test_midi_drops_note_when_note_priority_stack_full),
 
         midi_test(test_midi_sets_psg_pitch_bend_down),
         midi_test(test_midi_sets_psg_pitch_bend_up),
@@ -368,7 +368,8 @@ int main(void)
         buffer_test(test_buffer_returns_cannot_write_if_full),
         buffer_test(test_buffer_returns_can_write_if_empty),
 
-        note_priority_test(test_note_priority_evicts_old_items)
+        note_priority_test(test_note_priority_ignores_push_when_full),
+        note_priority_test(test_note_priority_indicates_when_full)
         // clang-format on
     };
 
