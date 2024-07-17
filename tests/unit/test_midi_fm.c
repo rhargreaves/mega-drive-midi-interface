@@ -1,4 +1,5 @@
 #include "test_midi.h"
+#include "debug.h"
 
 static void test_midi_triggers_synth_note_on(UNUSED void** state)
 {
@@ -734,12 +735,12 @@ static void test_midi_note_priority_respected_for_multiple_notes(
 static void test_midi_note_priority_removes_oldest_when_full(
     UNUSED void** state)
 {
-    const u16 expectedFreqNum[NOTE_PRIORITY_OVERFLOW_LENGTH] = { 0x284, 0x2a9,
-        0x2d2, 0x2fd, 0x32a, 0x35a, 0x38e, 0x3c4, 0x3fd, 0x439, 0x47a };
+    const u16 expectedFreqNum[NOTE_PRIORITY_OVERFLOW_LENGTH] = { 0x25f, 0x284,
+        0x2a9, 0x2d2, 0x2fd, 0x32a, 0x35a, 0x38e, 0x3c4, 0x3fd, 0x439 };
     const u8 expectedOctave = 4;
 
     for (u16 i = 0; i < NOTE_PRIORITY_OVERFLOW_LENGTH; i++) {
-        u8 pitch = 60 + i;
+        u8 pitch = 59 + i;
         u16 freqNum = expectedFreqNum[i];
 
         print_message("noteOn: pitch = %d, freqNum = 0x%x, octave = %d\n",
@@ -751,8 +752,8 @@ static void test_midi_note_priority_removes_oldest_when_full(
         __real_midi_note_on(0, pitch, MAX_MIDI_VOLUME);
     }
 
-    for (s16 i = NOTE_PRIORITY_OVERFLOW_LENGTH - 1; i >= 1; i--) {
-        u8 pitch = 60 + i;
+    for (s16 i = NOTE_PRIORITY_OVERFLOW_LENGTH - 1; i >= 2; i--) {
+        u8 pitch = 59 + i;
         u16 freqNum = expectedFreqNum[i - 1];
 
         print_message("noteOff: pitch = %d, freqNum = 0x%x, octave = %d\n",
@@ -763,4 +764,7 @@ static void test_midi_note_priority_removes_oldest_when_full(
         expect_value(__wrap_synth_noteOn, channel, 0);
         __real_midi_note_off(0, pitch);
     }
+
+    expect_value(__wrap_synth_noteOff, channel, 0);
+    __real_midi_note_off(0, 60);
 }

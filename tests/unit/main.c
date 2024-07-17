@@ -17,6 +17,7 @@
 #include "test_synth.c"
 #include "test_vstring.c"
 #include "test_buffer.c"
+#include "test_note_priority.c"
 
 #define midi_test(test) cmocka_unit_test_setup(test, test_midi_setup)
 #define midi_pcm_test(test) cmocka_unit_test_setup(test, test_midi_setup)
@@ -33,6 +34,8 @@
 #define buffer_test(test) cmocka_unit_test_setup(test, test_buffer_setup)
 #define midi_receiver_test(test)                                               \
     cmocka_unit_test_setup(test, test_midi_receiver_setup)
+#define note_priority_test(test)                                               \
+    cmocka_unit_test_setup(test, test_note_priority_setup)
 
 int main(void)
 {
@@ -363,7 +366,9 @@ int main(void)
         buffer_test(test_buffer_available_returns_correct_value_when_empty),
         buffer_test(test_buffer_available_returns_correct_value_when_full),
         buffer_test(test_buffer_returns_cannot_write_if_full),
-        buffer_test(test_buffer_returns_can_write_if_empty)
+        buffer_test(test_buffer_returns_can_write_if_empty),
+
+        note_priority_test(test_note_priority_evicts_old_items)
         // clang-format on
     };
 
