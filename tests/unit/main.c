@@ -21,21 +21,17 @@
 
 #define midi_test(test) cmocka_unit_test_setup(test, test_midi_setup)
 #define midi_pcm_test(test) cmocka_unit_test_setup(test, test_midi_setup)
-#define dynamic_midi_test(test)                                                \
-    cmocka_unit_test_setup(test, test_dynamic_midi_setup)
+#define dynamic_midi_test(test) cmocka_unit_test_setup(test, test_dynamic_midi_setup)
 #define synth_test(test) cmocka_unit_test_setup(test, test_synth_setup)
 #define comm_test(test) cmocka_unit_test_setup(test, test_comm_setup)
-#define comm_megawifi_test(test)                                               \
-    cmocka_unit_test_setup(test, test_comm_megawifi_setup)
+#define comm_megawifi_test(test) cmocka_unit_test_setup(test, test_comm_megawifi_setup)
 #define comm_demo_test(test) cmocka_unit_test_setup(test, test_comm_demo_setup)
 #define log_test(test) cmocka_unit_test_setup(test, test_log_setup)
 #define scheduler_test(test) cmocka_unit_test_setup(test, test_scheduler_setup)
 #define applemidi_test(test) cmocka_unit_test_setup(test, test_applemidi_setup)
 #define buffer_test(test) cmocka_unit_test_setup(test, test_buffer_setup)
-#define midi_receiver_test(test)                                               \
-    cmocka_unit_test_setup(test, test_midi_receiver_setup)
-#define note_priority_test(test)                                               \
-    cmocka_unit_test_setup(test, test_note_priority_setup)
+#define midi_receiver_test(test) cmocka_unit_test_setup(test, test_midi_receiver_setup)
+#define note_priority_test(test) cmocka_unit_test_setup(test, test_note_priority_setup)
 
 int main(void)
 {
@@ -213,6 +209,7 @@ int main(void)
         synth_test(test_synth_sets_global_LFO_enable_and_frequency),
         synth_test(test_synth_sets_busy_indicators),
         synth_test(test_synth_sets_preset),
+        synth_test(test_synth_sets_preset_retaining_pan),
         synth_test(
             test_synth_applies_volume_modifier_to_output_operators_algorithm_7),
         synth_test(

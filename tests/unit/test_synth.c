@@ -353,8 +353,51 @@ static void test_synth_sets_preset(UNUSED void** state)
     __real_synth_preset(chan, &M_BANK_0_INST_7_CLAVINET);
 }
 
-static void test_synth_applies_volume_modifier_to_output_operators_algorithm_7(
-    UNUSED void** state)
+static void test_synth_sets_preset_retaining_pan(UNUSED void** state)
+{
+    const u8 chan = 0;
+
+    expect_ym2612_write_channel(chan, 0xB4, 0x80);
+    __real_synth_stereo(chan, STEREO_MODE_LEFT);
+
+    const FmChannel M_BANK_0_INST_7_CLAVINET = { 1, 7, 3, 0, 0, 0, 0,
+        { { 1, 1, 31, 2, 0, 1, 0, 1, 6, 28, 0 }, { 1, 3, 31, 2, 0, 0, 0, 1, 7, 33, 0 },
+            { 1, 5, 31, 3, 0, 1, 0, 0, 2, 30, 0 }, { 1, 7, 31, 0, 6, 0, 4, 6, 7, 6, 0 } } };
+
+    expect_ym2612_write_channel_any_data(chan, 0xB0);
+    expect_ym2612_write_channel(chan, 0xB4, 0x80);
+    expect_ym2612_write_channel_any_data(chan, 0x30);
+    expect_ym2612_write_channel_any_data(chan, 0x50);
+    expect_ym2612_write_channel_any_data(chan, 0x60);
+    expect_ym2612_write_channel_any_data(chan, 0x70);
+    expect_ym2612_write_channel_any_data(chan, 0x80);
+    expect_ym2612_write_channel_any_data(chan, 0x40);
+    expect_ym2612_write_channel_any_data(chan, 0x90);
+    expect_ym2612_write_channel_any_data(chan, 0x38);
+    expect_ym2612_write_channel_any_data(chan, 0x58);
+    expect_ym2612_write_channel_any_data(chan, 0x68);
+    expect_ym2612_write_channel_any_data(chan, 0x78);
+    expect_ym2612_write_channel_any_data(chan, 0x88);
+    expect_ym2612_write_channel_any_data(chan, 0x48);
+    expect_ym2612_write_channel_any_data(chan, 0x98);
+    expect_ym2612_write_channel_any_data(chan, 0x34);
+    expect_ym2612_write_channel_any_data(chan, 0x54);
+    expect_ym2612_write_channel_any_data(chan, 0x64);
+    expect_ym2612_write_channel_any_data(chan, 0x74);
+    expect_ym2612_write_channel_any_data(chan, 0x84);
+    expect_ym2612_write_channel_any_data(chan, 0x44);
+    expect_ym2612_write_channel_any_data(chan, 0x94);
+    expect_ym2612_write_channel_any_data(chan, 0x3C);
+    expect_ym2612_write_channel_any_data(chan, 0x5C);
+    expect_ym2612_write_channel_any_data(chan, 0x6C);
+    expect_ym2612_write_channel_any_data(chan, 0x7C);
+    expect_ym2612_write_channel_any_data(chan, 0x8C);
+    expect_ym2612_write_channel_any_data(chan, 0x4C);
+    expect_ym2612_write_channel_any_data(chan, 0x9C);
+    __real_synth_preset(chan, &M_BANK_0_INST_7_CLAVINET);
+}
+
+static void test_synth_applies_volume_modifier_to_output_operators_algorithm_7(UNUSED void** state)
 {
     const u8 algorithm = 7;
     const u8 totalLevelReg = 0x40;

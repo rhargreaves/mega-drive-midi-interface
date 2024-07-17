@@ -244,7 +244,10 @@ u8 synth_busy(void)
 
 void synth_preset(u8 channel, const FmChannel* preset)
 {
-    memcpy(&fmChannels[channel], preset, sizeof(FmChannel));
+    FmChannel* chan = &fmChannels[channel];
+    u8 currentStereo = chan->stereo;
+    memcpy(chan, preset, sizeof(FmChannel));
+    chan->stereo = currentStereo;
     updateChannel(channel);
     channelParameterUpdated(channel);
 }

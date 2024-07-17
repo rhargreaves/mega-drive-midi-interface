@@ -173,8 +173,6 @@ static void test_midi_sets_presets_on_dynamic_channels(UNUSED void** state)
 {
     expect_value(__wrap_synth_preset, channel, 0);
     expect_any(__wrap_synth_preset, preset);
-    expect_any(__wrap_synth_stereo, channel);
-    expect_any(__wrap_synth_stereo, mode);
     __real_midi_program(0, 2);
 
     // Playing first note
@@ -186,8 +184,6 @@ static void test_midi_sets_presets_on_dynamic_channels(UNUSED void** state)
     // Playing second note
     expect_value(__wrap_synth_preset, channel, 1);
     expect_any(__wrap_synth_preset, preset);
-    expect_any(__wrap_synth_stereo, channel);
-    expect_any(__wrap_synth_stereo, mode);
     expect_synth_pitch_any();
     expect_synth_volume_any();
     expect_value(__wrap_synth_noteOn, channel, 1);

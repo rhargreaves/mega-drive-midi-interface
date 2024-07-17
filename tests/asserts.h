@@ -6,6 +6,7 @@
 
 void expect_usb_sent_byte(u8 value);
 void stub_usb_receive_byte(u8 value);
+void stub_usb_receive_program(u8 chan, u8 program);
 void stub_usb_receive_cc(u8 chan, u8 cc, u8 value);
 void stub_usb_receive_note_on(u8 chan, u8 key, u8 velocity);
 void stub_usb_receive_note_off(u8 chan, u8 key);
@@ -24,8 +25,12 @@ void _expect_synth_pitch(u8 channel, u8 octave, u16 freqNumber,
     const char* const file, const int line);
 void _expect_ym2612_write_reg(
     u8 part, u8 reg, u8 data, const char* const file, const int line);
+void _expect_ym2612_write_reg_any_data(
+    u8 part, u8 reg, const char* const file, const int line);
 void _expect_ym2612_write_channel(
     u8 chan, u8 baseReg, u8 data, const char* const file, const int line);
+void _expect_ym2612_write_channel_any_data(
+    u8 chan, u8 baseReg, const char* const file, const int line);
 void _expect_ym2612_write_operator(u8 chan, u8 op, u8 baseReg, u8 data,
     const char* const file, const int line);
 
@@ -99,5 +104,11 @@ void _expect_ym2612_write_operator(u8 chan, u8 op, u8 baseReg, u8 data,
 #define expect_ym2612_write_reg(part, reg, data)                               \
     _expect_ym2612_write_reg(part, reg, data, __FILE__, __LINE__)
 
+#define expect_ym2612_write_reg_any_data(part, reg)                            \
+    _expect_ym2612_write_reg_any_data(part, reg, __FILE__, __LINE__)
+
 #define expect_ym2612_write_channel(chan, baseReg, data)                       \
     _expect_ym2612_write_channel(chan, baseReg, data, __FILE__, __LINE__)
+
+#define expect_ym2612_write_channel_any_data(chan, baseReg)                    \
+    _expect_ym2612_write_channel_any_data(chan, baseReg, __FILE__, __LINE__)

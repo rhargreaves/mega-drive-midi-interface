@@ -122,7 +122,6 @@ void midi_fm_program(u8 chan, u8 program)
 {
     const FmChannel* data = presets[program];
     synth_preset(chan, data);
-    updatePan(chan);
 }
 
 void midi_fm_all_notes_off(u8 chan)
