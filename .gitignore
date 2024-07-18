@@ -14,3 +14,4 @@ res/*.s
 src/boot/sega.s
 res/samples/*
 res/*.h
+.vscode/settings.json
