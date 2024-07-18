@@ -150,8 +150,6 @@ void __wrap_VDP_setReg(u16 reg, u8 value);
 u8 __wrap_VDP_getReg(u16 reg);
 void __wrap_SYS_setExtIntCallback(VoidCallback* CB);
 void __wrap_SYS_setInterruptMaskLevel(u16 value);
-u16 __wrap_SYS_getCPULoad();
-u32 __wrap_getFPS();
 void __wrap_VDP_clearTextArea(u16 x, u16 y, u16 w, u16 h);
 u16 __wrap_SYS_isPAL(void);
 void wraps_set_SYS_isPAL(bool isPal);

@@ -621,16 +621,6 @@ void __wrap_comm_serial_write(u8 data)
     check_expected(data);
 }
 
-u16 __wrap_SYS_getCPULoad()
-{
-    return 0;
-}
-
-u32 __wrap_getFPS()
-{
-    return 0;
-}
-
 void __wrap_log_init(void)
 {
 }
