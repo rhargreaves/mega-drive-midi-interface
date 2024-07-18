@@ -17,15 +17,13 @@ static const u16 MAX_COMM_BUSY = 0x28F;
 
 static bool countsInBounds(void);
 
-typedef struct CommVTable CommVTable;
-
-struct CommVTable {
+typedef struct CommVTable {
     void (*init)(void);
     u8 (*read_ready)(void);
     u8 (*read)(void);
     u8 (*write_ready)(void);
     void (*write)(u8 data);
-};
+} CommVTable;
 
 static const CommVTable Demo_VTable = { comm_demo_init, comm_demo_read_ready, comm_demo_read,
     comm_demo_write_ready, comm_demo_write };

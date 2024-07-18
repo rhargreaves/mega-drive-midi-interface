@@ -4,17 +4,13 @@
 
 #define MSG_MAX_LEN 40
 
-typedef enum LogLevel LogLevel;
+typedef enum LogLevel { Info, Warn } LogLevel;
 
-enum LogLevel { Info, Warn };
-
-typedef struct Log Log;
-
-struct Log {
+typedef struct Log {
     LogLevel level;
     u16 msgLen;
     char msg[MSG_MAX_LEN];
-};
+} Log;
 
 void log_init(void);
 void log_info(const char* fmt, ...) __attribute__((format(printf, 1, 2)));

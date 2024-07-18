@@ -15,16 +15,14 @@ static const u16 FREQS[] = {
 };
 static const u8 FREQ_NORMAL_RANGE_OFFSET = 2;
 
-typedef struct MidiFmChannel MidiFmChannel;
-
-struct MidiFmChannel {
+typedef struct MidiFmChannel {
     u8 pitch;
     u8 volume;
     u8 velocity;
     u8 pan;
     bool percussive;
     u16 pitchBend;
-};
+} MidiFmChannel;
 
 static MidiFmChannel fmChannels[MAX_FM_CHANS];
 

@@ -1,8 +1,7 @@
 #pragma once
 #include "types.h"
 
-enum CommMode { Discovery, Everdrive, EverdrivePro, Serial, MegaWiFi, Demo };
-typedef enum CommMode CommMode;
+typedef enum CommMode { Discovery, Everdrive, EverdrivePro, Serial, MegaWiFi, Demo } CommMode;
 
 void comm_init(void);
 void comm_write(u8 data);

@@ -4,12 +4,10 @@
 
 #define SM_OP_LEN 3
 
-typedef struct SpecialModeOperator SpecialModeOperator;
-
-struct SpecialModeOperator {
+typedef struct SpecialModeOperator {
     u8 pitch;
     u16 pitchBend;
-};
+} SpecialModeOperator;
 
 static SpecialModeOperator smOperators[SM_OP_LEN];
 

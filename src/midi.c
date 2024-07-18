@@ -17,11 +17,9 @@
 #define CHANNEL_UNASSIGNED 0xFF
 #define LENGTH_OF(x) (sizeof(x) / sizeof(x[0]))
 
-typedef enum DeviceSelect DeviceSelect;
-enum DeviceSelect { Auto, FM, PSG_Tone, PSG_Noise };
+typedef enum DeviceSelect { Auto, FM, PSG_Tone, PSG_Noise } DeviceSelect;
 
-typedef struct MidiChannel MidiChannel;
-struct MidiChannel {
+typedef struct MidiChannel {
     u8 volume;
     u8 program;
     u8 pan;
@@ -29,10 +27,9 @@ struct MidiChannel {
     u8 prevVelocity;
     NotePriorityStack notePriority;
     DeviceSelect deviceSelect;
-};
+} MidiChannel;
 
-typedef enum MappingMode MappingMode;
-enum MappingMode { MappingMode_Static, MappingMode_Dynamic, MappingMode_Auto };
+typedef enum MappingMode { MappingMode_Static, MappingMode_Dynamic, MappingMode_Auto } MappingMode;
 
 static const VTable PSG_VTable = { midi_psg_note_on, midi_psg_note_off, midi_psg_channel_volume,
     midi_psg_pitch_bend, midi_psg_program, midi_psg_all_notes_off, midi_psg_pan };

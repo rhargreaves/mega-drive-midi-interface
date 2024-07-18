@@ -11,9 +11,7 @@
 #define STEREO_MODE_RIGHT 1
 #define STEREO_MODE_LEFT 2
 
-typedef struct Operator Operator;
-
-struct Operator {
+typedef struct Operator {
     u8 multiple;
     u8 detune;
     u8 attackRate;
@@ -25,11 +23,9 @@ struct Operator {
     u8 releaseRate;
     u8 totalLevel;
     u8 ssgEg;
-};
+} Operator;
 
-typedef struct FmChannel FmChannel;
-
-struct FmChannel {
+typedef struct FmChannel {
     u8 algorithm;
     u8 feedback;
     u8 stereo;
@@ -38,19 +34,15 @@ struct FmChannel {
     u8 octave;
     u16 freqNumber;
     Operator operators[MAX_FM_OPERATORS];
-};
+} FmChannel;
 
-typedef struct Global Global;
-
-struct Global {
+typedef struct Global {
     u8 lfoEnable;
     u8 lfoFrequency;
     bool specialMode;
-};
+} Global;
 
-typedef enum ParameterUpdated ParameterUpdated;
-
-enum ParameterUpdated { Channel, Lfo, SpecialMode };
+typedef enum ParameterUpdated { Channel, Lfo, SpecialMode } ParameterUpdated;
 
 typedef void ParameterUpdatedCallback(u8 fmChan, ParameterUpdated parameterUpdated);
 

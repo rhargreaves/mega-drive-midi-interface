@@ -34,13 +34,7 @@ static const u8 ATTENUATIONS[] = { 15, 14, 14, 14, 13, 13, 13, 13, 12, 12, 12, 1
     2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-typedef struct MidiPsgChannel MidiPsgChannel;
-
-static u8 userDefinedEnvelope[256];
-static u8* userDefinedEnvelopePtr;
-static const u8** envelopes;
-
-struct MidiPsgChannel {
+typedef struct MidiPsgChannel {
     u8 chanNum;
     u8 key;
     u8 attenuation;
@@ -53,8 +47,11 @@ struct MidiPsgChannel {
     const u8* envelopeLoopStart;
     bool noteReleased;
     u16 pitchBend;
-};
+} MidiPsgChannel;
 
+static u8 userDefinedEnvelope[256];
+static u8* userDefinedEnvelopePtr;
+static const u8** envelopes;
 static u8 audible;
 static MidiPsgChannel psgChannels[MAX_PSG_CHANS];
 

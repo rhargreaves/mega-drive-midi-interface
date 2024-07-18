@@ -118,9 +118,7 @@
 #define SYSEX_COMMAND_WRITE_YM2612_REG_PART_0 0x08
 #define SYSEX_COMMAND_WRITE_YM2612_REG_PART_1 0x09
 
-typedef struct VTable VTable;
-
-struct VTable {
+typedef struct VTable {
     void (*noteOn)(u8 chan, u8 pitch, u8 velocity);
     void (*noteOff)(u8 chan, u8 pitch);
     void (*channelVolume)(u8 chan, u8 volume);
@@ -128,11 +126,9 @@ struct VTable {
     void (*program)(u8 chan, u8 program);
     void (*allNotesOff)(u8 chan);
     void (*pan)(u8 chan, u8 pan);
-};
+} VTable;
 
-typedef struct DeviceChannel DeviceChannel;
-
-struct DeviceChannel {
+typedef struct DeviceChannel {
     u8 number;
     const VTable* ops;
     bool noteOn;
@@ -142,7 +138,7 @@ struct DeviceChannel {
     u8 volume;
     u8 pan;
     u16 pitchBend;
-};
+} DeviceChannel;
 
 void midi_init(const FmChannel** defaultPresets, const PercussionPreset** defaultPercussionPresets,
     const u8** defaultEnvelopes);
