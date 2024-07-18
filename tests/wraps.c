@@ -1,8 +1,6 @@
 #include "cmocka_inc.h"
-
 #include "synth.h"
-
-#include <stdbool.h>
+#include "types.h"
 
 static bool disableChecks = false;
 static bool loggingChecks = false;
@@ -363,13 +361,6 @@ void __wrap_midi_reset(void)
     function_called();
 }
 
-void __wrap_fm_writeReg(u16 part, u8 reg, u8 data)
-{
-    check_expected(part);
-    check_expected(reg);
-    check_expected(data);
-}
-
 void __wrap_psg_note_on(u8 channel, u16 freq)
 {
     if (disableChecks)
@@ -429,9 +420,14 @@ void __wrap_VDP_clearText(u16 x, u16 y, u16 w)
 {
 }
 
-void __wrap_VDP_setPaletteColor(u16 index, u16 value)
+void __wrap_PAL_setColor(u16 index, u16 value)
 {
 }
+
+void __wrap_PAL_setColors(u16 index, const u16* pal, u16 count, TransferMethod tm)
+{
+}
+
 void __wrap_VDP_setBackgroundColor(u8 index)
 {
 }
@@ -664,15 +660,15 @@ void __wrap_VDP_clearTextArea(u16 x, u16 y, u16 w, u16 h)
 {
 }
 
-static bool regionIsPal = false;
-bool __wrap_region_isPal(void)
+static u16 testIsPal = false;
+u16 __wrap_SYS_isPAL(void)
 {
-    return regionIsPal;
+    return testIsPal;
 }
 
-void wraps_region_setIsPal(bool isPal)
+void wraps_set_SYS_isPAL(bool isPal)
 {
-    regionIsPal = isPal;
+    testIsPal = isPal;
 }
 
 void __wrap_comm_megawifi_midiEmitCallback(u8 midiByte)
@@ -899,8 +895,8 @@ int16_t __wrap_mw_def_ap_cfg_get(void)
     return mock_type(int16_t);
 }
 
-void __wrap_SND_startPlay_PCM(
-    const u8* sample, const u32 len, const u8 rate, const u8 pan, const u8 loop)
+void __wrap_SND_PCM_startPlay(const u8* sample, const u32 len, const SoundPcmSampleRate rate,
+    const SoundPanning pan, const u8 loop)
 {
     check_expected(sample);
     check_expected(len);
@@ -945,4 +941,24 @@ void __wrap_Z80_releaseBus()
 bool __wrap_SYS_doVBlankProcess()
 {
     return mock_type(bool);
+}
+
+s16 __wrap_fix16ToInt(fix16 value)
+{
+    return 0;
+}
+
+s32 __wrap_fix32ToInt(fix32 value)
+{
+    return 0;
+}
+
+fix16 __wrap_fix16Frac(fix16 value)
+{
+    return 0;
+}
+
+fix32 __wrap_fix32Frac(fix32 value)
+{
+    return 0;
 }

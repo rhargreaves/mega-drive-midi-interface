@@ -1,5 +1,5 @@
 #pragma once
-#include <stdbool.h>
+#include "types.h"
 
 bool settings_is_megawifi_rom(void);
 bool settings_debug_load(void);

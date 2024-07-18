@@ -1,1 +1,1 @@
-WAV Clap "samples/Clap.wav" 0 22050
+WAV Clap "samples/Clap.wav" PCM 22050

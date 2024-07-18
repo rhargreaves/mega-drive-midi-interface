@@ -1,6 +1,5 @@
 #pragma once
-#include <stdint.h>
-#include <types.h>
+#include "types.h"
 
 void comm_everdrive_init(void);
 u8 comm_everdrive_read_ready(void);

@@ -1,8 +1,8 @@
 #include "cmocka_inc.h"
 #include "applemidi.h"
 #include "comm_megawifi.h"
-#include <ext/mw/megawifi.h>
-#include <ext/mw/lsd.h>
+#include "ext/mw/megawifi.h"
+#include "ext/mw/lsd.h"
 #include "buffer.h"
 #include "settings.h"
 #include "ip_util.h"

@@ -1,6 +1,5 @@
 #pragma once
-#include <stdint.h>
-#include <types.h>
+#include "types.h"
 
 void comm_demo_init(void);
 u8 comm_demo_read_ready(void);

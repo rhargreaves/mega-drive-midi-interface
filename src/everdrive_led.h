@@ -1,6 +1,5 @@
 #pragma once
-#include <stdint.h>
-#include <types.h>
+#include "types.h"
 
 void everdrive_led_init(void);
 void everdrive_led_blink(void);

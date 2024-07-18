@@ -3,12 +3,11 @@
 #include "envelopes.h"
 #include "midi.h"
 #include "psg.h"
-#include "region.h"
 #include "scheduler.h"
-#include <memory.h>
-#include <psg.h>
-#include <stdbool.h>
-#include <types.h>
+#include "memory.h"
+#include "psg.h"
+#include "types.h"
+#include "sys.h"
 
 #define MIN_PSG_CHAN 6
 #define MAX_PSG_CHAN 9
@@ -306,7 +305,7 @@ void midi_psg_load_envelope(const u8* eef)
 
 static u16 toneForMidiKey(u8 midiKey)
 {
-    const u16* tones = region_isPal() ? TONES_PAL : TONES_NTSC;
+    const u16* tones = SYS_isPAL() ? TONES_PAL : TONES_NTSC;
     if (midiKey < MIN_MIDI_KEY) {
         return tones[0];
     }

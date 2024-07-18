@@ -1,7 +1,5 @@
 #pragma once
-#include <stdint.h>
-#include <types.h>
-#include <stdbool.h>
+#include "types.h"
 
 #ifndef BUILD
 #define BUILD "*Dev Build*"

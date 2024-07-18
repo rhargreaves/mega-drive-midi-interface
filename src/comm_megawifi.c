@@ -1,15 +1,14 @@
 #include "comm_megawifi.h"
 #include "applemidi.h"
 #include "log.h"
-#include <ext/mw/megawifi.h>
-#include <ext/mw/lsd.h>
+#include "ext/mw/megawifi.h"
+#include "ext/mw/lsd.h"
 #include "vstring.h"
-#include <stdbool.h>
 #include "settings.h"
 #include "buffer.h"
 #include "memory.h"
 #include "ip_util.h"
-#include <task.h>
+#include "task.h"
 #include "scheduler.h"
 
 #define UDP_CONTROL_PORT 5006
@@ -17,7 +16,7 @@
 
 #define MW_BUFLEN 1460
 #define MAX_UDP_DATA_LENGTH MW_BUFLEN
-static char __attribute__((aligned(2))) cmd_buf[MW_BUFLEN];
+static u16 cmd_buf[MW_BUFLEN];
 
 static bool mwDetected = false;
 static bool recvData = false;
@@ -31,7 +30,7 @@ static bool awaitingRecv = false;
 static bool awaitingSend = false;
 
 #define FPS 60
-#define MS_TO_FRAMES(ms) (((ms)*FPS / 500 + 1) / 2)
+#define MS_TO_FRAMES(ms) (((ms) * FPS / 500 + 1) / 2)
 
 static MegaWifiStatus status;
 

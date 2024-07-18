@@ -5,9 +5,8 @@
 #include "midi_receiver.h"
 #include "comm_megawifi.h"
 #include "comm_demo.h"
-#include <sys.h>
-#include <stdint.h>
-#include <types.h>
+#include "sys.h"
+#include "types.h"
 
 #define MAX_TICK_HANDLERS 3
 #define MAX_FRAME_HANDLERS 6

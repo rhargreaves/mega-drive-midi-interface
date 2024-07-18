@@ -1,6 +1,5 @@
 #include "midi_fm.h"
 #include "midi.h"
-#include "region.h"
 #include "synth.h"
 
 static const u8 SEMITONES = 12;

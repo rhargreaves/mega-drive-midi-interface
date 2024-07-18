@@ -1,16 +1,15 @@
 #pragma once
-#include <stdint.h>
-#include <midi.h>
-#include <sprite_eng.h>
-#include <types.h>
-#include <sys.h>
-#include <ext/mw/megawifi.h>
+#include "midi.h"
+#include "sprite_eng.h"
+#include "types.h"
+#include "sys.h"
+#include "ext/mw/megawifi.h"
 #include "log.h"
 #include "synth.h"
 #include "scheduler.h"
-#include <vdp_bg.h>
-
-typedef enum mw_err mw_err;
+#include "vdp_bg.h"
+#include "snd/sound.h"
+#include "snd/pcm/snd_pcm.h"
 
 extern bool __real_comm_read_ready(void);
 extern void __real_comm_init(void);
@@ -20,7 +19,6 @@ extern u16 __real_comm_idle_count(void);
 extern u16 __real_comm_busy_count(void);
 extern void __real_comm_reset_counts(void);
 extern void __real_comm_megawifi_midiEmitCallback(u8 midiByte);
-
 extern void __real_comm_demo_init(void);
 extern u8 __real_comm_demo_read_ready(void);
 extern u8 __real_comm_demo_read(void);
@@ -32,6 +30,7 @@ void wraps_disable_checks(void);
 void wraps_enable_checks(void);
 void wraps_disable_logging_checks(void);
 void wraps_enable_logging_checks(void);
+
 void __wrap_synth_enableLfo(u8 enable);
 void __wrap_synth_globalLfoFrequency(u8 freq);
 void __wrap_synth_noteOn(u8 channel);
@@ -64,14 +63,42 @@ void __wrap_synth_specialModeVolume(u8 op, u8 volume);
 void __wrap_synth_directWriteYm2612(u8 part, u8 reg, u8 data);
 void __wrap_synth_enableDac(bool enable);
 
+void __wrap_comm_init(void);
 bool __wrap_comm_read_ready(void);
 u8 __wrap_comm_read(void);
 void __wrap_comm_write(u8 data);
+void __wrap_comm_serial_init(void);
+u8 __wrap_comm_serial_read_ready(void);
+u8 __wrap_comm_serial_read(void);
+u8 __wrap_comm_serial_write_ready(void);
+void __wrap_comm_serial_write(u8 data);
+void __wrap_comm_everdrive_init(void);
+u8 __wrap_comm_everdrive_read_ready(void);
+u8 __wrap_comm_everdrive_read(void);
+u8 __wrap_comm_everdrive_write_ready(void);
+void __wrap_comm_everdrive_write(u8 data);
+void __wrap_comm_everdrive_pro_init(void);
+u8 __wrap_comm_everdrive_pro_read_ready(void);
+u8 __wrap_comm_everdrive_pro_read(void);
+u8 __wrap_comm_everdrive_pro_write_ready(void);
+void __wrap_comm_everdrive_pro_write(u8 data);
+void __wrap_comm_demo_init(void);
+u8 __wrap_comm_demo_read_ready(void);
+u8 __wrap_comm_demo_read(void);
+u8 __wrap_comm_demo_write_ready(void);
+void __wrap_comm_demo_write(u8 data);
+void __wrap_comm_demo_vsync(void);
 void __wrap_comm_megawifi_init(void);
-void __wrap_fm_writeReg(u16 part, u8 reg, u8 data);
+void __wrap_comm_megawifi_midiEmitCallback(u8 midiByte);
+void __wrap_comm_megawifi_tick(void);
+void __wrap_comm_megawifi_send(u8 ch, char* data, u16 len);
+
 void __wrap_psg_note_on(u8 channel, u16 freq);
 void __wrap_psg_note_off(u8 channel);
 void __wrap_psg_attenuation(u8 channel, u8 attenuation);
+
+void __wrap_midi_receiver_read_if_comm_ready(void);
+
 void __wrap_midi_note_off(u8 chan, u8 pitch);
 void __wrap_midi_note_on(u8 chan, u8 pitch, u8 velocity);
 void __wrap_midi_channel_volume(u8 chan, u8 volume);
@@ -86,8 +113,20 @@ DeviceChannel* __wrap_midi_channel_mappings(void);
 void __wrap_midi_psg_tick(void);
 void __wrap_midi_psg_load_envelope(const u8* eef);
 void __wrap_midi_reset(void);
+
 void __wrap_ui_fm_set_parameters_visibility(u8 chan, bool show);
 void __wrap_ui_update(void);
+
+void __wrap_log_init(void);
+void __wrap_log_info(const char* fmt, ...);
+void __wrap_log_warn(const char* fmt, ...);
+Log* __wrap_log_dequeue(void);
+
+void __wrap_scheduler_tick(void);
+void __wrap_scheduler_addTickHandler(HandlerFunc* onTick);
+void __wrap_scheduler_addFrameHandler(HandlerFunc* onFrame);
+
+/* SDGK wraps */
 void __wrap_YM2612_writeReg(const u16 part, const u8 reg, const u8 data);
 void __wrap_VDP_drawText(const char* str, u16 x, u16 y);
 void __wrap_SYS_setVIntCallback(VoidCallback* CB);
@@ -100,8 +139,8 @@ void __wrap_SPR_update();
 void __wrap_SYS_disableInts();
 void __wrap_SYS_enableInts();
 void __wrap_SPR_init(u16 maxSprite, u16 vramSize, u16 unpackBufferSize);
-void __wrap_VDP_setPaletteColors(u16 index, const u16* values, u16 count);
-void __wrap_VDP_setPaletteColor(u16 index, u16 value);
+void __wrap_PAL_setColor(u16 index, u16 value);
+void __wrap_PAL_setColors(u16 index, const u16* pal, u16 count, TransferMethod tm);
 void __wrap_VDP_setBackgroundColor(u8 index);
 void __wrap_SPR_setAnim(Sprite* sprite, s16 anim);
 void __wrap_SPR_setFrame(Sprite* sprite, s16 frame);
@@ -111,54 +150,43 @@ void __wrap_VDP_setReg(u16 reg, u8 value);
 u8 __wrap_VDP_getReg(u16 reg);
 void __wrap_SYS_setExtIntCallback(VoidCallback* CB);
 void __wrap_SYS_setInterruptMaskLevel(u16 value);
-void __wrap_comm_init(void);
-void __wrap_comm_serial_init(void);
-u8 __wrap_comm_serial_read_ready(void);
-u8 __wrap_comm_serial_read(void);
-u8 __wrap_comm_serial_write_ready(void);
-void __wrap_comm_serial_write(u8 data);
-
-void __wrap_comm_everdrive_init(void);
-u8 __wrap_comm_everdrive_read_ready(void);
-u8 __wrap_comm_everdrive_read(void);
-u8 __wrap_comm_everdrive_write_ready(void);
-void __wrap_comm_everdrive_write(u8 data);
-
-void __wrap_comm_everdrive_pro_init(void);
-u8 __wrap_comm_everdrive_pro_read_ready(void);
-u8 __wrap_comm_everdrive_pro_read(void);
-u8 __wrap_comm_everdrive_pro_write_ready(void);
-void __wrap_comm_everdrive_pro_write(u8 data);
-
-void __wrap_comm_demo_init(void);
-u8 __wrap_comm_demo_read_ready(void);
-u8 __wrap_comm_demo_read(void);
-u8 __wrap_comm_demo_write_ready(void);
-void __wrap_comm_demo_write(u8 data);
-void __wrap_comm_demo_vsync(void);
-
 u16 __wrap_SYS_getCPULoad();
 u32 __wrap_getFPS();
-void __wrap_log_init(void);
-void __wrap_log_info(const char* fmt, ...);
-void __wrap_log_warn(const char* fmt, ...);
-Log* __wrap_log_dequeue(void);
 void __wrap_VDP_clearTextArea(u16 x, u16 y, u16 w, u16 h);
-bool __wrap_region_isPal(void);
-void wraps_region_setIsPal(bool isPal);
+u16 __wrap_SYS_isPAL(void);
+void wraps_set_SYS_isPAL(bool isPal);
+void __wrap_SYS_die(char* err);
+void __wrap_SYS_doVBlankProcessEx(VBlankProcessTime processTime);
+void __wrap_VDP_setTileMapXY(VDPPlane plane, u16 tile, u16 x, u16 y);
+u16 __wrap_VDP_loadTileSet(const TileSet* tileset, u16 index, TransferMethod tm);
+u16 __wrap_VDP_drawImageEx(
+    VDPPlane plane, const Image* image, u16 basetile, u16 x, u16 y, u16 loadpal, bool dma);
+void __wrap_JOY_update(void);
+u16 __wrap_JOY_readJoypad(u16 joy);
+void __wrap_JOY_init(void);
+void __wrap_TSK_userSet(VoidCallback* task);
+void __wrap_SND_PCM_startPlay(const u8* sample, const u32 len, const SoundPcmSampleRate rate,
+    const SoundPanning pan, const u8 loop);
+void __wrap_Z80_loadDriver(const u16 driver, const bool waitReady);
+void __wrap_Z80_requestBus(bool wait);
+bool __wrap_Z80_getAndRequestBus(bool wait);
+void __wrap_Z80_releaseBus();
+bool __wrap_SYS_doVBlankProcess();
+s16 __wrap_fix16ToInt(fix16 value);
+s32 __wrap_fix32ToInt(fix32 value);
+fix16 __wrap_fix16Frac(fix16 value);
+fix32 __wrap_fix32Frac(fix32 value);
 
-void __wrap_comm_megawifi_midiEmitCallback(u8 midiByte);
+/* MegaWiFi wraps */
+typedef enum mw_err mw_err;
+
 mw_err __wrap_mediator_recv_event(void);
 mw_err __wrap_mediator_send_packet(u8 ch, char* data, u16 len);
-void __wrap_SYS_die(char* err);
-
 int __wrap_mw_init(char* cmd_buf, uint16_t buf_len);
 void __wrap_mw_process(void);
 void __wrap_lsd_process(void);
 mw_err __wrap_mw_detect(uint8_t* major, uint8_t* minor, char** variant);
-
 void mock_mw_detect(u8 major, u8 minor);
-
 int __wrap_loop_init(uint8_t max_func, uint8_t max_timer);
 mw_err __wrap_mw_ap_assoc(uint8_t slot);
 mw_err __wrap_mw_ap_assoc_wait(int tout_frames);
@@ -167,39 +195,7 @@ void mock_ip_cfg(u32 ip_addr);
 mw_err __wrap_mw_udp_set(
     uint8_t ch, const char* dst_addr, const char* dst_port, const char* src_port);
 mw_err __wrap_mw_sock_conn_wait(uint8_t ch, int tout_frames);
-
-void __wrap_midi_receiver_read_if_comm_ready(void);
-void __wrap_scheduler_tick(void);
-void __wrap_scheduler_addTickHandler(HandlerFunc* onTick);
-void __wrap_scheduler_addFrameHandler(HandlerFunc* onFrame);
-
-void __wrap_comm_megawifi_tick(void);
-void __wrap_comm_megawifi_send(u8 ch, char* data, u16 len);
-
 enum lsd_status __wrap_lsd_recv(char* buf, int16_t len, void* ctx, lsd_recv_cb recv_cb);
 enum lsd_status __wrap_lsd_send(
     uint8_t ch, const char* data, int16_t len, void* ctx, lsd_send_cb send_cb);
-
-void __wrap_SYS_doVBlankProcessEx(VBlankProcessTime processTime);
-
-void __wrap_VDP_setTileMapXY(VDPPlane plane, u16 tile, u16 x, u16 y);
-u16 __wrap_VDP_loadTileSet(const TileSet* tileset, u16 index, TransferMethod tm);
-u16 __wrap_VDP_drawImageEx(
-    VDPPlane plane, const Image* image, u16 basetile, u16 x, u16 y, u16 loadpal, bool dma);
-
-void __wrap_JOY_update(void);
-u16 __wrap_JOY_readJoypad(u16 joy);
-void __wrap_JOY_init(void);
-
-void __wrap_TSK_userSet(VoidCallback* task);
-
 int16_t __wrap_mw_def_ap_cfg_get(void);
-
-void __wrap_SND_startPlay_PCM(
-    const u8* sample, const u32 len, const u8 rate, const u8 pan, const u8 loop);
-
-void __wrap_Z80_loadDriver(const u16 driver, const bool waitReady);
-void __wrap_Z80_requestBus(bool wait);
-bool __wrap_Z80_getAndRequestBus(bool wait);
-void __wrap_Z80_releaseBus();
-bool __wrap_SYS_doVBlankProcess();

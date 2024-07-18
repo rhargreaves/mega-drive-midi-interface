@@ -1,7 +1,5 @@
 #pragma once
-#include <stdint.h>
-#include <types.h>
-#include <stdbool.h>
+#include "types.h"
 
 #define MAX_FM_OPERATORS 4
 #define MAX_FM_CHANS 6

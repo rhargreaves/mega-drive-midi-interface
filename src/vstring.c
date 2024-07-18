@@ -1,9 +1,9 @@
+#include "vstring.h"
 #include "config.h"
 #include "types.h"
-#include "tab_cnv.h"
 #include "maths.h"
+#include "tab_cnv.h"
 #include "memory.h"
-#include "vstring.h"
 
 #define P01 10
 #define P02 100

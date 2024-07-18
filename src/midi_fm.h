@@ -1,7 +1,6 @@
 #pragma once
 #include "synth.h"
-#include <stdbool.h>
-#include <types.h>
+#include "types.h"
 
 #define MAX_FM_CHAN 5
 #define MIN_MIDI_PITCH 11

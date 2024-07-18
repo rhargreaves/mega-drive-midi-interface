@@ -1,6 +1,6 @@
 #include "cmocka_inc.h"
 #include "comm_demo.h"
-#include <joy.h>
+#include "joy.h"
 
 #define DEFAULT_PITCH 69
 

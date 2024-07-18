@@ -73,7 +73,6 @@ MOCKS=midi_process \
 	synth_specialModeVolume \
 	synth_directWriteYm2612 \
 	synth_enableDac \
-	fm_writeReg \
 	midi_note_off \
 	midi_note_on \
 	midi_pitch_bend \
@@ -109,7 +108,8 @@ MD_MOCKS=SYS_setVIntCallback \
 	VDP_drawText \
 	VDP_clearText \
 	VDP_setBackgroundColor \
-	VDP_setPaletteColor \
+	PAL_setColor \
+	PAL_setColors \
 	PSG_setEnvelope \
 	PSG_setTone \
 	SPR_addSprite \
@@ -125,7 +125,6 @@ MD_MOCKS=SYS_setVIntCallback \
 	SPR_setFrame \
 	SPR_setAnimAndFrame \
 	SPR_setVisibility \
-	VDP_setPaletteColors \
 	comm_serial_init \
 	comm_serial_read_ready \
 	comm_serial_read \
@@ -150,7 +149,7 @@ MD_MOCKS=SYS_setVIntCallback \
 	SYS_getCPULoad \
 	getFPS \
 	VDP_clearTextArea \
-	region_isPal \
+	SYS_isPAL \
 	SYS_die \
 	mw_init \
 	mw_process \
@@ -168,7 +167,6 @@ MD_MOCKS=SYS_setVIntCallback \
 	lsd_send \
 	mw_udp_reuse_recv \
 	mw_udp_reuse_send \
-	Z80_requestBus \
 	SYS_doVBlankProcessEx \
 	VDP_loadTileSet \
 	VDP_setTileMapXY \
@@ -178,12 +176,16 @@ MD_MOCKS=SYS_setVIntCallback \
 	JOY_update \
 	TSK_userSet \
 	mw_def_ap_cfg_get \
-	SND_startPlay_PCM \
+	SND_PCM_startPlay \
 	Z80_loadDriver \
 	Z80_releaseBus \
 	Z80_requestBus \
 	Z80_getAndRequestBus \
-	SYS_doVBlankProcess
+	SYS_doVBlankProcess \
+	fix16ToInt \
+	fix32ToInt \
+	fix16Frac \
+	fix32Frac
 
 LDFLAGS=-ggdb -ffreestanding -lcmocka -L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src
 LDFLAGS+=$(foreach MOCK,$(MD_MOCKS),-Wl,--wrap=$(MOCK))

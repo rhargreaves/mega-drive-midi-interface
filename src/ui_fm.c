@@ -1,14 +1,13 @@
 #include "ui_fm.h"
 #include "midi.h"
 #include "synth.h"
-#include <vdp.h>
-#include <sys.h>
+#include "vdp.h"
+#include "sys.h"
 #include "vdp_bg.h"
-#include "vdp_dma.h"
 #include "vdp_spr.h"
 #include "vdp_tile.h"
 #include "vdp_pal.h"
-#include <sprite_eng.h>
+#include "sprite_eng.h"
 #include "sprite.h"
 #include "vstring.h"
 #include "ui.h"
@@ -64,7 +63,7 @@ static void initAlgorithmSprites(void)
         algorSprites[i] = sprite;
     }
 
-    VDP_setPaletteColors((PAL0 * 16), activity.palette->data, activity.palette->length);
+    PAL_setColors((PAL0 * 16), activity.palette->data, activity.palette->length, CPU);
 }
 
 static void synthParameterUpdated(u8 fmChan, ParameterUpdated parameterUpdated)

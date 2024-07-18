@@ -1,8 +1,7 @@
 #pragma once
+#include "types.h"
 #include "midi_fm.h"
 #include "midi_psg.h"
-#include <stdbool.h>
-#include <types.h>
 
 #define MIDI_PROGRAMS 128
 #define MAX_MIDI_VOLUME 127

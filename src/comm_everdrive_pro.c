@@ -1,6 +1,5 @@
 #include "comm_everdrive_pro.h"
 #include "everdrive_led.h"
-#include <stdbool.h>
 
 #define CMD_USB_WR 0x22
 

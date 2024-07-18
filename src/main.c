@@ -10,8 +10,7 @@
 #include "comm_megawifi.h"
 #include "everdrive_led.h"
 #include "comm_demo.h"
-#include <vdp.h>
-#include <dma.h>
+#include "vdp.h"
 
 int main()
 {
@@ -22,7 +21,6 @@ int main()
     comm_init();
     everdrive_led_init();
     midi_receiver_init();
-    SYS_setVIntAligned(false);
     SYS_setVIntCallback(scheduler_vsync);
     scheduler_run();
 }

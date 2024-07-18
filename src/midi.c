@@ -11,7 +11,6 @@
 #include "synth.h"
 #include "ui_fm.h"
 #include "note_priority.h"
-#include <stdbool.h>
 
 #define MIN_MIDI_VELOCITY 0
 #define RANGE(value, range) (value / (128 / range))

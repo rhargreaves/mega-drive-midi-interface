@@ -1,10 +1,7 @@
 #pragma once
-#include <types.h>
-
-#include <stdbool.h>
-
-#include <sys.h>
-#include <vdp.h>
+#include "types.h"
+#include "sys.h"
+#include "vdp.h"
 
 #define PORT2_CTRL 0xA1000B
 #define PORT2_SCTRL 0xA10019

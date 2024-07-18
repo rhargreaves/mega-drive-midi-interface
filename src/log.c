@@ -1,7 +1,6 @@
 #include "log.h"
 #include "vstring.h"
-#include <memory.h>
-#include <stdbool.h>
+#include "memory.h"
 
 #define MAX_LOG_ENTRIES 10
 

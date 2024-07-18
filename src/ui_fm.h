@@ -1,7 +1,5 @@
 #pragma once
-#include <stdint.h>
-#include <types.h>
-#include <stdbool.h>
+#include "types.h"
 
 void ui_fm_set_parameters_visibility(u8 chan, bool show);
 void ui_fm_init(void);

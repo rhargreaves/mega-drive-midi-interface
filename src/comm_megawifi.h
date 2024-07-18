@@ -1,6 +1,5 @@
 #pragma once
-#include <stdint.h>
-#include <types.h>
+#include "types.h"
 
 void comm_megawifi_init(void);
 u8 comm_megawifi_read_ready(void);

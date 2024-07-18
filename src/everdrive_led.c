@@ -1,6 +1,5 @@
 #include "everdrive_led.h"
 #include "scheduler.h"
-#include <stdbool.h>
 
 #define CTRL_LED_ON 0x1000
 #define CTRL_LED_OFF 0x0000

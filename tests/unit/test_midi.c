@@ -58,7 +58,7 @@ int test_midi_setup(UNUSED void** state)
     wraps_disable_checks();
     midi_init(M_BANK_0, P_BANK_0, TEST_ENVELOPES);
     wraps_enable_checks();
-    wraps_region_setIsPal(false);
+    wraps_set_SYS_isPAL(false);
     return 0;
 }
 

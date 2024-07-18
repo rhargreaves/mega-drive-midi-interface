@@ -278,11 +278,11 @@ static void test_plays_pcm_sample(void** state)
     midi_receiver_read();
 
     stub_usb_receive_note_on(TEST_MIDI_CHANNEL_6, 60, TEST_VOLUME_MAX);
-    expect_any(__wrap_SND_startPlay_PCM, sample);
-    expect_any(__wrap_SND_startPlay_PCM, len);
-    expect_value(__wrap_SND_startPlay_PCM, rate, 1);
-    expect_value(__wrap_SND_startPlay_PCM, pan, 0xC0);
-    expect_value(__wrap_SND_startPlay_PCM, loop, 0);
+    expect_any(__wrap_SND_PCM_startPlay, sample);
+    expect_any(__wrap_SND_PCM_startPlay, len);
+    expect_value(__wrap_SND_PCM_startPlay, rate, 1);
+    expect_value(__wrap_SND_PCM_startPlay, pan, 0xC0);
+    expect_value(__wrap_SND_PCM_startPlay, loop, 0);
     midi_receiver_read();
 }
 

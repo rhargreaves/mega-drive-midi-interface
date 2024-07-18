@@ -153,10 +153,12 @@ static void test_midi_sysex_sets_mapping_mode_to_auto(UNUSED void** state)
         SYSEX_COMMAND_DYNAMIC,
         SYSEX_DYNAMIC_AUTO,
     };
-
     __real_midi_sysex(sequence, sizeof(sequence));
 
     const u8 sysExGeneralMidiResetSequence[] = { 0x7E, 0x7F, 0x09, 0x01 };
+    for (u16 ch = 0; ch < MAX_FM_CHANS; ch++) {
+        expect_value(__wrap_synth_noteOff, channel, ch);
+    }
     __real_midi_sysex(sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
 
     // Initial note

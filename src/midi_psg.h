@@ -1,6 +1,5 @@
 #pragma once
-#include <stdint.h>
-#include <types.h>
+#include "types.h"
 
 #define MIN_PSG_CHAN 6
 #define MAX_PSG_CHAN 9

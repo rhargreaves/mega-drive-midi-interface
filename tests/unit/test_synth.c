@@ -1,9 +1,7 @@
 #include "cmocka_inc.h"
-
 #include "synth.h"
 #include "test_midi.h"
 #include "z80_ctrl.h"
-#include <stdbool.h>
 
 extern void __real_synth_init(const FmChannel* defaultPreset);
 extern void __real_synth_noteOn(u8 channel);

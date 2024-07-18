@@ -1,4 +1,3 @@
-#include <stdint.h>
 #include "cmocka_inc.h"
 #include "test_applemidi.c"
 #include "test_comm.c"

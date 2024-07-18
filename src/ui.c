@@ -11,15 +11,14 @@
 #include "serial.h"
 #include "synth.h"
 #include "ui_fm.h"
-#include <vdp.h>
-#include <sys.h>
+#include "vdp.h"
+#include "sys.h"
 #include "vdp_bg.h"
-#include "vdp_dma.h"
 #include "vdp_spr.h"
 #include "vdp_tile.h"
 #include "vdp_pal.h"
 #include "memory.h"
-#include <sprite_eng.h>
+#include "sprite_eng.h"
 #include "sprite.h"
 #include "scheduler.h"
 #include "settings.h"
@@ -50,7 +49,7 @@
 #define FRAMES_BEFORE_UPDATE_LOAD 15
 #define FRAMES_BEFORE_UPDATE_LOAD_PERCENT 15
 
-#define TILE_LED_INDEX TILE_USERINDEX
+#define TILE_LED_INDEX TILE_USER_INDEX
 #define TILE_ROUTING_INDEX (TILE_LED_INDEX + 8)
 #define TILE_BORDERS_INDEX (TILE_ROUTING_INDEX + 4)
 #define TILE_IMAGES_INDEX (TILE_BORDERS_INDEX + 8)
@@ -97,9 +96,9 @@ void ui_init(void)
     scheduler_addFrameHandler(ui_update);
     SPR_init();
     VDP_setBackgroundColor(BG_COLOUR_INDEX);
-    VDP_setPaletteColor(BG_COLOUR_INDEX, RGB24_TO_VDPCOLOR(0x202020));
-    VDP_setPaletteColor(PALETTE_INDEX(PAL1, FONT_COLOUR_INDEX), RGB24_TO_VDPCOLOR(0xFFFF00));
-    VDP_setPaletteColor(PALETTE_INDEX(PAL3, FONT_COLOUR_INDEX), RGB24_TO_VDPCOLOR(0x808080));
+    PAL_setColor(BG_COLOUR_INDEX, RGB24_TO_VDPCOLOR(0x202020));
+    PAL_setColor(PALETTE_INDEX(PAL1, FONT_COLOUR_INDEX), RGB24_TO_VDPCOLOR(0xFFFF00));
+    PAL_setColor(PALETTE_INDEX(PAL3, FONT_COLOUR_INDEX), RGB24_TO_VDPCOLOR(0x808080));
     print_header();
     print_channels();
     update_load();
@@ -402,7 +401,7 @@ static void print_comm_mode(void)
 static void init_load(void)
 {
     draw_text("%", 0, MAX_EFFECTIVE_Y);
-    VDP_setPaletteColors((PAL2 * 16), pal_load.data, pal_load.length);
+    PAL_setColors((PAL2 * 16), pal_load.data, pal_load.length, CPU);
     VDP_loadTileSet(&ts_load, TILE_LED_INDEX, CPU);
 }
 

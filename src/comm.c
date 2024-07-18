@@ -4,9 +4,8 @@
 #include "comm_megawifi.h"
 #include "comm_serial.h"
 #include "comm_demo.h"
-#include <stdbool.h>
-#include <vdp.h>
-#include <vdp_bg.h>
+#include "vdp.h"
+#include "vdp_bg.h"
 #include "vstring.h"
 #include "settings.h"
 

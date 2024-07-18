@@ -1,11 +1,12 @@
 #include "midi_dac.h"
 #include "pcm_sample.h"
-#include <sound.h>
+#include "snd/sound.h"
+#include "snd/pcm/snd_pcm.h"
 
 void midi_dac_note_on(u8 chan, u8 pitch, u8 velocity)
 {
     const PcmSample* sample = percussionPcmSample[0];
-    SND_startPlay_PCM(sample->data, sample->length, sample->rate, SOUND_PAN_CENTER, 0);
+    SND_PCM_startPlay(sample->data, sample->length, sample->rate, SOUND_PAN_CENTER, 0);
 }
 
 void midi_dac_pitch_bend(u8 chan, u16 bend)
