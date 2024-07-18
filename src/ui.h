@@ -1,10 +1,6 @@
 #pragma once
 #include "types.h"
 
-#ifndef BUILD
-#define BUILD "*Dev Build*"
-#endif
-
 #define MAX_Y 27
 #define MAX_X 39
 #define MARGIN_X 1
