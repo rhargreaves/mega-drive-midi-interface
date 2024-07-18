@@ -1,0 +1,12 @@
+#!/bin/bash
+set -eu
+
+cd ~/Projects/mega-drive/serialmidi
+source bin/activate
+
+python3 serialmidi.py \
+    --serial_name=/dev/cu.usbserial-FTACSO3C \
+    --midi_in_name="IAC Driver Bus 1" \
+    --midi_out_name="IAC Driver Bus 2" \
+    --baud=4800 \
+    --debug
