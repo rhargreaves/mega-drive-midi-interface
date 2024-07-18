@@ -16,7 +16,8 @@
                 "DEBUG",
                 "DEBUG_EVENTS",
                 "DEBUG_TICKS",
-                "MODULE_MEGAWIFI=1"
+                "MODULE_MEGAWIFI=1",
+                "BUILD=\"dev\""
             ],
             "cStandard": "c11",
             "cppStandard": "c++17",
