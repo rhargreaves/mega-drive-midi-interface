@@ -11,6 +11,7 @@
 #include "synth.h"
 #include "ui_fm.h"
 #include "note_priority.h"
+#include "scheduler.h"
 
 #define MIN_MIDI_VELOCITY 0
 #define RANGE(value, range) (value / (128 / range))
@@ -29,6 +30,7 @@ typedef struct MidiChannel {
     DeviceSelect deviceSelect;
     bool portamento;
     u16 glideProgress;
+    u16 glideTargetPitch;
 } MidiChannel;
 
 typedef enum MappingMode { MappingMode_Static, MappingMode_Dynamic, MappingMode_Auto } MappingMode;
@@ -87,6 +89,7 @@ static void init(void)
 {
     midi_psg_init(defaultEnvelopes);
     midi_fm_init(defaultPresets, defaultPercussionPresets);
+    scheduler_addFrameHandler(midi_tick);
     reset();
 }
 
@@ -401,6 +404,7 @@ void midi_note_on(u8 chan, u8 pitch, u8 velocity)
         midiChannel->prevVelocity = velocity;
 
         if (note_priority_count(&midiChannel->notePriority) > 1 && midiChannel->portamento) {
+            midiChannel->glideTargetPitch = pitch;
             return;
         }
     }
@@ -930,15 +934,17 @@ void midi_tick(void)
                 u8 pitch = state->pitch;
                 s8 cents = state->cents;
 
-                cents += 10;
-                if (cents == 100) {
-                    pitch++;
-                    cents = 0;
-                }
+                if (midiChannel->glideTargetPitch > pitch) {
+                    cents += 10;
+                    if (cents == 100) {
+                        pitch++;
+                        cents = 0;
+                    }
 
-                state->ops->pitch(state->number, pitch, cents);
-                state->pitch = pitch;
-                state->cents = cents;
+                    state->ops->pitch(state->number, pitch, cents);
+                    state->pitch = pitch;
+                    state->cents = cents;
+                }
             }
         }
     }
