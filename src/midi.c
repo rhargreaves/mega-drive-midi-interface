@@ -27,22 +27,24 @@ typedef struct MidiChannel {
     u8 prevVelocity;
     NotePriorityStack notePriority;
     DeviceSelect deviceSelect;
+    bool portamento;
+    u16 glideProgress;
 } MidiChannel;
 
 typedef enum MappingMode { MappingMode_Static, MappingMode_Dynamic, MappingMode_Auto } MappingMode;
 
 static const VTable PSG_VTable = { midi_psg_note_on, midi_psg_note_off, midi_psg_channel_volume,
-    midi_psg_pitch_bend, midi_psg_program, midi_psg_all_notes_off, midi_psg_pan };
+    midi_psg_pitch_bend, midi_psg_program, midi_psg_all_notes_off, midi_psg_pan, midi_psg_pitch };
 
 static const VTable FM_VTable = { midi_fm_note_on, midi_fm_note_off, midi_fm_channel_volume,
-    midi_fm_pitch_bend, midi_fm_program, midi_fm_all_notes_off, midi_fm_pan };
+    midi_fm_pitch_bend, midi_fm_program, midi_fm_all_notes_off, midi_fm_pan, midi_fm_pitch };
 
 static const VTable SpecialMode_VTable
     = { midi_fm_sm_note_on, midi_fm_sm_note_off, midi_fm_sm_channel_volume, midi_fm_sm_pitch_bend,
-          midi_fm_sm_program, midi_fm_sm_all_notes_off, midi_fm_sm_pan };
+          midi_fm_sm_program, midi_fm_sm_all_notes_off, midi_fm_sm_pan, midi_fm_sm_pitch };
 
 static const VTable DAC_VTable = { midi_dac_note_on, midi_dac_note_off, midi_dac_channel_volume,
-    midi_dac_pitch_bend, midi_dac_program, midi_dac_all_notes_off, midi_dac_pan };
+    midi_dac_pitch_bend, midi_dac_program, midi_dac_all_notes_off, midi_dac_pan, midi_dac_pitch };
 
 static const u8** defaultEnvelopes;
 static const FmChannel** defaultPresets;
@@ -397,6 +399,10 @@ void midi_note_on(u8 chan, u8 pitch, u8 velocity)
         }
         note_priority_push(&midiChannel->notePriority, pitch);
         midiChannel->prevVelocity = velocity;
+
+        if (note_priority_count(&midiChannel->notePriority) > 1 && midiChannel->portamento) {
+            return;
+        }
     }
 
     devChan->midiChannel = chan;
@@ -858,6 +864,12 @@ static void fmParameterCC(u8 chan, u8 controller, u8 value)
     }
 }
 
+static void setPortamentoMode(u8 chan, bool enable)
+{
+    MidiChannel* midiChannel = &midiChannels[chan];
+    midiChannel->portamento = enable;
+}
+
 void midi_cc(u8 chan, u8 controller, u8 value)
 {
     switch (controller) {
@@ -890,6 +902,9 @@ void midi_cc(u8 chan, u8 controller, u8 value)
             break;
         channelDeviceSelect(chan, RANGE(value, 4));
         break;
+    case CC_PORTAMENTO_ENABLE:
+        setPortamentoMode(chan, RANGE(value, 2));
+        break;
     default:
         fmParameterCC(chan, controller, value);
         break;
@@ -899,4 +914,32 @@ void midi_cc(u8 chan, u8 controller, u8 value)
 void midi_reset(void)
 {
     reset();
+}
+
+void midi_tick(void)
+{
+    u8 chan = 0;
+    MidiChannel* midiChannel = &midiChannels[chan];
+    if (midiChannel->portamento) {
+        midiChannel->glideProgress++;
+
+        for (DeviceChannel* state = &deviceChannels[0]; state < &deviceChannels[DEV_CHANS];
+             state++) {
+            if (state->midiChannel == chan && state->noteOn) {
+
+                u8 pitch = state->pitch;
+                s8 cents = state->cents;
+
+                cents += 10;
+                if (cents == 100) {
+                    pitch++;
+                    cents = 0;
+                }
+
+                state->ops->pitch(state->number, pitch, cents);
+                state->pitch = pitch;
+                state->cents = cents;
+            }
+        }
+    }
 }

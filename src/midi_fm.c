@@ -172,3 +172,12 @@ static u8 effectiveVolume(MidiFmChannel* fmChan)
 {
     return (fmChan->volume * fmChan->velocity) / 0x7F;
 }
+
+void midi_fm_pitch(u8 chan, u8 pitch, u8 cents)
+{
+    u16 freq = lookupFreqNum(pitch, 0);
+    u16 nextFreq = lookupFreqNum(pitch, 1);
+    u16 newFreq = freq + (((nextFreq - freq) * cents) / 100);
+
+    synth_pitch(chan, midi_fm_pitchToOctave(pitch), newFreq);
+}

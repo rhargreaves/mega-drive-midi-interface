@@ -17,9 +17,11 @@
 #include "test_vstring.c"
 #include "test_buffer.c"
 #include "test_note_priority.c"
+#include "test_midi_portamento.c"
 
 #define midi_test(test) cmocka_unit_test_setup(test, test_midi_setup)
 #define midi_pcm_test(test) cmocka_unit_test_setup(test, test_midi_setup)
+#define midi_portamento_test(test) cmocka_unit_test_setup(test, test_midi_setup)
 #define dynamic_midi_test(test) cmocka_unit_test_setup(test, test_dynamic_midi_setup)
 #define synth_test(test) cmocka_unit_test_setup(test, test_synth_setup)
 #define comm_test(test) cmocka_unit_test_setup(test, test_comm_setup)
@@ -365,7 +367,9 @@ int main(void)
         buffer_test(test_buffer_returns_can_write_if_empty),
 
         note_priority_test(test_note_priority_ignores_push_when_full),
-        note_priority_test(test_note_priority_indicates_when_full)
+        note_priority_test(test_note_priority_indicates_when_full),
+
+        midi_portamento_test(test_midi_portamento_glides_note)
         // clang-format on
     };
 

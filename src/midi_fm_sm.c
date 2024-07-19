@@ -57,3 +57,7 @@ void midi_fm_sm_program(u8 chan, u8 program)
 void midi_fm_sm_all_notes_off(u8 chan)
 {
 }
+
+void midi_fm_sm_pitch(u8 chan, u8 pitch, u8 cents)
+{
+}

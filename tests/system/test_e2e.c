@@ -15,6 +15,7 @@
 static const u8 TEST_CC_PAN = 10;
 static const u8 TEST_CC_VOLUME = 7;
 static const u8 TEST_CC_ALGORITHM = 14;
+static const u8 TEST_CC_PORTAMENTO_ON = 65;
 static const u8 TEST_CC_SPECIAL_MODE = 80;
 static const u8 TEST_CC_POLYPHONIC = 84;
 static const u8 TEST_CC_DEVICE_SELECT = 86;
@@ -358,12 +359,12 @@ static void test_midi_changing_program_retains_pan(void** state)
 {
     const u8 chan = 0;
 
-    print_message("Change pan\n");
+    // print_message("Change pan\n");
     stub_usb_receive_cc(TEST_MIDI_CHANNEL_1, TEST_CC_PAN, 0); // left
     expect_ym2612_write_channel(chan, 0xB4, 0x80); // pan, alg, fb
     midi_receiver_read();
 
-    print_message("Change program\n");
+    // print_message("Change program\n");
     stub_usb_receive_program(TEST_MIDI_CHANNEL_1, 1);
     expect_ym2612_write_channel_any_data(chan, 0xB0);
     expect_ym2612_write_channel(chan, 0xB4, 0x80); // pan, alg, fb
@@ -402,7 +403,7 @@ static void test_midi_changing_program_retains_volume(void** state)
 {
     const u8 chan = 0;
 
-    print_message("Change volume\n");
+    // print_message("Change volume\n");
     stub_usb_receive_cc(TEST_MIDI_CHANNEL_1, TEST_CC_VOLUME, 0);
     expect_ym2612_write_channel(chan, 0x40, 0x27);
     expect_ym2612_write_channel(chan, 0x48, 0x04);
@@ -410,7 +411,7 @@ static void test_midi_changing_program_retains_volume(void** state)
     expect_ym2612_write_channel(chan, 0x4C, 0x7F); // output operator mute
     midi_receiver_read();
 
-    print_message("Change program\n");
+    // print_message("Change program\n");
     stub_usb_receive_program(TEST_MIDI_CHANNEL_1, 1);
     expect_ym2612_write_channel_any_data(chan, 0xB0);
     expect_ym2612_write_channel_any_data(chan, 0xB4);
@@ -443,4 +444,23 @@ static void test_midi_changing_program_retains_volume(void** state)
     expect_ym2612_write_channel(chan, 0x4C, 0x7f); // output operator mute
     expect_ym2612_write_channel_any_data(chan, 0x9C);
     midi_receiver_read();
+}
+
+static void test_midi_portamento_glides_note(void** state)
+{
+    stub_usb_receive_cc(TEST_MIDI_CHANNEL_1, TEST_CC_PORTAMENTO_ON, 0x7F);
+    midi_receiver_read();
+
+    stub_usb_receive_note_on(TEST_MIDI_CHANNEL_1, 48, 127);
+    expect_ym2612_write_channel(0, 0xA4, 0x1A);
+    expect_ym2612_write_channel(0, 0xA0, 0x84);
+    expect_ym2612_write_reg(0, 0x28, 0xF0);
+    midi_receiver_read();
+
+    stub_usb_receive_note_on(TEST_MIDI_CHANNEL_1, 58, 127);
+    midi_receiver_read();
+
+    expect_ym2612_write_channel(0, 0xA4, 0x1A);
+    expect_ym2612_write_channel(0, 0xA0, 0x85);
+    scheduler_tick();
 }

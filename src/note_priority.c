@@ -44,3 +44,8 @@ bool note_priority_isFull(NotePriorityStack* notePriority)
 {
     return notePriority->top == NOTE_PRIORITY_LENGTH - 1;
 }
+
+u8 note_priority_count(NotePriorityStack* notePriority)
+{
+    return notePriority->top + 1;
+}

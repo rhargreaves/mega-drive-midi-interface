@@ -1,5 +1,4 @@
 #include "cmocka_inc.h"
-
 #include "midi.h"
 #include "midi_receiver.h"
 #include "comm.h"

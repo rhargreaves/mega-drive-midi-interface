@@ -7,6 +7,11 @@
 #define expect_any_with_pos(function, parameter, file, line)                                       \
     _expect_any(#function, #parameter, file, line, 1)
 
+void stub_usb_receive_nothing(void)
+{
+    will_return(__wrap_comm_everdrive_read_ready, 0);
+}
+
 void stub_usb_receive_byte(u8 value)
 {
     will_return(__wrap_comm_everdrive_read_ready, 1);
@@ -124,6 +129,10 @@ void expect_synth_volume_any(void)
 {
     expect_any(__wrap_synth_volume, channel);
     expect_any(__wrap_synth_volume, volume);
+}
+void expect_synth_noteOn(u8 chan)
+{
+    expect_value(__wrap_synth_noteOn, channel, chan);
 }
 
 void _expect_ym2612_write_reg(u8 part, u8 reg, u8 data, const char* const file, const int line)
