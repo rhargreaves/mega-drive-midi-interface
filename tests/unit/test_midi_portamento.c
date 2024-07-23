@@ -229,3 +229,22 @@ static void test_midi_portamento_glides_fully_up_and_down(UNUSED void** state)
     expect_synth_pitch(chan, 2, 0x43f);
     midi_tick();
 }
+
+static void test_midi_portamento_synth_note_off_triggered(UNUSED void** state)
+{
+    u8 chan = 0;
+    debug_message("channel %d\n", chan);
+    __real_midi_cc(chan, CC_PORTAMENTO_ENABLE, 127);
+
+    expect_synth_pitch(chan, 2, 0x439);
+    expect_synth_volume_any();
+    expect_synth_noteOn(chan);
+    __real_midi_note_on(chan, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
+
+    midi_tick();
+
+    debug_message("note off\n");
+    expect_value(__wrap_synth_noteOff, channel, chan);
+    __real_midi_note_off(chan, MIDI_PITCH_A2);
+    midi_tick();
+}

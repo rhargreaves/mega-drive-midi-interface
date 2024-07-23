@@ -158,13 +158,12 @@ static void initDeviceChannel(u8 devChan)
     updateDeviceChannelFromAssociatedMidiChannel(chan);
 }
 
-static DeviceChannel* findChannelPlayingNote(u8 midiChannel, u8 pitch, bool portamento)
+static DeviceChannel* findChannelPlayingNote(u8 midiChannel, u8 pitch)
 {
     for (u16 i = 0; i < DEV_CHANS; i++) {
         DeviceChannel* chan = &deviceChannels[i];
-        if (chan->noteOn && chan->midiChannel == midiChannel
-            && ((chan->pitch == pitch && !portamento)
-                || (chan->glideTargetPitch == pitch && portamento))) {
+        u8 effectivePitch = chan->glideTargetPitch != 0 ? chan->glideTargetPitch : chan->pitch;
+        if (chan->noteOn && chan->midiChannel == midiChannel && effectivePitch == pitch) {
             return chan;
         }
     }
@@ -426,7 +425,7 @@ void midi_note_off(u8 chan, u8 pitch)
     note_priority_remove(&midiChannel->notePriority, pitch);
 
     DeviceChannel* devChan;
-    while ((devChan = findChannelPlayingNote(chan, pitch, midiChannel->portamento)) != NULL) {
+    while ((devChan = findChannelPlayingNote(chan, pitch)) != NULL) {
         u8 nextMostRecentPitch = note_priority_pop(&midiChannel->notePriority);
         if (!dynamicMode && nextMostRecentPitch != 0) {
 

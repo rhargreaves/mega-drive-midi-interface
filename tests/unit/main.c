@@ -376,7 +376,8 @@ int main(void)
         midi_portamento_test(test_midi_portamento_glide_ignores_unassigned_channels),
         midi_portamento_test(test_midi_portamento_glides_note_up_down_and_back_up),
         midi_portamento_test(test_midi_portamento_glide_ends_after_both_notes_off),
-        midi_portamento_test(test_midi_portamento_glides_fully_up_and_down)
+        midi_portamento_test(test_midi_portamento_glides_fully_up_and_down),
+        midi_portamento_test(test_midi_portamento_synth_note_off_triggered)
         // clang-format on
     };
 
