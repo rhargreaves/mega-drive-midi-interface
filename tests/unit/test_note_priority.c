@@ -1,6 +1,6 @@
 #include "cmocka_inc.h"
-
 #include "note_priority.h"
+#include "debug.h"
 
 static NotePriorityStack testStack;
 
@@ -15,7 +15,7 @@ static void test_note_priority_ignores_push_when_full(UNUSED void** state)
     const u16 additive = 50;
 
     for (u16 i = 0; i < NOTE_PRIORITY_LENGTH + 1; i++) {
-        // print_message("pushing %d\n", i + additive);
+        debug_message("pushing %d\n", i + additive);
         note_priority_push(&testStack, i + additive);
     }
 
@@ -23,7 +23,7 @@ static void test_note_priority_ignores_push_when_full(UNUSED void** state)
         u8 item = note_priority_pop(&testStack);
         u8 expected = i + additive;
 
-        // print_message("expected %d, popping %d\n", expected, item);
+        debug_message("expected %d, popping %d\n", expected, item);
         assert_int_equal(item, expected);
     }
 
