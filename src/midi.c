@@ -930,6 +930,9 @@ void midi_reset(void)
 void midi_tick(void)
 {
     for (DeviceChannel* state = &deviceChannels[0]; state < &deviceChannels[DEV_CHANS]; state++) {
+        if (state->midiChannel == DEFAULT_MIDI_CHANNEL) {
+            continue;
+        }
         MidiChannel* midiChannel = &midiChannels[state->midiChannel];
         if (midiChannel->portamento && state->noteOn) {
 

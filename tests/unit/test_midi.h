@@ -28,6 +28,8 @@
 #define SYSEX_NON_GENERAL_MIDI_CCS_ENABLED 0x01
 #define SYSEX_NON_GENERAL_MIDI_CCS_DISABLED 0x00
 
+#define UNASSIGNED_MIDI_CHANNEL 0x7F
+
 int test_midi_setup(UNUSED void** state);
 void test_midi_polyphonic_mode_returns_state(UNUSED void** state);
 void test_midi_sets_all_sound_off(UNUSED void** state);

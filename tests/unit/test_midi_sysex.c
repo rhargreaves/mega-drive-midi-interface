@@ -65,10 +65,9 @@ static void test_midi_sysex_remaps_midi_channel_to_psg(UNUSED void** state)
 {
     const u8 FM_CHAN_1 = 0;
     const u8 MIDI_CHAN_1 = 0;
-    const u8 UNASSIGNED_MIDI = 0x7F;
     const u8 PSG_TONE_1 = 6;
 
-    remapChannel(UNASSIGNED_MIDI, FM_CHAN_1);
+    remapChannel(UNASSIGNED_MIDI_CHANNEL, FM_CHAN_1);
     remapChannel(MIDI_CHAN_1, PSG_TONE_1);
 
     expect_any_psg_tone_on_channel(0);
@@ -81,10 +80,9 @@ static void test_midi_sysex_remaps_midi_channel_to_fm(UNUSED void** state)
 {
     const u8 FM_CHAN_2 = 1;
     const u8 MIDI_CHAN_1 = 0;
-    const u8 UNASSIGNED_MIDI = 0x7F;
     const u8 FM_CHAN_1 = 0;
 
-    remapChannel(UNASSIGNED_MIDI, FM_CHAN_1);
+    remapChannel(UNASSIGNED_MIDI_CHANNEL, FM_CHAN_1);
     remapChannel(MIDI_CHAN_1, FM_CHAN_2);
 
     expect_value(__wrap_synth_pitch, channel, 1);

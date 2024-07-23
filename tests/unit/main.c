@@ -371,7 +371,8 @@ int main(void)
 
         midi_portamento_test(test_midi_portamento_glides_note_up),
         midi_portamento_test(test_midi_portamento_glides_note_down),
-        midi_portamento_test(test_midi_portamento_glides_note_up_and_down_on_early_release)
+        midi_portamento_test(test_midi_portamento_glides_note_up_and_down_on_early_release),
+        midi_portamento_test(test_midi_portamento_glide_ignores_unassigned_channels)
         // clang-format on
     };
 
