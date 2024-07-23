@@ -233,7 +233,7 @@ static void test_midi_sysex_resets_dynamic_mode_state(UNUSED void** state)
     DeviceChannel* mappings = __real_midi_channel_mappings();
     for (u8 i = 0; i < DEV_CHANS; i++) {
         DeviceChannel* mapping = &mappings[i];
-        assert_int_equal(mapping->midiChannel, DEFAULT_MIDI_CHANNEL);
+        assert_int_equal(mapping->midiChannel, UNASSIGNED_MIDI_CHANNEL);
         assert_int_equal(mapping->program, 0);
         assert_false(mapping->noteOn);
     }
@@ -388,7 +388,7 @@ static void test_midi_dynamic_resets_mappings_on_cc_121(UNUSED void** state)
     DeviceChannel* channels = __real_midi_channel_mappings();
     for (u16 i = DEV_CHAN_MIN_FM; i <= DEV_CHAN_MAX_FM; i++) {
         DeviceChannel* chan = &channels[i];
-        assert_int_equal(chan->midiChannel, DEFAULT_MIDI_CHANNEL);
+        assert_int_equal(chan->midiChannel, UNASSIGNED_MIDI_CHANNEL);
     }
 }
 

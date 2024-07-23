@@ -651,18 +651,16 @@ static void sendPong(void)
 void midi_remap_channel(u8 midiChan, u8 devChan)
 {
     const u8 SYSEX_UNASSIGNED_DEVICE_CHANNEL = 0x7F;
-    const u8 SYSEX_UNASSIGNED_MIDI_CHANNEL = 0x7F;
 
     if (devChan == SYSEX_UNASSIGNED_DEVICE_CHANNEL) {
         DeviceChannel* assignedChan = deviceChannelByMidiChannel(midiChan);
         if (assignedChan != NULL) {
-            assignedChan->midiChannel = DEFAULT_MIDI_CHANNEL;
+            assignedChan->midiChannel = UNASSIGNED_MIDI_CHANNEL;
         }
         return;
     }
     DeviceChannel* chan = &deviceChannels[devChan];
-    chan->midiChannel
-        = (midiChan == SYSEX_UNASSIGNED_MIDI_CHANNEL) ? DEFAULT_MIDI_CHANNEL : midiChan;
+    chan->midiChannel = midiChan;
 }
 
 static void generalMidiReset(void)
@@ -680,7 +678,7 @@ static void applyDynamicMode(void)
 {
     for (u8 chan = 0; chan < DEV_CHANS; chan++) {
         DeviceChannel* devChan = &deviceChannels[chan];
-        devChan->midiChannel = dynamicMode ? DEFAULT_MIDI_CHANNEL : chan;
+        devChan->midiChannel = dynamicMode ? UNASSIGNED_MIDI_CHANNEL : chan;
     }
 }
 
@@ -930,7 +928,7 @@ void midi_reset(void)
 void midi_tick(void)
 {
     for (DeviceChannel* state = &deviceChannels[0]; state < &deviceChannels[DEV_CHANS]; state++) {
-        if (state->midiChannel == DEFAULT_MIDI_CHANNEL) {
+        if (state->midiChannel == UNASSIGNED_MIDI_CHANNEL) {
             continue;
         }
         MidiChannel* midiChannel = &midiChannels[state->midiChannel];
