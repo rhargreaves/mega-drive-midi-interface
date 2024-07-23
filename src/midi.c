@@ -72,6 +72,8 @@ static void initMidiChannel(u8 midiChan);
 static void initDeviceChannel(u8 devChan);
 static void reset(void);
 static void init(void);
+static void devChanNoteOn(DeviceChannel* devChan, u8 pitch, u8 velocity);
+static void devChanNoteOff(DeviceChannel* devChan, u8 pitch);
 
 void midi_init(
     const FmChannel** presets, const PercussionPreset** percussionPresets, const u8** envelopes)
@@ -413,9 +415,7 @@ void midi_note_on(u8 chan, u8 pitch, u8 velocity)
 
     devChan->midiChannel = chan;
     updateDeviceChannelFromAssociatedMidiChannel(devChan);
-    devChan->pitch = pitch;
-    devChan->noteOn = true;
-    devChan->ops->noteOn(devChan->number, pitch, velocity);
+    devChanNoteOn(devChan, pitch, velocity);
 }
 
 void midi_note_off(u8 chan, u8 pitch)
@@ -432,17 +432,26 @@ void midi_note_off(u8 chan, u8 pitch)
                 note_priority_push(&midiChannel->notePriority, nextMostRecentPitch);
                 devChan->glideTargetPitch = nextMostRecentPitch;
             } else {
-                devChan->pitch = nextMostRecentPitch;
-                devChan->noteOn = true;
-                devChan->ops->noteOn(
-                    devChan->number, nextMostRecentPitch, midiChannel->lastVelocity);
+                devChanNoteOn(devChan, nextMostRecentPitch, midiChannel->lastVelocity);
             }
         } else {
-            devChan->noteOn = false;
-            devChan->pitch = 0;
-            devChan->ops->noteOff(devChan->number, pitch);
+            devChanNoteOff(devChan, pitch);
         }
     }
+}
+
+static void devChanNoteOn(DeviceChannel* devChan, u8 pitch, u8 velocity)
+{
+    devChan->noteOn = true;
+    devChan->pitch = pitch;
+    devChan->ops->noteOn(devChan->number, pitch, velocity);
+}
+
+static void devChanNoteOff(DeviceChannel* devChan, u8 pitch)
+{
+    devChan->noteOn = false;
+    devChan->pitch = 0;
+    devChan->ops->noteOff(devChan->number, pitch);
 }
 
 static void channelPan(u8 chan, u8 pan)
@@ -927,41 +936,41 @@ void midi_reset(void)
     reset();
 }
 
-static void processChannelGlide(DeviceChannel* state)
+static void processChannelGlide(DeviceChannel* chan)
 {
     const s8 increment = 10;
 
-    if (state->glideTargetPitch == 0) {
+    if (chan->glideTargetPitch == 0) {
         return;
     }
 
-    if (state->glideTargetPitch > state->pitch) {
-        state->cents += increment;
-        if (state->cents == 100) {
-            state->pitch++;
-            state->cents = 0;
+    if (chan->glideTargetPitch > chan->pitch) {
+        chan->cents += increment;
+        if (chan->cents == 100) {
+            chan->pitch++;
+            chan->cents = 0;
         }
-        state->ops->pitch(state->number, state->pitch, state->cents);
-    } else if (state->glideTargetPitch < state->pitch
-        || (state->glideTargetPitch == state->pitch && state->cents > 0)) {
-        state->cents -= increment;
-        if (state->cents == (0 - increment)) {
-            state->pitch--;
-            state->cents = 100 - increment;
+        chan->ops->pitch(chan->number, chan->pitch, chan->cents);
+    } else if (chan->glideTargetPitch < chan->pitch
+        || (chan->glideTargetPitch == chan->pitch && chan->cents > 0)) {
+        chan->cents -= increment;
+        if (chan->cents == 0 - increment) {
+            chan->pitch--;
+            chan->cents = 100 - increment;
         }
-        state->ops->pitch(state->number, state->pitch, state->cents);
+        chan->ops->pitch(chan->number, chan->pitch, chan->cents);
     }
 }
 
 static void processPortamento(void)
 {
-    for (DeviceChannel* state = &deviceChannels[0]; state < &deviceChannels[DEV_CHANS]; state++) {
-        if (state->midiChannel == UNASSIGNED_MIDI_CHANNEL) {
+    for (DeviceChannel* chan = &deviceChannels[0]; chan < &deviceChannels[DEV_CHANS]; chan++) {
+        if (chan->midiChannel == UNASSIGNED_MIDI_CHANNEL) {
             continue;
         }
-        MidiChannel* midiChannel = &midiChannels[state->midiChannel];
-        if (midiChannel->portamento && state->noteOn) {
-            processChannelGlide(state);
+        MidiChannel* midiChannel = &midiChannels[chan->midiChannel];
+        if (midiChannel->portamento && chan->noteOn) {
+            processChannelGlide(chan);
         }
     }
 }
