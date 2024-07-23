@@ -15,7 +15,6 @@
 
 #define MIN_MIDI_VELOCITY 0
 #define RANGE(value, range) (value / (128 / range))
-#define CHANNEL_UNASSIGNED 0xFF
 #define LENGTH_OF(x) (sizeof(x) / sizeof(x[0]))
 
 typedef enum DeviceSelect { Auto, FM, PSG_Tone, PSG_Noise } DeviceSelect;
