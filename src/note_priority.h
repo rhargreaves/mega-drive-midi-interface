@@ -13,3 +13,4 @@ void note_priority_push(NotePriorityStack* notePriority, u8 pitch);
 u8 note_priority_pop(NotePriorityStack* notePriority);
 void note_priority_remove(NotePriorityStack* notePriority, u8 pitch);
 bool note_priority_isFull(NotePriorityStack* notePriority);
+u8 note_priority_count(NotePriorityStack* notePriority);

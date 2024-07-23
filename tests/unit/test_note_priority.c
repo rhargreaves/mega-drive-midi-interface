@@ -40,3 +40,12 @@ static void test_note_priority_indicates_when_full(UNUSED void** state)
 
     assert_int_equal(note_priority_isFull(&testStack), true);
 }
+
+static void test_note_priority_returns_size(UNUSED void** state)
+{
+    assert_int_equal(note_priority_count(&testStack), 0);
+    note_priority_push(&testStack, 1);
+    assert_int_equal(note_priority_count(&testStack), 1);
+    note_priority_push(&testStack, 2);
+    assert_int_equal(note_priority_count(&testStack), 2);
+}

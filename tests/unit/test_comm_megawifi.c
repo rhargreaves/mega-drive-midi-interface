@@ -7,8 +7,6 @@
 #include "settings.h"
 #include "ip_util.h"
 
-extern void __real_comm_megawifi_init(void);
-
 static int test_comm_megawifi_setup(UNUSED void** state)
 {
     log_init();

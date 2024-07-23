@@ -32,7 +32,8 @@ CFLAGS=$(INCLUDE_DIRS) \
 	-Wno-char-subscripts \
 	-Wno-unused-parameter \
 	-Wno-builtin-declaration-mismatch \
-	-Wno-unused-function
+	-Wno-unused-function \
+	-fsigned-char
 
  # list of function signature to mock
 MOCKS=midi_process \

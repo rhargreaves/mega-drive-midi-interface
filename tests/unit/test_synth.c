@@ -3,39 +3,6 @@
 #include "test_midi.h"
 #include "z80_ctrl.h"
 
-extern void __real_synth_init(const FmChannel* defaultPreset);
-extern void __real_synth_noteOn(u8 channel);
-extern void __real_synth_noteOff(u8 channel);
-extern void __real_synth_enableLfo(u8 enable);
-extern void __real_synth_globalLfoFrequency(u8 freq);
-extern void __real_synth_pitch(u8 channel, u8 octave, u16 freqNumber);
-extern void __real_synth_stereo(u8 channel, u8 stereo);
-extern void __real_synth_ams(u8 channel, u8 ams);
-extern void __real_synth_fms(u8 channel, u8 fms);
-extern void __real_synth_algorithm(u8 channel, u8 algorithm);
-extern void __real_synth_feedback(u8 channel, u8 feedback);
-extern void __real_synth_operatorTotalLevel(u8 channel, u8 op, u8 totalLevel);
-extern void __real_synth_operatorMultiple(u8 channel, u8 op, u8 multiple);
-extern void __real_synth_operatorDetune(u8 channel, u8 op, u8 detune);
-extern void __real_synth_operatorRateScaling(u8 channel, u8 op, u8 rateScaling);
-extern void __real_synth_operatorAttackRate(u8 channel, u8 op, u8 attackRate);
-extern void __real_synth_operatorFirstDecayRate(u8 channel, u8 op, u8 firstDecayRate);
-extern void __real_synth_operatorSecondDecayRate(u8 channel, u8 op, u8 secondDecayRate);
-extern void __real_synth_operatorSecondaryAmplitude(u8 channel, u8 op, u8 secondaryAmplitude);
-extern void __real_synth_operatorAmplitudeModulation(u8 channel, u8 op, u8 amplitudeModulation);
-extern void __real_synth_operatorReleaseRate(u8 channel, u8 op, u8 releaseRate);
-extern void __real_synth_operatorSsgEg(u8 channel, u8 op, u8 ssgEg);
-extern void __real_synth_pitchBend(u8 channel, u16 bend);
-extern void __real_synth_preset(u8 channel, const FmChannel* preset);
-extern void __real_synth_volume(u8 channel, u8 volume);
-extern const FmChannel* __real_synth_channelParameters(u8 channel);
-extern const Global* __real_synth_globalParameters();
-extern void __real_synth_setSpecialMode(bool enable);
-extern void __real_synth_specialModePitch(u8 op, u8 octave, u16 freqNumber);
-extern void __real_synth_specialModeVolume(u8 op, u8 volume);
-extern void __real_synth_enableDac(bool enable);
-extern void __real_synth_directWriteYm2612(u8 part, u8 reg, u8 data);
-
 static bool updated = false;
 static u8 lastChan = -1;
 static ParameterUpdated lastParameterUpdated = -1;

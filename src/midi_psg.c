@@ -321,3 +321,7 @@ u8 midi_psg_busy(void)
 {
     return audible;
 }
+
+void midi_psg_pitch(u8 chan, u8 pitch, u8 cents)
+{
+}

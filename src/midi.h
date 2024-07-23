@@ -74,6 +74,7 @@
 #define CC_GENMDM_RELEASE_RATE_OP3 61
 #define CC_GENMDM_RELEASE_RATE_OP4 62
 #define CC_SUSTAIN_PEDAL 64
+#define CC_PORTAMENTO_ENABLE 65
 #define CC_GENMDM_AMPLITUDE_MODULATION_OP1 70
 #define CC_GENMDM_AMPLITUDE_MODULATION_OP2 71
 #define CC_GENMDM_AMPLITUDE_MODULATION_OP3 72
@@ -126,6 +127,7 @@ typedef struct VTable {
     void (*program)(u8 chan, u8 program);
     void (*allNotesOff)(u8 chan);
     void (*pan)(u8 chan, u8 pan);
+    void (*pitch)(u8 chan, u8 pitch, u8 cents);
 } VTable;
 
 typedef struct DeviceChannel {
@@ -138,6 +140,7 @@ typedef struct DeviceChannel {
     u8 volume;
     u8 pan;
     u16 pitchBend;
+    s8 cents;
 } DeviceChannel;
 
 void midi_init(const FmChannel** defaultPresets, const PercussionPreset** defaultPercussionPresets,
@@ -152,3 +155,4 @@ bool midi_dynamic_mode(void);
 DeviceChannel* midi_channel_mappings(void);
 void midi_remap_channel(u8 midiChannel, u8 deviceChannel);
 void midi_reset(void);
+void midi_tick(void);

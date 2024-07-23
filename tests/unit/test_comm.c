@@ -1,5 +1,4 @@
 #include "cmocka_inc.h"
-
 #include "comm.h"
 
 static const u16 MAX_COMM_IDLE = 0x28F;

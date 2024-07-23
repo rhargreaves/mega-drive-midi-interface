@@ -52,6 +52,7 @@ static const u8* TEST_ENVELOPES[MIDI_PROGRAMS] = { ENVELOPE_0, ENVELOPE_1, ENVEL
 int test_midi_setup(UNUSED void** state)
 {
     expect_any(__wrap_scheduler_addFrameHandler, onFrame);
+    expect_any(__wrap_scheduler_addFrameHandler, onFrame);
 
     P_BANK_0[30] = &P_BANK_0_INST_30_CASTANETS;
     wraps_disable_logging_checks();

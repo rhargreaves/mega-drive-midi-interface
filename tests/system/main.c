@@ -29,7 +29,8 @@ int main(void)
         e2e_test(test_midi_last_note_played_cleared_when_released_on_fm),
         e2e_test(test_midi_last_note_played_remembers_velocity_on_fm),
         e2e_test(test_midi_changing_program_retains_volume),
-        e2e_test(test_midi_changing_program_retains_pan)
+        e2e_test(test_midi_changing_program_retains_pan),
+        e2e_test(test_midi_portamento_glides_note)
         // clang-format on
     };
 
