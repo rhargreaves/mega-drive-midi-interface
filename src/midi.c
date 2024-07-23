@@ -925,7 +925,29 @@ void midi_reset(void)
     reset();
 }
 
-void midi_tick(void)
+static void processChannelGlide(DeviceChannel* state)
+{
+    const s8 increment = 10;
+
+    if (state->glideTargetPitch > state->pitch) {
+        state->cents += increment;
+        if (state->cents == 100) {
+            state->pitch++;
+            state->cents = 0;
+        }
+        state->ops->pitch(state->number, state->pitch, state->cents);
+    } else if (state->glideTargetPitch < state->pitch
+        || (state->glideTargetPitch == state->pitch && state->cents > 0)) {
+        state->cents -= increment;
+        if (state->cents == (0 - increment)) {
+            state->pitch--;
+            state->cents = 100 - increment;
+        }
+        state->ops->pitch(state->number, state->pitch, state->cents);
+    }
+}
+
+static void processPortamento(void)
 {
     for (DeviceChannel* state = &deviceChannels[0]; state < &deviceChannels[DEV_CHANS]; state++) {
         if (state->midiChannel == UNASSIGNED_MIDI_CHANNEL) {
@@ -933,26 +955,12 @@ void midi_tick(void)
         }
         MidiChannel* midiChannel = &midiChannels[state->midiChannel];
         if (midiChannel->portamento && state->noteOn) {
-
-            const s8 increment = 10;
-
-            if (state->glideTargetPitch > state->pitch) {
-                state->cents += increment;
-                if (state->cents == 100) {
-                    state->pitch++;
-                    state->cents = 0;
-                }
-                state->ops->pitch(state->number, state->pitch, state->cents);
-            } else if (state->glideTargetPitch < state->pitch
-                || (state->glideTargetPitch == state->pitch && state->cents > 0)) {
-                state->cents -= increment;
-                if (state->cents == (0 - increment)) {
-                    state->pitch--;
-                    state->cents = 100 - increment;
-                }
-                state->ops->pitch(state->number, state->pitch, state->cents);
-            } else {
-            }
+            processChannelGlide(state);
         }
     }
+}
+
+void midi_tick(void)
+{
+    processPortamento();
 }
