@@ -7,6 +7,7 @@
 #include "synth.h"
 
 #define MIDI_PITCH_A2 45
+#define MIDI_PITCH_C3 48
 #define MIDI_PITCH_C4 60
 #define MIDI_PITCH_CS4 61
 #define MIDI_PITCH_AS6 94
