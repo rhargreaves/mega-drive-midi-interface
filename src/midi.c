@@ -428,6 +428,7 @@ void midi_note_off(u8 chan, u8 pitch)
         if (!dynamicMode && nextMostRecentPitch != 0) {
 
             if (midiChannel->portamento) {
+                note_priority_push(&midiChannel->notePriority, nextMostRecentPitch);
                 devChan->glideTargetPitch = nextMostRecentPitch;
             } else {
                 devChan->pitch = nextMostRecentPitch;
