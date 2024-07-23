@@ -24,7 +24,7 @@ typedef struct MidiChannel {
     u8 program;
     u8 pan;
     u16 pitchBend;
-    u8 prevVelocity;
+    u8 lastVelocity;
     NotePriorityStack notePriority;
     DeviceSelect deviceSelect;
     bool portamento;
@@ -118,7 +118,7 @@ static void initMidiChannel(u8 midiChan)
     chan->pan = DEFAULT_MIDI_PAN;
     chan->volume = MAX_MIDI_VOLUME;
     chan->pitchBend = DEFAULT_MIDI_PITCH_BEND;
-    chan->prevVelocity = 0;
+    chan->lastVelocity = 0;
     note_priority_init(&chan->notePriority);
     chan->deviceSelect = Auto;
     chan->portamento = false;
@@ -402,14 +402,13 @@ void midi_note_on(u8 chan, u8 pitch, u8 velocity)
             return;
         }
         note_priority_push(&midiChannel->notePriority, pitch);
-        midiChannel->prevVelocity = velocity;
+        midiChannel->lastVelocity = velocity;
 
-        if (note_priority_count(&midiChannel->notePriority) > 1 && midiChannel->portamento) {
+        if (midiChannel->portamento && note_priority_count(&midiChannel->notePriority) > 1) {
             devChan->glideTargetPitch = pitch;
             return;
-        } else {
-            devChan->glideTargetPitch = 0;
         }
+        devChan->glideTargetPitch = 0;
     }
 
     devChan->midiChannel = chan;
@@ -436,7 +435,7 @@ void midi_note_off(u8 chan, u8 pitch)
                 devChan->pitch = nextMostRecentPitch;
                 devChan->noteOn = true;
                 devChan->ops->noteOn(
-                    devChan->number, nextMostRecentPitch, midiChannel->prevVelocity);
+                    devChan->number, nextMostRecentPitch, midiChannel->lastVelocity);
             }
         } else {
             devChan->noteOn = false;
