@@ -932,30 +932,23 @@ void midi_tick(void)
              state++) {
             if (state->midiChannel == chan && state->noteOn) {
 
-                u8 pitch = state->pitch;
-                s8 cents = state->cents;
+                const s8 increment = 10;
 
-                if (midiChannel->glideTargetPitch > pitch) {
-                    cents += 10;
-                    if (cents == 100) {
-                        pitch++;
-                        cents = 0;
+                if (midiChannel->glideTargetPitch > state->pitch) {
+                    state->cents += increment;
+                    if (state->cents == 100) {
+                        state->pitch++;
+                        state->cents = 0;
                     }
-
-                    state->ops->pitch(state->number, pitch, cents);
-                    state->pitch = pitch;
-                    state->cents = cents;
-                } else if (midiChannel->glideTargetPitch < pitch
-                    || (midiChannel->glideTargetPitch == pitch && cents > 0)) {
-                    cents -= 10;
-                    if (cents == -10) {
-                        pitch--;
-                        cents = 90;
+                    state->ops->pitch(state->number, state->pitch, state->cents);
+                } else if (midiChannel->glideTargetPitch < state->pitch
+                    || (midiChannel->glideTargetPitch == state->pitch && state->cents > 0)) {
+                    state->cents -= increment;
+                    if (state->cents == (0 - increment)) {
+                        state->pitch--;
+                        state->cents = 100 - increment;
                     }
-
-                    state->ops->pitch(state->number, pitch, cents);
-                    state->pitch = pitch;
-                    state->cents = cents;
+                    state->ops->pitch(state->number, state->pitch, state->cents);
                 } else {
                 }
             }
