@@ -933,7 +933,7 @@ void midi_tick(void)
             if (state->midiChannel == chan && state->noteOn) {
 
                 u8 pitch = state->pitch;
-                signed char cents = state->cents;
+                s8 cents = state->cents;
 
                 if (midiChannel->glideTargetPitch > pitch) {
                     cents += 10;
@@ -945,8 +945,8 @@ void midi_tick(void)
                     state->ops->pitch(state->number, pitch, cents);
                     state->pitch = pitch;
                     state->cents = cents;
-                } else if (midiChannel->glideTargetPitch < pitch || (midiChannel->glideTargetPitch
-                        == pitch && cents > 0)) {
+                } else if (midiChannel->glideTargetPitch < pitch
+                    || (midiChannel->glideTargetPitch == pitch && cents > 0)) {
                     cents -= 10;
                     if (cents == -10) {
                         pitch--;
