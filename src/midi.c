@@ -929,6 +929,10 @@ static void processChannelGlide(DeviceChannel* state)
 {
     const s8 increment = 10;
 
+    if (state->glideTargetPitch == 0) {
+        return;
+    }
+
     if (state->glideTargetPitch > state->pitch) {
         state->cents += increment;
         if (state->cents == 100) {
