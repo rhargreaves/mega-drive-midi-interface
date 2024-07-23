@@ -29,7 +29,6 @@ typedef struct MidiChannel {
     NotePriorityStack notePriority;
     DeviceSelect deviceSelect;
     bool portamento;
-    u16 glideProgress;
     u16 glideTargetPitch;
 } MidiChannel;
 
@@ -124,6 +123,8 @@ static void initMidiChannel(u8 midiChan)
     chan->prevVelocity = 0;
     note_priority_init(&chan->notePriority);
     chan->deviceSelect = Auto;
+    chan->glideTargetPitch = 0;
+    chan->portamento = false;
 }
 
 static void initAllDeviceChannels(void)
@@ -154,6 +155,7 @@ static void initDeviceChannel(u8 devChan)
     chan->noteOn = false;
     chan->midiChannel = devChan;
     chan->pitch = 0;
+    chan->cents = 0;
     chan->pitchBend = DEFAULT_MIDI_PITCH_BEND;
     updateDeviceChannelFromAssociatedMidiChannel(chan);
 }
@@ -925,14 +927,13 @@ void midi_tick(void)
     u8 chan = 0;
     MidiChannel* midiChannel = &midiChannels[chan];
     if (midiChannel->portamento) {
-        midiChannel->glideProgress++;
 
         for (DeviceChannel* state = &deviceChannels[0]; state < &deviceChannels[DEV_CHANS];
              state++) {
             if (state->midiChannel == chan && state->noteOn) {
 
                 u8 pitch = state->pitch;
-                s8 cents = state->cents;
+                signed char cents = state->cents;
 
                 if (midiChannel->glideTargetPitch > pitch) {
                     cents += 10;
@@ -944,6 +945,18 @@ void midi_tick(void)
                     state->ops->pitch(state->number, pitch, cents);
                     state->pitch = pitch;
                     state->cents = cents;
+                } else if (midiChannel->glideTargetPitch < pitch || (midiChannel->glideTargetPitch
+                        == pitch && cents > 0)) {
+                    cents -= 10;
+                    if (cents == -10) {
+                        pitch--;
+                        cents = 90;
+                    }
+
+                    state->ops->pitch(state->number, pitch, cents);
+                    state->pitch = pitch;
+                    state->cents = cents;
+                } else {
                 }
             }
         }

@@ -461,6 +461,19 @@ static void test_midi_portamento_glides_note(void** state)
     midi_receiver_read();
 
     expect_ym2612_write_channel(0, 0xA4, 0x1A);
-    expect_ym2612_write_channel(0, 0xA0, 0x85);
+    expect_ym2612_write_channel(0, 0xA0, 0x87);
+    scheduler_vsync();
+    scheduler_tick();
+    for (u16 i = 0; i < 99; i++) {
+        print_message("%d\n", i);
+        expect_ym2612_write_channel_any_data(0, 0xA4);
+        expect_ym2612_write_channel_any_data(0, 0xA0);
+        scheduler_vsync();
+        scheduler_tick();
+    }
+
+    scheduler_vsync();
+    scheduler_tick();
+    scheduler_vsync();
     scheduler_tick();
 }

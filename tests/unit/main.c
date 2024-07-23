@@ -369,7 +369,8 @@ int main(void)
         note_priority_test(test_note_priority_ignores_push_when_full),
         note_priority_test(test_note_priority_indicates_when_full),
 
-        midi_portamento_test(test_midi_portamento_glides_note)
+        midi_portamento_test(test_midi_portamento_glides_note_up),
+        midi_portamento_test(test_midi_portamento_glides_note_down)
         // clang-format on
     };
 

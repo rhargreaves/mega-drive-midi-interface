@@ -12,18 +12,15 @@ void stub_usb_receive_note_on(u8 chan, u8 key, u8 velocity);
 void stub_usb_receive_note_off(u8 chan, u8 key);
 void stub_usb_receive_pitch_bend(u8 chan, u16 bend);
 void stub_comm_read_returns_midi_event(u8 status, u8 data, u8 data2);
-void expect_ym2612_write_reg_any_data(u8 part, u8 reg);
 void expect_ym2612_write_operator_any_data(u8 chan, u8 op, u8 baseReg);
-void expect_ym2612_write_channel_any_data(u8 chan, u8 baseReg);
 void expect_synth_noteOn(u8 chan);
-void expect_synth_pitch_any(void);
-void expect_synth_pitch(u8 channel, u8 octave, u16 freqNumber);
 void expect_synth_volume_any(void);
 void expect_synth_volume(u8 channel, u8 volume);
 u8 regOpIndex(u8 op);
 
 void _expect_synth_pitch(
     u8 channel, u8 octave, u16 freqNumber, const char* const file, const int line);
+void _expect_synth_pitch_any(const char* const file, const int line);
 void _expect_ym2612_write_reg(u8 part, u8 reg, u8 data, const char* const file, const int line);
 void _expect_ym2612_write_reg_any_data(u8 part, u8 reg, const char* const file, const int line);
 void _expect_ym2612_write_channel(
@@ -97,6 +94,8 @@ void _expect_ym2612_write_operator(
 #define expect_synth_pitch(channel, octave, freqNumber)                                            \
     _expect_synth_pitch(channel, octave, freqNumber, __FILE__, __LINE__)
 
+#define expect_synth_pitch_any() _expect_synth_pitch_any(__FILE__, __LINE__)
+
 #define expect_ym2612_write_operator(chan, op, baseReg, data)                                      \
     _expect_ym2612_write_operator(chan, op, baseReg, data, __FILE__, __LINE__)
 
@@ -111,3 +110,12 @@ void _expect_ym2612_write_operator(
 
 #define expect_ym2612_write_channel_any_data(chan, baseReg)                                        \
     _expect_ym2612_write_channel_any_data(chan, baseReg, __FILE__, __LINE__)
+
+#define expect_value_with_pos(function, parameter, value, file, line)                              \
+    _expect_value(#function, #parameter, file, line, cast_to_largest_integral_type(value), 1)
+
+#define expect_any_with_pos(function, parameter, file, line)                                       \
+    _expect_any(#function, #parameter, file, line, 1)
+
+#define will_return_with_pos(function, value, file, line)                                          \
+    _will_return(#function, file, line, cast_to_largest_integral_type(value), 1)
