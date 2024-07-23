@@ -465,7 +465,6 @@ static void test_midi_portamento_glides_note(void** state)
     scheduler_vsync();
     scheduler_tick();
     for (u16 i = 0; i < 99; i++) {
-        print_message("%d\n", i);
         expect_ym2612_write_channel_any_data(0, 0xA4);
         expect_ym2612_write_channel_any_data(0, 0xA0);
         scheduler_vsync();

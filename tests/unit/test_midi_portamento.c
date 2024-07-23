@@ -13,7 +13,6 @@ static void test_midi_portamento_glides_note_up(UNUSED void** state)
     expect_synth_pitch(0, 2, 0x43f);
     midi_tick();
     for (u16 i = 0; i < 148; i++) {
-        print_message("%d\n", i);
         expect_synth_pitch_any();
         midi_tick();
     }
@@ -39,7 +38,6 @@ static void test_midi_portamento_glides_note_down(UNUSED void** state)
     expect_synth_pitch(0, 4, 640);
     midi_tick();
     for (u16 i = 0; i < 148; i++) {
-        print_message("%d\n", i);
         expect_synth_pitch_any();
         midi_tick();
     }

@@ -1,6 +1,7 @@
 #include "cmocka_inc.h"
 #include "synth.h"
 #include "types.h"
+#include "debug.h"
 
 static bool disableChecks = false;
 static bool loggingChecks = false;
@@ -60,7 +61,7 @@ void __wrap_synth_noteOff(u8 channel)
 
 void __wrap_synth_pitch(u8 channel, u8 octave, u16 freqNumber)
 {
-    print_message("call: synth_pitch(%d, %d, %d)\n", channel, octave, freqNumber);
+    debug_message("call: synth_pitch(%d, %d, %d)\n", channel, octave, freqNumber);
     if (disableChecks)
         return;
     check_expected(channel);
