@@ -923,34 +923,28 @@ void midi_reset(void)
 
 void midi_tick(void)
 {
-    for (u8 chan = 0; chan < MIDI_CHANNELS; chan++) {
-        MidiChannel* midiChannel = &midiChannels[chan];
-        if (midiChannel->portamento) {
+    for (DeviceChannel* state = &deviceChannels[0]; state < &deviceChannels[DEV_CHANS]; state++) {
+        MidiChannel* midiChannel = &midiChannels[state->midiChannel];
+        if (midiChannel->portamento && state->noteOn) {
 
-            for (DeviceChannel* state = &deviceChannels[0]; state < &deviceChannels[DEV_CHANS];
-                 state++) {
-                if (state->midiChannel == chan && state->noteOn) {
+            const s8 increment = 10;
 
-                    const s8 increment = 10;
-
-                    if (state->glideTargetPitch > state->pitch) {
-                        state->cents += increment;
-                        if (state->cents == 100) {
-                            state->pitch++;
-                            state->cents = 0;
-                        }
-                        state->ops->pitch(state->number, state->pitch, state->cents);
-                    } else if (state->glideTargetPitch < state->pitch
-                        || (state->glideTargetPitch == state->pitch && state->cents > 0)) {
-                        state->cents -= increment;
-                        if (state->cents == (0 - increment)) {
-                            state->pitch--;
-                            state->cents = 100 - increment;
-                        }
-                        state->ops->pitch(state->number, state->pitch, state->cents);
-                    } else {
-                    }
+            if (state->glideTargetPitch > state->pitch) {
+                state->cents += increment;
+                if (state->cents == 100) {
+                    state->pitch++;
+                    state->cents = 0;
                 }
+                state->ops->pitch(state->number, state->pitch, state->cents);
+            } else if (state->glideTargetPitch < state->pitch
+                || (state->glideTargetPitch == state->pitch && state->cents > 0)) {
+                state->cents -= increment;
+                if (state->cents == (0 - increment)) {
+                    state->pitch--;
+                    state->cents = 100 - increment;
+                }
+                state->ops->pitch(state->number, state->pitch, state->cents);
+            } else {
             }
         }
     }
