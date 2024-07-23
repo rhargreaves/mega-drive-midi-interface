@@ -29,7 +29,6 @@ typedef struct MidiChannel {
     NotePriorityStack notePriority;
     DeviceSelect deviceSelect;
     bool portamento;
-    u16 glideTargetPitch;
 } MidiChannel;
 
 typedef enum MappingMode { MappingMode_Static, MappingMode_Dynamic, MappingMode_Auto } MappingMode;
@@ -123,7 +122,6 @@ static void initMidiChannel(u8 midiChan)
     chan->prevVelocity = 0;
     note_priority_init(&chan->notePriority);
     chan->deviceSelect = Auto;
-    chan->glideTargetPitch = 0;
     chan->portamento = false;
 }
 
@@ -157,6 +155,7 @@ static void initDeviceChannel(u8 devChan)
     chan->pitch = 0;
     chan->cents = 0;
     chan->pitchBend = DEFAULT_MIDI_PITCH_BEND;
+    chan->glideTargetPitch = 0;
     updateDeviceChannelFromAssociatedMidiChannel(chan);
 }
 
@@ -406,7 +405,7 @@ void midi_note_on(u8 chan, u8 pitch, u8 velocity)
         midiChannel->prevVelocity = velocity;
 
         if (note_priority_count(&midiChannel->notePriority) > 1 && midiChannel->portamento) {
-            midiChannel->glideTargetPitch = pitch;
+            devChan->glideTargetPitch = pitch;
             return;
         }
     }
@@ -934,15 +933,15 @@ void midi_tick(void)
 
                 const s8 increment = 10;
 
-                if (midiChannel->glideTargetPitch > state->pitch) {
+                if (state->glideTargetPitch > state->pitch) {
                     state->cents += increment;
                     if (state->cents == 100) {
                         state->pitch++;
                         state->cents = 0;
                     }
                     state->ops->pitch(state->number, state->pitch, state->cents);
-                } else if (midiChannel->glideTargetPitch < state->pitch
-                    || (midiChannel->glideTargetPitch == state->pitch && state->cents > 0)) {
+                } else if (state->glideTargetPitch < state->pitch
+                    || (state->glideTargetPitch == state->pitch && state->cents > 0)) {
                     state->cents -= increment;
                     if (state->cents == (0 - increment)) {
                         state->pitch--;
