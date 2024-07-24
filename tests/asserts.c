@@ -119,11 +119,6 @@ void expect_synth_volume(u8 channel, u8 volume)
     expect_value(__wrap_synth_volume, volume, volume);
 }
 
-void expect_synth_volume_any(void)
-{
-    expect_any(__wrap_synth_volume, channel);
-    expect_any(__wrap_synth_volume, volume);
-}
 void expect_synth_noteOn(u8 chan)
 {
     expect_value(__wrap_synth_noteOn, channel, chan);

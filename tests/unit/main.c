@@ -101,6 +101,7 @@ int main(void)
         midi_test(test_midi_channel_volume_sets_psg_attenuation),
         midi_test(test_midi_channel_volume_sets_psg_attenuation_2),
         midi_test(test_midi_sets_synth_pitch_bend),
+        midi_test(test_midi_sets_synth_pitch_bend_before_note_on),
         midi_test(test_midi_pitch_bends_down_an_octave),
         midi_test(test_midi_pitch_bends_up_an_octave),
         midi_test(test_midi_pitch_bends_up_an_octave_upper_freq_limit),
@@ -379,8 +380,7 @@ int main(void)
         midi_portamento_test(test_midi_portamento_glides_fully_up_and_down),
         midi_portamento_test(test_midi_portamento_synth_note_off_triggered),
         midi_portamento_test(test_midi_portamento_zeros_any_residual_cents),
-        midi_portamento_test(test_midi_portamento_glides_note_up_for_psg)
-        // TODO: test for PSG glide
+        midi_portamento_test(test_midi_portamento_glides_note_up_for_psg),
         // TODO: test for special mode glide
         // TODO: pitch bend conflicts
         // clang-format on

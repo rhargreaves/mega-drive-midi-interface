@@ -14,7 +14,6 @@ void stub_usb_receive_pitch_bend(u8 chan, u16 bend);
 void stub_comm_read_returns_midi_event(u8 status, u8 data, u8 data2);
 void expect_ym2612_write_operator_any_data(u8 chan, u8 op, u8 baseReg);
 void expect_synth_noteOn(u8 chan);
-void expect_synth_volume_any(void);
 void expect_synth_volume(u8 channel, u8 volume);
 u8 regOpIndex(u8 op);
 
@@ -95,6 +94,12 @@ void _expect_ym2612_write_operator(
     _expect_synth_pitch(channel, octave, freqNumber, __FILE__, __LINE__)
 
 #define expect_synth_pitch_any() _expect_synth_pitch_any(__FILE__, __LINE__)
+
+#define expect_synth_volume_any()                                                                  \
+    {                                                                                              \
+        expect_any(__wrap_synth_volume, channel);                                                  \
+        expect_any(__wrap_synth_volume, volume);                                                   \
+    }
 
 #define expect_ym2612_write_operator(chan, op, baseReg, data)                                      \
     _expect_ym2612_write_operator(chan, op, baseReg, data, __FILE__, __LINE__)
