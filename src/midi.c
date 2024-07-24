@@ -16,6 +16,11 @@
 #define MIN_MIDI_VELOCITY 0
 #define RANGE(value, range) (value / (128 / range))
 #define LENGTH_OF(x) (sizeof(x) / sizeof(x[0]))
+#define FOREACH_DEV_CHAN(ch)                                                                       \
+    for (DeviceChannel* ch = &deviceChannels[0]; ch < &deviceChannels[DEV_CHANS]; ch++)
+#define FOREACH_DEV_CHAN_WITH_MIDI(midiCh, ch)                                                     \
+    FOREACH_DEV_CHAN(ch)                                                                           \
+        if (ch->midiChannel == midiCh)
 
 typedef enum DeviceSelect { Auto, FM, PSG_Tone, PSG_Noise } DeviceSelect;
 
@@ -74,13 +79,6 @@ static void reset(void);
 static void init(void);
 static void devChanNoteOn(DeviceChannel* devChan, u8 pitch, u8 velocity);
 static void devChanNoteOff(DeviceChannel* devChan, u8 pitch);
-
-#define FOREACH_DEV_CHAN(ch)                                                                       \
-    for (DeviceChannel* ch = &deviceChannels[0]; ch < &deviceChannels[DEV_CHANS]; ch++)
-
-#define FOREACH_DEV_CHAN_WITH_MIDI(midiCh, ch)                                                     \
-    FOREACH_DEV_CHAN(ch)                                                                           \
-        if (ch->midiChannel == midiCh)
 
 void midi_init(
     const FmChannel** presets, const PercussionPreset** percussionPresets, const u8** envelopes)
