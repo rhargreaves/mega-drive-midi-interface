@@ -248,3 +248,38 @@ static void test_midi_portamento_synth_note_off_triggered(UNUSED void** state)
     __real_midi_note_off(chan, MIDI_PITCH_A2);
     midi_tick();
 }
+
+static void test_midi_portamento_zeros_any_residual_cents(UNUSED void** state)
+{
+    const u8 chan = 0;
+    debug_message("channel %d\n", chan);
+    __real_midi_cc(chan, CC_PORTAMENTO_ENABLE, 127);
+
+    expect_synth_pitch(chan, 2, 0x439);
+    expect_synth_volume_any();
+    expect_synth_noteOn(chan);
+    __real_midi_note_on(chan, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
+    __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
+
+    expect_synth_pitch(chan, 2, 0x43f);
+    midi_tick();
+    for (u16 i = 0; i < 37; i++) {
+        expect_synth_pitch_any();
+        midi_tick();
+    }
+
+    expect_value(__wrap_synth_noteOff, channel, chan);
+    __real_midi_note_off(chan, MIDI_PITCH_C4);
+    __real_midi_note_off(chan, MIDI_PITCH_A2);
+
+    midi_tick();
+
+    expect_synth_pitch(chan, 2, 0x439);
+    expect_synth_volume_any();
+    expect_synth_noteOn(chan);
+    __real_midi_note_on(chan, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
+    __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
+
+    expect_synth_pitch(chan, 2, 0x43f);
+    midi_tick();
+}

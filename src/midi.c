@@ -436,6 +436,7 @@ void midi_note_off(u8 chan, u8 pitch)
 static void devChanNoteOn(DeviceChannel* devChan, u8 pitch, u8 velocity)
 {
     devChan->noteOn = true;
+    devChan->cents = 0;
     devChan->pitch = pitch;
     devChan->ops->noteOn(devChan->number, pitch, velocity);
 }
