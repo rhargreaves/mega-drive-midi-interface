@@ -359,7 +359,7 @@ static void test_midi_dynamic_maintains_pitch_bend_on_remapping(UNUSED void** st
     __real_midi_note_on(0, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
 
     // Set bend
-    expect_synth_pitch(0, 6, 0x4c0);
+    expect_synth_pitch(0, 7, 0x25f);
     __real_midi_pitch_bend(0, midi_bend);
 
     // Note 2

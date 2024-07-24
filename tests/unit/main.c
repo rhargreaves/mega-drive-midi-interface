@@ -184,6 +184,12 @@ int main(void)
         midi_test(test_midi_hides_fm_parameter_ui),
         midi_test(test_midi_resets_fm_values_to_defaults),
         midi_test(test_midi_resets_psg_values_to_defaults),
+        midi_test(test_midi_effectivePitchCents),
+        midi_test(test_midi_effectivePitchCents_2),
+        midi_test(test_midi_effectivePitchCents_3),
+        midi_test(test_midi_effectivePitchCents_4),
+        midi_test(test_midi_effectivePitchCents_5),
+        midi_test(test_midi_effectivePitchCents_6),
 
         midi_pcm_test(test_midi_enables_dac),
         midi_pcm_test(test_midi_disables_dac),

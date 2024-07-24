@@ -427,7 +427,7 @@ static void test_midi_sets_synth_pitch_bend(UNUSED void** state)
         expect_value(__wrap_synth_noteOn, channel, chan);
         __real_midi_note_on(chan, 60, MAX_MIDI_VOLUME);
 
-        expect_synth_pitch(chan, 4, 0x246);
+        expect_synth_pitch(chan, 3, 0x48b);
         __real_midi_pitch_bend(chan, 1000);
     }
 }
@@ -436,11 +436,11 @@ static void test_midi_sets_synth_pitch_bend_before_note_on(UNUSED void** state)
 {
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         print_message("channel %d\n", chan);
-        expect_synth_pitch(chan, 4, 0x246);
+        expect_synth_pitch(chan, 3, 0x48b);
         __real_midi_pitch_bend(chan, 1000);
 
         print_message("note on %d\n", chan);
-        expect_synth_pitch(chan, 4, 0x246);
+        expect_synth_pitch(chan, 3, 0x48b);
         expect_synth_volume_any();
         expect_value(__wrap_synth_noteOn, channel, chan);
         __real_midi_note_on(chan, 60, MAX_MIDI_VOLUME);
@@ -451,7 +451,7 @@ static void test_midi_pitch_bends_down_an_octave(UNUSED void** state)
 {
     const u8 MIDI_PITCH_B3 = 59;
     const u16 SYNTH_FREQ_B3 = 0x25f;
-    const u16 SYNTH_FREQ_A3 = 541;
+    const u16 SYNTH_FREQ_A3 = 0x439;
 
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         expect_synth_pitch(chan, 4, SYNTH_FREQ_B3);
@@ -459,7 +459,7 @@ static void test_midi_pitch_bends_down_an_octave(UNUSED void** state)
         expect_value(__wrap_synth_noteOn, channel, chan);
         __real_midi_note_on(chan, MIDI_PITCH_B3, MAX_MIDI_VOLUME);
 
-        expect_synth_pitch(chan, 4, SYNTH_FREQ_A3);
+        expect_synth_pitch(chan, 3, SYNTH_FREQ_A3);
         __real_midi_pitch_bend(chan, MIDI_PITCH_BEND_MIN); // down 2 st
     }
 }
@@ -485,7 +485,7 @@ static void test_midi_pitch_bends_up_an_octave_upper_freq_limit(UNUSED void** st
 {
     const u8 MIDI_PITCH_AS4 = 70;
     const u16 SYNTH_FREQ_AS4 = 1146;
-    const u16 SYNTH_FREQ_C3 = 1286;
+    const u16 SYNTH_FREQ_C3 = 644;
 
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         expect_synth_pitch(chan, 4, SYNTH_FREQ_AS4);
@@ -493,7 +493,7 @@ static void test_midi_pitch_bends_up_an_octave_upper_freq_limit(UNUSED void** st
         expect_value(__wrap_synth_noteOn, channel, chan);
         __real_midi_note_on(chan, MIDI_PITCH_AS4, MAX_MIDI_VOLUME);
 
-        expect_synth_pitch(chan, 4, SYNTH_FREQ_C3);
+        expect_synth_pitch(chan, 5, SYNTH_FREQ_C3);
         __real_midi_pitch_bend(chan, MIDI_PITCH_BEND_MAX); // up 2 st
     }
 }
@@ -506,10 +506,10 @@ static void test_midi_persists_pitch_bend_between_notes(UNUSED void** state)
         expect_value(__wrap_synth_noteOn, channel, chan);
         __real_midi_note_on(chan, 60, MAX_MIDI_VOLUME);
 
-        expect_synth_pitch(chan, 4, 0x246);
+        expect_synth_pitch(chan, 3, 1163);
         __real_midi_pitch_bend(chan, 1000);
 
-        expect_synth_pitch(chan, 4, 0x246);
+        expect_synth_pitch(chan, 3, 1163);
         expect_synth_volume_any();
         expect_value(__wrap_synth_noteOn, channel, chan);
         __real_midi_note_on(chan, 60, MAX_MIDI_VOLUME);
@@ -731,4 +731,52 @@ static void test_midi_drops_note_when_note_priority_stack_full(UNUSED void** sta
     }
 
     __real_midi_note_on(0, 100, MAX_MIDI_VOLUME);
+}
+
+static void test_midi_effectivePitchCents(UNUSED void** state)
+{
+    PitchCents pc = midi_fm_effectivePitchCents(50, 0, 0x2000);
+
+    assert_int_equal(pc.pitch, 50);
+    assert_int_equal(pc.cents, 0);
+}
+
+static void test_midi_effectivePitchCents_2(UNUSED void** state)
+{
+    PitchCents pc = midi_fm_effectivePitchCents(50, 0, 0);
+
+    assert_int_equal(pc.pitch, 48);
+    assert_int_equal(pc.cents, 0);
+}
+
+static void test_midi_effectivePitchCents_3(UNUSED void** state)
+{
+    PitchCents pc = midi_fm_effectivePitchCents(50, 0, 0x4000);
+
+    assert_int_equal(pc.pitch, 52);
+    assert_int_equal(pc.cents, 0);
+}
+
+static void test_midi_effectivePitchCents_4(UNUSED void** state)
+{
+    PitchCents pc = midi_fm_effectivePitchCents(50, 0, 0x3000);
+
+    assert_int_equal(pc.pitch, 51);
+    assert_int_equal(pc.cents, 0);
+}
+
+static void test_midi_effectivePitchCents_5(UNUSED void** state)
+{
+    PitchCents pc = midi_fm_effectivePitchCents(50, 0, 0x1800);
+
+    assert_int_equal(pc.pitch, 49);
+    assert_int_equal(pc.cents, 51);
+}
+
+static void test_midi_effectivePitchCents_6(UNUSED void** state)
+{
+    PitchCents pc = midi_fm_effectivePitchCents(50, 0, 0x2800);
+
+    assert_int_equal(pc.pitch, 50);
+    assert_int_equal(pc.cents, 49);
 }

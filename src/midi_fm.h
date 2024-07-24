@@ -11,6 +11,11 @@ typedef struct PercussionPreset {
     u8 key;
 } PercussionPreset;
 
+typedef struct PitchCents {
+    u8 pitch;
+    u8 cents;
+} PitchCents;
+
 void midi_fm_init(
     const FmChannel** defaultPresets, const PercussionPreset** defaultPercussionPresets);
 void midi_fm_reset(void);
@@ -25,3 +30,4 @@ void midi_fm_percussive(u8 chan, bool enabled);
 u8 midi_fm_pitchToOctave(u8 pitch);
 u16 midi_fm_pitchToFreqNum(u8 pitch, u16 pitchBend);
 void midi_fm_pitch(u8 chan, u8 pitch, u8 cents);
+PitchCents midi_fm_effectivePitchCents(u8 pitch, u8 cents, u16 pitchBend);
