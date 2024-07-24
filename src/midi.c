@@ -958,3 +958,19 @@ void midi_tick(void)
 {
     processPortamento();
 }
+
+PitchCents midi_effectivePitchCents(u8 pitch, u8 cents, u16 pitchBend)
+{
+    s16 newPitch = pitch + ((pitchBend - MIDI_PITCH_BEND_CENTRE) / 0x1000);
+    s16 newCents = cents + (((pitchBend - MIDI_PITCH_BEND_CENTRE) % 0x1000) / 41);
+
+    if (newCents < 0) {
+        newCents += 100;
+        newPitch--;
+    } else if (cents >= 100) {
+        newCents -= 100;
+        newPitch++;
+    }
+    PitchCents pc = { .cents = newCents, .pitch = newPitch };
+    return pc;
+}

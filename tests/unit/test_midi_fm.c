@@ -735,7 +735,7 @@ static void test_midi_drops_note_when_note_priority_stack_full(UNUSED void** sta
 
 static void test_midi_effectivePitchCents(UNUSED void** state)
 {
-    PitchCents pc = midi_fm_effectivePitchCents(50, 0, 0x2000);
+    PitchCents pc = midi_effectivePitchCents(50, 0, 0x2000);
 
     assert_int_equal(pc.pitch, 50);
     assert_int_equal(pc.cents, 0);
@@ -743,7 +743,7 @@ static void test_midi_effectivePitchCents(UNUSED void** state)
 
 static void test_midi_effectivePitchCents_2(UNUSED void** state)
 {
-    PitchCents pc = midi_fm_effectivePitchCents(50, 0, 0);
+    PitchCents pc = midi_effectivePitchCents(50, 0, 0);
 
     assert_int_equal(pc.pitch, 48);
     assert_int_equal(pc.cents, 0);
@@ -751,7 +751,7 @@ static void test_midi_effectivePitchCents_2(UNUSED void** state)
 
 static void test_midi_effectivePitchCents_3(UNUSED void** state)
 {
-    PitchCents pc = midi_fm_effectivePitchCents(50, 0, 0x4000);
+    PitchCents pc = midi_effectivePitchCents(50, 0, 0x4000);
 
     assert_int_equal(pc.pitch, 52);
     assert_int_equal(pc.cents, 0);
@@ -759,7 +759,7 @@ static void test_midi_effectivePitchCents_3(UNUSED void** state)
 
 static void test_midi_effectivePitchCents_4(UNUSED void** state)
 {
-    PitchCents pc = midi_fm_effectivePitchCents(50, 0, 0x3000);
+    PitchCents pc = midi_effectivePitchCents(50, 0, 0x3000);
 
     assert_int_equal(pc.pitch, 51);
     assert_int_equal(pc.cents, 0);
@@ -767,7 +767,7 @@ static void test_midi_effectivePitchCents_4(UNUSED void** state)
 
 static void test_midi_effectivePitchCents_5(UNUSED void** state)
 {
-    PitchCents pc = midi_fm_effectivePitchCents(50, 0, 0x1800);
+    PitchCents pc = midi_effectivePitchCents(50, 0, 0x1800);
 
     assert_int_equal(pc.pitch, 49);
     assert_int_equal(pc.cents, 51);
@@ -775,7 +775,7 @@ static void test_midi_effectivePitchCents_5(UNUSED void** state)
 
 static void test_midi_effectivePitchCents_6(UNUSED void** state)
 {
-    PitchCents pc = midi_fm_effectivePitchCents(50, 0, 0x2800);
+    PitchCents pc = midi_effectivePitchCents(50, 0, 0x2800);
 
     assert_int_equal(pc.pitch, 50);
     assert_int_equal(pc.cents, 49);
