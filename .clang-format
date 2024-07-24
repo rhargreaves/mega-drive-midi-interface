@@ -6,3 +6,7 @@ SortIncludes: false
 AllowShortBlocksOnASingleLine: Empty
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: false
+ForEachMacros:
+  - FOREACH_DEV_CHAN
+  - FOREACH_DEV_CHAN_WITH_MIDI
+SpaceBeforeParens: ControlStatementsExceptControlMacros

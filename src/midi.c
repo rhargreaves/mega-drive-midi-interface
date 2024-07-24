@@ -75,6 +75,13 @@ static void init(void);
 static void devChanNoteOn(DeviceChannel* devChan, u8 pitch, u8 velocity);
 static void devChanNoteOff(DeviceChannel* devChan, u8 pitch);
 
+#define FOREACH_DEV_CHAN(ch)                                                                       \
+    for (DeviceChannel* ch = &deviceChannels[0]; ch < &deviceChannels[DEV_CHANS]; ch++)
+
+#define FOREACH_DEV_CHAN_WITH_MIDI(midiCh, ch)                                                     \
+    FOREACH_DEV_CHAN(ch)                                                                           \
+        if (ch->midiChannel == midiCh)
+
 void midi_init(
     const FmChannel** presets, const PercussionPreset** percussionPresets, const u8** envelopes)
 {
@@ -136,7 +143,6 @@ static void initAllDeviceChannels(void)
 static void initDeviceChannel(u8 devChan)
 {
     DeviceChannel* chan = &deviceChannels[devChan];
-
     if (devChan <= DEV_CHAN_MAX_FM) {
         chan->number = devChan;
         chan->ops = &FM_VTable;
@@ -150,7 +156,6 @@ static void initDeviceChannel(u8 devChan)
         chan->number = DEV_CHAN_DAC;
         chan->ops = &DAC_VTable;
     }
-
     chan->noteOn = false;
     chan->midiChannel = devChan;
     chan->pitch = 0;
@@ -160,16 +165,10 @@ static void initDeviceChannel(u8 devChan)
     updateDeviceChannelFromAssociatedMidiChannel(chan);
 }
 
-static DeviceChannel* findChannelPlayingNote(u8 midiChannel, u8 pitch)
+static bool isChannelPlayingNote(DeviceChannel* devChan, u8 pitch)
 {
-    for (u16 i = 0; i < DEV_CHANS; i++) {
-        DeviceChannel* chan = &deviceChannels[i];
-        u8 effectivePitch = chan->glideTargetPitch != 0 ? chan->glideTargetPitch : chan->pitch;
-        if (chan->noteOn && chan->midiChannel == midiChannel && effectivePitch == pitch) {
-            return chan;
-        }
-    }
-    return NULL;
+    u8 effectivePitch = devChan->glideTargetPitch != 0 ? devChan->glideTargetPitch : devChan->pitch;
+    return devChan->noteOn && effectivePitch == pitch;
 }
 
 static bool isPsgAndIncomingChanIsPercussive(DeviceChannel* chan, u8 incomingChan)
@@ -306,9 +305,8 @@ static bool tooManyPercussiveNotes(u8 midiChan)
     }
 
     u16 counter = 0;
-    for (u16 i = 0; i < DEV_CHANS; i++) {
-        DeviceChannel* chan = &deviceChannels[i];
-        if (chan->midiChannel == GENERAL_MIDI_PERCUSSION_CHANNEL && chan->noteOn) {
+    FOREACH_DEV_CHAN_WITH_MIDI(GENERAL_MIDI_PERCUSSION_CHANNEL, chan) {
+        if (chan->noteOn) {
             counter++;
         }
         if (counter >= MAX_POLYPHONY) {
@@ -358,11 +356,8 @@ static void channelDeviceSelect(u8 midiChan, DeviceSelect deviceSelect)
 
 static DeviceChannel* deviceChannelByMidiChannel(u8 midiChannel)
 {
-    for (u8 i = 0; i < DEV_CHANS; i++) {
-        DeviceChannel* chan = &deviceChannels[i];
-        if (chan->midiChannel == midiChannel) {
-            return chan;
-        }
+    FOREACH_DEV_CHAN_WITH_MIDI(midiChannel, chan) {
+        return chan;
     }
     return NULL;
 }
@@ -423,19 +418,19 @@ void midi_note_off(u8 chan, u8 pitch)
     MidiChannel* midiChannel = &midiChannels[chan];
     note_priority_remove(&midiChannel->notePriority, pitch);
 
-    DeviceChannel* devChan;
-    while ((devChan = findChannelPlayingNote(chan, pitch)) != NULL) {
-        u8 nextMostRecentPitch = note_priority_pop(&midiChannel->notePriority);
-        if (!dynamicMode && nextMostRecentPitch != 0) {
-
-            if (midiChannel->portamento) {
-                note_priority_push(&midiChannel->notePriority, nextMostRecentPitch);
-                devChan->glideTargetPitch = nextMostRecentPitch;
+    FOREACH_DEV_CHAN_WITH_MIDI(chan, devChan) {
+        if (isChannelPlayingNote(devChan, pitch)) {
+            u8 nextMostRecentPitch = note_priority_pop(&midiChannel->notePriority);
+            if (!dynamicMode && nextMostRecentPitch != 0) {
+                if (midiChannel->portamento) {
+                    note_priority_push(&midiChannel->notePriority, nextMostRecentPitch);
+                    devChan->glideTargetPitch = nextMostRecentPitch;
+                } else {
+                    devChanNoteOn(devChan, nextMostRecentPitch, midiChannel->lastVelocity);
+                }
             } else {
-                devChanNoteOn(devChan, nextMostRecentPitch, midiChannel->lastVelocity);
+                devChanNoteOff(devChan, pitch);
             }
-        } else {
-            devChanNoteOff(devChan, pitch);
         }
     }
 }
@@ -458,11 +453,8 @@ static void channelPan(u8 chan, u8 pan)
 {
     MidiChannel* midiChannel = &midiChannels[chan];
     midiChannel->pan = pan;
-    for (u8 i = 0; i < DEV_CHANS; i++) {
-        DeviceChannel* devChan = &deviceChannels[i];
-        if (devChan->midiChannel == chan) {
-            updatePan(midiChannel, devChan);
-        }
+    FOREACH_DEV_CHAN_WITH_MIDI(chan, devChan) {
+        updatePan(midiChannel, devChan);
     }
 }
 
@@ -470,11 +462,8 @@ static void channelVolume(u8 chan, u8 volume)
 {
     MidiChannel* midiChannel = &midiChannels[chan];
     midiChannel->volume = volume;
-    for (u8 i = 0; i < DEV_CHANS; i++) {
-        DeviceChannel* state = &deviceChannels[i];
-        if (state->midiChannel == chan) {
-            updateVolume(midiChannel, state);
-        }
+    FOREACH_DEV_CHAN_WITH_MIDI(chan, devChan) {
+        updateVolume(midiChannel, devChan);
     }
 }
 
@@ -509,8 +498,8 @@ void midi_pitch_bend(u8 chan, u16 bend)
 {
     MidiChannel* midiChannel = &midiChannels[chan];
     midiChannel->pitchBend = bend;
-    for (DeviceChannel* state = &deviceChannels[0]; state < &deviceChannels[DEV_CHANS]; state++) {
-        if (state->midiChannel == chan && state->noteOn) {
+    FOREACH_DEV_CHAN_WITH_MIDI(chan, state) {
+        if (state->noteOn) {
             updatePitchBend(midiChannel, state);
         }
     }
@@ -520,11 +509,8 @@ void midi_program(u8 chan, u8 program)
 {
     MidiChannel* midiChannel = &midiChannels[chan];
     midiChannel->program = program;
-    for (u8 i = 0; i < DEV_CHANS; i++) {
-        DeviceChannel* state = &deviceChannels[i];
-        if (state->midiChannel == chan) {
-            updateProgram(midiChannel, state);
-        }
+    FOREACH_DEV_CHAN_WITH_MIDI(chan, state) {
+        updateProgram(midiChannel, state);
     }
 }
 
@@ -540,13 +526,10 @@ DeviceChannel* midi_channel_mappings(void)
 
 static void allNotesOff(u8 chan)
 {
-    for (u8 i = 0; i < DEV_CHANS; i++) {
-        DeviceChannel* devChan = &deviceChannels[i];
-        if (devChan->midiChannel == chan) {
-            devChan->noteOn = false;
-            devChan->pitch = 0;
-            devChan->ops->allNotesOff(devChan->number);
-        }
+    FOREACH_DEV_CHAN_WITH_MIDI(chan, devChan) {
+        devChan->noteOn = false;
+        devChan->pitch = 0;
+        devChan->ops->allNotesOff(devChan->number);
     }
 }
 
@@ -876,11 +859,8 @@ static void setInvertTotalLevel(bool invert)
 
 static void fmParameterCC(u8 chan, u8 controller, u8 value)
 {
-    for (u8 i = 0; i < DEV_CHANS; i++) {
-        DeviceChannel* devChan = &deviceChannels[i];
-        if (devChan->midiChannel == chan) {
-            setFmChanParameter(devChan, controller, value);
-        }
+    FOREACH_DEV_CHAN_WITH_MIDI(chan, devChan) {
+        setFmChanParameter(devChan, controller, value);
     }
 }
 
@@ -964,7 +944,7 @@ static void processChannelGlide(DeviceChannel* chan)
 
 static void processPortamento(void)
 {
-    for (DeviceChannel* chan = &deviceChannels[0]; chan < &deviceChannels[DEV_CHANS]; chan++) {
+    FOREACH_DEV_CHAN(chan) {
         if (chan->midiChannel == UNASSIGNED_MIDI_CHANNEL) {
             continue;
         }
