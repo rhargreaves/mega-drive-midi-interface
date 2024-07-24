@@ -3,17 +3,11 @@
 #include "synth.h"
 
 static const u8 SEMITONES = 12;
-static const u16 FREQS[] = {
-    // Lower Pitch Bends (-2 st)
-    541, 573,
-    // Normal Range
-    607, // B
+static const u16 FREQS[] = { 607, // B
     644, 681, 722, 765, 810, 858, 910, 964, 1021, 1081,
     1146, // A#
-    // Upper Pitch Bends (+2 st)
-    1214, 1286
-};
-static const u8 FREQ_NORMAL_RANGE_OFFSET = 2;
+    // One more freqNum used for cents calculation
+    1214 };
 
 typedef struct MidiFmChannel {
     u8 pitch;
@@ -81,7 +75,7 @@ PitchCents midi_fm_effectivePitchCents(u8 pitch, u8 cents, u16 pitchBend)
     return pc;
 }
 
-static void updateSynthPitch(u8 chan)
+static void setSynthPitch(u8 chan)
 {
     MidiFmChannel* fmChan = &fmChannels[chan];
     PitchCents pc = midi_fm_effectivePitchCents(fmChan->pitch, fmChan->cents, fmChan->pitchBend);
@@ -105,8 +99,7 @@ void midi_fm_note_on(u8 chan, u8 pitch, u8 velocity)
     fmChan->pitch = pitch;
     fmChan->cents = 0;
 
-    updateSynthPitch(chan);
-
+    setSynthPitch(chan);
     synth_noteOn(chan);
 }
 
@@ -128,7 +121,7 @@ void midi_fm_pitch_bend(u8 chan, u16 bend)
     MidiFmChannel* fmChan = &fmChannels[chan];
     fmChan->pitchBend = bend;
 
-    updateSynthPitch(chan);
+    setSynthPitch(chan);
 }
 
 void midi_fm_program(u8 chan, u8 program)
@@ -174,9 +167,7 @@ u8 midi_fm_pitchToOctave(u8 pitch)
 
 static u16 lookupFreqNum(u8 pitch, s16 offset)
 {
-    u16 index = FREQ_NORMAL_RANGE_OFFSET + ((u8)(pitch - MIN_MIDI_PITCH) % SEMITONES) + offset;
-    u16 freq = FREQS[index];
-    return freq;
+    return FREQS[((u8)(pitch - MIN_MIDI_PITCH) % SEMITONES) + offset];
 }
 
 static u8 pitchIsOutOfRange(u8 pitch)
@@ -194,6 +185,5 @@ void midi_fm_pitch(u8 chan, u8 pitch, u8 cents)
     MidiFmChannel* fmChan = &fmChannels[chan];
     fmChan->pitch = pitch;
     fmChan->cents = cents;
-
-    updateSynthPitch(chan);
+    setSynthPitch(chan);
 }
