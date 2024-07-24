@@ -283,3 +283,30 @@ static void test_midi_portamento_zeros_any_residual_cents(UNUSED void** state)
     expect_synth_pitch(chan, 2, 0x43f);
     midi_tick();
 }
+
+static void test_midi_portamento_glides_note_up_for_psg(UNUSED void** state)
+{
+    for (u8 chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN; chan++) {
+        debug_message("channel %d\n", chan);
+        u8 psgChan = chan - MIN_PSG_CHAN;
+        __real_midi_cc(chan, CC_PORTAMENTO_ENABLE, 127);
+
+        expect_psg_attenuation(psgChan, 0);
+        expect_psg_tone(psgChan, 0x3f8);
+        __real_midi_note_on(chan, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
+        __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
+
+        expect_psg_tone(psgChan, 0x3f3);
+        midi_tick();
+        for (u16 i = 0; i < 148; i++) {
+            expect_any_psg_tone();
+            midi_tick();
+        }
+
+        expect_psg_tone(psgChan, 0x1ab);
+        midi_tick();
+
+        midi_tick();
+        midi_tick();
+    }
+}

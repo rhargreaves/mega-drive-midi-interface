@@ -324,4 +324,10 @@ u8 midi_psg_busy(void)
 
 void midi_psg_pitch(u8 chan, u8 pitch, u8 cents)
 {
+    u16 tone = toneForMidiKey(pitch);
+    u16 nextTone = toneForMidiKey(pitch + 1);
+    u16 newTone = tone + (((nextTone - tone) * cents) / 100);
+
+    MidiPsgChannel* psgChan = psgChannel(chan);
+    applyTone(psgChan, newTone);
 }

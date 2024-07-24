@@ -452,6 +452,7 @@ void __wrap_PSG_setFrequency(u8 channel, u16 value)
 
 void __wrap_PSG_setTone(u8 channel, u16 value)
 {
+    debug_message("call: PSG_setTone(%d, %d)\n", channel, value);
     if (disableChecks)
         return;
     check_expected(channel);
