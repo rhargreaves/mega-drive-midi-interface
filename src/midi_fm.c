@@ -58,7 +58,7 @@ void midi_fm_reset(void)
     synth_init(presets[0]);
 }
 
-static u16 pitchCentsToFreqNum(u8 pitch, u8 cents)
+u16 midi_fm_pitchCentsToFreqNum(u8 pitch, u8 cents)
 {
     u16 freq = lookupFreqNum(pitch, 0);
     u16 nextFreq = lookupFreqNum(pitch, 1);
@@ -85,7 +85,8 @@ static void updateSynthPitch(u8 chan)
 {
     MidiFmChannel* fmChan = &fmChannels[chan];
     PitchCents pc = midi_fm_effectivePitchCents(fmChan->pitch, fmChan->cents, fmChan->pitchBend);
-    synth_pitch(chan, midi_fm_pitchToOctave(pc.pitch), pitchCentsToFreqNum(pc.pitch, pc.cents));
+    synth_pitch(
+        chan, midi_fm_pitchToOctave(pc.pitch), midi_fm_pitchCentsToFreqNum(pc.pitch, pc.cents));
 }
 
 void midi_fm_note_on(u8 chan, u8 pitch, u8 velocity)
@@ -120,26 +121,6 @@ void midi_fm_channel_volume(u8 chan, u8 volume)
     MidiFmChannel* fmChan = &fmChannels[chan];
     fmChan->volume = volume;
     synth_volume(chan, effectiveVolume(fmChan));
-}
-
-u16 midi_fm_pitchToFreqNum(u8 pitch, u16 pitchBend)
-{
-    u16 freq = lookupFreqNum(pitch, 0);
-    if (pitchBend == MIDI_PITCH_BEND_CENTRE) {
-        return freq;
-    }
-    s16 bendRelative = pitchBend - MIDI_PITCH_BEND_CENTRE;
-    s16 approxFreqDelta;
-    if (bendRelative < 0) {
-        // bend down
-        u16 boundFreq = lookupFreqNum(pitch, -GENERAL_MIDI_PITCH_BEND_SEMITONE_RANGE);
-        approxFreqDelta = (((freq - boundFreq) * bendRelative) / DEFAULT_MIDI_PITCH_BEND);
-    } else {
-        // bend up
-        u16 boundFreq = lookupFreqNum(pitch, GENERAL_MIDI_PITCH_BEND_SEMITONE_RANGE);
-        approxFreqDelta = (((boundFreq - freq) * bendRelative) / DEFAULT_MIDI_PITCH_BEND);
-    }
-    return freq + approxFreqDelta;
 }
 
 void midi_fm_pitch_bend(u8 chan, u16 bend)
