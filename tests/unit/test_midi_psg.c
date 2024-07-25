@@ -183,12 +183,13 @@ static void test_midi_sets_psg_pitch_bend_up(UNUSED void** state)
 static void test_midi_psg_pitch_bend_persists_after_tick(UNUSED void** state)
 {
     for (int chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN; chan++) {
+        debug_message("channel %d\n", chan);
         u8 expectedPsgChan = chan - MIN_PSG_CHAN;
         expect_psg_tone(expectedPsgChan, TONE_NTSC_C4);
         expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
         __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
-        expect_psg_tone(expectedPsgChan, 0x1d8);
+        expect_psg_tone(expectedPsgChan, 0x1d9);
         __real_midi_pitch_bend(chan, 1000);
 
         __real_midi_psg_tick();

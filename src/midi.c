@@ -38,17 +38,17 @@ typedef struct MidiChannel {
 typedef enum MappingMode { MappingMode_Static, MappingMode_Dynamic, MappingMode_Auto } MappingMode;
 
 static const VTable PSG_VTable = { midi_psg_note_on, midi_psg_note_off, midi_psg_channel_volume,
-    midi_psg_pitch_bend, midi_psg_program, midi_psg_all_notes_off, midi_psg_pan, midi_psg_pitch };
+    midi_psg_program, midi_psg_all_notes_off, midi_psg_pan, midi_psg_pitch };
 
 static const VTable FM_VTable = { midi_fm_note_on, midi_fm_note_off, midi_fm_channel_volume,
-    midi_fm_pitch_bend, midi_fm_program, midi_fm_all_notes_off, midi_fm_pan, midi_fm_pitch };
+    midi_fm_program, midi_fm_all_notes_off, midi_fm_pan, midi_fm_pitch };
 
 static const VTable SpecialMode_VTable
-    = { midi_fm_sm_note_on, midi_fm_sm_note_off, midi_fm_sm_channel_volume, midi_fm_sm_pitch_bend,
-          midi_fm_sm_program, midi_fm_sm_all_notes_off, midi_fm_sm_pan, midi_fm_sm_pitch };
+    = { midi_fm_sm_note_on, midi_fm_sm_note_off, midi_fm_sm_channel_volume, midi_fm_sm_program,
+          midi_fm_sm_all_notes_off, midi_fm_sm_pan, midi_fm_sm_pitch };
 
 static const VTable DAC_VTable = { midi_dac_note_on, midi_dac_note_off, midi_dac_channel_volume,
-    midi_dac_pitch_bend, midi_dac_program, midi_dac_all_notes_off, midi_dac_pan, midi_dac_pitch };
+    midi_dac_program, midi_dac_all_notes_off, midi_dac_pan, midi_dac_pitch };
 
 static const u8** defaultEnvelopes;
 static const FmChannel** defaultPresets;
@@ -333,7 +333,9 @@ static void updatePan(MidiChannel* midiChannel, DeviceChannel* devChan)
 static void updatePitchBend(MidiChannel* midiChannel, DeviceChannel* devChan)
 {
     if (devChan->pitchBend != midiChannel->pitchBend) {
-        devChan->ops->pitchBend(devChan->number, midiChannel->pitchBend);
+        PitchCents pc
+            = midi_effectivePitchCents(devChan->pitch, devChan->cents, midiChannel->pitchBend);
+        devChan->ops->pitch(devChan->number, pc.pitch, pc.cents);
         devChan->pitchBend = midiChannel->pitchBend;
     }
 }
@@ -407,8 +409,12 @@ void midi_note_on(u8 chan, u8 pitch, u8 velocity)
     }
 
     devChan->midiChannel = chan;
+    devChan->noteOn = true;
+    devChan->cents = 0;
+    devChan->pitch = pitch;
     updateDeviceChannelFromAssociatedMidiChannel(devChan);
-    devChanNoteOn(devChan, pitch, velocity);
+    PitchCents pc = midi_effectivePitchCents(devChan->pitch, devChan->cents, devChan->pitchBend);
+    devChan->ops->noteOn(devChan->number, pc.pitch, pc.cents, velocity);
 }
 
 void midi_note_off(u8 chan, u8 pitch)
@@ -438,7 +444,8 @@ static void devChanNoteOn(DeviceChannel* devChan, u8 pitch, u8 velocity)
     devChan->noteOn = true;
     devChan->cents = 0;
     devChan->pitch = pitch;
-    devChan->ops->noteOn(devChan->number, pitch, velocity);
+    PitchCents pc = midi_effectivePitchCents(devChan->pitch, devChan->cents, devChan->pitchBend);
+    devChan->ops->noteOn(devChan->number, pc.pitch, pc.cents, velocity);
 }
 
 static void devChanNoteOff(DeviceChannel* devChan, u8 pitch)
@@ -959,7 +966,7 @@ void midi_tick(void)
     processPortamento();
 }
 
-PitchCents midi_effectivePitchCents(u8 pitch, u8 cents, u16 pitchBend)
+PitchCents midi_effectivePitchCents(u8 pitch, s8 cents, u16 pitchBend)
 {
     s16 newPitch = pitch + ((pitchBend - MIDI_PITCH_BEND_CENTRE) / 0x1000);
     s16 newCents = cents + (((pitchBend - MIDI_PITCH_BEND_CENTRE) % 0x1000) / 41);

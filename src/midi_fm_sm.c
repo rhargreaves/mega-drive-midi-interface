@@ -6,30 +6,30 @@
 
 typedef struct SpecialModeOperator {
     u8 pitch;
-    u16 pitchBend;
+    s8 cents;
 } SpecialModeOperator;
 
 static SpecialModeOperator smOperators[SM_OP_LEN];
 
-void midi_fm_sm_note_on(u8 op, u8 pitch, u8 velocity)
+void midi_fm_sm_note_on(u8 op, u8 pitch, s8 cents, u8 velocity)
 {
     SpecialModeOperator* smOp = &smOperators[op];
     smOp->pitch = pitch;
-    PitchCents pc = midi_effectivePitchCents(smOp->pitch, 0, smOp->pitchBend);
+    smOp->cents = cents;
 
-    synth_specialModePitch(
-        op, midi_fm_pitchToOctave(pc.pitch), midi_fm_pitchCentsToFreqNum(pc.pitch, pc.cents));
+    synth_specialModePitch(op, midi_fm_pitchToOctave(smOp->pitch),
+        midi_fm_pitchCentsToFreqNum(smOp->pitch, smOp->cents));
     synth_specialModeVolume(op, velocity);
 }
 
-void midi_fm_sm_pitch_bend(u8 op, u16 bend)
+void midi_fm_sm_pitch(u8 op, u8 pitch, s8 cents)
 {
     SpecialModeOperator* smOp = &smOperators[op];
-    smOp->pitchBend = bend;
-    PitchCents pc = midi_effectivePitchCents(smOp->pitch, 0, smOp->pitchBend);
+    smOp->pitch = pitch;
+    smOp->cents = cents;
 
-    synth_specialModePitch(
-        op, midi_fm_pitchToOctave(pc.pitch), midi_fm_pitchCentsToFreqNum(pc.pitch, pc.cents));
+    synth_specialModePitch(op, midi_fm_pitchToOctave(smOp->pitch),
+        midi_fm_pitchCentsToFreqNum(smOp->pitch, smOp->cents));
 }
 
 void midi_fm_sm_reset(void)
@@ -37,7 +37,7 @@ void midi_fm_sm_reset(void)
     for (u8 op = 0; op < SM_OP_LEN; op++) {
         SpecialModeOperator* smOp = &smOperators[op];
         smOp->pitch = 0;
-        smOp->pitchBend = DEFAULT_MIDI_PITCH_BEND;
+        smOp->cents = 0;
     }
 }
 
@@ -59,9 +59,5 @@ void midi_fm_sm_program(u8 chan, u8 program)
 }
 
 void midi_fm_sm_all_notes_off(u8 chan)
-{
-}
-
-void midi_fm_sm_pitch(u8 chan, u8 pitch, u8 cents)
 {
 }

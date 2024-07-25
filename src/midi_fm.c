@@ -11,8 +11,7 @@ static const u16 FREQS[] = { 607, // B
 
 typedef struct MidiFmChannel {
     u8 pitch;
-    u8 cents;
-    u16 pitchBend;
+    s8 cents;
     u8 volume;
     u8 velocity;
     u8 pan;
@@ -46,13 +45,12 @@ void midi_fm_reset(void)
         fmChan->velocity = MAX_MIDI_VOLUME;
         fmChan->pan = 0;
         fmChan->percussive = false;
-        fmChan->pitchBend = DEFAULT_MIDI_PITCH_BEND;
         fmChan->cents = 0;
     }
     synth_init(presets[0]);
 }
 
-u16 midi_fm_pitchCentsToFreqNum(u8 pitch, u8 cents)
+u16 midi_fm_pitchCentsToFreqNum(u8 pitch, s8 cents)
 {
     u16 freq = lookupFreqNum(pitch, 0);
     u16 nextFreq = lookupFreqNum(pitch, 1);
@@ -62,12 +60,11 @@ u16 midi_fm_pitchCentsToFreqNum(u8 pitch, u8 cents)
 static void setSynthPitch(u8 chan)
 {
     MidiFmChannel* fmChan = &fmChannels[chan];
-    PitchCents pc = midi_effectivePitchCents(fmChan->pitch, fmChan->cents, fmChan->pitchBend);
-    synth_pitch(
-        chan, midi_fm_pitchToOctave(pc.pitch), midi_fm_pitchCentsToFreqNum(pc.pitch, pc.cents));
+    synth_pitch(chan, midi_fm_pitchToOctave(fmChan->pitch),
+        midi_fm_pitchCentsToFreqNum(fmChan->pitch, fmChan->cents));
 }
 
-void midi_fm_note_on(u8 chan, u8 pitch, u8 velocity)
+void midi_fm_note_on(u8 chan, u8 pitch, s8 cents, u8 velocity)
 {
     if (pitchIsOutOfRange(pitch)) {
         return;
@@ -81,7 +78,7 @@ void midi_fm_note_on(u8 chan, u8 pitch, u8 velocity)
     fmChan->velocity = velocity;
     synth_volume(chan, effectiveVolume(fmChan));
     fmChan->pitch = pitch;
-    fmChan->cents = 0;
+    fmChan->cents = cents;
 
     setSynthPitch(chan);
     synth_noteOn(chan);
@@ -98,14 +95,6 @@ void midi_fm_channel_volume(u8 chan, u8 volume)
     MidiFmChannel* fmChan = &fmChannels[chan];
     fmChan->volume = volume;
     synth_volume(chan, effectiveVolume(fmChan));
-}
-
-void midi_fm_pitch_bend(u8 chan, u16 bend)
-{
-    MidiFmChannel* fmChan = &fmChannels[chan];
-    fmChan->pitchBend = bend;
-
-    setSynthPitch(chan);
 }
 
 void midi_fm_program(u8 chan, u8 program)
@@ -164,7 +153,7 @@ static u8 effectiveVolume(MidiFmChannel* fmChan)
     return (fmChan->volume * fmChan->velocity) / 0x7F;
 }
 
-void midi_fm_pitch(u8 chan, u8 pitch, u8 cents)
+void midi_fm_pitch(u8 chan, u8 pitch, s8 cents)
 {
     MidiFmChannel* fmChan = &fmChannels[chan];
     fmChan->pitch = pitch;

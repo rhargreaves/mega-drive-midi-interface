@@ -120,14 +120,13 @@
 #define SYSEX_COMMAND_WRITE_YM2612_REG_PART_1 0x09
 
 typedef struct VTable {
-    void (*noteOn)(u8 chan, u8 pitch, u8 velocity);
+    void (*noteOn)(u8 chan, u8 pitch, s8 cents, u8 velocity);
     void (*noteOff)(u8 chan, u8 pitch);
     void (*channelVolume)(u8 chan, u8 volume);
-    void (*pitchBend)(u8 chan, u16 bend);
     void (*program)(u8 chan, u8 program);
     void (*allNotesOff)(u8 chan);
     void (*pan)(u8 chan, u8 pan);
-    void (*pitch)(u8 chan, u8 pitch, u8 cents);
+    void (*pitch)(u8 chan, u8 pitch, s8 cents);
 } VTable;
 
 typedef struct DeviceChannel {
@@ -146,7 +145,7 @@ typedef struct DeviceChannel {
 
 typedef struct PitchCents {
     u8 pitch;
-    u8 cents;
+    s8 cents;
 } PitchCents;
 
 void midi_init(const FmChannel** defaultPresets, const PercussionPreset** defaultPercussionPresets,
@@ -162,4 +161,4 @@ DeviceChannel* midi_channel_mappings(void);
 void midi_remap_channel(u8 midiChannel, u8 deviceChannel);
 void midi_reset(void);
 void midi_tick(void);
-PitchCents midi_effectivePitchCents(u8 pitch, u8 cents, u16 pitchBend);
+PitchCents midi_effectivePitchCents(u8 pitch, s8 cents, u16 pitchBend);
