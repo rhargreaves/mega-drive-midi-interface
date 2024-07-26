@@ -924,33 +924,28 @@ void midi_reset(void)
 
 static void processChannelGlide(DeviceChannel* chan)
 {
-    const s8 increment = 10;
-
-    if (chan->glideTargetPitch == 0) {
+    if (chan->glideTargetPitch == 0
+        || (chan->glideTargetPitch == chan->pitch && chan->cents == 0)) {
         return;
     }
 
+    const u8 increment = 10;
+    s8 effectiveIncrement;
+
     if (chan->glideTargetPitch > chan->pitch) {
-
-        PitchCents pc = { .pitch = chan->pitch, .cents = chan->cents };
-        pc = midi_pitchShift(pc, increment);
-        chan->pitch = pc.pitch;
-        chan->cents = pc.cents;
-
-        pc = midi_effectivePitchCents(pc.pitch, pc.cents, chan->pitchBend);
-        chan->ops->pitch(chan->number, pc.pitch, pc.cents);
-
+        effectiveIncrement = increment;
     } else if (chan->glideTargetPitch < chan->pitch
         || (chan->glideTargetPitch == chan->pitch && chan->cents > 0)) {
-
-        PitchCents pc = { .pitch = chan->pitch, .cents = chan->cents };
-        pc = midi_pitchShift(pc, 0 - increment);
-        chan->pitch = pc.pitch;
-        chan->cents = pc.cents;
-
-        pc = midi_effectivePitchCents(pc.pitch, pc.cents, chan->pitchBend);
-        chan->ops->pitch(chan->number, pc.pitch, pc.cents);
+        effectiveIncrement = 0 - increment;
     }
+
+    PitchCents pc = { .pitch = chan->pitch, .cents = chan->cents };
+    pc = midi_pitchShift(pc, effectiveIncrement);
+    chan->pitch = pc.pitch;
+    chan->cents = pc.cents;
+
+    pc = midi_effectivePitchCents(pc.pitch, pc.cents, chan->pitchBend);
+    chan->ops->pitch(chan->number, pc.pitch, pc.cents);
 }
 
 static void processPortamento(void)
@@ -974,7 +969,7 @@ void midi_tick(void)
 PitchCents midi_effectivePitchCents(u8 pitch, s8 cents, u16 pitchBend)
 {
     u16 totalCents = (pitch * 100) + cents;
-    s16 bendCents = ((pitchBend - MIDI_PITCH_BEND_CENTRE) * 25) / 1024; // 8192 pb = 200 cents
+    s16 bendCents = ((pitchBend - MIDI_PITCH_BEND_CENTRE) * 25) / 1024;
     totalCents += bendCents;
 
     PitchCents pc = { .pitch = totalCents / 100, .cents = totalCents % 100 };
