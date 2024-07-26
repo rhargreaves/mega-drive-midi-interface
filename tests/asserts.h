@@ -14,6 +14,7 @@ void stub_usb_receive_pitch_bend(u8 chan, u16 bend);
 void stub_comm_read_returns_midi_event(u8 status, u8 data, u8 data2);
 void expect_ym2612_write_operator_any_data(u8 chan, u8 op, u8 baseReg);
 void expect_synth_noteOn(u8 chan);
+void expect_synth_noteOff(u8 chan);
 void expect_synth_volume(u8 channel, u8 volume);
 u8 regOpIndex(u8 op);
 

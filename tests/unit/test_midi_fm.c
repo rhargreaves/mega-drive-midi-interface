@@ -509,6 +509,9 @@ static void test_midi_persists_pitch_bend_between_notes(UNUSED void** state)
         expect_synth_pitch(chan, 3, 1163);
         __real_midi_pitch_bend(chan, 1000);
 
+        expect_synth_noteOff(chan);
+        __real_midi_note_off(chan, 60);
+
         expect_synth_pitch(chan, 3, 1163);
         expect_synth_volume_any();
         expect_value(__wrap_synth_noteOn, channel, chan);

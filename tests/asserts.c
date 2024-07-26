@@ -124,6 +124,11 @@ void expect_synth_noteOn(u8 chan)
     expect_value(__wrap_synth_noteOn, channel, chan);
 }
 
+void expect_synth_noteOff(u8 chan)
+{
+    expect_value(__wrap_synth_noteOff, channel, chan);
+}
+
 void _expect_ym2612_write_reg(u8 part, u8 reg, u8 data, const char* const file, const int line)
 {
 #ifdef DEBUG
