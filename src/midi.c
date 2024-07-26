@@ -975,7 +975,7 @@ PitchCents midi_effectivePitchCents(u8 pitch, s8 cents, u16 pitchBend)
 {
     u16 totalCents = (pitch * 100) + cents;
     s16 bendCents = ((pitchBend - MIDI_PITCH_BEND_CENTRE) * 25) / 1024; // 8192 pb = 200 cents
-    totalCents = totalCents + bendCents;
+    totalCents += bendCents;
 
     PitchCents pc = { .pitch = totalCents / 100, .cents = totalCents % 100 };
     return pc;
@@ -983,19 +983,10 @@ PitchCents midi_effectivePitchCents(u8 pitch, s8 cents, u16 pitchBend)
 
 PitchCents midi_pitchShift(PitchCents pc, s8 centsAdd)
 {
-    s16 newCents = pc.cents + centsAdd;
-    if (newCents < -100) {
-        newCents += 100;
-        pc.pitch--;
-    }
-    if (newCents < 0) {
-        newCents += 100;
-        pc.pitch--;
-    }
-    if (newCents >= 100) {
-        newCents -= 100;
-        pc.pitch++;
-    }
-    pc.cents = newCents;
+    u16 totalCents = (pc.pitch * 100) + pc.cents;
+    totalCents += centsAdd;
+
+    pc.pitch = totalCents / 100;
+    pc.cents = totalCents % 100;
     return pc;
 }
