@@ -34,6 +34,7 @@ typedef struct MidiChannel {
     NotePriorityStack notePriority;
     DeviceSelect deviceSelect;
     bool portamento;
+    u16 portamentoTime;
 } MidiChannel;
 
 typedef enum MappingMode { MappingMode_Static, MappingMode_Dynamic, MappingMode_Auto } MappingMode;
@@ -876,9 +877,19 @@ static void setPortamentoMode(u8 chan, bool enable)
     midiChannel->portamento = enable;
 }
 
+static void setPortamentoTime(u8 chan, u8 value)
+{
+    MidiChannel* midiChannel = &midiChannels[chan];
+    u16 interval = (127 - value) * 10;
+    midiChannel->portamentoTime = interval;
+}
+
 void midi_cc(u8 chan, u8 controller, u8 value)
 {
     switch (controller) {
+    case CC_PORTAMENTO_TIME_MSB:
+        setPortamentoTime(chan, value);
+        break;
     case CC_VOLUME:
         channelVolume(chan, value);
         break;
@@ -922,21 +933,20 @@ void midi_reset(void)
     reset();
 }
 
-static void processChannelGlide(DeviceChannel* chan)
+static void processChannelGlide(DeviceChannel* chan, u16 portamentoTime)
 {
     if (chan->glideTargetPitch == 0
         || (chan->glideTargetPitch == chan->pitch && chan->cents == 0)) {
         return;
     }
 
-    const u8 increment = 10;
-    s8 effectiveIncrement;
+    s16 effectiveIncrement;
 
     if (chan->glideTargetPitch > chan->pitch) {
-        effectiveIncrement = increment;
+        effectiveIncrement = portamentoTime;
     } else if (chan->glideTargetPitch < chan->pitch
         || (chan->glideTargetPitch == chan->pitch && chan->cents > 0)) {
-        effectiveIncrement = 0 - increment;
+        effectiveIncrement = 0 - portamentoTime;
     }
 
     PitchCents pc = { .pitch = chan->pitch, .cents = chan->cents };
@@ -956,7 +966,7 @@ static void processPortamento(void)
         }
         MidiChannel* midiChannel = &midiChannels[chan->midiChannel];
         if (midiChannel->portamento && chan->noteOn) {
-            processChannelGlide(chan);
+            processChannelGlide(chan, midiChannel->portamentoTime);
         }
     }
 }

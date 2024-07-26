@@ -22,7 +22,7 @@
 
 #define midi_test(test) cmocka_unit_test_setup(test, test_midi_setup)
 #define midi_pcm_test(test) cmocka_unit_test_setup(test, test_midi_setup)
-#define midi_portamento_test(test) cmocka_unit_test_setup(test, test_midi_setup)
+#define midi_portamento_test(test) cmocka_unit_test_setup(test, test_midi_portamento_setup)
 #define dynamic_midi_test(test) cmocka_unit_test_setup(test, test_dynamic_midi_setup)
 #define synth_test(test) cmocka_unit_test_setup(test, test_synth_setup)
 #define comm_test(test) cmocka_unit_test_setup(test, test_comm_setup)
@@ -396,7 +396,9 @@ int main(void)
         midi_portamento_test(test_midi_portamento_zeros_any_residual_cents),
         midi_portamento_test(test_midi_portamento_glides_note_up_for_psg),
         midi_portamento_test(test_midi_portamento_glides_note_up_with_pitch_bend),
-        midi_portamento_test(test_midi_portamento_glides_note_down_with_pitch_bend)
+        midi_portamento_test(test_midi_portamento_glides_note_down_with_pitch_bend),
+        midi_portamento_test(test_midi_portamento_sets_portamento_time_to_minimum),
+        midi_portamento_test(test_midi_portamento_sets_portamento_time_to_maximum)
         // TODO: test for special mode glide
         // clang-format on
     };

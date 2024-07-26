@@ -1,5 +1,15 @@
 #include "test_midi.h"
 
+static int test_midi_portamento_setup(UNUSED void** state)
+{
+    test_midi_setup(state);
+
+    for (u8 chan = 0; chan < MIDI_CHANNELS; chan++) {
+        __real_midi_cc(chan, CC_PORTAMENTO_TIME_MSB, 126);
+    }
+    return 0;
+}
+
 static void test_midi_portamento_glides_note_up(UNUSED void** state)
 {
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
@@ -371,4 +381,44 @@ static void test_midi_portamento_glides_note_down_with_pitch_bend(UNUSED void** 
         midi_tick();
         midi_tick();
     }
+}
+
+static void test_midi_portamento_sets_portamento_time_to_minimum(UNUSED void** state)
+{
+    const u8 chan = 0;
+
+    __real_midi_cc(chan, CC_PORTAMENTO_ENABLE, 127);
+    __real_midi_cc(chan, CC_PORTAMENTO_TIME_MSB, 0);
+
+    expect_synth_pitch(chan, 2, 0x439);
+    expect_synth_volume_any();
+    expect_synth_noteOn(chan);
+    __real_midi_note_on(chan, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
+    __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
+
+    expect_synth_pitch(chan, 3, 0x466);
+    midi_tick();
+
+    expect_synth_pitch(chan, 4, 0x495);
+    midi_tick();
+}
+
+static void test_midi_portamento_sets_portamento_time_to_maximum(UNUSED void** state)
+{
+    const u8 chan = 0;
+
+    __real_midi_cc(chan, CC_PORTAMENTO_ENABLE, 127);
+    __real_midi_cc(chan, CC_PORTAMENTO_TIME_MSB, 127);
+
+    expect_synth_pitch(chan, 2, 0x439);
+    expect_synth_volume_any();
+    expect_synth_noteOn(chan);
+    __real_midi_note_on(chan, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
+    __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
+
+    expect_synth_pitch(chan, 2, 0x439);
+    midi_tick();
+
+    expect_synth_pitch(chan, 2, 0x439);
+    midi_tick();
 }

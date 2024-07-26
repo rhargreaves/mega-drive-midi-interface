@@ -38,7 +38,7 @@ static void test_midi_receiver_read_passes_note_on_to_midi_processor(UNUSED void
     const u8 expectedData = 60;
     const u8 expectedData2 = 127;
 
-    for (int chan = 0; chan < MAX_MIDI_CHANS; chan++) {
+    for (int chan = 0; chan < MIDI_CHANNELS; chan++) {
         u8 expectedStatus = 0x90 + chan;
 
         stub_comm_read_returns_midi_event(expectedStatus, expectedData, expectedData2);
