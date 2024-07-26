@@ -12,6 +12,7 @@
 #include "ui_fm.h"
 #include "note_priority.h"
 #include "scheduler.h"
+#include "pitchcents.h"
 
 #define MIN_MIDI_VELOCITY 0
 #define RANGE(value, range) (value / (128 / range))
@@ -333,8 +334,7 @@ static void updatePan(MidiChannel* midiChannel, DeviceChannel* devChan)
 static void updatePitchBend(MidiChannel* midiChannel, DeviceChannel* devChan)
 {
     if (devChan->pitchBend != midiChannel->pitchBend) {
-        PitchCents pc
-            = midi_effectivePitchCents(devChan->pitch, devChan->cents, midiChannel->pitchBend);
+        PitchCents pc = pitchcents_bend(devChan->pitch, devChan->cents, midiChannel->pitchBend);
         devChan->ops->pitch(devChan->number, pc.pitch, pc.cents);
         devChan->pitchBend = midiChannel->pitchBend;
     }
@@ -413,7 +413,7 @@ void midi_note_on(u8 chan, u8 pitch, u8 velocity)
     devChan->cents = 0;
     devChan->pitch = pitch;
     updateDeviceChannelFromAssociatedMidiChannel(devChan);
-    PitchCents pc = midi_effectivePitchCents(devChan->pitch, devChan->cents, devChan->pitchBend);
+    PitchCents pc = pitchcents_bend(devChan->pitch, devChan->cents, devChan->pitchBend);
     devChan->ops->noteOn(devChan->number, pc.pitch, pc.cents, velocity);
 }
 
@@ -444,7 +444,7 @@ static void devChanNoteOn(DeviceChannel* devChan, u8 pitch, u8 velocity)
     devChan->noteOn = true;
     devChan->cents = 0;
     devChan->pitch = pitch;
-    PitchCents pc = midi_effectivePitchCents(devChan->pitch, devChan->cents, devChan->pitchBend);
+    PitchCents pc = pitchcents_bend(devChan->pitch, devChan->cents, devChan->pitchBend);
     devChan->ops->noteOn(devChan->number, pc.pitch, pc.cents, velocity);
 }
 
@@ -940,11 +940,11 @@ static void processChannelGlide(DeviceChannel* chan)
     }
 
     PitchCents pc = { .pitch = chan->pitch, .cents = chan->cents };
-    pc = midi_pitchShift(pc, effectiveIncrement);
+    pc = pitchcents_shift(pc, effectiveIncrement);
     chan->pitch = pc.pitch;
     chan->cents = pc.cents;
 
-    pc = midi_effectivePitchCents(pc.pitch, pc.cents, chan->pitchBend);
+    pc = pitchcents_bend(pc.pitch, pc.cents, chan->pitchBend);
     chan->ops->pitch(chan->number, pc.pitch, pc.cents);
 }
 
@@ -964,21 +964,4 @@ static void processPortamento(void)
 void midi_tick(void)
 {
     processPortamento();
-}
-
-PitchCents midi_effectivePitchCents(u8 pitch, s8 cents, u16 pitchBend)
-{
-    s16 centsAdd = ((pitchBend - MIDI_PITCH_BEND_CENTRE) * 25) / 1024;
-    PitchCents pc = { .pitch = pitch, .cents = cents };
-    return midi_pitchShift(pc, centsAdd);
-}
-
-PitchCents midi_pitchShift(PitchCents pc, s16 centsAdd)
-{
-    u16 totalCents = (pc.pitch * 100) + pc.cents;
-    totalCents += centsAdd;
-
-    pc.pitch = totalCents / 100;
-    pc.cents = totalCents % 100;
-    return pc;
 }

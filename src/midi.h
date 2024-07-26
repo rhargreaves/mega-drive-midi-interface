@@ -143,11 +143,6 @@ typedef struct DeviceChannel {
     u16 glideTargetPitch;
 } DeviceChannel;
 
-typedef struct PitchCents {
-    u8 pitch;
-    s8 cents;
-} PitchCents;
-
 void midi_init(const FmChannel** defaultPresets, const PercussionPreset** defaultPercussionPresets,
     const u8** defaultEnvelopes);
 void midi_note_on(u8 chan, u8 pitch, u8 velocity);
@@ -161,5 +156,3 @@ DeviceChannel* midi_channel_mappings(void);
 void midi_remap_channel(u8 midiChannel, u8 deviceChannel);
 void midi_reset(void);
 void midi_tick(void);
-PitchCents midi_effectivePitchCents(u8 pitch, s8 cents, u16 pitchBend);
-PitchCents midi_pitchShift(PitchCents pc, s16 centsAdd);

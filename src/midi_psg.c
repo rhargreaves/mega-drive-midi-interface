@@ -8,6 +8,7 @@
 #include "psg.h"
 #include "types.h"
 #include "sys.h"
+#include "pitchcents.h"
 
 #define MIN_PSG_CHAN 6
 #define MAX_PSG_CHAN 9
@@ -128,16 +129,16 @@ static u16 envelopeTone(MidiPsgChannel* psgChan)
     case 0:
         break;
     case 0x1:
-        pc = midi_pitchShift(pc, 5);
+        pc = pitchcents_shift(pc, 5);
         break;
     case 0x2:
-        pc = midi_pitchShift(pc, 10);
+        pc = pitchcents_shift(pc, 10);
         break;
     case 0x3:
-        pc = midi_pitchShift(pc, 20);
+        pc = pitchcents_shift(pc, 20);
         break;
     case 0x4:
-        pc = midi_pitchShift(pc, 50);
+        pc = pitchcents_shift(pc, 50);
         break;
     case 0x5:
         pc.pitch += 1;
@@ -149,16 +150,16 @@ static u16 envelopeTone(MidiPsgChannel* psgChan)
         pc.pitch += 5;
         break;
     case 0x8:
-        pc = midi_pitchShift(pc, -5);
+        pc = pitchcents_shift(pc, -5);
         break;
     case 0x9:
-        pc = midi_pitchShift(pc, -10);
+        pc = pitchcents_shift(pc, -10);
         break;
     case 0xA:
-        pc = midi_pitchShift(pc, -20);
+        pc = pitchcents_shift(pc, -20);
         break;
     case 0xB:
-        pc = midi_pitchShift(pc, -50);
+        pc = pitchcents_shift(pc, -50);
         break;
     case 0xC:
         pc.pitch -= 1;

@@ -5,6 +5,7 @@
 #include "midi_fm.h"
 #include "midi_psg.h"
 #include "synth.h"
+#include "pitchcents.h"
 
 #define MIDI_PITCH_A2 45
 #define MIDI_PITCH_C3 48
