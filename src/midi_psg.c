@@ -13,7 +13,6 @@
 #define MAX_PSG_CHAN 9
 #define MIN_MIDI_KEY 45
 #define MAX_MIDI_KEY 127
-#define PITCH_SHIFTS 7
 #define NUM_TONES (128 - MIN_MIDI_KEY)
 
 static const u16 TONES_NTSC[NUM_TONES] = { 1016, 959, 905, 855, 807, 761, 719, 678, 640, 604, 570,
@@ -102,8 +101,7 @@ static u8 effectiveAttenuation(MidiPsgChannel* psgChan)
     u8 envAtt = *psgChan->envelopeStep & 0x0F;
     u8 invEnvAtt = MAX_ATTENUATION - envAtt;
     u8 invEffectiveAtt = (invAtt * invEnvAtt) / MAX_ATTENUATION;
-    u8 effectiveAtt = MAX_ATTENUATION - invEffectiveAtt;
-    return effectiveAtt;
+    return MAX_ATTENUATION - invEffectiveAtt;
 }
 
 static void noteOff(MidiPsgChannel* psgChan)
@@ -119,8 +117,7 @@ static u16 toneFromPitchCents(PitchCents pc)
     if (pc.cents == 0) {
         return tone;
     }
-    u16 nextTone = toneForMidiKey(pc.pitch + 1);
-    return tone + (((nextTone - tone) * pc.cents) / 100);
+    return tone + (((toneForMidiKey(pc.pitch + 1) - tone) * pc.cents) / 100);
 }
 
 static PitchCents pitchShift(PitchCents pc, s8 centsAdd)
@@ -146,10 +143,9 @@ static u16 envelopeTone(MidiPsgChannel* psgChan)
 {
     PitchCents pc = { .pitch = psgChan->pitch, .cents = psgChan->cents };
     u8 shift = *psgChan->envelopeStep >> 4;
-    if (shift == 0) {
-        return toneFromPitchCents(pc);
-    }
     switch (shift) {
+    case 0:
+        break;
     case 0x1:
         pc = pitchShift(pc, 5);
         break;
