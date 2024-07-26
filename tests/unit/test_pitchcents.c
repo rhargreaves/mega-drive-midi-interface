@@ -1,5 +1,14 @@
 #include "test_midi.h"
 
+static void test_pitchcents_shift_extreme_up(UNUSED void** state)
+{
+    PitchCents pc = { .pitch = 50, .cents = 99 };
+    pc = pitchcents_shift(pc, 255);
+
+    assert_int_equal(pc.pitch, 53);
+    assert_int_equal(pc.cents, 54);
+}
+
 static void test_pitchcents_bend_nil(UNUSED void** state)
 {
     PitchCents pc = pitchcents_bend(50, 0, 0x2000);

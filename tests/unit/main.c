@@ -186,6 +186,8 @@ int main(void)
         midi_test(test_midi_hides_fm_parameter_ui),
         midi_test(test_midi_resets_fm_values_to_defaults),
         midi_test(test_midi_resets_psg_values_to_defaults),
+
+        pitchcents_test(test_pitchcents_shift_extreme_up),
         pitchcents_test(test_pitchcents_bend_nil),
         pitchcents_test(test_pitchcents_bend_down_fully),
         pitchcents_test(test_pitchcents_bend_up_fully),
@@ -396,7 +398,6 @@ int main(void)
         midi_portamento_test(test_midi_portamento_glides_note_up_with_pitch_bend),
         midi_portamento_test(test_midi_portamento_glides_note_down_with_pitch_bend)
         // TODO: test for special mode glide
-        // TODO: pitch bend conflicts
         // clang-format on
     };
 
