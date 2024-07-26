@@ -968,15 +968,12 @@ void midi_tick(void)
 
 PitchCents midi_effectivePitchCents(u8 pitch, s8 cents, u16 pitchBend)
 {
-    u16 totalCents = (pitch * 100) + cents;
-    s16 bendCents = ((pitchBend - MIDI_PITCH_BEND_CENTRE) * 25) / 1024;
-    totalCents += bendCents;
-
-    PitchCents pc = { .pitch = totalCents / 100, .cents = totalCents % 100 };
-    return pc;
+    s16 centsAdd = ((pitchBend - MIDI_PITCH_BEND_CENTRE) * 25) / 1024;
+    PitchCents pc = { .pitch = pitch, .cents = cents };
+    return midi_pitchShift(pc, centsAdd);
 }
 
-PitchCents midi_pitchShift(PitchCents pc, s8 centsAdd)
+PitchCents midi_pitchShift(PitchCents pc, s16 centsAdd)
 {
     u16 totalCents = (pc.pitch * 100) + pc.cents;
     totalCents += centsAdd;
