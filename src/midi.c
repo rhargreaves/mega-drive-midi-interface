@@ -931,20 +931,25 @@ static void processChannelGlide(DeviceChannel* chan)
     }
 
     if (chan->glideTargetPitch > chan->pitch) {
-        chan->cents += increment;
-        if (chan->cents == 100) {
-            chan->pitch++;
-            chan->cents = 0;
-        }
-        chan->ops->pitch(chan->number, chan->pitch, chan->cents);
+
+        PitchCents pc = { .pitch = chan->pitch, .cents = chan->cents };
+        pc = midi_pitchShift(pc, increment);
+        chan->pitch = pc.pitch;
+        chan->cents = pc.cents;
+
+        pc = midi_effectivePitchCents(pc.pitch, pc.cents, chan->pitchBend);
+        chan->ops->pitch(chan->number, pc.pitch, pc.cents);
+
     } else if (chan->glideTargetPitch < chan->pitch
         || (chan->glideTargetPitch == chan->pitch && chan->cents > 0)) {
-        chan->cents -= increment;
-        if (chan->cents == 0 - increment) {
-            chan->pitch--;
-            chan->cents = 100 - increment;
-        }
-        chan->ops->pitch(chan->number, chan->pitch, chan->cents);
+
+        PitchCents pc = { .pitch = chan->pitch, .cents = chan->cents };
+        pc = midi_pitchShift(pc, 0 - increment);
+        chan->pitch = pc.pitch;
+        chan->cents = pc.cents;
+
+        pc = midi_effectivePitchCents(pc.pitch, pc.cents, chan->pitchBend);
+        chan->ops->pitch(chan->number, pc.pitch, pc.cents);
     }
 }
 
@@ -968,16 +973,29 @@ void midi_tick(void)
 
 PitchCents midi_effectivePitchCents(u8 pitch, s8 cents, u16 pitchBend)
 {
-    s16 newPitch = pitch + ((pitchBend - MIDI_PITCH_BEND_CENTRE) / 0x1000);
-    s16 newCents = cents + (((pitchBend - MIDI_PITCH_BEND_CENTRE) % 0x1000) / 41);
+    u16 totalCents = (pitch * 100) + cents;
+    s16 bendCents = ((pitchBend - MIDI_PITCH_BEND_CENTRE) * 25) / 1024; // 8192 pb = 200 cents
+    totalCents = totalCents + bendCents;
 
+    PitchCents pc = { .pitch = totalCents / 100, .cents = totalCents % 100 };
+    return pc;
+}
+
+PitchCents midi_pitchShift(PitchCents pc, s8 centsAdd)
+{
+    s16 newCents = pc.cents + centsAdd;
+    if (newCents < -100) {
+        newCents += 100;
+        pc.pitch--;
+    }
     if (newCents < 0) {
         newCents += 100;
-        newPitch--;
-    } else if (cents >= 100) {
-        newCents -= 100;
-        newPitch++;
+        pc.pitch--;
     }
-    PitchCents pc = { .cents = newCents, .pitch = newPitch };
+    if (newCents >= 100) {
+        newCents -= 100;
+        pc.pitch++;
+    }
+    pc.cents = newCents;
     return pc;
 }

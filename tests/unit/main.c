@@ -190,6 +190,10 @@ int main(void)
         midi_test(test_midi_effectivePitchCents_4),
         midi_test(test_midi_effectivePitchCents_5),
         midi_test(test_midi_effectivePitchCents_6),
+        midi_test(test_midi_effectivePitchCents_cents_with_partial_bend_down),
+        midi_test(test_midi_effectivePitchCents_high_cents_with_partial_bend_down),
+        midi_test(test_midi_effectivePitchCents_cents_with_full_bend_up),
+        midi_test(test_midi_effectivePitchCents_high_cents_with_full_bend_up),
 
         midi_pcm_test(test_midi_enables_dac),
         midi_pcm_test(test_midi_disables_dac),
@@ -387,6 +391,8 @@ int main(void)
         midi_portamento_test(test_midi_portamento_synth_note_off_triggered),
         midi_portamento_test(test_midi_portamento_zeros_any_residual_cents),
         midi_portamento_test(test_midi_portamento_glides_note_up_for_psg),
+        midi_portamento_test(test_midi_portamento_glides_note_up_with_pitch_bend),
+        midi_portamento_test(test_midi_portamento_glides_note_down_with_pitch_bend)
         // TODO: test for special mode glide
         // TODO: pitch bend conflicts
         // clang-format on

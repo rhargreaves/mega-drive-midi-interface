@@ -120,25 +120,6 @@ static u16 toneFromPitchCents(PitchCents pc)
     return tone + (((toneForMidiKey(pc.pitch + 1) - tone) * pc.cents) / 100);
 }
 
-static PitchCents pitchShift(PitchCents pc, s8 centsAdd)
-{
-    s16 newCents = pc.cents + centsAdd;
-    if (newCents < -100) {
-        newCents += 100;
-        pc.pitch--;
-    }
-    if (newCents < 0) {
-        newCents += 100;
-        pc.pitch--;
-    }
-    if (newCents >= 100) {
-        newCents -= 100;
-        pc.pitch++;
-    }
-    pc.cents = newCents;
-    return pc;
-}
-
 static u16 envelopeTone(MidiPsgChannel* psgChan)
 {
     PitchCents pc = { .pitch = psgChan->pitch, .cents = psgChan->cents };
@@ -147,16 +128,16 @@ static u16 envelopeTone(MidiPsgChannel* psgChan)
     case 0:
         break;
     case 0x1:
-        pc = pitchShift(pc, 5);
+        pc = midi_pitchShift(pc, 5);
         break;
     case 0x2:
-        pc = pitchShift(pc, 10);
+        pc = midi_pitchShift(pc, 10);
         break;
     case 0x3:
-        pc = pitchShift(pc, 20);
+        pc = midi_pitchShift(pc, 20);
         break;
     case 0x4:
-        pc = pitchShift(pc, 50);
+        pc = midi_pitchShift(pc, 50);
         break;
     case 0x5:
         pc.pitch += 1;
@@ -168,16 +149,16 @@ static u16 envelopeTone(MidiPsgChannel* psgChan)
         pc.pitch += 5;
         break;
     case 0x8:
-        pc = pitchShift(pc, -5);
+        pc = midi_pitchShift(pc, -5);
         break;
     case 0x9:
-        pc = pitchShift(pc, -10);
+        pc = midi_pitchShift(pc, -10);
         break;
     case 0xA:
-        pc = pitchShift(pc, -20);
+        pc = midi_pitchShift(pc, -20);
         break;
     case 0xB:
-        pc = pitchShift(pc, -50);
+        pc = midi_pitchShift(pc, -50);
         break;
     case 0xC:
         pc.pitch -= 1;

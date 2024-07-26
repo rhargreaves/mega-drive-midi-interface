@@ -773,7 +773,7 @@ static void test_midi_effectivePitchCents_5(UNUSED void** state)
     PitchCents pc = midi_effectivePitchCents(50, 0, 0x1800);
 
     assert_int_equal(pc.pitch, 49);
-    assert_int_equal(pc.cents, 51);
+    assert_int_equal(pc.cents, 50);
 }
 
 static void test_midi_effectivePitchCents_6(UNUSED void** state)
@@ -781,5 +781,37 @@ static void test_midi_effectivePitchCents_6(UNUSED void** state)
     PitchCents pc = midi_effectivePitchCents(50, 0, 0x2800);
 
     assert_int_equal(pc.pitch, 50);
-    assert_int_equal(pc.cents, 49);
+    assert_int_equal(pc.cents, 50);
+}
+
+static void test_midi_effectivePitchCents_cents_with_partial_bend_down(UNUSED void** state)
+{
+    PitchCents pc = midi_effectivePitchCents(50, 25, 0x1800);
+
+    assert_int_equal(pc.pitch, 49);
+    assert_int_equal(pc.cents, 75);
+}
+
+static void test_midi_effectivePitchCents_high_cents_with_partial_bend_down(UNUSED void** state)
+{
+    PitchCents pc = midi_effectivePitchCents(50, 80, 0x1800);
+
+    assert_int_equal(pc.pitch, 50);
+    assert_int_equal(pc.cents, 30);
+}
+
+static void test_midi_effectivePitchCents_cents_with_full_bend_up(UNUSED void** state)
+{
+    PitchCents pc = midi_effectivePitchCents(50, 25, 0x4000);
+
+    assert_int_equal(pc.pitch, 52);
+    assert_int_equal(pc.cents, 25);
+}
+
+static void test_midi_effectivePitchCents_high_cents_with_full_bend_up(UNUSED void** state)
+{
+    PitchCents pc = midi_effectivePitchCents(50, 80, 0x4000);
+
+    assert_int_equal(pc.pitch, 52);
+    assert_int_equal(pc.cents, 80);
 }

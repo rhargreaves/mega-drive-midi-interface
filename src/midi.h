@@ -162,3 +162,4 @@ void midi_remap_channel(u8 midiChannel, u8 deviceChannel);
 void midi_reset(void);
 void midi_tick(void);
 PitchCents midi_effectivePitchCents(u8 pitch, s8 cents, u16 pitchBend);
+PitchCents midi_pitchShift(PitchCents pc, s8 centsAdd);
