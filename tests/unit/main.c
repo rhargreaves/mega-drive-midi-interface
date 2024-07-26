@@ -18,7 +18,7 @@
 #include "test_buffer.c"
 #include "test_note_priority.c"
 #include "test_midi_portamento.c"
-#include "test_pitchbend.c"
+#include "test_pitchcents.c"
 
 #define midi_test(test) cmocka_unit_test_setup(test, test_midi_setup)
 #define midi_pcm_test(test) cmocka_unit_test_setup(test, test_midi_setup)
@@ -34,7 +34,7 @@
 #define buffer_test(test) cmocka_unit_test_setup(test, test_buffer_setup)
 #define midi_receiver_test(test) cmocka_unit_test_setup(test, test_midi_receiver_setup)
 #define note_priority_test(test) cmocka_unit_test_setup(test, test_note_priority_setup)
-#define pitchbend_test(test) cmocka_unit_test(test)
+#define pitchcents_test(test) cmocka_unit_test(test)
 
 int main(void)
 {
@@ -186,16 +186,16 @@ int main(void)
         midi_test(test_midi_hides_fm_parameter_ui),
         midi_test(test_midi_resets_fm_values_to_defaults),
         midi_test(test_midi_resets_psg_values_to_defaults),
-        pitchbend_test(test_pitchcents_bend_nil),
-        pitchbend_test(test_pitchcents_bend_down_fully),
-        pitchbend_test(test_pitchcents_bend_up_fully),
-        pitchbend_test(test_pitchcents_bend_up),
-        pitchbend_test(test_pitchcents_bend_down),
-        pitchbend_test(test_pitchcents_bend_up_2),
-        pitchbend_test(test_pitchcents_bend_cents_with_partial_bend_down),
-        pitchbend_test(test_pitchcents_bend_high_cents_with_partial_bend_down),
-        pitchbend_test(test_pitchcents_bend_cents_with_full_bend_up),
-        pitchbend_test(test_pitchcents_bend_high_cents_with_full_bend_up),
+        pitchcents_test(test_pitchcents_bend_nil),
+        pitchcents_test(test_pitchcents_bend_down_fully),
+        pitchcents_test(test_pitchcents_bend_up_fully),
+        pitchcents_test(test_pitchcents_bend_up),
+        pitchcents_test(test_pitchcents_bend_down),
+        pitchcents_test(test_pitchcents_bend_up_2),
+        pitchcents_test(test_pitchcents_bend_cents_with_partial_bend_down),
+        pitchcents_test(test_pitchcents_bend_high_cents_with_partial_bend_down),
+        pitchcents_test(test_pitchcents_bend_cents_with_full_bend_up),
+        pitchcents_test(test_pitchcents_bend_high_cents_with_full_bend_up),
 
         midi_pcm_test(test_midi_enables_dac),
         midi_pcm_test(test_midi_disables_dac),
