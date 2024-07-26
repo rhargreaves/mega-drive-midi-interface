@@ -26,13 +26,22 @@ res/samples:
 	unzip temp.zip -d res/samples
 	rm temp.zip
 
+debug: FLAGS= $(DEFAULT_FLAGS) -O1 -DDEBUG=1
+debug: CFLAGS= $(FLAGS) -ggdb
+debug: AFLAGS= $(FLAGS)
+debug: LIBMD= $(LIB)/libmd_debug.a
+debug: pre-build out/rom.bin out/rom.out out/symbol.txt out/rom.s
+
 release: FLAGS= $(DEFAULT_FLAGS) -O3 -fuse-linker-plugin -fno-web -fno-gcse \
 	-fno-unit-at-a-time -fomit-frame-pointer $(LTO_FLAGS)
 release: LIBMD= $(LIB)/libmd.a
-release: pre-build out/rom.bin out/symbol.txt
+release: pre-build out/rom.bin out/symbol.txt out/rom.s
+
+clean: cleanobj cleanres cleanlst cleandep
+	$(RM) -f out.lst out/cmd_ out/symbol.txt out/rom.nm out/rom.wch out/rom.bin out/rom.s
 
 out/rom.s: out/rom.out
-	m68k-elf-objdump -S $^ > $@
+	m68k-elf-objdump -D -S $^ > $@
 
 unit-test:
 	$(MAKE) -C tests clean-target unit
