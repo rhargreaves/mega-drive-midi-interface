@@ -184,6 +184,8 @@ static void test_midi_psg_pitch_bend_persists_after_tick(UNUSED void** state)
 {
     for (int chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN; chan++) {
         debug_message("channel %d\n", chan);
+        __real_midi_program(chan, 8);
+
         u8 expectedPsgChan = chan - MIN_PSG_CHAN;
         expect_psg_tone(expectedPsgChan, TONE_NTSC_C4);
         expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
@@ -192,7 +194,14 @@ static void test_midi_psg_pitch_bend_persists_after_tick(UNUSED void** state)
         expect_psg_tone(expectedPsgChan, 0x1d9);
         __real_midi_pitch_bend(chan, 1000);
 
+        expect_psg_tone(expectedPsgChan, 0x1d7);
         __real_midi_psg_tick();
+
+        expect_psg_tone(expectedPsgChan, 0x1d6);
+        __real_midi_psg_tick();
+
+        expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_SILENCE);
+        __real_midi_note_off(chan, MIDI_PITCH_C4);
     }
 }
 
@@ -324,7 +333,7 @@ static void test_midi_shifts_semitone_in_psg_envelope(UNUSED void** state)
     const u16 expectedInitialTone = TONE_NTSC_C4;
     const u16 expectedShiftedTone[SHIFTS]
         = { /* Up */ 0x1aa, 0x1a9, 0x1a7, 0x19f, 0x193, 0x17c, 0x140,
-              /* Down */ 0x1ac, 0x1ad, 0x1b0, 0x1b7, 0x1c4, 0x1df, 0x23a };
+              /* Down */ 0x1ad, 0x1ae, 0x1b0, 0x1b8, 0x1c4, 0x1df, 0x23a };
 
     for (u8 i = 0; i < SHIFTS; i++) {
         u8 envelopeStep = (i + 1) * 0x10;
