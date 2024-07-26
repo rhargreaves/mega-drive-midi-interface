@@ -50,7 +50,7 @@ static void test_midi_portamento_glides_note_down(UNUSED void** state)
 
     expect_synth_pitch(0, 4, 640);
     midi_tick();
-    for (u16 i = 0; i < 148; i++) {
+    for (u16 i = 0; i < 139; i++) {
         expect_synth_pitch_any();
         midi_tick();
     }
@@ -83,7 +83,7 @@ static void test_midi_portamento_glides_note_up_and_down_on_early_release(UNUSED
 
     debug_message("note off\n");
     __real_midi_note_off(chan, MIDI_PITCH_C4);
-    for (u16 i = 0; i < 74; i++) {
+    for (u16 i = 0; i < 65; i++) {
         expect_synth_pitch_any();
         midi_tick();
     }
@@ -232,11 +232,11 @@ static void test_midi_portamento_glides_fully_up_and_down(UNUSED void** state)
 
     debug_message("note off\n");
     __real_midi_note_off(chan, MIDI_PITCH_C4);
-    for (u16 i = 0; i < 148; i++) {
+    for (u16 i = 0; i < 140; i++) {
         expect_synth_pitch_any();
         midi_tick();
     }
-    expect_synth_pitch(chan, 2, 0x43f);
+    expect_synth_pitch(chan, 2, 0x439);
     midi_tick();
 }
 
@@ -313,9 +313,10 @@ static void test_midi_portamento_glides_note_up_for_psg(UNUSED void** state)
             midi_tick();
         }
 
-        expect_psg_tone(psgChan, 0x1ab);
+        expect_psg_tone(psgChan, TONE_NTSC_C4);
         midi_tick();
 
+        debug_message("nil %d\n", chan);
         midi_tick();
         midi_tick();
     }
@@ -370,7 +371,7 @@ static void test_midi_portamento_glides_note_down_with_pitch_bend(UNUSED void** 
         expect_synth_pitch(chan, 3, 0x4b7);
         midi_tick();
 
-        for (u16 i = 0; i < 148; i++) {
+        for (u16 i = 0; i < 139; i++) {
             expect_synth_pitch_any();
             midi_tick();
         }
@@ -398,8 +399,8 @@ static void test_midi_portamento_sets_portamento_time_to_minimum(UNUSED void** s
 
     expect_synth_pitch(chan, 3, 0x466);
     midi_tick();
-
-    expect_synth_pitch(chan, 4, 0x495);
+    expect_synth_pitch(chan, 4, 0x284);
+    midi_tick();
     midi_tick();
 }
 

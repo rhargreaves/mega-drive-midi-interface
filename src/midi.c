@@ -951,6 +951,14 @@ static void processChannelGlide(DeviceChannel* chan, u16 portamentoTime)
 
     PitchCents pc = { .pitch = chan->pitch, .cents = chan->cents };
     pc = pitchcents_shift(pc, effectiveIncrement);
+
+    if ((effectiveIncrement > 0 && pc.pitch >= chan->glideTargetPitch)
+        || (effectiveIncrement < 0 && pc.pitch <= chan->glideTargetPitch)) {
+        pc.pitch = chan->glideTargetPitch;
+        pc.cents = 0;
+        chan->glideTargetPitch = 0;
+    }
+
     chan->pitch = pc.pitch;
     chan->cents = pc.cents;
 

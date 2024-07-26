@@ -1,7 +1,7 @@
 #pragma once
 #include "types.h"
-
-#include <cmocka.h>
+#include "debug.h"
+#include "cmocka.h"
 
 void expect_usb_sent_byte(u8 value);
 void stub_usb_receive_nothing(void);
@@ -51,6 +51,7 @@ void _expect_ym2612_write_operator(
 
 #define expect_psg_tone(c, t)                                                                      \
     {                                                                                              \
+        debug_message("expect: PSG_setTone(channel=%d, value=%d)\n", c, t);                        \
         expect_value(__wrap_PSG_setTone, channel, c);                                              \
         expect_value(__wrap_PSG_setTone, value, t);                                                \
     }
@@ -63,6 +64,7 @@ void _expect_ym2612_write_operator(
 
 #define expect_any_psg_tone()                                                                      \
     {                                                                                              \
+        debug_message("expect: PSG_setTone(channel=*, value=*)\n");                                \
         expect_any(__wrap_PSG_setTone, channel);                                                   \
         expect_any(__wrap_PSG_setTone, value);                                                     \
     }

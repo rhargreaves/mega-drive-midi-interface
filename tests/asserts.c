@@ -1,4 +1,5 @@
 #include "cmocka_inc.h"
+#include "asserts.h"
 #include "comm.h"
 
 void stub_usb_receive_nothing(void)
@@ -100,6 +101,7 @@ void expect_ym2612_write_operator_any_data(u8 chan, u8 op, u8 baseReg)
 
 void _expect_synth_pitch_any(const char* const file, const int line)
 {
+    debug_message("expect: synth_pitch(channel=*, octave=*, freqNumber=*)\n");
     expect_any_with_pos(__wrap_synth_pitch, channel, file, line);
     expect_any_with_pos(__wrap_synth_pitch, octave, file, line);
     expect_any_with_pos(__wrap_synth_pitch, freqNumber, file, line);

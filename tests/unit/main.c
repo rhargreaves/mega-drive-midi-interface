@@ -399,9 +399,9 @@ int main(void)
         midi_portamento_test(test_midi_portamento_glides_note_down_with_pitch_bend),
         midi_portamento_test(test_midi_portamento_sets_portamento_time_to_minimum),
         midi_portamento_test(test_midi_portamento_sets_portamento_time_to_maximum)
-        // TODO: test for special mode glide
         // clang-format on
     };
 
+    cmocka_set_test_filter("*");
     return cmocka_run_group_tests(tests, NULL, NULL);
 }
