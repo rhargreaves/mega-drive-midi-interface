@@ -442,3 +442,19 @@ static void test_midi_portamento_default_portamento_time_set(UNUSED void** state
     expect_synth_pitch(chan, 2, 0x457);
     midi_tick();
 }
+
+static void test_midi_portamento_glides_with_fine_tune(UNUSED void** state)
+{
+    const u8 chan = 0;
+    __real_midi_cc(chan, CC_PORTAMENTO_ENABLE, 127);
+    __real_midi_cc(chan, CC_FINE_TUNE, 127);
+
+    expect_synth_pitch(chan, 2, 0x461);
+    expect_synth_volume_any();
+    expect_synth_noteOn(chan);
+    __real_midi_note_on(chan, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
+    __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
+
+    expect_synth_pitch(chan, 2, 0x468);
+    midi_tick();
+}

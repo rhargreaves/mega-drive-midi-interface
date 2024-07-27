@@ -91,6 +91,7 @@ static void reset(void);
 static void init(void);
 static void devChanNoteOn(DeviceChannel* devChan, u8 pitch, u8 velocity);
 static void devChanNoteOff(DeviceChannel* devChan, u8 pitch);
+static void setDownstreamPitch(DeviceChannel* devChan, MidiChannel* midiChannel);
 
 void midi_init(
     const FmChannel** presets, const PercussionPreset** percussionPresets, const u8** envelopes)
@@ -347,9 +348,8 @@ static void updatePan(MidiChannel* midiChannel, DeviceChannel* devChan)
 static void updatePitchBend(MidiChannel* midiChannel, DeviceChannel* devChan)
 {
     if (devChan->pitchBend != midiChannel->pitchBend) {
-        PitchCents pc = pitchcents_bend(devChan->pitch, devChan->cents, midiChannel->pitchBend);
-        devChan->ops->pitch(devChan->number, pc.pitch, pc.cents);
         devChan->pitchBend = midiChannel->pitchBend;
+        setDownstreamPitch(devChan, midiChannel);
     }
 }
 
@@ -390,6 +390,20 @@ static DeviceChannel* findSuitableDeviceChannel(u8 midiChan)
     return dynamicMode ? findFreeChannel(midiChan) : deviceChannelByMidiChannel(midiChan);
 }
 
+static void setDownstreamPitch(DeviceChannel* devChan, MidiChannel* midiChannel)
+{
+    PitchCents pc = pitchcents_bend(devChan->pitch, devChan->cents, devChan->pitchBend);
+    pc = pitchcents_shift(pc, midiChannel->fineTune);
+    devChan->ops->pitch(devChan->number, pc.pitch, pc.cents);
+}
+
+static void setDownstreamNoteOn(DeviceChannel* devChan, u8 velocity)
+{
+    PitchCents pc = pitchcents_bend(devChan->pitch, devChan->cents, devChan->pitchBend);
+    pc = pitchcents_shift(pc, midiChannels[devChan->midiChannel].fineTune);
+    devChan->ops->noteOn(devChan->number, pc.pitch, pc.cents, velocity);
+}
+
 void midi_note_on(u8 chan, u8 pitch, u8 velocity)
 {
     if (velocity == MIN_MIDI_VELOCITY) {
@@ -426,9 +440,7 @@ void midi_note_on(u8 chan, u8 pitch, u8 velocity)
     devChan->cents = 0;
     devChan->pitch = pitch;
     updateDeviceChannelFromAssociatedMidiChannel(devChan);
-    PitchCents pc = pitchcents_bend(devChan->pitch, devChan->cents, devChan->pitchBend);
-    pc = pitchcents_shift(pc, midiChannel->fineTune);
-    devChan->ops->noteOn(devChan->number, pc.pitch, pc.cents, velocity);
+    setDownstreamNoteOn(devChan, velocity);
 }
 
 void midi_note_off(u8 chan, u8 pitch)
@@ -458,8 +470,7 @@ static void devChanNoteOn(DeviceChannel* devChan, u8 pitch, u8 velocity)
     devChan->noteOn = true;
     devChan->cents = 0;
     devChan->pitch = pitch;
-    PitchCents pc = pitchcents_bend(devChan->pitch, devChan->cents, devChan->pitchBend);
-    devChan->ops->noteOn(devChan->number, pc.pitch, pc.cents, velocity);
+    setDownstreamNoteOn(devChan, velocity);
 }
 
 static void devChanNoteOff(DeviceChannel* devChan, u8 pitch)
@@ -984,9 +995,7 @@ static void processChannelGlide(DeviceChannel* chan, u16 portamentoTime)
 
     chan->pitch = pc.pitch;
     chan->cents = pc.cents;
-
-    pc = pitchcents_bend(pc.pitch, pc.cents, chan->pitchBend);
-    chan->ops->pitch(chan->number, pc.pitch, pc.cents);
+    setDownstreamPitch(chan, &midiChannels[chan->midiChannel]);
 }
 
 static void processPortamento(void)
