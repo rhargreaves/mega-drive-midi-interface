@@ -14,6 +14,7 @@ Control the Yamaha YM2612 and PSG of the Sega Mega Drive via MIDI.
 - Built-in PSG envelopes based on the [EEF](https://github.com/rhargreaves/mega-drive-midi-interface/wiki/PSG-Envelopes) format
 - Supports MIDI 1.0 CCs & events (e.g. panning, volume, pitch bending)
 - Polyphony via dynamic FM channel mapping
+- Portamento (glide)
 - Connectivity via:
   - [Mega EverDrive X7](https://krikzz.com/store/home/33-mega-everdrive-x7.html) USB port.
   - [Mega EverDrive PRO](https://krikzz.com/store/home/59-mega-everdrive-pro.html) USB port.
