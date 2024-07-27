@@ -66,8 +66,9 @@
 static const char HEADER[] = "Mega Drive MIDI Interface";
 static const char CHAN_HEADER[] = "Ch.   1  2  3  4  5  6  1  2  3  4";
 static const char MIDI_HEADER[] = "MIDI";
-static const char MIDI_CH_TEXT[17][3] = { " -", " 1", " 2", " 3", " 4", " 5", " 6", " 7", " 8",
-    " 9", "10", "11", "12", "13", "14", "15", "16" };
+static const char MIDI_CH_TEXT[16][3] = { " 1", " 2", " 3", " 4", " 5", " 6", " 7", " 8", " 9",
+    "10", "11", "12", "13", "14", "15", "16" };
+static const char MIDI_CH_UNASSIGNED_TEXT[] = " -";
 
 static void init_activity_leds(void);
 static void init_load(void);
@@ -295,20 +296,22 @@ static void update_key_on_off(void)
     }
 }
 
-static u8 midi_chan_for_ui(DeviceChannel* mappings, u8 index)
-{
-    return (mappings[index].midiChannel) + 1;
-}
-
 static void print_mappings_if_dirty(u8* midiChans)
 {
     static u8 lastMidiChans[DEV_PHYSICAL_CHANS];
     if (memcmp(lastMidiChans, midiChans, sizeof(u8) * DEV_PHYSICAL_CHANS) == 0) {
         return;
     }
-    memcpy(lastMidiChans, midiChans, sizeof(u8) * DEV_PHYSICAL_CHANS);
-    for (u8 ch = 0; ch < 10; ch++) {
-        draw_text(MIDI_CH_TEXT[midiChans[ch]], 5 + (ch * 3), MIDI_Y);
+
+    for (u8 devChan = 0; devChan < 10; devChan++) {
+        u8 midiCh = midiChans[devChan];
+        const char* text;
+        if (midiCh == UNASSIGNED_MIDI_CHANNEL) {
+            text = MIDI_CH_UNASSIGNED_TEXT;
+        } else {
+            text = MIDI_CH_TEXT[midiChans[devChan]];
+        }
+        draw_text(text, 5 + (devChan * 3), MIDI_Y);
     }
 }
 
@@ -316,7 +319,7 @@ static void populate_mappings(u8* midiChans)
 {
     DeviceChannel* chans = midi_channel_mappings();
     for (u8 i = 0; i < DEV_PHYSICAL_CHANS; i++) {
-        midiChans[i] = midi_chan_for_ui(chans, i);
+        midiChans[i] = chans[i].midiChannel;
     }
 }
 
