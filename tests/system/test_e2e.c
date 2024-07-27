@@ -449,7 +449,7 @@ static void test_midi_changing_program_retains_volume(void** state)
 
 static void test_midi_portamento_glides_note(void** state)
 {
-    stub_usb_receive_cc(TEST_MIDI_CHANNEL_1, TEST_CC_PORTAMENTO_TIME, 126);
+    stub_usb_receive_cc(TEST_MIDI_CHANNEL_1, TEST_CC_PORTAMENTO_TIME, 95);
     midi_receiver_read();
     stub_usb_receive_cc(TEST_MIDI_CHANNEL_1, TEST_CC_PORTAMENTO_ON, 0x7F);
     midi_receiver_read();

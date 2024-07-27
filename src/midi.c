@@ -34,7 +34,7 @@ typedef struct MidiChannel {
     NotePriorityStack notePriority;
     DeviceSelect deviceSelect;
     bool portamento;
-    u16 portamentoTime;
+    u16 portamentoInterval;
 } MidiChannel;
 
 typedef enum MappingMode { MappingMode_Static, MappingMode_Dynamic, MappingMode_Auto } MappingMode;
@@ -55,6 +55,14 @@ static const VTable DAC_VTable = { midi_dac_note_on, midi_dac_note_off, midi_dac
 static const u8** defaultEnvelopes;
 static const FmChannel** defaultPresets;
 static const PercussionPreset** defaultPercussionPresets;
+
+static const u16 portaTimeToInterval[128]
+    = { 1145, 1089, 1036, 985, 937, 892, 848, 807, 768, 730, 694, 661, 628, 598, 569, 541, 514, 489,
+          466, 443, 421, 401, 381, 363, 345, 328, 312, 297, 282, 269, 255, 243, 231, 220, 209, 199,
+          189, 180, 171, 163, 155, 147, 140, 133, 127, 121, 115, 109, 104, 99, 94, 89, 85, 81, 77,
+          73, 70, 66, 63, 60, 57, 54, 52, 49, 47, 44, 42, 40, 38, 36, 35, 33, 31, 30, 28, 27, 26,
+          24, 23, 22, 21, 20, 19, 18, 17, 16, 16, 15, 14, 13, 13, 12, 12, 11, 10, 10, 9, 9, 9, 8, 8,
+          7, 7, 7, 6, 6, 6, 5, 5, 5, 5, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2 };
 
 static MappingMode mappingModePref;
 static DeviceChannel deviceChannels[DEV_CHANS];
@@ -880,8 +888,8 @@ static void setPortamentoMode(u8 chan, bool enable)
 static void setPortamentoTime(u8 chan, u8 value)
 {
     MidiChannel* midiChannel = &midiChannels[chan];
-    u16 interval = (127 - value) * 10;
-    midiChannel->portamentoTime = interval;
+    u16 interval = portaTimeToInterval[value];
+    midiChannel->portamentoInterval = interval;
 }
 
 void midi_cc(u8 chan, u8 controller, u8 value)
@@ -974,7 +982,7 @@ static void processPortamento(void)
         }
         MidiChannel* midiChannel = &midiChannels[chan->midiChannel];
         if (midiChannel->portamento && chan->noteOn) {
-            processChannelGlide(chan, midiChannel->portamentoTime);
+            processChannelGlide(chan, midiChannel->portamentoInterval);
         }
     }
 }

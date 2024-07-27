@@ -5,7 +5,7 @@ static int test_midi_portamento_setup(UNUSED void** state)
     test_midi_setup(state);
 
     for (u8 chan = 0; chan < MIDI_CHANNELS; chan++) {
-        __real_midi_cc(chan, CC_PORTAMENTO_TIME_MSB, 126);
+        __real_midi_cc(chan, CC_PORTAMENTO_TIME_MSB, 95);
     }
     return 0;
 }
@@ -397,9 +397,11 @@ static void test_midi_portamento_sets_portamento_time_to_minimum(UNUSED void** s
     __real_midi_note_on(chan, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
     __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
-    expect_synth_pitch(chan, 3, 0x466);
+    expect_synth_pitch(chan, 3, 1048);
     midi_tick();
-    expect_synth_pitch(chan, 4, 0x284);
+    expect_synth_pitch(chan, 4, 644);
+    midi_tick();
+
     midi_tick();
     midi_tick();
 }
@@ -417,9 +419,9 @@ static void test_midi_portamento_sets_portamento_time_to_maximum(UNUSED void** s
     __real_midi_note_on(chan, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
     __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
-    expect_synth_pitch(chan, 2, 0x439);
+    expect_synth_pitch(chan, 2, 0x43a);
     midi_tick();
 
-    expect_synth_pitch(chan, 2, 0x439);
+    expect_synth_pitch(chan, 2, 0x43b);
     midi_tick();
 }
