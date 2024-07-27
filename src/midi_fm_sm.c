@@ -13,12 +13,7 @@ static SpecialModeOperator smOperators[SM_OP_LEN];
 
 void midi_fm_sm_note_on(u8 op, u8 pitch, s8 cents, u8 velocity)
 {
-    SpecialModeOperator* smOp = &smOperators[op];
-    smOp->pitch = pitch;
-    smOp->cents = cents;
-
-    synth_specialModePitch(op, midi_fm_pitchToOctave(smOp->pitch),
-        midi_fm_pitchCentsToFreqNum(smOp->pitch, smOp->cents));
+    midi_fm_sm_pitch(op, pitch, cents);
     synth_specialModeVolume(op, velocity);
 }
 
