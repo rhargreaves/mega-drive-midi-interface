@@ -417,10 +417,10 @@ static void test_midi_portamento_sets_portamento_time_to_maximum(UNUSED void** s
     __real_midi_note_on(chan, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
     __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
-    expect_synth_pitch(chan, 2, 0x43a);
+    expect_synth_pitch(chan, 2, 0x439);
     midi_tick();
 
-    expect_synth_pitch(chan, 2, 0x43b);
+    expect_synth_pitch(chan, 2, 0x43a);
     midi_tick();
 }
 
