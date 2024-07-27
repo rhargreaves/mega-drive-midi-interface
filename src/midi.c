@@ -890,8 +890,7 @@ static void setPortamentoMode(u8 chan, bool enable)
 static void setPortamentoTime(u8 chan, u8 value)
 {
     MidiChannel* midiChannel = &midiChannels[chan];
-    u16 interval = portaTimeToInterval[value];
-    midiChannel->portamentoInterval = interval;
+    midiChannel->portamentoInterval = portaTimeToInterval[value];
 }
 
 void midi_cc(u8 chan, u8 controller, u8 value)
