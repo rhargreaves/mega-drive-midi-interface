@@ -91,7 +91,7 @@ static void reset(void);
 static void init(void);
 static void devChanNoteOn(DeviceChannel* devChan, u8 pitch, u8 velocity);
 static void devChanNoteOff(DeviceChannel* devChan, u8 pitch);
-static void setDownstreamPitch(DeviceChannel* devChan, MidiChannel* midiChannel);
+static void setDownstreamPitch(DeviceChannel* devChan);
 
 void midi_init(
     const FmChannel** presets, const PercussionPreset** percussionPresets, const u8** envelopes)
@@ -349,7 +349,7 @@ static void updatePitchBend(MidiChannel* midiChannel, DeviceChannel* devChan)
 {
     if (devChan->pitchBend != midiChannel->pitchBend) {
         devChan->pitchBend = midiChannel->pitchBend;
-        setDownstreamPitch(devChan, midiChannel);
+        setDownstreamPitch(devChan);
     }
 }
 
@@ -390,17 +390,21 @@ static DeviceChannel* findSuitableDeviceChannel(u8 midiChan)
     return dynamicMode ? findFreeChannel(midiChan) : deviceChannelByMidiChannel(midiChan);
 }
 
-static void setDownstreamPitch(DeviceChannel* devChan, MidiChannel* midiChannel)
+static PitchCents effectivePitchCents(DeviceChannel* devChan)
 {
     PitchCents pc = pitchcents_bend(devChan->pitch, devChan->cents, devChan->pitchBend);
-    pc = pitchcents_shift(pc, midiChannel->fineTune);
+    return pitchcents_shift(pc, midiChannels[devChan->midiChannel].fineTune);
+}
+
+static void setDownstreamPitch(DeviceChannel* devChan)
+{
+    PitchCents pc = effectivePitchCents(devChan);
     devChan->ops->pitch(devChan->number, pc.pitch, pc.cents);
 }
 
 static void setDownstreamNoteOn(DeviceChannel* devChan, u8 velocity)
 {
-    PitchCents pc = pitchcents_bend(devChan->pitch, devChan->cents, devChan->pitchBend);
-    pc = pitchcents_shift(pc, midiChannels[devChan->midiChannel].fineTune);
+    PitchCents pc = effectivePitchCents(devChan);
     devChan->ops->noteOn(devChan->number, pc.pitch, pc.cents, velocity);
 }
 
@@ -995,7 +999,7 @@ static void processChannelGlide(DeviceChannel* chan, u16 portamentoTime)
 
     chan->pitch = pc.pitch;
     chan->cents = pc.cents;
-    setDownstreamPitch(chan, &midiChannels[chan->midiChannel]);
+    setDownstreamPitch(chan);
 }
 
 static void processPortamento(void)
