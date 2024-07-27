@@ -22,6 +22,7 @@
 #define FOREACH_DEV_CHAN_WITH_MIDI(midiCh, ch)                                                     \
     FOREACH_DEV_CHAN(ch)                                                                           \
         if (ch->midiChannel == midiCh)
+#define DEFAULT_PORTAMENTO_INTERVAL 47
 
 typedef enum DeviceSelect { Auto, FM, PSG_Tone, PSG_Noise } DeviceSelect;
 
@@ -139,6 +140,7 @@ static void initMidiChannel(u8 midiChan)
     note_priority_init(&chan->notePriority);
     chan->deviceSelect = Auto;
     chan->portamento = false;
+    chan->portamentoInterval = DEFAULT_PORTAMENTO_INTERVAL;
 }
 
 static void initAllDeviceChannels(void)

@@ -398,7 +398,8 @@ int main(void)
         midi_portamento_test(test_midi_portamento_glides_note_up_with_pitch_bend),
         midi_portamento_test(test_midi_portamento_glides_note_down_with_pitch_bend),
         midi_portamento_test(test_midi_portamento_sets_portamento_time_to_minimum),
-        midi_portamento_test(test_midi_portamento_sets_portamento_time_to_maximum)
+        midi_portamento_test(test_midi_portamento_sets_portamento_time_to_maximum),
+        midi_portamento_test(test_midi_portamento_default_portamento_time_set)
         // clang-format on
     };
 
