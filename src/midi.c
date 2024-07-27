@@ -36,6 +36,7 @@ typedef struct MidiChannel {
     DeviceSelect deviceSelect;
     bool portamento;
     u16 portamentoInterval;
+    s8 fineTune;
 } MidiChannel;
 
 typedef enum MappingMode { MappingMode_Static, MappingMode_Dynamic, MappingMode_Auto } MappingMode;
@@ -141,6 +142,7 @@ static void initMidiChannel(u8 midiChan)
     chan->deviceSelect = Auto;
     chan->portamento = false;
     chan->portamentoInterval = DEFAULT_PORTAMENTO_INTERVAL;
+    chan->fineTune = 0;
 }
 
 static void initAllDeviceChannels(void)
@@ -403,8 +405,8 @@ void midi_note_on(u8 chan, u8 pitch, u8 velocity)
         return;
     }
 
+    MidiChannel* midiChannel = &midiChannels[chan];
     if (!dynamicMode) {
-        MidiChannel* midiChannel = &midiChannels[chan];
         if (note_priority_isFull(&midiChannel->notePriority)) {
             log_warn("Ch %d: Note priority stack full", chan + 1);
             return;
@@ -425,6 +427,7 @@ void midi_note_on(u8 chan, u8 pitch, u8 velocity)
     devChan->pitch = pitch;
     updateDeviceChannelFromAssociatedMidiChannel(devChan);
     PitchCents pc = pitchcents_bend(devChan->pitch, devChan->cents, devChan->pitchBend);
+    pc = pitchcents_shift(pc, midiChannel->fineTune);
     devChan->ops->noteOn(devChan->number, pc.pitch, pc.cents, velocity);
 }
 
@@ -893,6 +896,12 @@ static void setPortamentoTime(u8 chan, u8 value)
     midiChannel->portamentoInterval = portaTimeToInterval[value];
 }
 
+static void setFineTune(u8 chan, u8 value)
+{
+    MidiChannel* midiChannel = &midiChannels[chan];
+    midiChannel->fineTune = value - 64;
+}
+
 void midi_cc(u8 chan, u8 controller, u8 value)
 {
     switch (controller) {
@@ -930,6 +939,11 @@ void midi_cc(u8 chan, u8 controller, u8 value)
         break;
     case CC_PORTAMENTO_ENABLE:
         setPortamentoMode(chan, RANGE(value, 2));
+        break;
+    case CC_FINE_TUNE:
+        if (isIgnoringNonGeneralMidiCCs())
+            break;
+        setFineTune(chan, value);
         break;
     default:
         fmParameterCC(chan, controller, value);

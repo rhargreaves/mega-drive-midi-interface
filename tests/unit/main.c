@@ -19,10 +19,12 @@
 #include "test_note_priority.c"
 #include "test_midi_portamento.c"
 #include "test_pitchcents.c"
+#include "test_midi_finetune.c"
 
 #define midi_test(test) cmocka_unit_test_setup(test, test_midi_setup)
 #define midi_pcm_test(test) cmocka_unit_test_setup(test, test_midi_setup)
 #define midi_portamento_test(test) cmocka_unit_test_setup(test, test_midi_portamento_setup)
+#define midi_finetune_test(test) cmocka_unit_test_setup(test, test_midi_setup)
 #define dynamic_midi_test(test) cmocka_unit_test_setup(test, test_dynamic_midi_setup)
 #define synth_test(test) cmocka_unit_test_setup(test, test_synth_setup)
 #define comm_test(test) cmocka_unit_test_setup(test, test_comm_setup)
@@ -399,7 +401,10 @@ int main(void)
         midi_portamento_test(test_midi_portamento_glides_note_down_with_pitch_bend),
         midi_portamento_test(test_midi_portamento_sets_portamento_time_to_minimum),
         midi_portamento_test(test_midi_portamento_sets_portamento_time_to_maximum),
-        midi_portamento_test(test_midi_portamento_default_portamento_time_set)
+        midi_portamento_test(test_midi_portamento_default_portamento_time_set),
+
+        midi_finetune_test(test_midi_finetune_max),
+        midi_finetune_test(test_midi_finetune_min)
         // clang-format on
     };
 
