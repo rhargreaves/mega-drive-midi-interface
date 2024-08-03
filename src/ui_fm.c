@@ -83,8 +83,8 @@ static void printChannelParameterHeadings(void)
     ui_draw_text(" DT", OP_HEADING_X, BASE_Y + 7);
     ui_draw_text(" RS", OP_HEADING_X, BASE_Y + 8);
     ui_draw_text(" AM", OP_HEADING_X, BASE_Y + 9);
-    ui_draw_text("D1R", OP_HEADING_X, BASE_Y + 10);
-    ui_draw_text("D2R", OP_HEADING_X, BASE_Y + 11);
+    ui_draw_text(" DR", OP_HEADING_X, BASE_Y + 10);
+    ui_draw_text(" SR", OP_HEADING_X, BASE_Y + 11);
     ui_draw_text(" SL", OP_HEADING_X, BASE_Y + 12);
     ui_draw_text(" RR", OP_HEADING_X, BASE_Y + 13);
     ui_draw_text("SSG", OP_HEADING_X, BASE_Y + 14);
@@ -246,11 +246,9 @@ static void updateOpValues(const FmChannel* channel, bool forceRefresh)
         updateOpValue(&lastOper->rateScaling, &oper->rateScaling, forceRefresh, op, 8);
         updateOpValue(
             &lastOper->amplitudeModulation, &oper->amplitudeModulation, forceRefresh, op, 9);
-        updateOpValue(&lastOper->firstDecayRate, &oper->firstDecayRate, forceRefresh, op, 10);
-        updateOpValue(
-            &lastOper->secondaryDecayRate, &oper->secondaryDecayRate, forceRefresh, op, 11);
-        updateOpValue(
-            &lastOper->secondaryAmplitude, &oper->secondaryAmplitude, forceRefresh, op, 12);
+        updateOpValue(&lastOper->decayRate, &oper->decayRate, forceRefresh, op, 10);
+        updateOpValue(&lastOper->sustainRate, &oper->sustainRate, forceRefresh, op, 11);
+        updateOpValue(&lastOper->sustainLevel, &oper->sustainLevel, forceRefresh, op, 12);
         updateOpValue(&lastOper->releaseRate, &oper->releaseRate, forceRefresh, op, 13);
         updateOpValue(&lastOper->ssgEg, &oper->ssgEg, forceRefresh, op, 14);
     }

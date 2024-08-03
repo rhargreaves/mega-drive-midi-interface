@@ -142,25 +142,25 @@ void __wrap_synth_operatorAttackRate(u8 channel, u8 op, u8 attackRate)
     check_expected(attackRate);
 }
 
-void __wrap_synth_operatorFirstDecayRate(u8 channel, u8 op, u8 firstDecayRate)
+void __wrap_synth_operatorDecayRate(u8 channel, u8 op, u8 decayRate)
 {
     check_expected(channel);
     check_expected(op);
-    check_expected(firstDecayRate);
+    check_expected(decayRate);
 }
 
-void __wrap_synth_operatorSecondDecayRate(u8 channel, u8 op, u8 secondDecayRate)
+void __wrap_synth_operatorSustainRate(u8 channel, u8 op, u8 sustainRate)
 {
     check_expected(channel);
     check_expected(op);
-    check_expected(secondDecayRate);
+    check_expected(sustainRate);
 }
 
-void __wrap_synth_operatorSecondaryAmplitude(u8 channel, u8 op, u8 secondaryAmplitude)
+void __wrap_synth_operatorSustainLevel(u8 channel, u8 op, u8 sustainLevel)
 {
     check_expected(channel);
     check_expected(op);
-    check_expected(secondaryAmplitude);
+    check_expected(sustainLevel);
 }
 
 void __wrap_synth_operatorAmplitudeModulation(u8 channel, u8 op, u8 amplitudeModulation)

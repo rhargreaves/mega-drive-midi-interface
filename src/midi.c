@@ -795,7 +795,7 @@ static void setFmChanParameter(DeviceChannel* devChan, u8 controller, u8 value)
     case CC_GENMDM_FIRST_DECAY_RATE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorFirstDecayRate(
+        synth_operatorDecayRate(
             devChan->number, controller - CC_GENMDM_FIRST_DECAY_RATE_OP1, RANGE(value, 32));
         break;
     case CC_GENMDM_SECOND_DECAY_RATE_OP1:
@@ -804,7 +804,7 @@ static void setFmChanParameter(DeviceChannel* devChan, u8 controller, u8 value)
     case CC_GENMDM_SECOND_DECAY_RATE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorSecondDecayRate(
+        synth_operatorSustainRate(
             devChan->number, controller - CC_GENMDM_SECOND_DECAY_RATE_OP1, RANGE(value, 16));
         break;
     case CC_GENMDM_SECOND_AMPLITUDE_OP1:
@@ -813,7 +813,7 @@ static void setFmChanParameter(DeviceChannel* devChan, u8 controller, u8 value)
     case CC_GENMDM_SECOND_AMPLITUDE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorSecondaryAmplitude(
+        synth_operatorSustainLevel(
             devChan->number, controller - CC_GENMDM_SECOND_AMPLITUDE_OP1, RANGE(value, 16));
         break;
     case CC_GENMDM_RELEASE_RATE_OP1:

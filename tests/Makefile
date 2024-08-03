@@ -58,9 +58,9 @@ MOCKS=midi_process \
 	synth_operatorDetune \
 	synth_operatorRateScaling \
 	synth_operatorAttackRate \
-	synth_operatorFirstDecayRate \
-	synth_operatorSecondDecayRate \
-	synth_operatorSecondaryAmplitude \
+	synth_operatorDecayRate \
+	synth_operatorSustainRate \
+	synth_operatorSustainLevel \
 	synth_operatorAmplitudeModulation \
 	synth_operatorReleaseRate \
 	synth_operatorSsgEg \

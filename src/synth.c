@@ -26,10 +26,10 @@ static void writeGlobalLfo(void);
 static void writeAlgorithmAndFeedback(u8 channel);
 static void writeOperatorMultipleAndDetune(u8 channel, u8 operator);
 static void writeOperatorRateScalingAndAttackRate(u8 channel, u8 operator);
-static void writeOperatorAmplitudeModulationAndFirstDecayRate(u8 channel, u8 operator);
-static void writeOperatorReleaseRateAndSecondaryAmplitude(u8 channel, u8 operator);
+static void writeOperatorAmplitudeModulationAndDecayRate(u8 channel, u8 operator);
+static void writeOperatorReleaseRateAndSustainLevel(u8 channel, u8 operator);
 static void writeOperatorTotalLevel(u8 channel, u8 operator);
-static void writeOperatorSecondaryDecayRate(u8 channel, u8 operator);
+static void writeOperatorSustainRate(u8 channel, u8 operator);
 static void writeOperatorSsgEg(u8 channel, u8 operator);
 static void writeStereoAmsFms(u8 channel);
 static void writeChannelReg(u8 channel, u8 baseReg, u8 data);
@@ -67,9 +67,9 @@ static void updateChannel(u8 chan)
     for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
         writeOperatorMultipleAndDetune(chan, op);
         writeOperatorRateScalingAndAttackRate(chan, op);
-        writeOperatorAmplitudeModulationAndFirstDecayRate(chan, op);
-        writeOperatorSecondaryDecayRate(chan, op);
-        writeOperatorReleaseRateAndSecondaryAmplitude(chan, op);
+        writeOperatorAmplitudeModulationAndDecayRate(chan, op);
+        writeOperatorSustainRate(chan, op);
+        writeOperatorReleaseRateAndSustainLevel(chan, op);
         writeOperatorTotalLevel(chan, op);
         writeOperatorSsgEg(chan, op);
     }
@@ -166,17 +166,17 @@ void synth_operatorAttackRate(u8 channel, u8 op, u8 attackRate)
     channelParameterUpdated(channel);
 }
 
-void synth_operatorSecondDecayRate(u8 channel, u8 op, u8 secondDecayRate)
+void synth_operatorSustainRate(u8 channel, u8 op, u8 sustainRate)
 {
-    getOperator(channel, op)->secondaryDecayRate = secondDecayRate;
-    writeOperatorSecondaryDecayRate(channel, op);
+    getOperator(channel, op)->sustainRate = sustainRate;
+    writeOperatorSustainRate(channel, op);
     channelParameterUpdated(channel);
 }
 
 void synth_operatorReleaseRate(u8 channel, u8 op, u8 releaseRate)
 {
     getOperator(channel, op)->releaseRate = releaseRate;
-    writeOperatorReleaseRateAndSecondaryAmplitude(channel, op);
+    writeOperatorReleaseRateAndSustainLevel(channel, op);
     channelParameterUpdated(channel);
 }
 
@@ -187,24 +187,24 @@ void synth_operatorSsgEg(u8 channel, u8 op, u8 ssgEg)
     channelParameterUpdated(channel);
 }
 
-void synth_operatorSecondaryAmplitude(u8 channel, u8 op, u8 secondaryAmplitude)
+void synth_operatorSustainLevel(u8 channel, u8 op, u8 sustainLevel)
 {
-    getOperator(channel, op)->secondaryAmplitude = secondaryAmplitude;
-    writeOperatorReleaseRateAndSecondaryAmplitude(channel, op);
+    getOperator(channel, op)->sustainLevel = sustainLevel;
+    writeOperatorReleaseRateAndSustainLevel(channel, op);
     channelParameterUpdated(channel);
 }
 
-void synth_operatorFirstDecayRate(u8 channel, u8 op, u8 firstDecayRate)
+void synth_operatorDecayRate(u8 channel, u8 op, u8 decayRate)
 {
-    getOperator(channel, op)->firstDecayRate = firstDecayRate;
-    writeOperatorAmplitudeModulationAndFirstDecayRate(channel, op);
+    getOperator(channel, op)->decayRate = decayRate;
+    writeOperatorAmplitudeModulationAndDecayRate(channel, op);
     channelParameterUpdated(channel);
 }
 
 void synth_operatorAmplitudeModulation(u8 channel, u8 op, u8 amplitudeModulation)
 {
     getOperator(channel, op)->amplitudeModulation = amplitudeModulation;
-    writeOperatorAmplitudeModulationAndFirstDecayRate(channel, op);
+    writeOperatorAmplitudeModulationAndDecayRate(channel, op);
     channelParameterUpdated(channel);
 }
 
@@ -334,22 +334,22 @@ static void writeOperatorRateScalingAndAttackRate(u8 channel, u8 operator)
     writeOperatorReg(channel, operator, 0x50, op->attackRate + (op->rateScaling << 6));
 }
 
-static void writeOperatorAmplitudeModulationAndFirstDecayRate(u8 channel, u8 operator)
+static void writeOperatorAmplitudeModulationAndDecayRate(u8 channel, u8 operator)
 {
     Operator* op = getOperator(channel, operator);
-    writeOperatorReg(channel, operator, 0x60, op->firstDecayRate + (op->amplitudeModulation << 7));
+    writeOperatorReg(channel, operator, 0x60, op->decayRate + (op->amplitudeModulation << 7));
 }
 
-static void writeOperatorSecondaryDecayRate(u8 channel, u8 operator)
+static void writeOperatorSustainRate(u8 channel, u8 operator)
 {
     Operator* op = getOperator(channel, operator);
-    writeOperatorReg(channel, operator, 0x70, op->secondaryDecayRate);
+    writeOperatorReg(channel, operator, 0x70, op->sustainRate);
 }
 
-static void writeOperatorReleaseRateAndSecondaryAmplitude(u8 channel, u8 operator)
+static void writeOperatorReleaseRateAndSustainLevel(u8 channel, u8 operator)
 {
     Operator* op = getOperator(channel, operator);
-    writeOperatorReg(channel, operator, 0x80, op->releaseRate + (op->secondaryAmplitude << 4));
+    writeOperatorReg(channel, operator, 0x80, op->releaseRate + (op->sustainLevel << 4));
 }
 
 static void writeOperatorSsgEg(u8 channel, u8 operator)

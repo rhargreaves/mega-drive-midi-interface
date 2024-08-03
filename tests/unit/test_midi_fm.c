@@ -281,9 +281,9 @@ static void test_midi_sets_operator_first_decay_rate(UNUSED void** state)
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         for (u8 cc = 47; cc <= 50; cc++) {
             u8 expectedOp = cc - 47;
-            expect_value(__wrap_synth_operatorFirstDecayRate, channel, chan);
-            expect_value(__wrap_synth_operatorFirstDecayRate, op, expectedOp);
-            expect_value(__wrap_synth_operatorFirstDecayRate, firstDecayRate, expectedValue);
+            expect_value(__wrap_synth_operatorDecayRate, channel, chan);
+            expect_value(__wrap_synth_operatorDecayRate, op, expectedOp);
+            expect_value(__wrap_synth_operatorDecayRate, decayRate, expectedValue);
 
             __real_midi_cc(chan, cc, 8);
         }
@@ -297,9 +297,9 @@ static void test_midi_sets_operator_second_decay_rate(UNUSED void** state)
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         for (u8 cc = 51; cc <= 54; cc++) {
             u8 expectedOp = cc - 51;
-            expect_value(__wrap_synth_operatorSecondDecayRate, channel, chan);
-            expect_value(__wrap_synth_operatorSecondDecayRate, op, expectedOp);
-            expect_value(__wrap_synth_operatorSecondDecayRate, secondDecayRate, expectedValue);
+            expect_value(__wrap_synth_operatorSustainRate, channel, chan);
+            expect_value(__wrap_synth_operatorSustainRate, op, expectedOp);
+            expect_value(__wrap_synth_operatorSustainRate, sustainRate, expectedValue);
 
             __real_midi_cc(chan, cc, 8);
         }
@@ -313,10 +313,9 @@ static void test_midi_sets_operator_secondary_amplitude(UNUSED void** state)
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         for (u8 cc = 55; cc <= 58; cc++) {
             u8 expectedOp = cc - 55;
-            expect_value(__wrap_synth_operatorSecondaryAmplitude, channel, chan);
-            expect_value(__wrap_synth_operatorSecondaryAmplitude, op, expectedOp);
-            expect_value(
-                __wrap_synth_operatorSecondaryAmplitude, secondaryAmplitude, expectedValue);
+            expect_value(__wrap_synth_operatorSustainLevel, channel, chan);
+            expect_value(__wrap_synth_operatorSustainLevel, op, expectedOp);
+            expect_value(__wrap_synth_operatorSustainLevel, sustainLevel, expectedValue);
 
             __real_midi_cc(chan, cc, 8);
         }

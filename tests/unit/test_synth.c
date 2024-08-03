@@ -204,11 +204,11 @@ static void test_synth_sets_operator_attack_rate_and_rate_scaling(UNUSED void** 
 static void test_synth_sets_operator_second_decay_rate(UNUSED void** state)
 {
     const u8 baseReg = 0x70;
-    u8 secondDecayRate = 16;
+    u8 sustainRate = 16;
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
-            expect_ym2612_write_operator(chan, op, baseReg, secondDecayRate);
-            __real_synth_operatorSecondDecayRate(chan, op, secondDecayRate);
+            expect_ym2612_write_operator(chan, op, baseReg, sustainRate);
+            __real_synth_operatorSustainRate(chan, op, sustainRate);
         }
     }
 }
@@ -216,14 +216,13 @@ static void test_synth_sets_operator_second_decay_rate(UNUSED void** state)
 static void test_synth_sets_operator_release_rate_and_secondary_amplitude(UNUSED void** state)
 {
     const u8 baseReg = 0x80;
-    u8 secondaryAmplitude = 15;
+    u8 sustainLevel = 15;
     u8 releaseRate = 4;
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
             expect_ym2612_write_operator_any_data(chan, op, baseReg);
-            __real_synth_operatorSecondaryAmplitude(chan, op, secondaryAmplitude);
-            expect_ym2612_write_operator(
-                chan, op, baseReg, releaseRate + (secondaryAmplitude << 4));
+            __real_synth_operatorSustainLevel(chan, op, sustainLevel);
+            expect_ym2612_write_operator(chan, op, baseReg, releaseRate + (sustainLevel << 4));
             __real_synth_operatorReleaseRate(chan, op, releaseRate);
         }
     }
@@ -233,13 +232,12 @@ static void test_synth_sets_operator_amplitude_modulation_and_first_decay_rate(U
 {
     const u8 baseReg = 0x60;
     u8 amplitudeModulation = 1;
-    u8 firstDecayRate = 16;
+    u8 decayRate = 16;
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
             expect_ym2612_write_operator_any_data(chan, op, baseReg);
-            __real_synth_operatorFirstDecayRate(chan, op, firstDecayRate);
-            expect_ym2612_write_operator(
-                chan, op, baseReg, firstDecayRate + (amplitudeModulation << 7));
+            __real_synth_operatorDecayRate(chan, op, decayRate);
+            expect_ym2612_write_operator(chan, op, baseReg, decayRate + (amplitudeModulation << 7));
             __real_synth_operatorAmplitudeModulation(chan, op, amplitudeModulation);
         }
     }
