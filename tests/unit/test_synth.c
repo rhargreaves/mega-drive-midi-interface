@@ -201,7 +201,7 @@ static void test_synth_sets_operator_attack_rate_and_rate_scaling(UNUSED void** 
     }
 }
 
-static void test_synth_sets_operator_second_decay_rate(UNUSED void** state)
+static void test_synth_sets_operator_sustain_rate(UNUSED void** state)
 {
     const u8 baseReg = 0x70;
     u8 sustainRate = 16;
@@ -213,7 +213,7 @@ static void test_synth_sets_operator_second_decay_rate(UNUSED void** state)
     }
 }
 
-static void test_synth_sets_operator_release_rate_and_secondary_amplitude(UNUSED void** state)
+static void test_synth_sets_operator_release_rate_and_sustain_level(UNUSED void** state)
 {
     const u8 baseReg = 0x80;
     u8 sustainLevel = 15;
@@ -228,7 +228,7 @@ static void test_synth_sets_operator_release_rate_and_secondary_amplitude(UNUSED
     }
 }
 
-static void test_synth_sets_operator_amplitude_modulation_and_first_decay_rate(UNUSED void** state)
+static void test_synth_sets_operator_amplitude_modulation_and_decay_rate(UNUSED void** state)
 {
     const u8 baseReg = 0x60;
     u8 amplitudeModulation = 1;

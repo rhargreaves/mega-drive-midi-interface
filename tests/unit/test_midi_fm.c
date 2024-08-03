@@ -275,7 +275,7 @@ static void test_midi_sets_operator_attack_rate(UNUSED void** state)
     }
 }
 
-static void test_midi_sets_operator_first_decay_rate(UNUSED void** state)
+static void test_midi_sets_operator_decay_rate(UNUSED void** state)
 {
     const u8 expectedValue = 2;
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
@@ -290,7 +290,7 @@ static void test_midi_sets_operator_first_decay_rate(UNUSED void** state)
     }
 }
 
-static void test_midi_sets_operator_second_decay_rate(UNUSED void** state)
+static void test_midi_sets_operator_sustain_rate(UNUSED void** state)
 {
     const u8 expectedValue = 1;
 
@@ -306,7 +306,7 @@ static void test_midi_sets_operator_second_decay_rate(UNUSED void** state)
     }
 }
 
-static void test_midi_sets_operator_secondary_amplitude(UNUSED void** state)
+static void test_midi_sets_operator_sustain_level(UNUSED void** state)
 {
     const u8 expectedValue = 1;
 

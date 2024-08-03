@@ -789,32 +789,32 @@ static void setFmChanParameter(DeviceChannel* devChan, u8 controller, u8 value)
         synth_operatorAttackRate(
             devChan->number, controller - CC_GENMDM_ATTACK_RATE_OP1, RANGE(value, 32));
         break;
-    case CC_GENMDM_FIRST_DECAY_RATE_OP1:
-    case CC_GENMDM_FIRST_DECAY_RATE_OP2:
-    case CC_GENMDM_FIRST_DECAY_RATE_OP3:
-    case CC_GENMDM_FIRST_DECAY_RATE_OP4:
+    case CC_GENMDM_DECAY_RATE_OP1:
+    case CC_GENMDM_DECAY_RATE_OP2:
+    case CC_GENMDM_DECAY_RATE_OP3:
+    case CC_GENMDM_DECAY_RATE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
         synth_operatorDecayRate(
-            devChan->number, controller - CC_GENMDM_FIRST_DECAY_RATE_OP1, RANGE(value, 32));
+            devChan->number, controller - CC_GENMDM_DECAY_RATE_OP1, RANGE(value, 32));
         break;
-    case CC_GENMDM_SECOND_DECAY_RATE_OP1:
-    case CC_GENMDM_SECOND_DECAY_RATE_OP2:
-    case CC_GENMDM_SECOND_DECAY_RATE_OP3:
-    case CC_GENMDM_SECOND_DECAY_RATE_OP4:
+    case CC_GENMDM_SUSTAIN_RATE_OP1:
+    case CC_GENMDM_SUSTAIN_RATE_OP2:
+    case CC_GENMDM_SUSTAIN_RATE_OP3:
+    case CC_GENMDM_SUSTAIN_RATE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
         synth_operatorSustainRate(
-            devChan->number, controller - CC_GENMDM_SECOND_DECAY_RATE_OP1, RANGE(value, 16));
+            devChan->number, controller - CC_GENMDM_SUSTAIN_RATE_OP1, RANGE(value, 16));
         break;
-    case CC_GENMDM_SECOND_AMPLITUDE_OP1:
-    case CC_GENMDM_SECOND_AMPLITUDE_OP2:
-    case CC_GENMDM_SECOND_AMPLITUDE_OP3:
-    case CC_GENMDM_SECOND_AMPLITUDE_OP4:
+    case CC_GENMDM_SUSTAIN_LEVEL_OP1:
+    case CC_GENMDM_SUSTAIN_LEVEL_OP2:
+    case CC_GENMDM_SUSTAIN_LEVEL_OP3:
+    case CC_GENMDM_SUSTAIN_LEVEL_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
         synth_operatorSustainLevel(
-            devChan->number, controller - CC_GENMDM_SECOND_AMPLITUDE_OP1, RANGE(value, 16));
+            devChan->number, controller - CC_GENMDM_SUSTAIN_LEVEL_OP1, RANGE(value, 16));
         break;
     case CC_GENMDM_RELEASE_RATE_OP1:
     case CC_GENMDM_RELEASE_RATE_OP2:
