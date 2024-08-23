@@ -12,34 +12,34 @@
 #define STEREO_MODE_LEFT 2
 
 typedef struct Operator {
-    u8 multiple;
-    u8 detune;
-    u8 attackRate;
-    u8 rateScaling;
-    u8 decayRate;
-    u8 amplitudeModulation;
-    u8 sustainLevel;
-    u8 sustainRate;
-    u8 releaseRate;
-    u8 totalLevel;
-    u8 ssgEg;
+    u8 multiple : 4;
+    u8 detune : 3;
+    u8 attackRate : 5;
+    u8 rateScaling : 2;
+    u8 decayRate : 5;
+    u8 amplitudeModulation : 1;
+    u8 sustainLevel : 4;
+    u8 sustainRate : 5;
+    u8 releaseRate : 4;
+    u8 totalLevel : 7;
+    u8 ssgEg : 4;
 } Operator;
 
 typedef struct FmChannel {
-    u8 algorithm;
-    u8 feedback;
-    u8 stereo;
-    u8 ams;
-    u8 fms;
-    u8 octave;
-    u16 freqNumber;
+    u8 algorithm : 3;
+    u8 feedback : 3;
+    u8 stereo : 2;
+    u8 ams : 2;
+    u8 fms : 3;
+    u8 octave : 3;
+    u16 freqNumber : 11;
     Operator operators[MAX_FM_OPERATORS];
 } FmChannel;
 
 typedef struct Global {
-    u8 lfoEnable;
-    u8 lfoFrequency;
-    bool specialMode;
+    u8 lfoEnable : 1;
+    u8 lfoFrequency : 3;
+    bool specialMode : 1;
 } Global;
 
 typedef enum ParameterUpdated { Channel, Lfo, SpecialMode } ParameterUpdated;
