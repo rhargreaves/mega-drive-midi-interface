@@ -539,8 +539,8 @@ static void test_midi_fm_note_on_percussion_channel_sets_percussion_preset(UNUSE
             { 4, 0, 31, 2, 20, 0, 15, 0, 15, 13, 0 }, { 2, 0, 31, 2, 20, 0, 15, 0, 15, 13, 0 } } };
 
     expect_value(__wrap_synth_preset, channel, FM_CHANNEL);
-    expect_memory(__wrap_synth_preset, preset, &P_BANK_0_INST_30_CASTANETS,
-        sizeof(P_BANK_0_INST_30_CASTANETS));
+    expect_check(
+        __wrap_synth_preset, preset, fmchannel_equality_check, &P_BANK_0_INST_30_CASTANETS);
 
     expect_synth_volume_any();
     expect_synth_pitch(FM_CHANNEL, 0, 0x32a);

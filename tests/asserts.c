@@ -164,3 +164,33 @@ void _expect_ym2612_write_channel_any_data(
 {
     _expect_ym2612_write_reg_any_data(REG_PART(chan), baseReg + REG_OFFSET(chan), file, line);
 }
+
+static bool operator_equality_check(Operator* l, Operator* r)
+{
+    return ((l->amplitudeModulation == r->amplitudeModulation) && (l->attackRate == r->attackRate)
+        && (l->decayRate == r->decayRate) && (l->detune == r->detune)
+        && (l->multiple == r->multiple) && (l->rateScaling == r->rateScaling)
+        && (l->releaseRate == r->releaseRate) && (l->ssgEg == r->ssgEg)
+        && (l->sustainLevel == r->sustainLevel) && (l->sustainRate == r->sustainRate)
+        && (l->totalLevel == r->totalLevel));
+}
+
+int fmchannel_equality_check(
+    const LargestIntegralType value, const LargestIntegralType check_value_data)
+{
+    FmChannel* expected = (FmChannel*)value;
+    FmChannel* actual = (FmChannel*)check_value_data;
+
+    if ((actual->algorithm == expected->algorithm) && (actual->ams == expected->ams)
+        && (actual->feedback == expected->feedback) && (actual->fms == expected->fms)
+        && (actual->freqNumber == expected->freqNumber) && (actual->octave == expected->octave)
+        && (actual->stereo == expected->stereo)
+        && operator_equality_check(&actual->operators[0], &expected->operators[0])
+        && operator_equality_check(&actual->operators[1], &expected->operators[1])
+        && operator_equality_check(&actual->operators[2], &expected->operators[2])
+        && operator_equality_check(&actual->operators[3], &expected->operators[3])) {
+        return 1;
+    }
+
+    return 0;
+}

@@ -30,6 +30,9 @@ void _expect_ym2612_write_channel_any_data(
 void _expect_ym2612_write_operator(
     u8 chan, u8 op, u8 baseReg, u8 data, const char* const file, const int line);
 
+int fmchannel_equality_check(
+    const LargestIntegralType value, const LargestIntegralType check_value_data);
+
 #define REG_PART(chan) (chan < 3 ? 0 : 1)
 #define REG_OFFSET(chan) (chan % 3)
 
