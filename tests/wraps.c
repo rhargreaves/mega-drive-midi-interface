@@ -406,6 +406,14 @@ void __wrap_YM2612_writeReg(const u16 part, const u8 reg, const u8 data)
     check_expected(data);
 }
 
+void __wrap_YM2612_write(const u16 port, const u8 data)
+{
+    if (disableChecks)
+        return;
+    check_expected(port);
+    check_expected(data);
+}
+
 void __wrap_VDP_drawText(const char* str, u16 x, u16 y)
 {
 }

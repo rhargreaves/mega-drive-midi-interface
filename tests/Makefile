@@ -107,6 +107,7 @@ MOCKS=midi_process \
 MD_MOCKS=SYS_setVIntCallback \
 	VDP_setTextPalette \
 	YM2612_writeReg \
+	YM2612_write \
 	VDP_drawText \
 	VDP_clearText \
 	VDP_setBackgroundColor \

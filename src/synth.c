@@ -44,10 +44,11 @@ static u8 volumeAdjustedTotalLevel(u8 channel, u8 totalLevel);
 static void channelParameterUpdated(u8 channel);
 static void otherParameterUpdated(u8 channel, ParameterUpdated parameterUpdated);
 static void writeRegSafe(u8 part, u8 reg, u8 data);
+static void releaseZ80Bus(void);
 
 void synth_init(const FmChannel* initialPreset)
 {
-    // Z80_loadDriver(Z80_DRIVER_PCM, true);
+    Z80_loadDriver(Z80_DRIVER_PCM, true);
     Z80_requestBus(TRUE);
     writeSpecialModeReg();
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
@@ -57,7 +58,7 @@ void synth_init(const FmChannel* initialPreset)
         updateChannel(chan);
     }
     writeGlobalLfo();
-    Z80_releaseBus();
+    releaseZ80Bus();
 }
 
 static void updateChannel(u8 chan)
@@ -454,6 +455,12 @@ static void writeRegSafe(u8 part, u8 reg, u8 data)
     bool takenAlready = Z80_getAndRequestBus(TRUE);
     YM2612_writeReg(part, reg, data);
     if (!takenAlready) {
-        Z80_releaseBus();
+        releaseZ80Bus();
     }
+}
+
+static void releaseZ80Bus(void)
+{
+    YM2612_write(0, 0x2A); // Latch reg address for PCM driver
+    Z80_releaseBus();
 }

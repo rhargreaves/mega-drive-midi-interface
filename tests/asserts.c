@@ -81,9 +81,14 @@ void _expect_ym2612_write_reg_any_data(u8 part, u8 reg, const char* const file, 
 #endif
     expect_value_with_pos(__wrap_Z80_getAndRequestBus, wait, TRUE, file, line);
     will_return_with_pos(__wrap_Z80_getAndRequestBus, false, file, line);
+
     expect_any_with_pos(__wrap_YM2612_writeReg, part, file, line);
     expect_any_with_pos(__wrap_YM2612_writeReg, reg, file, line);
     expect_any_with_pos(__wrap_YM2612_writeReg, data, file, line);
+
+    expect_value_with_pos(__wrap_YM2612_write, port, 0, file, line);
+    expect_value_with_pos(__wrap_YM2612_write, data, 0x2A, file, line);
+
     expect_function_call(__wrap_Z80_releaseBus);
 }
 
@@ -95,6 +100,9 @@ void expect_ym2612_write_operator_any_data(u8 chan, u8 op, u8 baseReg)
     expect_value(__wrap_YM2612_writeReg, part, REG_PART(chan));
     expect_value(__wrap_YM2612_writeReg, reg, baseReg + REG_OFFSET(chan) + (regOpIndex(op) * 4));
     expect_any(__wrap_YM2612_writeReg, data);
+
+    expect_value(__wrap_YM2612_write, port, 0);
+    expect_value(__wrap_YM2612_write, data, 0x2A);
 
     expect_function_call(__wrap_Z80_releaseBus);
 }
@@ -138,9 +146,14 @@ void _expect_ym2612_write_reg(u8 part, u8 reg, u8 data, const char* const file, 
 #endif
     expect_value(__wrap_Z80_getAndRequestBus, wait, TRUE);
     will_return(__wrap_Z80_getAndRequestBus, false);
+
     expect_value_with_pos(__wrap_YM2612_writeReg, part, part, file, line);
     expect_value_with_pos(__wrap_YM2612_writeReg, reg, reg, file, line);
     expect_value_with_pos(__wrap_YM2612_writeReg, data, data, file, line);
+
+    expect_value_with_pos(__wrap_YM2612_write, port, 0, file, line);
+    expect_value_with_pos(__wrap_YM2612_write, data, 0x2A, file, line);
+
     expect_function_call(__wrap_Z80_releaseBus);
 }
 

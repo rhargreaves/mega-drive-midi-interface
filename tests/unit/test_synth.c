@@ -20,6 +20,8 @@ static void set_initial_registers(void)
         expect_any(__wrap_YM2612_writeReg, data);
     }
 
+    expect_value(__wrap_YM2612_write, port, 0);
+    expect_value(__wrap_YM2612_write, data, 0x2A);
     expect_function_call(__wrap_Z80_releaseBus);
 
     const FmChannel M_BANK_0_INST_0_GRANDPIANO = { 0, 0, 3, 0, 0, 0, 0,
@@ -37,14 +39,14 @@ static void loads_pcm_driver(void)
 static int test_synth_setup(UNUSED void** state)
 {
     updated = false;
-    // loads_pcm_driver();
+    loads_pcm_driver();
     set_initial_registers();
     return 0;
 }
 
 static void test_synth_init_sets_initial_registers(UNUSED void** state)
 {
-    // loads_pcm_driver();
+    loads_pcm_driver();
     set_initial_registers();
 }
 
@@ -744,6 +746,8 @@ static void test_requests_Z80_bus_if_not_already_taken(UNUSED void** state)
     expect_value(__wrap_YM2612_writeReg, reg, 0x2B);
     expect_value(__wrap_YM2612_writeReg, data, 0);
 
+    expect_value(__wrap_YM2612_write, port, 0);
+    expect_value(__wrap_YM2612_write, data, 0x2A);
     expect_function_call(__wrap_Z80_releaseBus);
 
     __real_synth_directWriteYm2612(0, 0x2B, 0);
