@@ -25,6 +25,7 @@
 #define midi_pcm_test(test) cmocka_unit_test_setup(test, test_midi_setup)
 #define midi_portamento_test(test) cmocka_unit_test_setup(test, test_midi_portamento_setup)
 #define midi_finetune_test(test) cmocka_unit_test_setup(test, test_midi_setup)
+#define midi_dac_test(test) cmocka_unit_test_setup(test, test_midi_dac_setup)
 #define dynamic_midi_test(test) cmocka_unit_test_setup(test, test_dynamic_midi_setup)
 #define synth_test(test) cmocka_unit_test_setup(test, test_synth_setup)
 #define comm_test(test) cmocka_unit_test_setup(test, test_comm_setup)
@@ -188,6 +189,8 @@ int main(void)
         midi_test(test_midi_hides_fm_parameter_ui),
         midi_test(test_midi_resets_fm_values_to_defaults),
         midi_test(test_midi_resets_psg_values_to_defaults),
+
+        midi_dac_test(test_midi_dac_plays_note),
 
         pitchcents_test(test_pitchcents_shift_extreme_up),
         pitchcents_test(test_pitchcents_bend_nil),
