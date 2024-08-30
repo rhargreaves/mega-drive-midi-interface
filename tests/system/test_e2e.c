@@ -17,6 +17,7 @@ static const u8 TEST_CC_PORTAMENTO_TIME = 5;
 static const u8 TEST_CC_VOLUME = 7;
 static const u8 TEST_CC_ALGORITHM = 14;
 static const u8 TEST_CC_PORTAMENTO_ON = 65;
+static const u8 TEST_CC_ENABLE_DAC = 78;
 static const u8 TEST_CC_SPECIAL_MODE = 80;
 static const u8 TEST_CC_POLYPHONIC = 84;
 static const u8 TEST_CC_DEVICE_SELECT = 86;
@@ -269,14 +270,8 @@ static void test_write_directly_to_ym2612_regs_via_sysex(void** state)
 
 static void test_plays_pcm_sample(void** state)
 {
-    const u8 MIDI_CHANNEL_UNASSIGNED = 0x7F;
-    const u8 DEVICE_FM_6 = 5;
-    const u8 DEVICE_PCM = 13;
-
-    remapChannel(MIDI_CHANNEL_UNASSIGNED, DEVICE_FM_6);
-    midi_receiver_read();
-
-    remapChannel(TEST_MIDI_CHANNEL_6, DEVICE_PCM);
+    stub_usb_receive_cc(TEST_MIDI_CHANNEL_1, TEST_CC_ENABLE_DAC, 127);
+    expect_ym2612_write_reg(0, 0x2B, 0x80);
     midi_receiver_read();
 
     stub_usb_receive_note_on(TEST_MIDI_CHANNEL_6, 60, TEST_VOLUME_MAX);

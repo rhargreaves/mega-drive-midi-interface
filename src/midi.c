@@ -162,12 +162,9 @@ static void initDeviceChannel(u8 devChan)
     } else if (devChan <= DEV_CHAN_MAX_PSG) {
         chan->number = devChan - DEV_CHAN_MIN_PSG;
         chan->ops = &PSG_VTable;
-    } else if (devChan <= DEV_CHAN_MAX_SPECIAL_MODE) {
+    } else {
         chan->number = devChan - DEV_CHAN_MIN_SPECIAL_MODE;
         chan->ops = &SpecialMode_VTable;
-    } else {
-        chan->number = DEV_CHAN_DAC;
-        chan->ops = &DAC_VTable;
     }
     chan->noteOn = false;
     chan->midiChannel = devChan;
@@ -733,6 +730,12 @@ static void setOperatorTotalLevel(u8 chan, u8 op, u8 value)
     synth_operatorTotalLevel(chan, op, value);
 }
 
+static void enableDac(bool enable)
+{
+    deviceChannels[5].ops = enable ? &DAC_VTable : &FM_VTable;
+    synth_enableDac(enable);
+}
+
 static void setFmChanParameter(DeviceChannel* devChan, u8 controller, u8 value)
 {
     switch (controller) {
@@ -870,7 +873,7 @@ static void setFmChanParameter(DeviceChannel* devChan, u8 controller, u8 value)
     case CC_GENMDM_ENABLE_DAC:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_enableDac(RANGE(value, 2));
+        enableDac(RANGE(value, 2));
         break;
     case CC_EXPRESSION:
     case CC_SUSTAIN_PEDAL:
