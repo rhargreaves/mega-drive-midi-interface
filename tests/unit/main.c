@@ -11,7 +11,7 @@
 #include "test_midi_psg.c"
 #include "test_midi_receiver.c"
 #include "test_midi_sysex.c"
-#include "test_midi_pcm.c"
+#include "test_midi_dac.c"
 #include "test_scheduler.c"
 #include "test_synth.c"
 #include "test_vstring.c"
