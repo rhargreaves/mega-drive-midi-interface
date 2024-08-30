@@ -191,6 +191,7 @@ int main(void)
         midi_test(test_midi_resets_psg_values_to_defaults),
 
         midi_dac_test(test_midi_dac_plays_note),
+        midi_dac_test(test_midi_dac_stops_note),
 
         pitchcents_test(test_pitchcents_shift_extreme_up),
         pitchcents_test(test_pitchcents_bend_nil),

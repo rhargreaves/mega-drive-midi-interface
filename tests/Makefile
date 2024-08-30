@@ -178,6 +178,7 @@ MD_MOCKS=SYS_setVIntCallback \
 	TSK_userSet \
 	mw_def_ap_cfg_get \
 	SND_PCM_startPlay \
+	SND_PCM_stopPlay \
 	Z80_loadDriver \
 	Z80_releaseBus \
 	Z80_requestBus \

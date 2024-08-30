@@ -906,6 +906,11 @@ void __wrap_SND_PCM_startPlay(const u8* sample, const u32 len, const SoundPcmSam
     check_expected(loop);
 }
 
+void __wrap_SND_PCM_stopPlay(void)
+{
+    function_called();
+}
+
 void __wrap_Z80_loadDriver(const u16 driver, const bool waitReady)
 {
     if (disableChecks)

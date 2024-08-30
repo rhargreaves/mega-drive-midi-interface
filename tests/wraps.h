@@ -217,6 +217,7 @@ void __wrap_JOY_init(void);
 void __wrap_TSK_userSet(VoidCallback* task);
 void __wrap_SND_PCM_startPlay(const u8* sample, const u32 len, const SoundPcmSampleRate rate,
     const SoundPanning pan, const u8 loop);
+void __wrap_SND_PCM_stopPlay(void);
 void __wrap_Z80_loadDriver(const u16 driver, const bool waitReady);
 void __wrap_Z80_requestBus(bool wait);
 bool __wrap_Z80_getAndRequestBus(bool wait);

@@ -15,6 +15,7 @@ void midi_dac_reset(void)
 
 void midi_dac_note_off(u8 chan, u8 pitch)
 {
+    SND_PCM_stopPlay();
 }
 
 void midi_dac_channel_volume(u8 chan, u8 volume)
