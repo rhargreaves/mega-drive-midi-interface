@@ -1,5 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -eo pipefail
+set +u
 
 if [ -z "$MDMI_MIDI_PORT" ]; then
 	MDMI_MIDI_PORT="MegaDriveLink"
