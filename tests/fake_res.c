@@ -26,4 +26,4 @@ const Image img_megawifi_connected = {};
 const Image img_megawifi_detected = {};
 const Image img_megawifi_not_detected = {};
 const Image img_megawifi_listening = {};
-const u8 Clap[0] = {};
+const u8 pcm_Clap[0] = {};
