@@ -109,12 +109,8 @@ static void tasking_init(void)
     TSK_userSet(idle_tsk);
 }
 
-void comm_megawifi_init(void)
+static void initMegaWiFi(void)
 {
-    scheduler_addTickHandler(comm_megawifi_tick);
-    scheduler_addFrameHandler(comm_megawifi_vsync);
-
-    status = NotDetected;
     enum mw_err err = mw_init(cmd_buf, MW_BUFLEN);
     if (err != MW_ERR_NONE) {
         return;
@@ -146,11 +142,22 @@ void comm_megawifi_init(void)
     status = Listening;
 }
 
+void comm_megawifi_init(void)
+{
+    scheduler_addTickHandler(comm_megawifi_tick);
+    scheduler_addFrameHandler(comm_megawifi_vsync);
+
+    status = NotDetected;
+    if (comm_megawifi_is_present()) {
+        initMegaWiFi();
+    }
+}
+
 bool comm_megawifi_is_present(void)
 {
-    u16 current = UART_SPR;
-    UART_SPR++;
-    return (current != UART_SPR);
+    const u8 random = 0x57;
+    UART_SPR = random;
+    return UART_SPR == random;
 }
 
 u8 comm_megawifi_read_ready(void)
