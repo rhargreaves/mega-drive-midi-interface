@@ -3,7 +3,7 @@
 #include "log.h"
 #include "ext/mw/megawifi.h"
 #include "ext/mw/lsd.h"
-#include "ext/mw/16c550.h"
+#include "mw_uart.h"
 #include "vstring.h"
 #include "settings.h"
 #include "buffer.h"
@@ -155,9 +155,7 @@ void comm_megawifi_init(void)
 
 bool comm_megawifi_is_present(void)
 {
-    const u8 random = 0x57;
-    UART_SPR = random;
-    return UART_SPR == random;
+    return mw_uart_is_present();
 }
 
 u8 comm_megawifi_read_ready(void)

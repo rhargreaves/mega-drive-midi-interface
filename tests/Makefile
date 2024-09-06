@@ -196,7 +196,8 @@ MD_MOCKS=SYS_setVIntCallback \
 	fix16ToInt \
 	fix32ToInt \
 	fix16Frac \
-	fix32Frac
+	fix32Frac \
+	mw_uart_is_present
 
 LDFLAGS=-ggdb -ffreestanding -lcmocka -L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src
 LDFLAGS+=$(foreach MOCK,$(MD_MOCKS),-Wl,--wrap=$(MOCK))

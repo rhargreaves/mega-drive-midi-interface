@@ -63,6 +63,7 @@ static void megawifi_init(void)
 {
     expect_any(__wrap_scheduler_addTickHandler, onTick);
     expect_any(__wrap_scheduler_addFrameHandler, onFrame);
+    will_return(__wrap_mw_uart_is_present, true);
     expect_mw_init();
     expect_mw_detect();
     expect_ap_connection();

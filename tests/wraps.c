@@ -612,6 +612,11 @@ void __wrap_comm_megawifi_write(u8 data)
     check_expected(data);
 }
 
+bool __wrap_mw_uart_is_present(void)
+{
+    return mock_type(bool);
+}
+
 void __wrap_SPR_setAnim(Sprite* sprite, s16 anim)
 {
 }

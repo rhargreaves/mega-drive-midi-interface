@@ -3,7 +3,8 @@
 #include "debug.h"
 #include "cmocka.h"
 
-void expect_everdrive_to_be_present(void);
+void stub_megawifi_as_not_present(void);
+void stub_everdrive_as_present(void);
 void expect_usb_sent_byte(u8 value);
 void stub_usb_receive_nothing(void);
 void stub_usb_receive_byte(u8 value);

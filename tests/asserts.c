@@ -2,7 +2,12 @@
 #include "asserts.h"
 #include "comm.h"
 
-void expect_everdrive_to_be_present(void)
+void stub_megawifi_as_not_present(void)
+{
+    will_return(__wrap_mw_uart_is_present, false);
+}
+
+void stub_everdrive_as_present(void)
 {
     will_return(__wrap_comm_everdrive_is_present, true);
 }
