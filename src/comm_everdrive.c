@@ -11,6 +11,10 @@
 #define IO_STATUS_HI_SD 0x00
 #define IO_STATUS_HI_SDHC 0x40
 
+void comm_everdrive_init(void)
+{
+}
+
 bool comm_everdrive_is_present(void)
 {
     /* REG_STE values:
@@ -28,11 +32,6 @@ bool comm_everdrive_is_present(void)
 
     u8 status = SSF_REG16(REG_STE) >> 8;
     return status == IO_STATUS_HI_SD || status == IO_STATUS_HI_SDHC;
-}
-
-u16 comm_everdrive_raw(void)
-{
-    return SSF_REG16(REG_STE);
 }
 
 u8 comm_everdrive_read_ready(void)
@@ -54,8 +53,4 @@ u8 comm_everdrive_write_ready(void)
 void comm_everdrive_write(u8 data)
 {
     SSF_REG16(REG_USB) = data;
-}
-
-void comm_everdrive_init(void)
-{
 }
