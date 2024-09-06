@@ -104,3 +104,8 @@ void comm_everdrive_pro_write(u8 data)
 void comm_everdrive_pro_init(void)
 {
 }
+
+bool comm_everdrive_pro_is_present(void)
+{
+    return pro_present();
+}

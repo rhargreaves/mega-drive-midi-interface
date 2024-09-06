@@ -19,27 +19,29 @@ static bool countsInBounds(void);
 
 typedef struct CommVTable {
     void (*init)(void);
+    bool (*is_present)(void);
     u8 (*read_ready)(void);
     u8 (*read)(void);
     u8 (*write_ready)(void);
     void (*write)(u8 data);
 } CommVTable;
 
-static const CommVTable Demo_VTable = { comm_demo_init, comm_demo_read_ready, comm_demo_read,
-    comm_demo_write_ready, comm_demo_write };
+static const CommVTable Demo_VTable = { comm_demo_init, comm_demo_is_present, comm_demo_read_ready,
+    comm_demo_read, comm_demo_write_ready, comm_demo_write };
 
-static const CommVTable Everdrive_VTable = { comm_everdrive_init, comm_everdrive_read_ready,
-    comm_everdrive_read, comm_everdrive_write_ready, comm_everdrive_write };
+static const CommVTable Everdrive_VTable
+    = { comm_everdrive_init, comm_everdrive_is_present, comm_everdrive_read_ready,
+          comm_everdrive_read, comm_everdrive_write_ready, comm_everdrive_write };
 
 static const CommVTable EverdrivePro_VTable
-    = { comm_everdrive_pro_init, comm_everdrive_pro_read_ready, comm_everdrive_pro_read,
-          comm_everdrive_pro_write_ready, comm_everdrive_pro_write };
+    = { comm_everdrive_pro_init, comm_everdrive_pro_is_present, comm_everdrive_pro_read_ready,
+          comm_everdrive_pro_read, comm_everdrive_pro_write_ready, comm_everdrive_pro_write };
 
-static const CommVTable Serial_VTable = { comm_serial_init, comm_serial_read_ready,
-    comm_serial_read, comm_serial_write_ready, comm_serial_write };
+static const CommVTable Serial_VTable = { comm_serial_init, comm_serial_is_present,
+    comm_serial_read_ready, comm_serial_read, comm_serial_write_ready, comm_serial_write };
 
-static const CommVTable Megawifi_VTable = { comm_megawifi_init, comm_megawifi_read_ready,
-    comm_megawifi_read, comm_megawifi_write_ready, comm_megawifi_write };
+static const CommVTable Megawifi_VTable = { comm_megawifi_init, comm_megawifi_is_present,
+    comm_megawifi_read_ready, comm_megawifi_read, comm_megawifi_write_ready, comm_megawifi_write };
 
 static const CommVTable* commTypes[] = {
 #if COMM_EVERDRIVE_X7 == 1
@@ -73,7 +75,7 @@ static bool readReady(void)
 {
     if (activeCommType == NULL) {
         for (u16 i = 0; i < COMM_TYPES; i++) {
-            if (commTypes[i]->read_ready()) {
+            if (commTypes[i]->is_present() && commTypes[i]->read_ready()) {
                 activeCommType = commTypes[i];
                 return true;
             }

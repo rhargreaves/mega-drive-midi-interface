@@ -275,7 +275,8 @@ int main(void)
         synth_test(test_does_not_release_Z80_bus_when_taken_prior_to_call),
 
         comm_test(test_comm_reads_from_serial_when_ready),
-        comm_test(test_comm_reads_when_ready),
+        comm_test(test_comm_reads_everdrive_when_ready),
+        comm_test(test_comm_reads_demo_when_ready),
         comm_test(test_comm_writes_when_ready),
         comm_test(test_comm_idle_count_is_correct),
         comm_test(test_comm_busy_count_is_correct),

@@ -2,6 +2,11 @@
 #include "asserts.h"
 #include "comm.h"
 
+void expect_everdrive_to_be_present(void)
+{
+    will_return(__wrap_comm_everdrive_is_present, true);
+}
+
 void stub_usb_receive_nothing(void)
 {
     will_return(__wrap_comm_everdrive_read_ready, 0);

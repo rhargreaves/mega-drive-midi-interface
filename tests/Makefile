@@ -128,22 +128,31 @@ MD_MOCKS=SYS_setVIntCallback \
 	SPR_setFrame \
 	SPR_setAnimAndFrame \
 	SPR_setVisibility \
+	comm_megawifi_is_present \
+	comm_megawifi_read_ready \
+	comm_megawifi_read \
+	comm_megawifi_write_ready \
+	comm_megawifi_write \
 	comm_serial_init \
+	comm_serial_is_present \
 	comm_serial_read_ready \
 	comm_serial_read \
 	comm_serial_write_ready \
 	comm_serial_write \
 	comm_everdrive_init \
+	comm_everdrive_is_present \
 	comm_everdrive_read_ready \
 	comm_everdrive_read \
 	comm_everdrive_write_ready \
 	comm_everdrive_write \
 	comm_everdrive_pro_init \
+	comm_everdrive_pro_is_present \
 	comm_everdrive_pro_read_ready \
 	comm_everdrive_pro_read \
 	comm_everdrive_pro_write_ready \
 	comm_everdrive_pro_write \
 	comm_demo_init \
+	comm_demo_is_present \
 	comm_demo_read_ready \
 	comm_demo_read \
 	comm_demo_ready \

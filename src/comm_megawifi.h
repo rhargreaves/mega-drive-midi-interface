@@ -2,6 +2,7 @@
 #include "types.h"
 
 void comm_megawifi_init(void);
+bool comm_megawifi_is_present(void);
 u8 comm_megawifi_read_ready(void);
 u8 comm_megawifi_read(void);
 u8 comm_megawifi_write_ready(void);

@@ -500,6 +500,11 @@ void __wrap_comm_everdrive_init(void)
 {
 }
 
+bool __wrap_comm_everdrive_is_present(void)
+{
+    return mock_type(bool);
+}
+
 u8 __wrap_comm_everdrive_read_ready(void)
 {
     return mock_type(u8);
@@ -522,6 +527,11 @@ void __wrap_comm_everdrive_write(u8 data)
 
 void __wrap_comm_everdrive_pro_init(void)
 {
+}
+
+bool __wrap_comm_everdrive_pro_is_present(void)
+{
+    return mock_type(bool);
 }
 
 u8 __wrap_comm_everdrive_pro_read_ready(void)
@@ -548,6 +558,11 @@ void __wrap_comm_demo_init(void)
 {
 }
 
+bool __wrap_comm_demo_is_present(void)
+{
+    return mock_type(bool);
+}
+
 u8 __wrap_comm_demo_read_ready(void)
 {
     return mock_type(u8);
@@ -570,6 +585,31 @@ void __wrap_comm_demo_write(u8 data)
 void __wrap_comm_demo_vsync(void)
 {
     function_called();
+}
+
+bool __wrap_comm_megawifi_is_present(void)
+{
+    return mock_type(bool);
+}
+
+u8 __wrap_comm_megawifi_read_ready(void)
+{
+    return mock_type(u8);
+}
+
+u8 __wrap_comm_megawifi_read(void)
+{
+    return mock_type(u8);
+}
+
+u8 __wrap_comm_megawifi_write_ready(void)
+{
+    return mock_type(u8);
+}
+
+void __wrap_comm_megawifi_write(u8 data)
+{
+    check_expected(data);
 }
 
 void __wrap_SPR_setAnim(Sprite* sprite, s16 anim)
@@ -610,6 +650,11 @@ void __wrap_comm_init(void)
 
 void __wrap_comm_serial_init(void)
 {
+}
+
+bool __wrap_comm_serial_is_present(void)
+{
+    return mock_type(bool);
 }
 
 u8 __wrap_comm_serial_read_ready(void)

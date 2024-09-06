@@ -48,6 +48,11 @@ void comm_demo_init(void)
     program = 0;
 }
 
+bool comm_demo_is_present(void)
+{
+    return true;
+}
+
 u8 comm_demo_read_ready(void)
 {
     if (!enabled) {

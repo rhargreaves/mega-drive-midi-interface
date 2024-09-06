@@ -3,6 +3,7 @@
 #include "log.h"
 #include "ext/mw/megawifi.h"
 #include "ext/mw/lsd.h"
+#include "ext/mw/16c550.h"
 #include "vstring.h"
 #include "settings.h"
 #include "buffer.h"
@@ -143,6 +144,13 @@ void comm_megawifi_init(void)
     log_info("MW: MIDI UDP port %u open", UDP_MIDI_PORT);
 #endif
     status = Listening;
+}
+
+bool comm_megawifi_is_present(void)
+{
+    u16 current = UART_SPR;
+    UART_SPR++;
+    return (current != UART_SPR);
 }
 
 u8 comm_megawifi_read_ready(void)

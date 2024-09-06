@@ -51,6 +51,11 @@ void comm_serial_init(void)
     }
 }
 
+bool comm_serial_is_present(void)
+{
+    return true;
+}
+
 u8 comm_serial_read_ready(void)
 {
     if (!recvData)
