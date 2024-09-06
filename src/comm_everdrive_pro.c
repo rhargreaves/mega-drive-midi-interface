@@ -9,12 +9,7 @@
 
 #define FIFO_CPU_RXF 0x8000 // fifo flags. system cpu can read
 #define FIFO_RXF_MSK 0x7FF
-#define STAT_PRO_PRESENT 0xA0
-
-static bool pro_present(void)
-{
-    return REG_SYS_STAT & STAT_PRO_PRESENT;
-}
+#define STAT_PRO_PRESENT 0x55A0
 
 static u8 bi_fifo_busy(void)
 {
@@ -72,12 +67,17 @@ static void bi_cmd_usb_wr(void* data, u16 len)
     bi_fifo_wr(data, len);
 }
 
+void comm_everdrive_pro_init(void)
+{
+}
+
+bool comm_everdrive_pro_is_present(void)
+{
+    return (REG_SYS_STAT & 0xFFF0) == STAT_PRO_PRESENT;
+}
+
 u8 comm_everdrive_pro_read_ready(void)
 {
-    if (!pro_present()) {
-        return 0;
-    }
-
     return !bi_fifo_busy();
 }
 
@@ -99,13 +99,4 @@ void comm_everdrive_pro_write(u8 data)
 {
     bi_cmd_usb_wr(&data, 1);
     (void)data;
-}
-
-void comm_everdrive_pro_init(void)
-{
-}
-
-bool comm_everdrive_pro_is_present(void)
-{
-    return pro_present();
 }
