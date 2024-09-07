@@ -1,6 +1,5 @@
 #include "applemidi.h"
 #include "rtpmidi.h"
-#include "string.h"
 #include "log.h"
 #include "comm_megawifi.h"
 #include "settings.h"

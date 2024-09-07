@@ -1,5 +1,5 @@
 #pragma once
-#include "types.h"
+#include "genesis.h"
 
 void comm_everdrive_init(void);
 bool comm_everdrive_is_present(void);

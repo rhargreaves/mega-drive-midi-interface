@@ -1,5 +1,5 @@
 #pragma once
-#include "types.h"
+#include "genesis.h"
 
 void everdrive_led_init(void);
 void everdrive_led_blink(void);

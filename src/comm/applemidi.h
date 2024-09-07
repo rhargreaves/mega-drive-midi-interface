@@ -1,6 +1,5 @@
 #pragma once
-#include "types.h"
-#include "ext/mw/megawifi.h"
+#include "genesis.h"
 
 #define ERR_BASE 100
 #define ERR_INVALID_APPLE_MIDI_SIGNATURE ERR_BASE;

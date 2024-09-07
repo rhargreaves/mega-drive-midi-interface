@@ -1,15 +1,10 @@
 #include "comm_megawifi.h"
 #include "applemidi.h"
 #include "log.h"
-#include "ext/mw/megawifi.h"
-#include "ext/mw/lsd.h"
 #include "mw_uart.h"
-#include "string.h"
 #include "settings.h"
 #include "buffer.h"
-#include "memory.h"
 #include "ip_util.h"
-#include "task.h"
 #include "scheduler.h"
 
 #define UDP_CONTROL_PORT 5006

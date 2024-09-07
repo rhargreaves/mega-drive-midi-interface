@@ -4,9 +4,6 @@
 #include "comm_megawifi.h"
 #include "comm_serial.h"
 #include "comm_demo.h"
-#include "vdp.h"
-#include "vdp_bg.h"
-#include "string.h"
 #include "settings.h"
 
 static u16 idle = 0;

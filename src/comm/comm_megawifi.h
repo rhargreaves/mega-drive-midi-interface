@@ -1,5 +1,5 @@
 #pragma once
-#include "types.h"
+#include "genesis.h"
 
 void comm_megawifi_init(void);
 bool comm_megawifi_is_present(void);

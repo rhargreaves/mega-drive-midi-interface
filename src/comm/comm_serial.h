@@ -1,5 +1,5 @@
 #pragma once
-#include "types.h"
+#include "genesis.h"
 
 void comm_serial_init(void);
 bool comm_serial_is_present(void);

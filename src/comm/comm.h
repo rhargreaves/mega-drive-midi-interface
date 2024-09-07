@@ -1,5 +1,5 @@
 #pragma once
-#include "types.h"
+#include "genesis.h"
 
 typedef enum CommMode { Discovery, Everdrive, EverdrivePro, Serial, MegaWiFi, Demo } CommMode;
 

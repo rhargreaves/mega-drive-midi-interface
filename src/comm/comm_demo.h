@@ -1,5 +1,5 @@
 #pragma once
-#include "types.h"
+#include "genesis.h"
 
 void comm_demo_init(void);
 bool comm_demo_is_present(void);

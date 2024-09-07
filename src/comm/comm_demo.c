@@ -1,6 +1,4 @@
 #include "comm_demo.h"
-#include "joy.h"
-#include "sys.h"
 #include "midi_fm.h"
 #include "log.h"
 #include "scheduler.h"

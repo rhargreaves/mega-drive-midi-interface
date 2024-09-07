@@ -1,5 +1,4 @@
 #pragma once
-#include "types.h"
-#include "ext/mw/16c550.h"
+#include "genesis.h"
 
 bool mw_uart_is_present(void);

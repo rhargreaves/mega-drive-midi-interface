@@ -1,4 +1,5 @@
 #include "rtpmidi.h"
+#include "applemidi.h"
 #include "comm_megawifi.h"
 #include "bits.h"
 
