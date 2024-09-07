@@ -1,15 +1,9 @@
 #pragma once
+#include "genesis.h"
 #include "midi.h"
-#include "sprite_eng.h"
-#include "types.h"
-#include "sys.h"
-#include "ext/mw/megawifi.h"
 #include "log.h"
 #include "synth.h"
 #include "scheduler.h"
-#include "vdp_bg.h"
-#include "snd/sound.h"
-#include "snd/pcm/snd_pcm.h"
 
 void wraps_disable_checks(void);
 void wraps_enable_checks(void);

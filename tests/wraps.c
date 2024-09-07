@@ -1,6 +1,5 @@
+#include "wraps.h"
 #include "cmocka_inc.h"
-#include "synth.h"
-#include "types.h"
 #include "debug.h"
 
 static bool disableChecks = false;
