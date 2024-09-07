@@ -1,4 +1,4 @@
 #!/bin/bash
 
 /Users/robert/Projects/mega-drive/MEGA-PRO/megalink/bin/megalink "$@"
-sleep 1
+sleep 3
