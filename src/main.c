@@ -1,3 +1,4 @@
+#include "genesis.h"
 #include "comm/comm.h"
 #include "envelopes.h"
 #include "log.h"
@@ -5,12 +6,10 @@
 #include "midi_receiver.h"
 #include "presets.h"
 #include "scheduler.h"
-#include "sys.h"
 #include "ui.h"
 #include "comm/comm_megawifi.h"
 #include "comm/everdrive_led.h"
 #include "comm/comm_demo.h"
-#include "vdp.h"
 #include "build_checks.h"
 
 int main()
