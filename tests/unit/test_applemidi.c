@@ -1,5 +1,5 @@
 #include "cmocka_inc.h"
-#include "applemidi.h"
+#include "comm/applemidi.h"
 
 static int test_applemidi_setup(UNUSED void** state)
 {

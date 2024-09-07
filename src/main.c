@@ -1,4 +1,4 @@
-#include "comm.h"
+#include "comm/comm.h"
 #include "envelopes.h"
 #include "log.h"
 #include "midi.h"
@@ -7,9 +7,9 @@
 #include "scheduler.h"
 #include "sys.h"
 #include "ui.h"
-#include "comm_megawifi.h"
-#include "everdrive_led.h"
-#include "comm_demo.h"
+#include "comm/comm_megawifi.h"
+#include "comm/everdrive_led.h"
+#include "comm/comm_demo.h"
 #include "vdp.h"
 
 int main()

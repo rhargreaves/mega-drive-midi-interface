@@ -1,11 +1,11 @@
 #include "midi_receiver.h"
-#include "comm.h"
+#include "comm/comm.h"
 #include "midi.h"
 #include "scheduler.h"
 #include "synth.h"
 #include "vstring.h"
 #include "ui.h"
-#include "applemidi.h"
+#include "comm/applemidi.h"
 #include "log.h"
 
 #define STATUS_LOWER(status) (status & 0x0F)

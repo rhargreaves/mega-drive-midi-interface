@@ -5,7 +5,7 @@
 #include "asserts.h"
 #include "unused.h"
 #include "wraps.h"
-#include "buffer.h"
+#include "comm/buffer.h"
 
 static int test_buffer_setup(UNUSED void** state)
 {

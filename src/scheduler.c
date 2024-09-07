@@ -1,10 +1,10 @@
 #include "scheduler.h"
-#include "everdrive_led.h"
+#include "comm/everdrive_led.h"
 #include "midi_psg.h"
 #include "ui.h"
 #include "midi_receiver.h"
-#include "comm_megawifi.h"
-#include "comm_demo.h"
+#include "comm/comm_megawifi.h"
+#include "comm/comm_demo.h"
 #include "sys.h"
 #include "types.h"
 

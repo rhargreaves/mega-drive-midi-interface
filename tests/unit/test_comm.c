@@ -1,5 +1,5 @@
 #include "cmocka_inc.h"
-#include "comm.h"
+#include "comm/comm.h"
 
 static const u16 MAX_COMM_IDLE = 0x28F;
 static const u16 MAX_COMM_BUSY = 0x28F;

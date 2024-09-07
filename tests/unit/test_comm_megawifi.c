@@ -1,11 +1,11 @@
 #include "cmocka_inc.h"
-#include "applemidi.h"
-#include "comm_megawifi.h"
+#include "comm/applemidi.h"
+#include "comm/comm_megawifi.h"
 #include "ext/mw/megawifi.h"
 #include "ext/mw/lsd.h"
-#include "buffer.h"
+#include "comm/buffer.h"
 #include "settings.h"
-#include "ip_util.h"
+#include "comm/ip_util.h"
 
 static int test_comm_megawifi_setup(UNUSED void** state)
 {

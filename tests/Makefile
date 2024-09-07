@@ -17,6 +17,7 @@ INCLUDE_DIRS+=-I$(SGDK)/res
 INCLUDE_DIRS+=-I.
 INCLUDE_DIRS+=-I../res
 INCLUDE_DIRS+=-I../src
+INCLUDE_DIRS+=-I../src/comm
 INCLUDE_DIRS+=-I$(CMOCKA_DIR)/include
 
 CFLAGS=$(INCLUDE_DIRS) \
@@ -207,6 +208,7 @@ UNIT_TEST_LDFLAGS=$(LDFLAGS) $(foreach MOCK,$(MOCKS),-Wl,--wrap=$(MOCK))
 SANITISE_LDFLAGS=-fsanitize=address
 
 SRC=$(shell find ../src/* -maxdepth 0 -type f -name '*.c' ! -name '*main.c*' -printf '%f\n')
+SRC+=$(shell find ../src/comm/* -maxdepth 0 -type f -name '*.c' ! -name '*main.c*' -printf 'comm/%f\n')
 COMMON_TEST_SRC=$(shell find * -maxdepth 0 -type f -name '*.c' -print)
 UNIT_TEST_SRC=$(shell find ./unit/* -maxdepth 0 -type f -name '*.c' -print)
 SYSTEM_TEST_SRC=$(shell find ./system/* -maxdepth 0 -type f -name '*.c' -print)
@@ -262,6 +264,7 @@ $(SRC_OBJ): | $(OBJ_DIR) $(CMOCKA_DIR)
 
 $(OBJ_DIR):
 	mkdir -p $@
+	mkdir -p $@/comm
 	mkdir -p $@/unit
 	mkdir -p $@/system
 

@@ -1,5 +1,5 @@
 #include "midi.h"
-#include "comm.h"
+#include "comm/comm.h"
 #include "log.h"
 #include "memcmp.h"
 #include "memory.h"
