@@ -8,8 +8,7 @@ release: res/samples
 
 include $(SGDK)/makefile.gen
 
-EXTRA_FLAGS:=-DMODULE_MEGAWIFI=1 \
-	-DBUILD='"$(BUILD)"' \
+EXTRA_FLAGS:=-DBUILD='"$(BUILD)"' \
 	-Wl,--wrap=SYS_enableInts \
 	-Wl,--wrap=SYS_disableInts
 

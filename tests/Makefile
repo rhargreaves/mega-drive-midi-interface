@@ -23,7 +23,6 @@ INCLUDE_DIRS+=-I$(CMOCKA_DIR)/include
 CFLAGS=$(INCLUDE_DIRS) \
 	-DBUILD='"$(BUILD)"' \
 	-DUNIT_TESTS \
-	-DMODULE_MEGAWIFI=1 \
 	-ggdb \
 	-O0 \
 	-Wall \
