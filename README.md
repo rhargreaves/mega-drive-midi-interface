@@ -1,4 +1,4 @@
-# SEGA Mega Drive MIDI Interface 
+# SEGA Mega Drive MIDI Interface
 [![Build & Release](https://github.com/rhargreaves/mega-drive-midi-interface/actions/workflows/build.yml/badge.svg)](https://github.com/rhargreaves/mega-drive-midi-interface/actions/workflows/build.yml) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/rhargreaves/mega-drive-midi-interface?style=plastic)](https://github.com/rhargreaves/mega-drive-midi-interface/releases)
 
 Control the Yamaha YM2612 and PSG of the Sega Mega Drive via MIDI.
@@ -58,6 +58,9 @@ You'll need to configure SGDK in your environment accordingly and make changes t
 ```sh
 make
 ```
+
+> [!WARNING]
+> Building this project requires certain modifications to be applied to the SGDK. If you are not building using Docker you will need to manually apply patches from the [docker-sgdk](https://github.com/rhargreaves/docker-sgdk) repo (*.patch files in the root) otherwise the build or tests may fail.
 
 ## Contributions
 
