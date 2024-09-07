@@ -12,18 +12,9 @@
 #include "comm/serial.h"
 #include "synth.h"
 #include "ui_fm.h"
-#include "vdp.h"
-#include "sys.h"
-#include "vdp_bg.h"
-#include "vdp_spr.h"
-#include "vdp_tile.h"
-#include "vdp_pal.h"
-#include "memory.h"
-#include "sprite_eng.h"
 #include "sprite.h"
 #include "scheduler.h"
 #include "settings.h"
-#include "string.h"
 
 #define MAX_EFFECTIVE_X (MAX_X - MARGIN_X - MARGIN_X)
 #define MAX_EFFECTIVE_Y (MAX_Y - MARGIN_Y - MARGIN_Y)

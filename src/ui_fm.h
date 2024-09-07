@@ -1,5 +1,5 @@
 #pragma once
-#include "types.h"
+#include "genesis.h"
 
 void ui_fm_set_parameters_visibility(u8 chan, bool show);
 void ui_fm_init(void);

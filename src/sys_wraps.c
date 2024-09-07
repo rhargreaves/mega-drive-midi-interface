@@ -1,6 +1,4 @@
 #include "sys_wraps.h"
-#include "types.h"
-#include "vdp.h"
 
 #ifndef UNIT_TESTS
 extern void __real_SYS_disableInts(void);

@@ -1,5 +1,5 @@
 #pragma once
-#include "types.h"
+#include "genesis.h"
 
 #define MAX_FM_OPERATORS 4
 #define MAX_FM_CHANS 6

@@ -1,5 +1,5 @@
 #pragma once
-#include "types.h"
+#include "genesis.h"
 
 bool settings_is_megawifi_rom(void);
 bool settings_debug_load(void);

@@ -1,8 +1,5 @@
 #include "synth.h"
 #include "bits.h"
-#include "memory.h"
-#include "z80_ctrl.h"
-#include "ym2612.h"
 #include "debug.h"
 
 static Global global = { .lfoEnable = 1, .lfoFrequency = 0, .specialMode = false };

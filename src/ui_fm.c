@@ -1,15 +1,7 @@
 #include "ui_fm.h"
 #include "midi.h"
 #include "synth.h"
-#include "vdp.h"
-#include "sys.h"
-#include "vdp_bg.h"
-#include "vdp_spr.h"
-#include "vdp_tile.h"
-#include "vdp_pal.h"
-#include "sprite_eng.h"
 #include "sprite.h"
-#include "string.h"
 #include "ui.h"
 
 #define UNKNOWN_FM_CHANNEL 0xFF

@@ -1,5 +1,5 @@
 #pragma once
-#include "types.h"
+#include "genesis.h"
 
 #define MAX_Y 27
 #define MAX_X 39
