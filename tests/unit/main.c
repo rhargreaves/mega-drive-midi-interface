@@ -192,6 +192,7 @@ int main(void)
 
         midi_dac_test(test_midi_dac_plays_note),
         midi_dac_test(test_midi_dac_stops_note),
+        midi_dac_test(test_midi_dac_does_not_play_null_sample),
 
         pitchcents_test(test_pitchcents_shift_extreme_up),
         pitchcents_test(test_pitchcents_bend_nil),

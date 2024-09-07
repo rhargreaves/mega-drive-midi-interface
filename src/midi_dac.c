@@ -5,7 +5,10 @@
 
 void midi_dac_note_on(u8 chan, u8 pitch, s8 cents, u8 velocity)
 {
-    const PcmSample* sample = percussionPcmSample[0];
+    const PcmSample* sample = percussionPcmSample[pitch];
+    if (!sample) {
+        return;
+    }
     SND_PCM_startPlay(sample->data, sample->length, sample->rate, SOUND_PAN_CENTER, 0);
 }
 

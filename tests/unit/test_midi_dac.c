@@ -2,6 +2,10 @@
 #include "snd/sound.h"
 #include "snd/pcm/snd_pcm.h"
 
+static const u8 noteKey = 39;
+static const u8 nullNoteKey = 1;
+static const u8 dacFmChannel = 5;
+
 static int test_midi_dac_setup(UNUSED void** state)
 {
     test_midi_setup(state);
@@ -34,7 +38,12 @@ static void test_midi_dac_plays_note(UNUSED void** state)
     expect_value(__wrap_SND_PCM_startPlay, pan, SOUND_PAN_CENTER);
     expect_value(__wrap_SND_PCM_startPlay, loop, 0);
 
-    __real_midi_note_on(5, 100, 100);
+    __real_midi_note_on(dacFmChannel, noteKey, 100);
+}
+
+static void test_midi_dac_does_not_play_null_sample(UNUSED void** state)
+{
+    __real_midi_note_on(dacFmChannel, nullNoteKey, 100);
 }
 
 static void test_midi_dac_stops_note(UNUSED void** state)
@@ -45,9 +54,9 @@ static void test_midi_dac_stops_note(UNUSED void** state)
     expect_value(__wrap_SND_PCM_startPlay, pan, SOUND_PAN_CENTER);
     expect_value(__wrap_SND_PCM_startPlay, loop, 0);
 
-    __real_midi_note_on(5, 100, 100);
+    __real_midi_note_on(dacFmChannel, noteKey, 100);
 
     expect_function_call(__wrap_SND_PCM_stopPlay);
 
-    __real_midi_note_off(5, 100);
+    __real_midi_note_off(dacFmChannel, noteKey);
 }
