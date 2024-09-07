@@ -6,7 +6,7 @@
 #include "comm_demo.h"
 #include "vdp.h"
 #include "vdp_bg.h"
-#include "vstring.h"
+#include "string.h"
 #include "settings.h"
 
 static u16 idle = 0;

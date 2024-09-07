@@ -1,9 +1,5 @@
-#include <setjmp.h>
-#include <stdarg.h>
-#include <stddef.h>
-
+#include "cmocka_inc.h"
 #include "test_e2e.c"
-#include <cmocka.h>
 
 #define e2e_test(test) cmocka_unit_test_setup(test, test_e2e_setup)
 

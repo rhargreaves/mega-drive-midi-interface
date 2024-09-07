@@ -1,6 +1,6 @@
 #include "applemidi.h"
 #include "rtpmidi.h"
-#include "vstring.h"
+#include "string.h"
 #include "log.h"
 #include "comm_megawifi.h"
 #include "settings.h"
@@ -164,7 +164,7 @@ enum mw_err applemidi_processSessionMidiPacket(char* buffer, u16 length)
             return processTimestampSync(buffer, length);
         } else {
             char text[100];
-            v_sprintf(text, "Unknown event %s", command);
+            sprintf(text, "Unknown event %s", command);
         }
     } else {
         return rtpmidi_processRtpMidiPacket(buffer, length, &lastSeqNum);

@@ -9,7 +9,7 @@
 #include "vdp_pal.h"
 #include "sprite_eng.h"
 #include "sprite.h"
-#include "vstring.h"
+#include "string.h"
 #include "ui.h"
 
 #define UNKNOWN_FM_CHANNEL 0xFF
@@ -187,14 +187,14 @@ static const char* fmsText(u8 fms)
 static const char* chanNumber(u8 chan)
 {
     static char buffer[3];
-    v_sprintf(buffer, "%-2d", chan + 1);
+    sprintf(buffer, "%-2d", chan + 1);
     return buffer;
 }
 
 static const char* formatNum(u8 value)
 {
     static char buffer[3];
-    v_sprintf(buffer, "%d", value);
+    sprintf(buffer, "%d", value);
     return buffer;
 }
 
@@ -226,7 +226,7 @@ static bool updateOpValue(u8 last, u8 current, bool forceRefresh, u8 op, u8 line
 
     if (last != current || forceRefresh) {
         char buffer[4];
-        v_sprintf(buffer, "%3d", current);
+        sprintf(buffer, "%3d", current);
         ui_draw_text(buffer, OP_VALUE_X + (op * OP_VALUE_GAP), BASE_Y + line);
         return true;
     }

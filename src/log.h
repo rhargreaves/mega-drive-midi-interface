@@ -1,6 +1,5 @@
 #pragma once
-#include "types.h"
-#include "vstring.h"
+#include "genesis.h"
 
 #define MSG_MAX_LEN 40
 

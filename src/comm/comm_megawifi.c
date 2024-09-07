@@ -4,7 +4,7 @@
 #include "ext/mw/megawifi.h"
 #include "ext/mw/lsd.h"
 #include "mw_uart.h"
-#include "vstring.h"
+#include "string.h"
 #include "settings.h"
 #include "buffer.h"
 #include "memory.h"
@@ -89,7 +89,7 @@ static bool detect_mw(void)
 static enum mw_err listenOnUdpPort(u8 ch, u16 src_port)
 {
     char src_port_str[6];
-    v_sprintf(src_port_str, "%u", src_port);
+    sprintf(src_port_str, "%u", src_port);
     enum mw_err err = mw_udp_set(ch, NULL, NULL, src_port_str);
     if (err != MW_ERR_NONE) {
         log_warn("MW: Cannot open UDP %s", src_port_str);

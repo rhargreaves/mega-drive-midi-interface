@@ -1,6 +1,6 @@
 #include <setjmp.h>
 #include "types.h"
-#include "vstring.h"
+#include "string.h"
 #include <stddef.h>
 #include <cmocka.h>
 #include "asserts.h"

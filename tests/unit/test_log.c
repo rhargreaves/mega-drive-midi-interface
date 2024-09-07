@@ -1,5 +1,6 @@
 #include "cmocka_inc.h"
 #include "log.h"
+#include "string.h"
 
 static int test_log_setup(UNUSED void** state)
 {
@@ -54,7 +55,7 @@ static void test_log_stores_multiple_logs_and_overwrites_older(UNUSED void** sta
         Log* log = __real_log_dequeue();
 
         char expectedMsg[20];
-        v_sprintf(expectedMsg, "Test Message %d", i);
+        sprintf(expectedMsg, "Test Message %d", i);
         assert_string_equal(expectedMsg, log->msg);
     }
 }

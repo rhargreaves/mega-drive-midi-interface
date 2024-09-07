@@ -22,6 +22,7 @@
 #include "sprite.h"
 #include "scheduler.h"
 #include "settings.h"
+#include "string.h"
 
 #define MAX_EFFECTIVE_X (MAX_X - MARGIN_X - MARGIN_X)
 #define MAX_EFFECTIVE_Y (MAX_Y - MARGIN_Y - MARGIN_Y)
@@ -183,7 +184,7 @@ void ui_hide_logs(void)
 static void print_ticks(void)
 {
     char t[6];
-    v_sprintf(t, "%-5u", scheduler_ticks());
+    sprintf(t, "%-5u", scheduler_ticks());
     draw_text(t, 0, 1);
 }
 
@@ -414,7 +415,7 @@ static void print_load_text(u16 percent)
     if (percent > 99) {
         percent = 99;
     }
-    v_sprintf(text_buffer, "%-2i", percent);
+    sprintf(text_buffer, "%-2i", percent);
     draw_text(text_buffer, 5, MAX_EFFECTIVE_Y);
 }
 

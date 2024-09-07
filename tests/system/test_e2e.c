@@ -1,16 +1,12 @@
-#include <setjmp.h>
-#include <stdarg.h>
-#include <stddef.h>
-
+#include "cmocka_inc.h"
 #include "asserts.h"
-#include "comm.h"
+#include "comm/comm.h"
 #include "envelopes.h"
 #include "midi.h"
 #include "midi_receiver.h"
 #include "presets.h"
 #include "wraps.h"
 #include "scheduler.h"
-#include <cmocka.h>
 
 static const u8 TEST_CC_PAN = 10;
 static const u8 TEST_CC_PORTAMENTO_TIME = 5;

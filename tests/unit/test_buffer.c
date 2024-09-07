@@ -1,10 +1,4 @@
-#include <setjmp.h>
-#include "types.h"
-#include "vstring.h"
-#include <cmocka.h>
-#include "asserts.h"
-#include "unused.h"
-#include "wraps.h"
+#include "cmocka_inc.h"
 #include "comm/buffer.h"
 
 static int test_buffer_setup(UNUSED void** state)

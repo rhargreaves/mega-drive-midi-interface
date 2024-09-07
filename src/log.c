@@ -1,6 +1,4 @@
 #include "log.h"
-#include "vstring.h"
-#include "memory.h"
 
 #define MAX_LOG_ENTRIES 10
 
@@ -8,6 +6,8 @@ static Log logs[MAX_LOG_ENTRIES];
 static u8 readHead;
 static u8 writeHead;
 static u16 count;
+
+extern u16 vsprintf(char* buf, const char* fmt, va_list args);
 
 void log_init(void)
 {
@@ -47,7 +47,7 @@ static void log(LogLevel level, const char* fmt, va_list args)
 {
     Log* log = &logs[writeHead];
     incrementWriteHead();
-    v_vsprintf(log->msg, fmt, args);
+    vsprintf(log->msg, fmt, args);
     log->level = level;
     log->msgLen = MSG_MAX_LEN;
 }

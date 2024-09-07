@@ -14,7 +14,6 @@
 #include "test_midi_dac.c"
 #include "test_scheduler.c"
 #include "test_synth.c"
-#include "test_vstring.c"
 #include "test_buffer.c"
 #include "test_note_priority.c"
 #include "test_midi_portamento.c"
@@ -378,8 +377,6 @@ int main(void)
             test_applemidi_parses_rtpmidi_packet_with_sysex_with_0xF7_at_end),
         applemidi_test(test_applemidi_does_not_read_beyond_length),
         applemidi_test(test_applemidi_parses_rtpmidi_packet_with_system_reset),
-
-        cmocka_unit_test(test_vstring_handles_variable_argument_list_correctly),
 
         buffer_test(test_buffer_reads_and_writes_single_byte),
         buffer_test(test_buffer_reads_and_writes_circularly_over_capacity),

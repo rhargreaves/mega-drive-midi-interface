@@ -3,7 +3,7 @@
 #include "midi.h"
 #include "scheduler.h"
 #include "synth.h"
-#include "vstring.h"
+#include "string.h"
 #include "ui.h"
 #include "comm/applemidi.h"
 #include "log.h"
@@ -52,7 +52,7 @@ static void debugPrintEvent(u8 status, u8 data1, u8 data2)
 #if DEBUG_EVENTS
     u16 seqNum = applemidi_lastSequenceNumber();
     char t[30];
-    v_sprintf(t, "S:%02X D1:%02X D2:%02X Sn:%05u", status, data1, data2, seqNum);
+    sprintf(t, "S:%02X D1:%02X D2:%02X Sn:%05u", status, data1, data2, seqNum);
     ui_draw_text(t, 7, 1);
 #else
     (void)status;
