@@ -3,7 +3,6 @@
 #include "midi.h"
 #include "scheduler.h"
 #include "synth.h"
-#include "string.h"
 #include "ui.h"
 #include "comm/applemidi.h"
 #include "log.h"

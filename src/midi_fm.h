@@ -1,6 +1,6 @@
 #pragma once
+#include "genesis.h"
 #include "synth.h"
-#include "types.h"
 
 #define MAX_FM_CHAN 5
 #define MIN_MIDI_PITCH 11

@@ -1,5 +1,5 @@
 #pragma once
-#include "types.h"
+#include "genesis.h"
 
 #define NOTE_PRIORITY_LENGTH 10
 

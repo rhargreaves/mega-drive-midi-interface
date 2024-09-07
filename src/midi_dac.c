@@ -1,7 +1,5 @@
 #include "midi_dac.h"
 #include "pcm_sample.h"
-#include "snd/sound.h"
-#include "snd/pcm/snd_pcm.h"
 
 void midi_dac_note_on(u8 chan, u8 pitch, s8 cents, u8 velocity)
 {

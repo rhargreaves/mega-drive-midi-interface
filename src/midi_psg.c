@@ -4,10 +4,6 @@
 #include "midi.h"
 #include "psg.h"
 #include "scheduler.h"
-#include "memory.h"
-#include "psg.h"
-#include "types.h"
-#include "sys.h"
 #include "pitchcents.h"
 
 #define MIN_PSG_CHAN 6

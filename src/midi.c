@@ -2,7 +2,6 @@
 #include "comm/comm.h"
 #include "log.h"
 #include "memcmp.h"
-#include "memory.h"
 #include "midi_fm.h"
 #include "midi_psg.h"
 #include "midi_fm_sm.h"

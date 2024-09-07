@@ -1,5 +1,4 @@
 #include "note_priority.h"
-#include "memory.h"
 
 void note_priority_init(NotePriorityStack* notePriority)
 {

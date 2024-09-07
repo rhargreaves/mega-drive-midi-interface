@@ -1,6 +1,5 @@
 #pragma once
-#include "synth.h"
-#include "types.h"
+#include "genesis.h"
 
 void midi_fm_sm_note_on(u8 chan, u8 pitch, s8 cents, u8 velocity);
 void midi_fm_sm_reset(void);

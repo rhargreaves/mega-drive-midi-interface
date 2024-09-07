@@ -1,5 +1,5 @@
 #pragma once
-#include "types.h"
+#include "genesis.h"
 
 #define MIN_PSG_CHAN 6
 #define MAX_PSG_CHAN 9

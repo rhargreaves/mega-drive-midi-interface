@@ -1,5 +1,5 @@
 #pragma once
-#include "types.h"
+#include "genesis.h"
 
 void midi_receiver_read_if_comm_ready(void);
 void midi_receiver_read(void);

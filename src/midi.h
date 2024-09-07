@@ -1,5 +1,5 @@
 #pragma once
-#include "types.h"
+#include "genesis.h"
 #include "midi_fm.h"
 #include "midi_psg.h"
 

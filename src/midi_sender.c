@@ -1,5 +1,5 @@
-#include "midi.h"
 #include "midi_sender.h"
+#include "midi.h"
 #include "comm/comm.h"
 
 void midi_sender_send_sysex(const u8* data, u16 length)
