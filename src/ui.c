@@ -1,6 +1,7 @@
 #include "ui.h"
 #include "comm/buffer.h"
 #include "comm/comm.h"
+#include "comm/comm_everdrive.h"
 #include "comm/comm_everdrive_pro.h"
 #include "comm/comm_serial.h"
 #include "comm/comm_megawifi.h"
@@ -40,6 +41,7 @@
 #define ACTIVITY_Y (MIDI_Y + 2)
 #define LOG_Y (ACTIVITY_Y + 3)
 #define MAX_LOG_LINES 14
+#define COMM_EXTRA_X 17
 
 #define PALETTE_INDEX(pal, index) ((pal * 16) + index)
 #define FONT_COLOUR_INDEX 15
@@ -56,7 +58,9 @@
 #define TILE_IMAGES_INDEX (TILE_BORDERS_INDEX + 8)
 #define TILE_DEVICE_FM_INDEX (TILE_IMAGES_INDEX + 7)
 #define TILE_DEVICE_PSG_INDEX (TILE_DEVICE_FM_INDEX + 6)
+
 #define TILE_MEGAWIFI_STATUS_INDEX (TILE_DEVICE_PSG_INDEX + 4)
+#define TILE_WAITING_ED_INDEX (TILE_MEGAWIFI_STATUS_INDEX + 5)
 
 #define TILE_BORDERS_LEFT_CORNER_INDEX (TILE_BORDERS_INDEX)
 #define TILE_BORDERS_H_LINE_INDEX (TILE_BORDERS_INDEX + 1)
@@ -362,6 +366,17 @@ static void print_comm_mode(void)
     if (commInited) {
         return;
     }
+
+    if (comm_everdrive_pro_is_present()) {
+        VDP_drawImageEx(BG_A, &img_wait_edpro,
+            TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_WAITING_ED_INDEX), COMM_EXTRA_X,
+            MAX_EFFECTIVE_Y + 1, FALSE, FALSE);
+    } else if (comm_everdrive_is_present()) {
+        VDP_drawImageEx(BG_A, &img_wait_edx7,
+            TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_WAITING_ED_INDEX), COMM_EXTRA_X,
+            MAX_EFFECTIVE_Y + 1, FALSE, FALSE);
+    }
+
     const Image* MODES_IMAGES[] = { &img_comm_waiting, &img_comm_ed_usb, &img_comm_ed_pro_usb,
         &img_comm_serial, &img_comm_megawifi, &img_comm_demo, 0 };
     u16 index;
@@ -393,9 +408,14 @@ static void print_comm_mode(void)
         index = 0;
         break;
     }
+
     VDP_drawImageEx(BG_A, MODES_IMAGES[index],
         TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_IMAGES_INDEX), 9, MAX_EFFECTIVE_Y + 1, FALSE,
         FALSE);
+
+    if (commInited) {
+        VDP_clearTextArea(COMM_EXTRA_X, MAX_EFFECTIVE_Y + 1, 5, 1);
+    }
 
     if (settings_is_megawifi_rom()) {
         print_megawifi_info();
