@@ -11,6 +11,7 @@
 #include "comm/everdrive_led.h"
 #include "comm/comm_demo.h"
 #include "vdp.h"
+#include "build_checks.h"
 
 int main()
 {
