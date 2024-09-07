@@ -2,7 +2,7 @@ SGDK=/sgdk
 MAKE=make
 BUILD?=$(shell git rev-parse --short HEAD)
 
-all: release out/rom.s test
+all: release test
 
 release: res/samples
 
@@ -30,12 +30,12 @@ debug: FLAGS= $(DEFAULT_FLAGS) -O1 -DDEBUG=1
 debug: CFLAGS= $(FLAGS) -ggdb
 debug: AFLAGS= $(FLAGS)
 debug: LIBMD= $(LIB)/libmd_debug.a
-debug: pre-build out/rom.bin out/rom.out out/symbol.txt out/rom.s
+debug: pre-build out/rom.bin out/rom.out out/symbol.txt
 
 release: FLAGS= $(DEFAULT_FLAGS) -O3 -fuse-linker-plugin -fno-web -fno-gcse \
 	-fno-unit-at-a-time -fomit-frame-pointer $(LTO_FLAGS)
 release: LIBMD= $(LIB)/libmd.a
-release: pre-build out/rom.bin out/symbol.txt out/rom.s
+release: pre-build out/rom.bin out/symbol.txt
 
 clean: cleanobj cleanres cleanlst cleandep
 	$(RM) -f out.lst out/cmd_ out/symbol.txt out/rom.nm out/rom.wch out/rom.bin out/rom.s
