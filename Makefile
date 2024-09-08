@@ -39,6 +39,10 @@ release: pre-build out/rom.bin out/symbol.txt
 clean: cleanobj cleanres cleanlst cleandep
 	$(RM) -f out.lst out/cmd_ out/symbol.txt out/rom.nm out/rom.wch out/rom.bin out/rom.s
 
+out/rom.bin: out/rom.out
+	$(OBJCPY) -O binary out/rom.out out/rom.bin
+	$(SIZEBND) out/rom.bin -sizealign 524288 -checksum
+
 out/rom.s: out/rom.out
 	m68k-elf-objdump -D -S $^ > $@
 
