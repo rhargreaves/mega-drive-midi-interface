@@ -1,5 +1,5 @@
 #include "cmocka_inc.h"
-#include "test_e2e.c"
+#include "test_e2e.h"
 
 #define e2e_test(test) cmocka_unit_test_setup(test, test_e2e_setup)
 

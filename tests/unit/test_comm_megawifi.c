@@ -1,4 +1,4 @@
-#include "cmocka_inc.h"
+#include "test_comm_megawifi.h"
 #include "comm/applemidi.h"
 #include "comm/comm_megawifi.h"
 #include "ext/mw/megawifi.h"
@@ -7,7 +7,7 @@
 #include "settings.h"
 #include "comm/ip_util.h"
 
-static int test_comm_megawifi_setup(UNUSED void** state)
+int test_comm_megawifi_setup(UNUSED void** state)
 {
     log_init();
     wraps_enable_logging_checks();
@@ -76,17 +76,17 @@ static void megawifi_init(void)
     __real_comm_megawifi_init();
 }
 
-static void test_comm_megawifi_initialises(UNUSED void** state)
+void test_comm_megawifi_initialises(UNUSED void** state)
 {
     megawifi_init();
 }
 
-static void test_comm_megawifi_reads_midi_message(UNUSED void** state)
+void test_comm_megawifi_reads_midi_message(UNUSED void** state)
 {
     megawifi_init();
 }
 
-static void test_comm_megawifi_logs_if_buffer_full(UNUSED void** state)
+void test_comm_megawifi_logs_if_buffer_full(UNUSED void** state)
 {
     expect_log_warn("MW: MIDI buffer full!");
 

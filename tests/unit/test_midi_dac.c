@@ -1,3 +1,4 @@
+#include "test_midi_dac.h"
 #include "test_midi.h"
 #include "snd/sound.h"
 #include "snd/pcm/snd_pcm.h"
@@ -6,7 +7,7 @@ static const u8 noteKey = 39;
 static const u8 nullNoteKey = 1;
 static const u8 dacFmChannel = 5;
 
-static int test_midi_dac_setup(UNUSED void** state)
+int test_midi_dac_setup(UNUSED void** state)
 {
     test_midi_setup(state);
 
@@ -16,21 +17,21 @@ static int test_midi_dac_setup(UNUSED void** state)
     return 0;
 }
 
-static void test_midi_enables_dac(UNUSED void** state)
+void test_midi_enables_dac(UNUSED void** state)
 {
     expect_value(__wrap_synth_enableDac, enable, true);
 
     __real_midi_cc(0, 78, 0x7F);
 }
 
-static void test_midi_disables_dac(UNUSED void** state)
+void test_midi_disables_dac(UNUSED void** state)
 {
     expect_value(__wrap_synth_enableDac, enable, false);
 
     __real_midi_cc(0, 78, 0);
 }
 
-static void test_midi_dac_plays_note(UNUSED void** state)
+void test_midi_dac_plays_note(UNUSED void** state)
 {
     expect_any(__wrap_SND_PCM_startPlay, sample);
     expect_any(__wrap_SND_PCM_startPlay, len);
@@ -41,12 +42,12 @@ static void test_midi_dac_plays_note(UNUSED void** state)
     __real_midi_note_on(dacFmChannel, noteKey, 100);
 }
 
-static void test_midi_dac_does_not_play_null_sample(UNUSED void** state)
+void test_midi_dac_does_not_play_null_sample(UNUSED void** state)
 {
     __real_midi_note_on(dacFmChannel, nullNoteKey, 100);
 }
 
-static void test_midi_dac_stops_note(UNUSED void** state)
+void test_midi_dac_stops_note(UNUSED void** state)
 {
     expect_any(__wrap_SND_PCM_startPlay, sample);
     expect_any(__wrap_SND_PCM_startPlay, len);

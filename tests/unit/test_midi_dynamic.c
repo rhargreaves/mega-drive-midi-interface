@@ -1,3 +1,4 @@
+#include "test_midi_dynamic.h"
 #include "test_midi.h"
 
 #define LENGTH_OF(x) (sizeof(x) / sizeof((x)[0]))
@@ -10,7 +11,7 @@ static void setStickToDeviceType(bool enable)
     __real_midi_sysex(sequence, sizeof(sequence));
 }
 
-static int test_dynamic_midi_setup(UNUSED void** state)
+int test_dynamic_midi_setup(UNUSED void** state)
 {
     test_midi_setup(state);
 
@@ -27,7 +28,7 @@ static int test_dynamic_midi_setup(UNUSED void** state)
     return 0;
 }
 
-static void test_midi_dynamic_uses_all_channels(UNUSED void** state)
+void test_midi_dynamic_uses_all_channels(UNUSED void** state)
 {
     const u8 octave = 4;
     const u16 freq = 0x284;
@@ -51,7 +52,7 @@ static void test_midi_dynamic_uses_all_channels(UNUSED void** state)
     }
 }
 
-static void test_midi_routing_switches_to_dynamic_on_gm_reset(UNUSED void** state)
+void test_midi_routing_switches_to_dynamic_on_gm_reset(UNUSED void** state)
 {
     const u8 sysExGeneralMidiResetSequence[] = { 0x7E, 0x7F, 0x09, 0x01 };
     __real_midi_sysex(sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
@@ -69,7 +70,7 @@ static void test_midi_routing_switches_to_dynamic_on_gm_reset(UNUSED void** stat
     __real_midi_note_on(0, 61, MAX_MIDI_VOLUME);
 }
 
-static void test_midi_dynamic_tries_to_reuse_original_midi_channel_if_available(UNUSED void** state)
+void test_midi_dynamic_tries_to_reuse_original_midi_channel_if_available(UNUSED void** state)
 {
     const u8 octave = 4;
     const u16 freq = 0x284;
@@ -95,7 +96,7 @@ static void test_midi_dynamic_tries_to_reuse_original_midi_channel_if_available(
     __real_midi_note_on(REUSE_MIDI_CHANNEL, pitch, MAX_MIDI_VOLUME);
 }
 
-static void test_midi_dynamic_reuses_mapped_midi_channel_even_if_busy_if_sticking_to_device_type(
+void test_midi_dynamic_reuses_mapped_midi_channel_even_if_busy_if_sticking_to_device_type(
     UNUSED void** state)
 {
     setStickToDeviceType(true);
@@ -117,12 +118,12 @@ static void test_midi_dynamic_reuses_mapped_midi_channel_even_if_busy_if_stickin
     __real_midi_note_on(REUSE_MIDI_CHANNEL, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
 }
 
-static void test_midi_reports_dynamic_mode_enabled(UNUSED void** state)
+void test_midi_reports_dynamic_mode_enabled(UNUSED void** state)
 {
     assert_true(__real_midi_dynamic_mode);
 }
 
-static void test_midi_reports_dynamic_mode_disabled(UNUSED void** state)
+void test_midi_reports_dynamic_mode_disabled(UNUSED void** state)
 {
     const u8 sequence[] = {
         SYSEX_MANU_EXTENDED,
@@ -137,7 +138,7 @@ static void test_midi_reports_dynamic_mode_disabled(UNUSED void** state)
     assert_false(__real_midi_dynamic_mode());
 }
 
-static void test_midi_exposes_dynamic_mode_mappings(UNUSED void** state)
+void test_midi_exposes_dynamic_mode_mappings(UNUSED void** state)
 {
     DeviceChannel* mappings = __real_midi_channel_mappings();
     for (u8 i = DEV_CHAN_MIN_FM; i < DEV_CHAN_MAX_FM; i++) {
@@ -148,7 +149,7 @@ static void test_midi_exposes_dynamic_mode_mappings(UNUSED void** state)
     }
 }
 
-static void test_midi_dynamic_enables_percussive_mode_if_needed(UNUSED void** state)
+void test_midi_dynamic_enables_percussive_mode_if_needed(UNUSED void** state)
 {
     const u8 MIDI_KEY = 30;
 
@@ -169,7 +170,7 @@ static void test_midi_dynamic_enables_percussive_mode_if_needed(UNUSED void** st
     __real_midi_note_on(GENERAL_MIDI_PERCUSSION_CHANNEL, MIDI_KEY, MAX_MIDI_VOLUME);
 }
 
-static void test_midi_sets_presets_on_dynamic_channels(UNUSED void** state)
+void test_midi_sets_presets_on_dynamic_channels(UNUSED void** state)
 {
     expect_value(__wrap_synth_preset, channel, 0);
     expect_any(__wrap_synth_preset, preset);
@@ -190,7 +191,7 @@ static void test_midi_sets_presets_on_dynamic_channels(UNUSED void** state)
     __real_midi_note_on(0, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
 }
 
-static void test_midi_dynamic_does_not_send_percussion_to_psg_channels(UNUSED void** state)
+void test_midi_dynamic_does_not_send_percussion_to_psg_channels(UNUSED void** state)
 {
     const u8 MIDI_KEY_IN_PSG_RANGE = MIDI_PITCH_AS6;
 
@@ -206,7 +207,7 @@ static void test_midi_dynamic_does_not_send_percussion_to_psg_channels(UNUSED vo
     __real_midi_note_on(GENERAL_MIDI_PERCUSSION_CHANNEL, MIDI_KEY_IN_PSG_RANGE, MAX_MIDI_VOLUME);
 }
 
-static void test_midi_sysex_resets_dynamic_mode_state(UNUSED void** state)
+void test_midi_sysex_resets_dynamic_mode_state(UNUSED void** state)
 {
     const u8 sysExGeneralMidiResetSequence[] = { 0x7E, 0x7F, 0x09, 0x01 };
     const u8 octave = 4;
@@ -239,7 +240,7 @@ static void test_midi_sysex_resets_dynamic_mode_state(UNUSED void** state)
     }
 }
 
-static void test_midi_dynamic_sends_note_off_to_channel_playing_same_pitch(UNUSED void** state)
+void test_midi_dynamic_sends_note_off_to_channel_playing_same_pitch(UNUSED void** state)
 {
     expect_synth_pitch_any();
     expect_synth_volume_any();
@@ -255,7 +256,7 @@ static void test_midi_dynamic_sends_note_off_to_channel_playing_same_pitch(UNUSE
     __real_midi_note_off(0, MIDI_PITCH_B6);
 }
 
-static void test_midi_dynamic_limits_percussion_notes(UNUSED void** state)
+void test_midi_dynamic_limits_percussion_notes(UNUSED void** state)
 {
     const u8 DRUM_KEY = 30;
 
@@ -272,7 +273,7 @@ static void test_midi_dynamic_limits_percussion_notes(UNUSED void** state)
     __real_midi_note_on(GENERAL_MIDI_PERCUSSION_CHANNEL, DRUM_KEY, MAX_MIDI_VOLUME);
 }
 
-static void test_midi_dynamic_maintains_volume_on_remapping(UNUSED void** state)
+void test_midi_dynamic_maintains_volume_on_remapping(UNUSED void** state)
 {
     const u8 midi_vol = 50;
     const u8 expected_synth_vol = 0x32;
@@ -294,7 +295,7 @@ static void test_midi_dynamic_maintains_volume_on_remapping(UNUSED void** state)
     __real_midi_note_on(0, MIDI_PITCH_B6, MAX_MIDI_VOLUME);
 }
 
-static void test_midi_dynamic_sets_volume_on_playing_notes(UNUSED void** state)
+void test_midi_dynamic_sets_volume_on_playing_notes(UNUSED void** state)
 {
     const u8 midi_vol_initial = 50;
     const u8 midi_vol_next = 75;
@@ -323,7 +324,7 @@ static void test_midi_dynamic_sets_volume_on_playing_notes(UNUSED void** state)
     __real_midi_cc(0, CC_VOLUME, midi_vol_next);
 }
 
-static void test_midi_dynamic_maintains_pan_on_remapping(UNUSED void** state)
+void test_midi_dynamic_maintains_pan_on_remapping(UNUSED void** state)
 {
     const u8 midi_pan = 127;
     const u8 expected_synth_stereo = STEREO_MODE_RIGHT;
@@ -348,7 +349,7 @@ static void test_midi_dynamic_maintains_pan_on_remapping(UNUSED void** state)
     __real_midi_note_on(0, MIDI_PITCH_B6, MAX_MIDI_VOLUME);
 }
 
-static void test_midi_dynamic_maintains_pitch_bend_on_remapping(UNUSED void** state)
+void test_midi_dynamic_maintains_pitch_bend_on_remapping(UNUSED void** state)
 {
     const u16 midi_bend = 0x3000;
 
@@ -371,7 +372,7 @@ static void test_midi_dynamic_maintains_pitch_bend_on_remapping(UNUSED void** st
     __real_midi_note_on(0, MIDI_PITCH_B6, MAX_MIDI_VOLUME);
 }
 
-static void test_midi_dynamic_resets_mappings_on_cc_121(UNUSED void** state)
+void test_midi_dynamic_resets_mappings_on_cc_121(UNUSED void** state)
 {
     const u8 midiChannel = 2;
 
@@ -392,7 +393,7 @@ static void test_midi_dynamic_resets_mappings_on_cc_121(UNUSED void** state)
     }
 }
 
-static void test_midi_dynamic_all_notes_off_on_cc_123(UNUSED void** state)
+void test_midi_dynamic_all_notes_off_on_cc_123(UNUSED void** state)
 {
     const u8 midiChannel = 2;
 
@@ -417,7 +418,7 @@ static void test_midi_dynamic_all_notes_off_on_cc_123(UNUSED void** state)
     }
 }
 
-static void test_midi_dynamic_sysex_remaps_midi_channel(UNUSED void** state)
+void test_midi_dynamic_sysex_remaps_midi_channel(UNUSED void** state)
 {
     const u8 MIDI_CHANNEL = 0x01;
     const u8 DESTINATION_FIRST_PSG_CHANNEL = 0x06;
@@ -433,7 +434,7 @@ static void test_midi_dynamic_sysex_remaps_midi_channel(UNUSED void** state)
     __real_midi_note_on(MIDI_CHANNEL, 60, MAX_MIDI_VOLUME);
 }
 
-static void test_midi_dynamic_sysex_removes_mapping_of_midi_channel(UNUSED void** state)
+void test_midi_dynamic_sysex_removes_mapping_of_midi_channel(UNUSED void** state)
 {
     const u8 MIDI_CHANNEL = 0x00;
     const u8 MIDI_CHANNEL_NO_MAPPING = 0x7F;
@@ -463,7 +464,7 @@ static void test_midi_dynamic_sysex_removes_mapping_of_midi_channel(UNUSED void*
     __real_midi_note_on(MIDI_CHANNEL, 60, MAX_MIDI_VOLUME);
 }
 
-static void test_midi_dynamic_prefers_psg_for_square_wave_instruments(UNUSED void** state)
+void test_midi_dynamic_prefers_psg_for_square_wave_instruments(UNUSED void** state)
 {
     const u8 PSG_CHANNEL = 0;
     const u8 MIDI_CHANNEL = 0;
@@ -485,7 +486,7 @@ static void test_midi_dynamic_prefers_psg_for_square_wave_instruments(UNUSED voi
     }
 }
 
-static void test_midi_dynamic_sticks_to_assigned_device_type_for_midi_channels(UNUSED void** state)
+void test_midi_dynamic_sticks_to_assigned_device_type_for_midi_channels(UNUSED void** state)
 {
     setStickToDeviceType(true);
 
@@ -505,8 +506,7 @@ static void test_midi_dynamic_sticks_to_assigned_device_type_for_midi_channels(U
     __real_midi_note_on(REUSE_MIDI_CHANNEL, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
 }
 
-static void test_midi_dynamic_sticks_to_assigned_psg_device_type_for_midi_channels(
-    UNUSED void** state)
+void test_midi_dynamic_sticks_to_assigned_psg_device_type_for_midi_channels(UNUSED void** state)
 {
     setStickToDeviceType(true);
 
@@ -526,7 +526,7 @@ static void test_midi_dynamic_sticks_to_assigned_psg_device_type_for_midi_channe
     __real_midi_note_on(MIDI_CHANNEL, MIDI_PITCH_B6, MAX_MIDI_VOLUME);
 }
 
-static void test_midi_assign_channel_to_psg_device(UNUSED void** state)
+void test_midi_assign_channel_to_psg_device(UNUSED void** state)
 {
     const u8 MIDI_CHANNEL = 0;
     const u8 PSG_CHANNEL = 0;
@@ -540,7 +540,7 @@ static void test_midi_assign_channel_to_psg_device(UNUSED void** state)
     __real_midi_note_on(MIDI_CHANNEL, 60, MAX_MIDI_VOLUME);
 }
 
-static void test_midi_assign_channel_to_fm_device_only(UNUSED void** state)
+void test_midi_assign_channel_to_fm_device_only(UNUSED void** state)
 {
     const u8 MIDI_CHANNEL = 0;
     const u8 DEVICE_SELECT_FM = 32;
@@ -560,7 +560,7 @@ static void test_midi_assign_channel_to_fm_device_only(UNUSED void** state)
     __real_midi_note_on(MIDI_CHANNEL, 60, MAX_MIDI_VOLUME);
 }
 
-static void test_midi_assign_channel_to_psg_noise(UNUSED void** state)
+void test_midi_assign_channel_to_psg_noise(UNUSED void** state)
 {
     const u8 MIDI_CHANNEL = 0;
     const u8 PSG_NOISE_CHANNEL = 3;

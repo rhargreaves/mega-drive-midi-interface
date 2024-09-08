@@ -1,16 +1,16 @@
-#include "cmocka_inc.h"
+#include "test_note_priority.h"
 #include "note_priority.h"
 #include "debug.h"
 
 static NotePriorityStack testStack;
 
-static int test_note_priority_setup(UNUSED void** state)
+int test_note_priority_setup(UNUSED void** state)
 {
     note_priority_init(&testStack);
     return 0;
 }
 
-static void test_note_priority_ignores_push_when_full(UNUSED void** state)
+void test_note_priority_ignores_push_when_full(UNUSED void** state)
 {
     const u16 additive = 50;
 
@@ -31,7 +31,7 @@ static void test_note_priority_ignores_push_when_full(UNUSED void** state)
     assert_int_equal(nilPop, 0);
 }
 
-static void test_note_priority_indicates_when_full(UNUSED void** state)
+void test_note_priority_indicates_when_full(UNUSED void** state)
 {
     for (u16 i = 0; i < NOTE_PRIORITY_LENGTH; i++) {
         assert_int_equal(note_priority_isFull(&testStack), false);
@@ -41,7 +41,7 @@ static void test_note_priority_indicates_when_full(UNUSED void** state)
     assert_int_equal(note_priority_isFull(&testStack), true);
 }
 
-static void test_note_priority_returns_size(UNUSED void** state)
+void test_note_priority_returns_size(UNUSED void** state)
 {
     assert_int_equal(note_priority_count(&testStack), 0);
     note_priority_push(&testStack, 1);

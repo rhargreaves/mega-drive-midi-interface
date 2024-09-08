@@ -1,12 +1,11 @@
-#include "cmocka_inc.h"
-#include "comm/applemidi.h"
+#include "test_applemidi.h"
 
-static int test_applemidi_setup(UNUSED void** state)
+int test_applemidi_setup(UNUSED void** state)
 {
     return 0;
 }
 
-static void test_applemidi_parses_rtpmidi_packet_with_single_midi_event(UNUSED void** state)
+void test_applemidi_parses_rtpmidi_packet_with_single_midi_event(UNUSED void** state)
 {
     char rtp_packet[1024] = { /* V P X CC M PT */ 0x80, 0x61, /* sequence number */ 0x8c, 0x24,
         /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1, 0x08,
@@ -22,7 +21,7 @@ static void test_applemidi_parses_rtpmidi_packet_with_single_midi_event(UNUSED v
     assert_int_equal(err, MW_ERR_NONE);
 }
 
-static void test_applemidi_parses_rtpmidi_packet_with_single_2_byte_midi_event(UNUSED void** state)
+void test_applemidi_parses_rtpmidi_packet_with_single_2_byte_midi_event(UNUSED void** state)
 {
     const u8 statuses[] = { 0xC0, 0xD0, 0xF1, 0xF3 };
 
@@ -42,8 +41,7 @@ static void test_applemidi_parses_rtpmidi_packet_with_single_2_byte_midi_event(U
     }
 }
 
-static void test_applemidi_parses_rtpmidi_packet_with_multiple_2_byte_midi_events(
-    UNUSED void** state)
+void test_applemidi_parses_rtpmidi_packet_with_multiple_2_byte_midi_events(UNUSED void** state)
 {
     const u8 statuses[] = { 0xC0, 0xD0, 0xF1, 0xF3 };
 
@@ -65,8 +63,7 @@ static void test_applemidi_parses_rtpmidi_packet_with_multiple_2_byte_midi_event
     }
 }
 
-static void test_applemidi_parses_rtpmidi_packet_with_single_midi_event_long_header(
-    UNUSED void** state)
+void test_applemidi_parses_rtpmidi_packet_with_single_midi_event_long_header(UNUSED void** state)
 {
     char rtp_packet[1024] = { /* V P X CC M PT */ 0x80, 0x61,
         /* sequence number */ 0x8c, 0x24,
@@ -83,7 +80,7 @@ static void test_applemidi_parses_rtpmidi_packet_with_single_midi_event_long_hea
     assert_int_equal(err, MW_ERR_NONE);
 }
 
-static void test_applemidi_parses_rtpmidi_packet_with_two_midi_events(UNUSED void** state)
+void test_applemidi_parses_rtpmidi_packet_with_two_midi_events(UNUSED void** state)
 {
     char rtp_packet[1024] = { /* V P X CC M PT */ 0x80, 0x61, /* sequence number */ 0x8c, 0x24,
         /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1, 0x08,
@@ -103,7 +100,7 @@ static void test_applemidi_parses_rtpmidi_packet_with_two_midi_events(UNUSED voi
     assert_int_equal(err, MW_ERR_NONE);
 }
 
-static void test_applemidi_parses_rtpmidi_packet_with_multiple_midi_events(UNUSED void** state)
+void test_applemidi_parses_rtpmidi_packet_with_multiple_midi_events(UNUSED void** state)
 {
     char rtp_packet[1024] = { /* V P X CC M PT */ 0x80, 0x61, /* sequence number */ 0x8c, 0x24,
         /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1, 0x08,
@@ -127,7 +124,7 @@ static void test_applemidi_parses_rtpmidi_packet_with_multiple_midi_events(UNUSE
     assert_int_equal(err, MW_ERR_NONE);
 }
 
-static void test_applemidi_parses_rtpmidi_packet_with_sysex(UNUSED void** state)
+void test_applemidi_parses_rtpmidi_packet_with_sysex(UNUSED void** state)
 {
     char rtpPacket[1024] = { /* V P X CC M PT */ 0x80, 0x61,
         /* sequence number */ 0x8c, 0x24,
@@ -146,7 +143,7 @@ static void test_applemidi_parses_rtpmidi_packet_with_sysex(UNUSED void** state)
     assert_int_equal(err, MW_ERR_NONE);
 }
 
-static void test_applemidi_parses_rtpmidi_packet_with_sysex_ending_with_F0(UNUSED void** state)
+void test_applemidi_parses_rtpmidi_packet_with_sysex_ending_with_F0(UNUSED void** state)
 {
     char rtpPacket[1024] = { /* V P X CC M PT */ 0x80, 0x61,
         /* sequence number */ 0x8c, 0x24,
@@ -165,7 +162,7 @@ static void test_applemidi_parses_rtpmidi_packet_with_sysex_ending_with_F0(UNUSE
     assert_int_equal(err, MW_ERR_NONE);
 }
 
-static void test_applemidi_parses_rtpmidi_packet_with_sysex_with_0xF7_at_end(UNUSED void** state)
+void test_applemidi_parses_rtpmidi_packet_with_sysex_with_0xF7_at_end(UNUSED void** state)
 {
     char rtpPacket[1024] = { /* V P X CC M PT */ 0x80, 0x61,
         /* sequence number */ 0x8c, 0x24,
@@ -184,8 +181,7 @@ static void test_applemidi_parses_rtpmidi_packet_with_sysex_with_0xF7_at_end(UNU
     assert_int_equal(err, MW_ERR_NONE);
 }
 
-static void test_applemidi_parses_rtpmidi_packet_with_multiple_different_midi_events(
-    UNUSED void** state)
+void test_applemidi_parses_rtpmidi_packet_with_multiple_different_midi_events(UNUSED void** state)
 {
     char rtp_packet[1024] = { /* V P X CC M PT */ 0x80, 0x61, /* sequence number */ 0x8c, 0x24,
         /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1, 0x08,
@@ -210,7 +206,7 @@ static void test_applemidi_parses_rtpmidi_packet_with_multiple_different_midi_ev
     assert_int_equal(err, MW_ERR_NONE);
 }
 
-static void test_applemidi_parses_rtpmidi_packet_with_system_reset(UNUSED void** state)
+void test_applemidi_parses_rtpmidi_packet_with_system_reset(UNUSED void** state)
 {
     char rtp_packet[1024] = { /* V P X CC M PT */ 0x80, 0x61, /* sequence number */ 0x8c, 0x24,
         /* timestamp */ 0x00, 0x58, 0xbb, 0x40, /* SSRC */ 0xac, 0x67, 0xe1, 0x08,
@@ -223,7 +219,7 @@ static void test_applemidi_parses_rtpmidi_packet_with_system_reset(UNUSED void**
     assert_int_equal(err, MW_ERR_NONE);
 }
 
-static void test_applemidi_parses_notes_sysex_cc_in_one_packet(UNUSED void** state)
+void test_applemidi_parses_notes_sysex_cc_in_one_packet(UNUSED void** state)
 {
     char rtp_packet[] = { /* V P X CC M PT */ 0x80, 0x61,
         /* sequence number */ 0xe0, 0x19, /* timestamp */ 0x03, 0x31, 0xdd, 0x6d, /* SSRC */ 0x09,
@@ -270,7 +266,7 @@ static void test_applemidi_parses_notes_sysex_cc_in_one_packet(UNUSED void** sta
     assert_int_equal(err, MW_ERR_NONE);
 }
 
-static void test_applemidi_ignores_middle_sysex_segments(UNUSED void** state)
+void test_applemidi_ignores_middle_sysex_segments(UNUSED void** state)
 {
     const u8 endings[] = { 0xF0, 0xF7 };
     const u8 cmd_length = 11;
@@ -295,7 +291,7 @@ static void test_applemidi_ignores_middle_sysex_segments(UNUSED void** state)
     }
 }
 
-static void test_applemidi_processes_multiple_sysex_segments(UNUSED void** state)
+void test_applemidi_processes_multiple_sysex_segments(UNUSED void** state)
 {
     const u8 cmd_length = 12;
     char rtp_packet[] = { /* V P X CC M PT */ 0x80, 0x61,
@@ -315,7 +311,7 @@ static void test_applemidi_processes_multiple_sysex_segments(UNUSED void** state
     assert_int_equal(err, MW_ERR_NONE);
 }
 
-static void test_applemidi_processes_ccs(UNUSED void** state)
+void test_applemidi_processes_ccs(UNUSED void** state)
 {
     char rtp_packet[] = { /* V P X CC M PT */ 0x80, 0x61,
         /* sequence number */ 0xf3, 0x86, /* timestamp */ 0x08, 0xbe, 0x9f, 0x2b, /* SSRC */ 0x09,
@@ -350,7 +346,7 @@ static void test_applemidi_processes_ccs(UNUSED void** state)
     assert_int_equal(err, MW_ERR_NONE);
 }
 
-static void test_applemidi_sets_last_sequence_number(UNUSED void** state)
+void test_applemidi_sets_last_sequence_number(UNUSED void** state)
 {
     char rtp_packet[1024] = { /* V P X CC M PT */ 0x80, 0x61,
         /* sequence number */ 0x8c, 0x24,
@@ -370,7 +366,7 @@ static void test_applemidi_sets_last_sequence_number(UNUSED void** state)
     assert_int_equal(seqNum, 0x8c24);
 }
 
-static void test_applemidi_sends_receiver_feedback(UNUSED void** state)
+void test_applemidi_sends_receiver_feedback(UNUSED void** state)
 {
     char rtp_packet[1024] = { /* V P X CC M PT */ 0x80, 0x61,
         /* sequence number */ 0x00, 0x01,
@@ -398,7 +394,7 @@ static void test_applemidi_sends_receiver_feedback(UNUSED void** state)
     assert_int_equal(err, MW_ERR_NONE);
 }
 
-static void test_applemidi_does_not_read_beyond_length(UNUSED void** state)
+void test_applemidi_does_not_read_beyond_length(UNUSED void** state)
 {
     u8 length = 4;
     char rtp_packet[1024] = { /* V P X CC M PT */ 0x80, 0x61,

@@ -1,6 +1,7 @@
+#include "test_midi_finetune.h"
 #include "test_midi.h"
 
-static void test_midi_finetune_max(UNUSED void** state)
+void test_midi_finetune_max(UNUSED void** state)
 {
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         debug_message("channel %d\n", chan);
@@ -13,7 +14,7 @@ static void test_midi_finetune_max(UNUSED void** state)
     }
 }
 
-static void test_midi_finetune_min(UNUSED void** state)
+void test_midi_finetune_min(UNUSED void** state)
 {
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         debug_message("channel %d\n", chan);
@@ -26,7 +27,7 @@ static void test_midi_finetune_min(UNUSED void** state)
     }
 }
 
-static void test_midi_finetune_with_pitchbend(UNUSED void** state)
+void test_midi_finetune_with_pitchbend(UNUSED void** state)
 {
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         debug_message("channel %d\n", chan);

@@ -1,4 +1,4 @@
-#include "cmocka_inc.h"
+#include "test_e2e.h"
 #include "asserts.h"
 #include "comm/comm.h"
 #include "envelopes.h"
@@ -30,7 +30,7 @@ static const u8 TEST_MIDI_CHANNEL_11 = 10;
 static const u8 TEST_VOLUME_MAX = 127;
 static const u8 TEST_VELOCITY_MAX = 127;
 
-static int test_e2e_setup(void** state)
+int test_e2e_setup(void** state)
 {
     wraps_disable_checks();
     scheduler_init();
@@ -42,7 +42,7 @@ static int test_e2e_setup(void** state)
     return 0;
 }
 
-static void test_midi_note_on_event_sent_to_ym2612(void** state)
+void test_midi_note_on_event_sent_to_ym2612(void** state)
 {
     stub_everdrive_as_present();
     stub_usb_receive_note_on(TEST_MIDI_CHANNEL_1, 48, 127);
@@ -52,7 +52,7 @@ static void test_midi_note_on_event_sent_to_ym2612(void** state)
     midi_receiver_read();
 }
 
-static void test_polyphonic_midi_sent_to_separate_ym2612_channels(void** state)
+void test_polyphonic_midi_sent_to_separate_ym2612_channels(void** state)
 {
     stub_everdrive_as_present();
     stub_usb_receive_cc(TEST_MIDI_CHANNEL_1, TEST_CC_POLYPHONIC, TEST_POLYPHONIC_ON);
@@ -72,7 +72,7 @@ static void test_polyphonic_midi_sent_to_separate_ym2612_channels(void** state)
     midi_receiver_read();
 }
 
-static void test_psg_audible_if_note_on_event_triggered(void** state)
+void test_psg_audible_if_note_on_event_triggered(void** state)
 {
     stub_everdrive_as_present();
     stub_usb_receive_note_on(TEST_MIDI_CHANNEL_PSG_1, 60, TEST_VELOCITY_MAX);
@@ -83,15 +83,14 @@ static void test_psg_audible_if_note_on_event_triggered(void** state)
     midi_receiver_read();
 }
 
-static void test_psg_not_audible_if_midi_channel_volume_set_and_there_is_no_note_on_event(
-    void** state)
+void test_psg_not_audible_if_midi_channel_volume_set_and_there_is_no_note_on_event(void** state)
 {
     stub_everdrive_as_present();
     stub_usb_receive_cc(TEST_MIDI_CHANNEL_PSG_1, TEST_CC_VOLUME, TEST_VOLUME_MAX);
     midi_receiver_read();
 }
 
-static void test_general_midi_reset_sysex_stops_all_notes(void** state)
+void test_general_midi_reset_sysex_stops_all_notes(void** state)
 {
     stub_everdrive_as_present();
 
@@ -137,7 +136,7 @@ static void remapChannel(u8 midiChannel, u8 deviceChannel)
     }
 }
 
-static void test_remap_midi_channel_1_to_psg_channel_1()
+void test_remap_midi_channel_1_to_psg_channel_1()
 {
     stub_everdrive_as_present();
 
@@ -159,7 +158,7 @@ static void test_remap_midi_channel_1_to_psg_channel_1()
     midi_receiver_read();
 }
 
-static void test_set_device_for_midi_channel_1_to_psg()
+void test_set_device_for_midi_channel_1_to_psg()
 {
     stub_everdrive_as_present();
     stub_usb_receive_cc(TEST_MIDI_CHANNEL_1, TEST_CC_POLYPHONIC, TEST_POLYPHONIC_ON);
@@ -176,7 +175,7 @@ static void test_set_device_for_midi_channel_1_to_psg()
     midi_receiver_read();
 }
 
-static void test_pong_received_after_ping_sent()
+void test_pong_received_after_ping_sent()
 {
     const u8 sysExPingSequence[] = { SYSEX_START, SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
         SYSEX_MANU_ID, SYSEX_COMMAND_PING, SYSEX_END };
@@ -197,7 +196,7 @@ static void test_pong_received_after_ping_sent()
     midi_receiver_read();
 }
 
-static void test_loads_psg_envelope()
+void test_loads_psg_envelope()
 {
     const u8 sysExPingSequence[] = { SYSEX_START, SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
         SYSEX_MANU_ID, SYSEX_COMMAND_LOAD_PSG_ENVELOPE, 0x06, 0x06, SYSEX_END };
@@ -216,7 +215,7 @@ static void test_loads_psg_envelope()
     midi_receiver_read();
 }
 
-static void test_enables_ch3_special_mode(void** state)
+void test_enables_ch3_special_mode(void** state)
 {
     stub_everdrive_as_present();
     stub_usb_receive_cc(TEST_MIDI_CHANNEL_1, TEST_CC_SPECIAL_MODE, TEST_SPECIAL_MODE_ON);
@@ -224,7 +223,7 @@ static void test_enables_ch3_special_mode(void** state)
     midi_receiver_read();
 }
 
-static void test_sets_separate_ch3_operator_frequencies(void** state)
+void test_sets_separate_ch3_operator_frequencies(void** state)
 {
     stub_everdrive_as_present();
     stub_usb_receive_cc(TEST_MIDI_CHANNEL_1, TEST_CC_SPECIAL_MODE, TEST_SPECIAL_MODE_ON);
@@ -248,7 +247,7 @@ static void test_sets_separate_ch3_operator_frequencies(void** state)
     }
 }
 
-static void test_pitch_bends_ch3_special_mode_operators(void** state)
+void test_pitch_bends_ch3_special_mode_operators(void** state)
 {
     stub_everdrive_as_present();
     stub_usb_receive_cc(TEST_MIDI_CHANNEL_1, TEST_CC_SPECIAL_MODE, TEST_SPECIAL_MODE_ON);
@@ -271,7 +270,7 @@ static void test_pitch_bends_ch3_special_mode_operators(void** state)
     midi_receiver_read();
 }
 
-static void test_write_directly_to_ym2612_regs_via_sysex(void** state)
+void test_write_directly_to_ym2612_regs_via_sysex(void** state)
 {
     stub_everdrive_as_present();
 
@@ -283,7 +282,7 @@ static void test_write_directly_to_ym2612_regs_via_sysex(void** state)
     midi_receiver_read();
 }
 
-static void test_plays_pcm_sample(void** state)
+void test_plays_pcm_sample(void** state)
 {
     stub_everdrive_as_present();
     stub_usb_receive_cc(TEST_MIDI_CHANNEL_1, TEST_CC_ENABLE_DAC, 127);
@@ -299,7 +298,7 @@ static void test_plays_pcm_sample(void** state)
     midi_receiver_read();
 }
 
-static void test_midi_last_note_played_priority_respected_on_fm(void** state)
+void test_midi_last_note_played_priority_respected_on_fm(void** state)
 {
     stub_everdrive_as_present();
     stub_usb_receive_note_on(TEST_MIDI_CHANNEL_1, 48, 127);
@@ -321,7 +320,7 @@ static void test_midi_last_note_played_priority_respected_on_fm(void** state)
     midi_receiver_read();
 }
 
-static void test_midi_last_note_played_remembers_velocity_on_fm(void** state)
+void test_midi_last_note_played_remembers_velocity_on_fm(void** state)
 {
     stub_everdrive_as_present();
     stub_usb_receive_note_on(TEST_MIDI_CHANNEL_1, 48, 100);
@@ -347,7 +346,7 @@ static void test_midi_last_note_played_remembers_velocity_on_fm(void** state)
     midi_receiver_read();
 }
 
-static void test_midi_last_note_played_cleared_when_released_on_fm(void** state)
+void test_midi_last_note_played_cleared_when_released_on_fm(void** state)
 {
     stub_everdrive_as_present();
     stub_usb_receive_note_on(TEST_MIDI_CHANNEL_1, 48, 127);
@@ -370,7 +369,7 @@ static void test_midi_last_note_played_cleared_when_released_on_fm(void** state)
     midi_receiver_read();
 }
 
-static void test_midi_changing_program_retains_pan(void** state)
+void test_midi_changing_program_retains_pan(void** state)
 {
     stub_everdrive_as_present();
 
@@ -414,7 +413,7 @@ static void test_midi_changing_program_retains_pan(void** state)
     midi_receiver_read();
 }
 
-static void test_midi_changing_program_retains_volume(void** state)
+void test_midi_changing_program_retains_volume(void** state)
 {
     stub_everdrive_as_present();
 
@@ -461,7 +460,7 @@ static void test_midi_changing_program_retains_volume(void** state)
     midi_receiver_read();
 }
 
-static void test_midi_portamento_glides_note(void** state)
+void test_midi_portamento_glides_note(void** state)
 {
     stub_everdrive_as_present();
 

@@ -1,4 +1,4 @@
-#include "cmocka_inc.h"
+#include "test_synth.h"
 #include "synth.h"
 #include "test_midi.h"
 #include "z80_ctrl.h"
@@ -36,7 +36,7 @@ static void loads_pcm_driver(void)
     expect_value(__wrap_Z80_loadDriver, waitReady, true);
 }
 
-static int test_synth_setup(UNUSED void** state)
+int test_synth_setup(UNUSED void** state)
 {
     updated = false;
     loads_pcm_driver();
@@ -44,13 +44,13 @@ static int test_synth_setup(UNUSED void** state)
     return 0;
 }
 
-static void test_synth_init_sets_initial_registers(UNUSED void** state)
+void test_synth_init_sets_initial_registers(UNUSED void** state)
 {
     loads_pcm_driver();
     set_initial_registers();
 }
 
-static void test_synth_sets_note_on_fm_reg_chan_0_to_2(UNUSED void** state)
+void test_synth_sets_note_on_fm_reg_chan_0_to_2(UNUSED void** state)
 {
     for (u8 chan = 0; chan < 3; chan++) {
         expect_ym2612_write_reg(0, 0x28, 0xF0 + chan);
@@ -58,7 +58,7 @@ static void test_synth_sets_note_on_fm_reg_chan_0_to_2(UNUSED void** state)
     }
 }
 
-static void test_synth_sets_note_on_fm_reg_chan_3_to_5(UNUSED void** state)
+void test_synth_sets_note_on_fm_reg_chan_3_to_5(UNUSED void** state)
 {
     for (u8 chan = 3; chan < MAX_FM_CHANS; chan++) {
         expect_ym2612_write_reg(0, 0x28, 0xF1 + chan);
@@ -66,7 +66,7 @@ static void test_synth_sets_note_on_fm_reg_chan_3_to_5(UNUSED void** state)
     }
 }
 
-static void test_synth_sets_note_off_fm_reg_chan_0_to_2(UNUSED void** state)
+void test_synth_sets_note_off_fm_reg_chan_0_to_2(UNUSED void** state)
 {
     for (u8 chan = 0; chan < 3; chan++) {
         expect_ym2612_write_reg(0, 0x28, chan);
@@ -74,7 +74,7 @@ static void test_synth_sets_note_off_fm_reg_chan_0_to_2(UNUSED void** state)
     }
 }
 
-static void test_synth_sets_note_off_fm_reg_chan_3_to_5(UNUSED void** state)
+void test_synth_sets_note_off_fm_reg_chan_3_to_5(UNUSED void** state)
 {
     for (u8 chan = 3; chan < MAX_FM_CHANS; chan++) {
         expect_ym2612_write_reg(0, 0x28, 1 + chan);
@@ -82,7 +82,7 @@ static void test_synth_sets_note_off_fm_reg_chan_3_to_5(UNUSED void** state)
     }
 }
 
-static void test_synth_sets_octave_and_freq_reg_chan(UNUSED void** state)
+void test_synth_sets_octave_and_freq_reg_chan(UNUSED void** state)
 {
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         expect_ym2612_write_channel(chan, 0xA4, 0x22);
@@ -91,7 +91,7 @@ static void test_synth_sets_octave_and_freq_reg_chan(UNUSED void** state)
     }
 }
 
-static void test_synth_sets_stereo_ams_and_freq(UNUSED void** state)
+void test_synth_sets_stereo_ams_and_freq(UNUSED void** state)
 {
     const u8 ams = 1;
     const u8 fms = 1;
@@ -107,7 +107,7 @@ static void test_synth_sets_stereo_ams_and_freq(UNUSED void** state)
     }
 }
 
-static void test_synth_sets_algorithm(UNUSED void** state)
+void test_synth_sets_algorithm(UNUSED void** state)
 {
     const u8 defaultFeedback = 0;
     const u8 algorithm = 1;
@@ -117,7 +117,7 @@ static void test_synth_sets_algorithm(UNUSED void** state)
     }
 }
 
-static void test_synth_sets_feedback(UNUSED void** state)
+void test_synth_sets_feedback(UNUSED void** state)
 {
     const u8 defaultAlgorithm = 0;
     const u8 feedback = 1;
@@ -127,7 +127,7 @@ static void test_synth_sets_feedback(UNUSED void** state)
     }
 }
 
-static void test_synth_sets_feedback_and_algorithm(UNUSED void** state)
+void test_synth_sets_feedback_and_algorithm(UNUSED void** state)
 {
     const u8 baseReg = 0xB0;
     const u8 defaultFeedback = 0;
@@ -145,7 +145,7 @@ static void test_synth_sets_feedback_and_algorithm(UNUSED void** state)
     }
 }
 
-static void test_synth_does_not_reset_operator_level_if_equal(UNUSED void** state)
+void test_synth_does_not_reset_operator_level_if_equal(UNUSED void** state)
 {
     const u8 baseReg = 0x40;
     const u8 totalLevel = 50;
@@ -157,7 +157,7 @@ static void test_synth_does_not_reset_operator_level_if_equal(UNUSED void** stat
     __real_synth_operatorTotalLevel(chan, op, totalLevel);
 }
 
-static void test_synth_sets_operator_total_level(UNUSED void** state)
+void test_synth_sets_operator_total_level(UNUSED void** state)
 {
     const u8 baseReg = 0x40;
     const u8 totalLevel = 50;
@@ -169,7 +169,7 @@ static void test_synth_sets_operator_total_level(UNUSED void** state)
     }
 }
 
-static void test_synth_sets_operator_multiple_and_detune(UNUSED void** state)
+void test_synth_sets_operator_multiple_and_detune(UNUSED void** state)
 {
     const u8 baseReg = 0x30;
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
@@ -186,7 +186,7 @@ static void test_synth_sets_operator_multiple_and_detune(UNUSED void** state)
     }
 }
 
-static void test_synth_sets_operator_attack_rate_and_rate_scaling(UNUSED void** state)
+void test_synth_sets_operator_attack_rate_and_rate_scaling(UNUSED void** state)
 {
     const u8 baseReg = 0x50;
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
@@ -203,7 +203,7 @@ static void test_synth_sets_operator_attack_rate_and_rate_scaling(UNUSED void** 
     }
 }
 
-static void test_synth_sets_operator_sustain_rate(UNUSED void** state)
+void test_synth_sets_operator_sustain_rate(UNUSED void** state)
 {
     const u8 baseReg = 0x70;
     u8 sustainRate = 16;
@@ -215,7 +215,7 @@ static void test_synth_sets_operator_sustain_rate(UNUSED void** state)
     }
 }
 
-static void test_synth_sets_operator_release_rate_and_sustain_level(UNUSED void** state)
+void test_synth_sets_operator_release_rate_and_sustain_level(UNUSED void** state)
 {
     const u8 baseReg = 0x80;
     u8 sustainLevel = 15;
@@ -230,7 +230,7 @@ static void test_synth_sets_operator_release_rate_and_sustain_level(UNUSED void*
     }
 }
 
-static void test_synth_sets_operator_amplitude_modulation_and_decay_rate(UNUSED void** state)
+void test_synth_sets_operator_amplitude_modulation_and_decay_rate(UNUSED void** state)
 {
     const u8 baseReg = 0x60;
     u8 amplitudeModulation = 1;
@@ -245,7 +245,7 @@ static void test_synth_sets_operator_amplitude_modulation_and_decay_rate(UNUSED 
     }
 }
 
-static void test_synth_sets_operator_ssg_eg(UNUSED void** state)
+void test_synth_sets_operator_ssg_eg(UNUSED void** state)
 {
     const u8 baseReg = 0x90;
     const u8 ssgEg = 11;
@@ -257,7 +257,7 @@ static void test_synth_sets_operator_ssg_eg(UNUSED void** state)
     }
 }
 
-static void test_synth_sets_global_LFO_enable_and_frequency(UNUSED void** state)
+void test_synth_sets_global_LFO_enable_and_frequency(UNUSED void** state)
 {
     const u8 baseReg = 0x22;
     expect_ym2612_write_reg_any_data(0, baseReg);
@@ -266,7 +266,7 @@ static void test_synth_sets_global_LFO_enable_and_frequency(UNUSED void** state)
     __real_synth_globalLfoFrequency(1);
 }
 
-static void test_synth_sets_busy_indicators(UNUSED void** state)
+void test_synth_sets_busy_indicators(UNUSED void** state)
 {
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan += 2) {
         expect_ym2612_write_reg_any_data(0, 0x28);
@@ -276,7 +276,7 @@ static void test_synth_sets_busy_indicators(UNUSED void** state)
     assert_int_equal(busy, 0b00010101);
 }
 
-static void test_synth_sets_preset(UNUSED void** state)
+void test_synth_sets_preset(UNUSED void** state)
 {
     const u8 chan = 0;
 
@@ -318,7 +318,7 @@ static void test_synth_sets_preset(UNUSED void** state)
     __real_synth_preset(chan, &M_BANK_0_INST_7_CLAVINET);
 }
 
-static void test_synth_sets_preset_retaining_pan(UNUSED void** state)
+void test_synth_sets_preset_retaining_pan(UNUSED void** state)
 {
     const u8 chan = 0;
 
@@ -362,7 +362,7 @@ static void test_synth_sets_preset_retaining_pan(UNUSED void** state)
     __real_synth_preset(chan, &M_BANK_0_INST_7_CLAVINET);
 }
 
-static void test_synth_applies_volume_modifier_to_output_operators_algorithm_7(UNUSED void** state)
+void test_synth_applies_volume_modifier_to_output_operators_algorithm_7(UNUSED void** state)
 {
     const u8 algorithm = 7;
     const u8 totalLevelReg = 0x40;
@@ -393,7 +393,7 @@ static void test_synth_applies_volume_modifier_to_output_operators_algorithm_7(U
     }
 }
 
-static void test_synth_does_not_apply_volume_if_equal(UNUSED void** state)
+void test_synth_does_not_apply_volume_if_equal(UNUSED void** state)
 {
     const u8 algorithm = 7;
     const u8 totalLevelReg = 0x40;
@@ -420,8 +420,7 @@ static void test_synth_does_not_apply_volume_if_equal(UNUSED void** state)
     __real_synth_volume(chan, loudestVolume / 2);
 }
 
-static void test_synth_applies_volume_modifier_to_output_operators_algorithm_7_quieter(
-    UNUSED void** state)
+void test_synth_applies_volume_modifier_to_output_operators_algorithm_7_quieter(UNUSED void** state)
 {
     const u8 algorithm = 7;
     const u8 totalLevelReg = 0x40;
@@ -447,8 +446,7 @@ static void test_synth_applies_volume_modifier_to_output_operators_algorithm_7_q
     }
 }
 
-static void test_synth_applies_volume_modifier_to_output_operators_algorithms_0_to_3(
-    UNUSED void** state)
+void test_synth_applies_volume_modifier_to_output_operators_algorithms_0_to_3(UNUSED void** state)
 {
     const u8 totalLevelReg = 0x40;
     const u8 algorithmReg = 0xB0;
@@ -473,7 +471,7 @@ static void test_synth_applies_volume_modifier_to_output_operators_algorithms_0_
     }
 }
 
-static void test_synth_applies_volume_modifier_to_output_operators_algorithm_4(UNUSED void** state)
+void test_synth_applies_volume_modifier_to_output_operators_algorithm_4(UNUSED void** state)
 {
     const u8 totalLevelReg = 0x40;
     const u8 algorithmReg = 0xB0;
@@ -492,8 +490,7 @@ static void test_synth_applies_volume_modifier_to_output_operators_algorithm_4(U
     }
 }
 
-static void test_synth_applies_volume_modifier_to_output_operators_algorithms_5_and_6(
-    UNUSED void** state)
+void test_synth_applies_volume_modifier_to_output_operators_algorithms_5_and_6(UNUSED void** state)
 {
     const u8 totalLevelReg = 0x40;
     const u8 algorithmReg = 0xB0;
@@ -517,14 +514,14 @@ static void test_synth_applies_volume_modifier_to_output_operators_algorithms_5_
     }
 }
 
-static void test_synth_exposes_fm_channel_parameters(UNUSED void** state)
+void test_synth_exposes_fm_channel_parameters(UNUSED void** state)
 {
     const FmChannel* chan = __real_synth_channelParameters(0);
 
     assert_int_equal(chan->stereo, STEREO_MODE_CENTRE);
 }
 
-static void test_synth_exposes_global_parameters(UNUSED void** state)
+void test_synth_exposes_global_parameters(UNUSED void** state)
 {
     const Global* global = __real_synth_globalParameters();
 
@@ -538,7 +535,7 @@ static void updateCallback(u8 chan, ParameterUpdated parameterUpdated)
     lastParameterUpdated = parameterUpdated;
 }
 
-static void test_synth_calls_callback_when_parameter_changes(UNUSED void** state)
+void test_synth_calls_callback_when_parameter_changes(UNUSED void** state)
 {
     synth_setParameterUpdateCallback(&updateCallback);
 
@@ -553,7 +550,7 @@ static void test_synth_calls_callback_when_parameter_changes(UNUSED void** state
     assert_int_equal(lastParameterUpdated, Channel);
 }
 
-static void test_synth_calls_callback_when_lfo_freq_changes(UNUSED void** state)
+void test_synth_calls_callback_when_lfo_freq_changes(UNUSED void** state)
 {
     synth_setParameterUpdateCallback(&updateCallback);
 
@@ -564,7 +561,7 @@ static void test_synth_calls_callback_when_lfo_freq_changes(UNUSED void** state)
     assert_int_equal(lastParameterUpdated, Lfo);
 }
 
-static void test_synth_calls_callback_when_lfo_enable_changes(UNUSED void** state)
+void test_synth_calls_callback_when_lfo_enable_changes(UNUSED void** state)
 {
     synth_setParameterUpdateCallback(&updateCallback);
 
@@ -575,7 +572,7 @@ static void test_synth_calls_callback_when_lfo_enable_changes(UNUSED void** stat
     assert_int_equal(lastParameterUpdated, Lfo);
 }
 
-static void test_synth_calls_callback_when_special_mode_changes(UNUSED void** state)
+void test_synth_calls_callback_when_special_mode_changes(UNUSED void** state)
 {
     synth_setParameterUpdateCallback(&updateCallback);
 
@@ -586,19 +583,19 @@ static void test_synth_calls_callback_when_special_mode_changes(UNUSED void** st
     assert_int_equal(lastParameterUpdated, SpecialMode);
 }
 
-static void test_synth_enables_ch3_special_mode(UNUSED void** state)
+void test_synth_enables_ch3_special_mode(UNUSED void** state)
 {
     expect_ym2612_write_reg(0, 0x27, 0x40);
     __real_synth_setSpecialMode(true);
 }
 
-static void test_synth_disables_ch3_special_mode(UNUSED void** state)
+void test_synth_disables_ch3_special_mode(UNUSED void** state)
 {
     expect_ym2612_write_reg(0, 0x27, 0);
     __real_synth_setSpecialMode(false);
 }
 
-static void test_synth_sets_ch3_special_mode_operator_pitches(UNUSED void** state)
+void test_synth_sets_ch3_special_mode_operator_pitches(UNUSED void** state)
 {
     const u8 upperRegs[] = { 0xAD, 0xAE, 0xAC };
     const u8 lowerRegs[] = { 0xA9, 0xAA, 0xA8 };
@@ -611,7 +608,7 @@ static void test_synth_sets_ch3_special_mode_operator_pitches(UNUSED void** stat
     }
 }
 
-static void test_synth_handles_out_of_range_ch3_special_mode_operator(UNUSED void** state)
+void test_synth_handles_out_of_range_ch3_special_mode_operator(UNUSED void** state)
 {
     const u8 op = 3; // invalid op
     expect_ym2612_write_reg(0, 0xAD, 0x22); // safely wrap to valid reg
@@ -675,69 +672,61 @@ static void synth_sets_ch3_special_mode_op_tl_only_if_output_operator(int alg)
     }
 }
 
-static void test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_0(
-    UNUSED void** state)
+void test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_0(UNUSED void** state)
 {
     synth_sets_ch3_special_mode_op_tl_only_if_output_operator(0);
 }
 
-static void test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_1(
-    UNUSED void** state)
+void test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_1(UNUSED void** state)
 {
     synth_sets_ch3_special_mode_op_tl_only_if_output_operator(1);
 }
 
-static void test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_2(
-    UNUSED void** state)
+void test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_2(UNUSED void** state)
 {
     synth_sets_ch3_special_mode_op_tl_only_if_output_operator(2);
 }
 
-static void test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_3(
-    UNUSED void** state)
+void test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_3(UNUSED void** state)
 {
     synth_sets_ch3_special_mode_op_tl_only_if_output_operator(3);
 }
 
-static void test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_4(
-    UNUSED void** state)
+void test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_4(UNUSED void** state)
 {
     synth_sets_ch3_special_mode_op_tl_only_if_output_operator(4);
 }
 
-static void test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_5(
-    UNUSED void** state)
+void test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_5(UNUSED void** state)
 {
     synth_sets_ch3_special_mode_op_tl_only_if_output_operator(5);
 }
 
-static void test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_6(
-    UNUSED void** state)
+void test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_6(UNUSED void** state)
 {
     synth_sets_ch3_special_mode_op_tl_only_if_output_operator(6);
 }
 
-static void test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_7(
-    UNUSED void** state)
+void test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_7(UNUSED void** state)
 {
     synth_sets_ch3_special_mode_op_tl_only_if_output_operator(7);
 }
 
-static void test_synth_enables_dac(UNUSED void** state)
+void test_synth_enables_dac(UNUSED void** state)
 {
     expect_ym2612_write_reg(0, 0x2B, 0x80);
 
     __real_synth_enableDac(true);
 }
 
-static void test_synth_disables_dac(UNUSED void** state)
+void test_synth_disables_dac(UNUSED void** state)
 {
     expect_ym2612_write_reg(0, 0x2B, 0);
 
     __real_synth_enableDac(false);
 }
 
-static void test_requests_Z80_bus_if_not_already_taken(UNUSED void** state)
+void test_requests_Z80_bus_if_not_already_taken(UNUSED void** state)
 {
     expect_value(__wrap_Z80_getAndRequestBus, wait, TRUE);
     will_return(__wrap_Z80_getAndRequestBus, false);
@@ -753,7 +742,7 @@ static void test_requests_Z80_bus_if_not_already_taken(UNUSED void** state)
     __real_synth_directWriteYm2612(0, 0x2B, 0);
 }
 
-static void test_does_not_release_Z80_bus_when_taken_prior_to_call(UNUSED void** state)
+void test_does_not_release_Z80_bus_when_taken_prior_to_call(UNUSED void** state)
 {
     expect_value(__wrap_Z80_getAndRequestBus, wait, TRUE);
     will_return(__wrap_Z80_getAndRequestBus, true);

@@ -1,6 +1,7 @@
+#include "test_midi_portamento.h"
 #include "test_midi.h"
 
-static int test_midi_portamento_setup(UNUSED void** state)
+int test_midi_portamento_setup(UNUSED void** state)
 {
     test_midi_setup(state);
 
@@ -10,7 +11,7 @@ static int test_midi_portamento_setup(UNUSED void** state)
     return 0;
 }
 
-static void test_midi_portamento_glides_note_up(UNUSED void** state)
+void test_midi_portamento_glides_note_up(UNUSED void** state)
 {
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         debug_message("channel %d\n", chan);
@@ -37,7 +38,7 @@ static void test_midi_portamento_glides_note_up(UNUSED void** state)
     }
 }
 
-static void test_midi_portamento_glides_note_down(UNUSED void** state)
+void test_midi_portamento_glides_note_down(UNUSED void** state)
 {
     __real_midi_cc(0, CC_PORTAMENTO_ENABLE, 127);
 
@@ -62,7 +63,7 @@ static void test_midi_portamento_glides_note_down(UNUSED void** state)
     midi_tick();
 }
 
-static void test_midi_portamento_glides_note_up_and_down_on_early_release(UNUSED void** state)
+void test_midi_portamento_glides_note_up_and_down_on_early_release(UNUSED void** state)
 {
     u8 chan = 0;
     debug_message("channel %d\n", chan);
@@ -95,7 +96,7 @@ static void test_midi_portamento_glides_note_up_and_down_on_early_release(UNUSED
     midi_tick();
 }
 
-static void test_midi_portamento_glide_ignores_unassigned_channels(UNUSED void** state)
+void test_midi_portamento_glide_ignores_unassigned_channels(UNUSED void** state)
 {
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         debug_message("channel %d\n", chan);
@@ -112,7 +113,7 @@ static void test_midi_portamento_glide_ignores_unassigned_channels(UNUSED void**
     }
 }
 
-static void test_midi_portamento_glides_note_up_down_and_back_up(UNUSED void** state)
+void test_midi_portamento_glides_note_up_down_and_back_up(UNUSED void** state)
 {
     u8 chan = 0;
     debug_message("channel %d\n", chan);
@@ -153,7 +154,7 @@ static void test_midi_portamento_glides_note_up_down_and_back_up(UNUSED void** s
     midi_tick();
 }
 
-static void test_midi_portamento_glides_only_if_target_set(UNUSED void** state)
+void test_midi_portamento_glides_only_if_target_set(UNUSED void** state)
 {
     u8 chan = 0;
     debug_message("channel %d\n", chan);
@@ -168,7 +169,7 @@ static void test_midi_portamento_glides_only_if_target_set(UNUSED void** state)
     midi_tick();
 }
 
-static void test_midi_portamento_glide_ends_after_both_notes_off(UNUSED void** state)
+void test_midi_portamento_glide_ends_after_both_notes_off(UNUSED void** state)
 {
     u8 chan = 0;
     debug_message("channel %d\n", chan);
@@ -209,7 +210,7 @@ static void test_midi_portamento_glide_ends_after_both_notes_off(UNUSED void** s
     midi_tick();
 }
 
-static void test_midi_portamento_glides_fully_up_and_down(UNUSED void** state)
+void test_midi_portamento_glides_fully_up_and_down(UNUSED void** state)
 {
     u8 chan = 0;
     debug_message("channel %d\n", chan);
@@ -240,7 +241,7 @@ static void test_midi_portamento_glides_fully_up_and_down(UNUSED void** state)
     midi_tick();
 }
 
-static void test_midi_portamento_synth_note_off_triggered(UNUSED void** state)
+void test_midi_portamento_synth_note_off_triggered(UNUSED void** state)
 {
     u8 chan = 0;
     debug_message("channel %d\n", chan);
@@ -259,7 +260,7 @@ static void test_midi_portamento_synth_note_off_triggered(UNUSED void** state)
     midi_tick();
 }
 
-static void test_midi_portamento_zeros_any_residual_cents(UNUSED void** state)
+void test_midi_portamento_zeros_any_residual_cents(UNUSED void** state)
 {
     const u8 chan = 0;
     debug_message("channel %d\n", chan);
@@ -294,7 +295,7 @@ static void test_midi_portamento_zeros_any_residual_cents(UNUSED void** state)
     midi_tick();
 }
 
-static void test_midi_portamento_glides_note_up_for_psg(UNUSED void** state)
+void test_midi_portamento_glides_note_up_for_psg(UNUSED void** state)
 {
     for (u8 chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN; chan++) {
         debug_message("channel %d\n", chan);
@@ -322,7 +323,7 @@ static void test_midi_portamento_glides_note_up_for_psg(UNUSED void** state)
     }
 }
 
-static void test_midi_portamento_glides_note_up_with_pitch_bend(UNUSED void** state)
+void test_midi_portamento_glides_note_up_with_pitch_bend(UNUSED void** state)
 {
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         debug_message("channel %d\n", chan);
@@ -353,7 +354,7 @@ static void test_midi_portamento_glides_note_up_with_pitch_bend(UNUSED void** st
     }
 }
 
-static void test_midi_portamento_glides_note_down_with_pitch_bend(UNUSED void** state)
+void test_midi_portamento_glides_note_down_with_pitch_bend(UNUSED void** state)
 {
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         debug_message("channel %d\n", chan);
@@ -384,7 +385,7 @@ static void test_midi_portamento_glides_note_down_with_pitch_bend(UNUSED void** 
     }
 }
 
-static void test_midi_portamento_sets_portamento_time_to_minimum(UNUSED void** state)
+void test_midi_portamento_sets_portamento_time_to_minimum(UNUSED void** state)
 {
     const u8 chan = 0;
     __real_midi_cc(chan, CC_PORTAMENTO_ENABLE, 127);
@@ -405,7 +406,7 @@ static void test_midi_portamento_sets_portamento_time_to_minimum(UNUSED void** s
     midi_tick();
 }
 
-static void test_midi_portamento_sets_portamento_time_to_maximum(UNUSED void** state)
+void test_midi_portamento_sets_portamento_time_to_maximum(UNUSED void** state)
 {
     const u8 chan = 0;
     __real_midi_cc(chan, CC_PORTAMENTO_ENABLE, 127);
@@ -424,7 +425,7 @@ static void test_midi_portamento_sets_portamento_time_to_maximum(UNUSED void** s
     midi_tick();
 }
 
-static void test_midi_portamento_default_portamento_time_set(UNUSED void** state)
+void test_midi_portamento_default_portamento_time_set(UNUSED void** state)
 {
     wraps_disable_checks();
     __real_midi_reset();
@@ -443,7 +444,7 @@ static void test_midi_portamento_default_portamento_time_set(UNUSED void** state
     midi_tick();
 }
 
-static void test_midi_portamento_glides_with_fine_tune(UNUSED void** state)
+void test_midi_portamento_glides_with_fine_tune(UNUSED void** state)
 {
     const u8 chan = 0;
     __real_midi_cc(chan, CC_PORTAMENTO_ENABLE, 127);

@@ -1,6 +1,7 @@
+#include "test_pitchcents.h"
 #include "test_midi.h"
 
-static void test_pitchcents_shift_extreme_up(UNUSED void** state)
+void test_pitchcents_shift_extreme_up(UNUSED void** state)
 {
     PitchCents pc = { .pitch = 50, .cents = 99 };
     pc = pitchcents_shift(pc, 255);
@@ -9,7 +10,7 @@ static void test_pitchcents_shift_extreme_up(UNUSED void** state)
     assert_int_equal(pc.cents, 54);
 }
 
-static void test_pitchcents_bend_nil(UNUSED void** state)
+void test_pitchcents_bend_nil(UNUSED void** state)
 {
     PitchCents pc = pitchcents_bend(50, 0, 0x2000);
 
@@ -17,7 +18,7 @@ static void test_pitchcents_bend_nil(UNUSED void** state)
     assert_int_equal(pc.cents, 0);
 }
 
-static void test_pitchcents_bend_down_fully(UNUSED void** state)
+void test_pitchcents_bend_down_fully(UNUSED void** state)
 {
     PitchCents pc = pitchcents_bend(50, 0, 0);
 
@@ -25,7 +26,7 @@ static void test_pitchcents_bend_down_fully(UNUSED void** state)
     assert_int_equal(pc.cents, 0);
 }
 
-static void test_pitchcents_bend_up_fully(UNUSED void** state)
+void test_pitchcents_bend_up_fully(UNUSED void** state)
 {
     PitchCents pc = pitchcents_bend(50, 0, 0x4000);
 
@@ -33,7 +34,7 @@ static void test_pitchcents_bend_up_fully(UNUSED void** state)
     assert_int_equal(pc.cents, 0);
 }
 
-static void test_pitchcents_bend_up(UNUSED void** state)
+void test_pitchcents_bend_up(UNUSED void** state)
 {
     PitchCents pc = pitchcents_bend(50, 0, 0x3000);
 
@@ -41,7 +42,7 @@ static void test_pitchcents_bend_up(UNUSED void** state)
     assert_int_equal(pc.cents, 0);
 }
 
-static void test_pitchcents_bend_down(UNUSED void** state)
+void test_pitchcents_bend_down(UNUSED void** state)
 {
     PitchCents pc = pitchcents_bend(50, 0, 0x1800);
 
@@ -49,7 +50,7 @@ static void test_pitchcents_bend_down(UNUSED void** state)
     assert_int_equal(pc.cents, 50);
 }
 
-static void test_pitchcents_bend_up_2(UNUSED void** state)
+void test_pitchcents_bend_up_2(UNUSED void** state)
 {
     PitchCents pc = pitchcents_bend(50, 0, 0x2800);
 
@@ -57,7 +58,7 @@ static void test_pitchcents_bend_up_2(UNUSED void** state)
     assert_int_equal(pc.cents, 50);
 }
 
-static void test_pitchcents_bend_cents_with_partial_bend_down(UNUSED void** state)
+void test_pitchcents_bend_cents_with_partial_bend_down(UNUSED void** state)
 {
     PitchCents pc = pitchcents_bend(50, 25, 0x1800);
 
@@ -65,7 +66,7 @@ static void test_pitchcents_bend_cents_with_partial_bend_down(UNUSED void** stat
     assert_int_equal(pc.cents, 75);
 }
 
-static void test_pitchcents_bend_high_cents_with_partial_bend_down(UNUSED void** state)
+void test_pitchcents_bend_high_cents_with_partial_bend_down(UNUSED void** state)
 {
     PitchCents pc = pitchcents_bend(50, 80, 0x1800);
 
@@ -73,7 +74,7 @@ static void test_pitchcents_bend_high_cents_with_partial_bend_down(UNUSED void**
     assert_int_equal(pc.cents, 30);
 }
 
-static void test_pitchcents_bend_cents_with_full_bend_up(UNUSED void** state)
+void test_pitchcents_bend_cents_with_full_bend_up(UNUSED void** state)
 {
     PitchCents pc = pitchcents_bend(50, 25, 0x4000);
 
@@ -81,7 +82,7 @@ static void test_pitchcents_bend_cents_with_full_bend_up(UNUSED void** state)
     assert_int_equal(pc.cents, 25);
 }
 
-static void test_pitchcents_bend_high_cents_with_full_bend_up(UNUSED void** state)
+void test_pitchcents_bend_high_cents_with_full_bend_up(UNUSED void** state)
 {
     PitchCents pc = pitchcents_bend(50, 80, 0x4000);
 

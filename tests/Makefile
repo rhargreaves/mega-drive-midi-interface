@@ -205,14 +205,13 @@ LDFLAGS+=$(foreach MOCK,$(MD_MOCKS),-Wl,--wrap=$(MOCK))
 SYSTEM_TEST_LDFLAGS=$(LDFLAGS)
 UNIT_TEST_LDFLAGS=$(LDFLAGS) $(foreach MOCK,$(MOCKS),-Wl,--wrap=$(MOCK))
 
-SRC=$(wildcard ../src/*.c)
-SRC+=$(wildcard ../src/*/*.c)
+SRC=$(wildcard ../src/*.c ../src/*/*.c)
 SRC:=$(filter-out ../src/boot/rom_head.c,$(SRC))
 SRC:=$(filter-out ../src/main.c,$(SRC))
 
 COMMON_TEST_SRC=$(wildcard *.c)
-UNIT_TEST_SRC+=$(wildcard unit/*.c)
-SYSTEM_TEST_SRC+=$(wildcard system/*.c)
+UNIT_TEST_SRC=$(wildcard unit/*.c)
+SYSTEM_TEST_SRC=$(wildcard system/*.c)
 
 SRC_OBJ=$(patsubst ../src/%.c,obj/%.o,$(SRC))
 COMMON_TEST_OBJ=$(patsubst %.c,obj/%.o,$(COMMON_TEST_SRC))
@@ -228,6 +227,7 @@ UNIT_TESTS_TARGET=$(BIN_DIR)/unit_tests
 SYSTEM_TESTS_TARGET=$(BIN_DIR)/system_tests
 
 all: unit system
+.PHONY: all
 
 unit: $(UNIT_TESTS_TARGET)
 	$(GDB) ./$(UNIT_TESTS_TARGET)
@@ -237,22 +237,24 @@ system: $(SYSTEM_TESTS_TARGET)
 	$(GDB) ./$(SYSTEM_TESTS_TARGET)
 .PHONY: system
 
-$(SRC_OBJ): | $(OBJ_DIR) $(CMOCKA_DIR)
-
 $(OBJ_DIR):
 	mkdir -p $(dir $@)
 
 $(OBJ_DIR)/%.o: %.c
 	mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -MMD -c $< -o $@
+
+$(OBJ_DIR)/%.o: %.c
+	mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -MMD -c $< -o $@
 
 $(UNIT_TESTS_TARGET): $(SRC_OBJ) $(UNIT_TEST_OBJ) $(COMMON_TEST_OBJ)
 	mkdir -p $(dir $@)
-	$(CC) -o $@ $^ $(UNIT_TEST_LDFLAGS)
+	$(CC) -MMD -o $@ $^ $(UNIT_TEST_LDFLAGS)
 
 $(SYSTEM_TESTS_TARGET): $(SRC_OBJ) $(SYSTEM_TEST_OBJ) $(COMMON_TEST_OBJ)
 	mkdir -p $(dir $@)
-	$(CC) -o $@ $^ $(SYSTEM_TEST_LDFLAGS)
+	$(CC) -MMD -o $@ $^ $(SYSTEM_TEST_LDFLAGS)
 
 $(CMOCKA_DIR):
 	mkdir -p $@
@@ -262,6 +264,8 @@ $(CMOCKA_DIR):
 
 clean-target:
 	rm -rf $(UNIT_TESTS_TARGET) $(SYSTEM_TESTS_TARGET) $(OBJ_DIR)
+.PHONY: clean-target
 
 clean: clean-target
 	rm -rf $(CMOCKA_DIR)
+.PHONY: clean

@@ -1,6 +1,7 @@
+#include "test_midi_polyphony.h"
 #include "test_midi.h"
 
-static void test_midi_polyphonic_mode_sends_CCs_to_all_FM_channels(UNUSED void** state)
+void test_midi_polyphonic_mode_sends_CCs_to_all_FM_channels(UNUSED void** state)
 {
     __real_midi_cc(0, CC_GENMDM_POLYPHONIC_MODE, 127);
 
@@ -19,7 +20,7 @@ static void test_midi_polyphonic_mode_sends_CCs_to_all_FM_channels(UNUSED void**
     __real_midi_cc(0, CC_GENMDM_FM_ALGORITHM, 16);
 }
 
-static void test_midi_set_overflow_flag_on_polyphony_breach(UNUSED void** state)
+void test_midi_set_overflow_flag_on_polyphony_breach(UNUSED void** state)
 {
     wraps_enable_logging_checks();
     __real_midi_cc(0, CC_GENMDM_POLYPHONIC_MODE, 127);
@@ -40,7 +41,7 @@ static void test_midi_set_overflow_flag_on_polyphony_breach(UNUSED void** state)
     __real_midi_note_on(DEV_CHAN_MAX_PSG + 1, MIDI_PITCH_AS6, 127);
 }
 
-static void test_midi_polyphonic_mode_uses_multiple_fm_channels(UNUSED void** state)
+void test_midi_polyphonic_mode_uses_multiple_fm_channels(UNUSED void** state)
 {
     __real_midi_cc(0, CC_GENMDM_POLYPHONIC_MODE, 127);
 
@@ -69,7 +70,7 @@ static void test_midi_polyphonic_mode_uses_multiple_fm_channels(UNUSED void** st
     __real_midi_cc(0, CC_GENMDM_POLYPHONIC_MODE, 0);
 }
 
-static void test_midi_polyphonic_mode_note_off_silences_all_matching_pitch(UNUSED void** state)
+void test_midi_polyphonic_mode_note_off_silences_all_matching_pitch(UNUSED void** state)
 {
     __real_midi_cc(0, CC_GENMDM_POLYPHONIC_MODE, 127);
 
@@ -95,7 +96,7 @@ static void test_midi_polyphonic_mode_note_off_silences_all_matching_pitch(UNUSE
     __real_midi_cc(0, CC_GENMDM_POLYPHONIC_MODE, 0);
 }
 
-static void test_midi_sets_all_notes_off_in_polyphonic_mode(UNUSED void** state)
+void test_midi_sets_all_notes_off_in_polyphonic_mode(UNUSED void** state)
 {
     __real_midi_cc(0, CC_GENMDM_POLYPHONIC_MODE, 64);
 
@@ -127,21 +128,21 @@ static void test_midi_sets_all_notes_off_in_polyphonic_mode(UNUSED void** state)
     __real_midi_cc(0, CC_GENMDM_POLYPHONIC_MODE, 0);
 }
 
-static void test_midi_sets_polyphonic_mode(UNUSED void** state)
+void test_midi_sets_polyphonic_mode(UNUSED void** state)
 {
     __real_midi_cc(0, CC_GENMDM_POLYPHONIC_MODE, 64);
 
     assert_true(__real_midi_dynamic_mode());
 }
 
-static void test_midi_unsets_polyphonic_mode(UNUSED void** state)
+void test_midi_unsets_polyphonic_mode(UNUSED void** state)
 {
     __real_midi_cc(0, CC_GENMDM_POLYPHONIC_MODE, 0);
 
     assert_false(__real_midi_dynamic_mode());
 }
 
-static void test_midi_sets_all_channel_mappings_when_setting_polyphonic_mode(UNUSED void** state)
+void test_midi_sets_all_channel_mappings_when_setting_polyphonic_mode(UNUSED void** state)
 {
     __real_midi_cc(0, CC_GENMDM_POLYPHONIC_MODE, 64);
 

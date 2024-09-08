@@ -1,10 +1,10 @@
-#include "cmocka_inc.h"
+#include "test_comm.h"
 #include "comm/comm.h"
 
 static const u16 MAX_COMM_IDLE = 0x28F;
 static const u16 MAX_COMM_BUSY = 0x28F;
 
-static int test_comm_setup(UNUSED void** state)
+int test_comm_setup(UNUSED void** state)
 {
     __real_comm_init();
 
@@ -20,7 +20,7 @@ static void switch_comm_type_to_everdrive(void)
     __real_comm_reset_counts();
 }
 
-static void test_comm_reads_from_serial_when_ready(UNUSED void** state)
+void test_comm_reads_from_serial_when_ready(UNUSED void** state)
 {
     will_return(__wrap_comm_everdrive_is_present, false);
     will_return(__wrap_comm_everdrive_pro_is_present, false);
@@ -33,7 +33,7 @@ static void test_comm_reads_from_serial_when_ready(UNUSED void** state)
     assert_int_equal(read, 50);
 }
 
-static void test_comm_reads_everdrive_when_ready(UNUSED void** state)
+void test_comm_reads_everdrive_when_ready(UNUSED void** state)
 {
     will_return(__wrap_comm_everdrive_is_present, true);
     will_return(__wrap_comm_everdrive_read_ready, 1);
@@ -44,7 +44,7 @@ static void test_comm_reads_everdrive_when_ready(UNUSED void** state)
     assert_int_equal(read, 50);
 }
 
-static void test_comm_reads_demo_when_ready(UNUSED void** state)
+void test_comm_reads_demo_when_ready(UNUSED void** state)
 {
     will_return(__wrap_comm_everdrive_is_present, false);
     will_return(__wrap_comm_everdrive_pro_is_present, false);
@@ -61,7 +61,7 @@ static void test_comm_reads_demo_when_ready(UNUSED void** state)
     assert_int_equal(read, 50);
 }
 
-static void test_comm_writes_when_ready(UNUSED void** state)
+void test_comm_writes_when_ready(UNUSED void** state)
 {
     const u8 test_data = 50;
 
@@ -77,7 +77,7 @@ static void test_comm_writes_when_ready(UNUSED void** state)
     __real_comm_write(test_data);
 }
 
-static void test_comm_idle_count_is_correct(UNUSED void** state)
+void test_comm_idle_count_is_correct(UNUSED void** state)
 {
     will_return(__wrap_comm_everdrive_is_present, true);
     will_return(__wrap_comm_everdrive_read_ready, 1);
@@ -95,7 +95,7 @@ static void test_comm_idle_count_is_correct(UNUSED void** state)
     assert_int_equal(idle, 2);
 }
 
-static void test_comm_busy_count_is_correct(UNUSED void** state)
+void test_comm_busy_count_is_correct(UNUSED void** state)
 {
     will_return(__wrap_comm_everdrive_is_present, true);
     will_return(__wrap_comm_everdrive_read_ready, 1);
@@ -115,7 +115,7 @@ static void test_comm_busy_count_is_correct(UNUSED void** state)
     assert_int_equal(busy, 2);
 }
 
-static void test_comm_clamps_idle_count(UNUSED void** state)
+void test_comm_clamps_idle_count(UNUSED void** state)
 {
     switch_comm_type_to_everdrive();
 
@@ -131,7 +131,7 @@ static void test_comm_clamps_idle_count(UNUSED void** state)
     assert_int_equal(idle, MAX_COMM_IDLE);
 }
 
-static void test_comm_clamps_busy_count(UNUSED void** state)
+void test_comm_clamps_busy_count(UNUSED void** state)
 {
     switch_comm_type_to_everdrive();
 

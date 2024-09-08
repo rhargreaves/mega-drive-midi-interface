@@ -1,3 +1,4 @@
+#include "test_midi_sysex.h"
 #include "test_midi.h"
 
 static void remapChannel(u8 midiChannel, u8 deviceChannel)
@@ -8,7 +9,7 @@ static void remapChannel(u8 midiChannel, u8 deviceChannel)
     __real_midi_sysex(sequence, sizeof(sequence));
 }
 
-static void test_midi_sysex_sends_all_notes_off(UNUSED void** state)
+void test_midi_sysex_sends_all_notes_off(UNUSED void** state)
 {
     const u8 sysExGeneralMidiResetSequence[] = { 0x7E, 0x7F, 0x09, 0x01 };
 
@@ -33,7 +34,7 @@ static void test_midi_sysex_sends_all_notes_off(UNUSED void** state)
     __real_midi_sysex(sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
 }
 
-static void test_midi_sysex_general_midi_reset_resets_synth_volume(UNUSED void** state)
+void test_midi_sysex_general_midi_reset_resets_synth_volume(UNUSED void** state)
 {
     const u8 sysExGeneralMidiResetSequence[] = { 0x7E, 0x7F, 0x09, 0x01 };
 
@@ -54,14 +55,14 @@ static void test_midi_sysex_general_midi_reset_resets_synth_volume(UNUSED void**
     __real_midi_sysex(sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
 }
 
-static void test_midi_sysex_ignores_unknown_sysex(UNUSED void** state)
+void test_midi_sysex_ignores_unknown_sysex(UNUSED void** state)
 {
     const u8 sysExGeneralMidiResetSequence[] = { 0x12 };
 
     __real_midi_sysex(sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
 }
 
-static void test_midi_sysex_remaps_midi_channel_to_psg(UNUSED void** state)
+void test_midi_sysex_remaps_midi_channel_to_psg(UNUSED void** state)
 {
     const u8 FM_CHAN_1 = 0;
     const u8 MIDI_CHAN_1 = 0;
@@ -76,7 +77,7 @@ static void test_midi_sysex_remaps_midi_channel_to_psg(UNUSED void** state)
     __real_midi_note_on(0, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
 }
 
-static void test_midi_sysex_remaps_midi_channel_to_fm(UNUSED void** state)
+void test_midi_sysex_remaps_midi_channel_to_fm(UNUSED void** state)
 {
     const u8 FM_CHAN_2 = 1;
     const u8 MIDI_CHAN_1 = 0;
@@ -94,14 +95,14 @@ static void test_midi_sysex_remaps_midi_channel_to_fm(UNUSED void** state)
     __real_midi_note_on(0, 60, MAX_MIDI_VOLUME);
 }
 
-static void test_midi_sysex_unassigns_midi_channel(UNUSED void** state)
+void test_midi_sysex_unassigns_midi_channel(UNUSED void** state)
 {
     remapChannel(0, 0x7F);
 
     __real_midi_note_on(0, 60, MAX_MIDI_VOLUME);
 }
 
-static void test_midi_sysex_does_nothing_for_empty_payload(UNUSED void** state)
+void test_midi_sysex_does_nothing_for_empty_payload(UNUSED void** state)
 {
     const u16 length = 0;
     u8 seq[1];
@@ -109,7 +110,7 @@ static void test_midi_sysex_does_nothing_for_empty_payload(UNUSED void** state)
     __real_midi_sysex(seq, length);
 }
 
-static void test_midi_sysex_handles_incomplete_channel_mapping_command(UNUSED void** state)
+void test_midi_sysex_handles_incomplete_channel_mapping_command(UNUSED void** state)
 {
     const u8 sequence[]
         = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID, SYSEX_COMMAND_REMAP };
@@ -117,7 +118,7 @@ static void test_midi_sysex_handles_incomplete_channel_mapping_command(UNUSED vo
     __real_midi_sysex(sequence, 4);
 }
 
-static void test_midi_sysex_enables_dynamic_channel_mode(UNUSED void** state)
+void test_midi_sysex_enables_dynamic_channel_mode(UNUSED void** state)
 {
     const u8 sequence[] = {
         SYSEX_MANU_EXTENDED,
@@ -142,7 +143,7 @@ static void test_midi_sysex_enables_dynamic_channel_mode(UNUSED void** state)
     __real_midi_note_on(0, 61, MAX_MIDI_VOLUME);
 }
 
-static void test_midi_sysex_sets_mapping_mode_to_auto(UNUSED void** state)
+void test_midi_sysex_sets_mapping_mode_to_auto(UNUSED void** state)
 {
     const u8 sequence[] = {
         SYSEX_MANU_EXTENDED,
@@ -172,7 +173,7 @@ static void test_midi_sysex_sets_mapping_mode_to_auto(UNUSED void** state)
     __real_midi_note_on(0, 61, MAX_MIDI_VOLUME);
 }
 
-static void test_midi_sysex_disables_fm_parameter_CCs(UNUSED void** state)
+void test_midi_sysex_disables_fm_parameter_CCs(UNUSED void** state)
 {
     const u8 sequence[] = {
         SYSEX_MANU_EXTENDED,
@@ -196,7 +197,7 @@ static void test_midi_sysex_disables_fm_parameter_CCs(UNUSED void** state)
     }
 }
 
-static void test_midi_sysex_loads_psg_envelope(UNUSED void** state)
+void test_midi_sysex_loads_psg_envelope(UNUSED void** state)
 {
     wraps_enable_logging_checks();
 
@@ -213,7 +214,7 @@ static void test_midi_sysex_loads_psg_envelope(UNUSED void** state)
     __real_midi_sysex(sequence, sizeof(sequence));
 }
 
-static void test_midi_sysex_inverts_total_level_values(UNUSED void** state)
+void test_midi_sysex_inverts_total_level_values(UNUSED void** state)
 {
     const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
         SYSEX_COMMAND_INVERT_TOTAL_LEVEL, 0x01 };
@@ -226,7 +227,7 @@ static void test_midi_sysex_inverts_total_level_values(UNUSED void** state)
     __real_midi_cc(0, CC_GENMDM_TOTAL_LEVEL_OP1, 1);
 }
 
-static void test_midi_sysex_sets_original_total_level_values(UNUSED void** state)
+void test_midi_sysex_sets_original_total_level_values(UNUSED void** state)
 {
     const u8 invert_sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
         SYSEX_COMMAND_INVERT_TOTAL_LEVEL, 0x01 };
@@ -247,7 +248,7 @@ static void test_midi_sysex_sets_original_total_level_values(UNUSED void** state
     __real_midi_cc(0, CC_GENMDM_TOTAL_LEVEL_OP1, 126);
 }
 
-static void test_midi_sysex_writes_directly_to_ym2612_regs_part_0(UNUSED void** state)
+void test_midi_sysex_writes_directly_to_ym2612_regs_part_0(UNUSED void** state)
 {
     const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
         SYSEX_COMMAND_WRITE_YM2612_REG_PART_0, 0x0B, 0x01, 0x01, 0x02 };
@@ -258,7 +259,7 @@ static void test_midi_sysex_writes_directly_to_ym2612_regs_part_0(UNUSED void** 
     __real_midi_sysex(sequence, sizeof(sequence));
 }
 
-static void test_midi_sysex_writes_directly_to_ym2612_regs_part_1(UNUSED void** state)
+void test_midi_sysex_writes_directly_to_ym2612_regs_part_1(UNUSED void** state)
 {
     const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
         SYSEX_COMMAND_WRITE_YM2612_REG_PART_1, 0x0B, 0x01, 0x01, 0x02 };
@@ -269,7 +270,7 @@ static void test_midi_sysex_writes_directly_to_ym2612_regs_part_1(UNUSED void** 
     __real_midi_sysex(sequence, sizeof(sequence));
 }
 
-static void test_midi_sysex_ignores_incorrect_length_ym2612_direct_writes(UNUSED void** state)
+void test_midi_sysex_ignores_incorrect_length_ym2612_direct_writes(UNUSED void** state)
 {
     const u8 badSeq1[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
         SYSEX_COMMAND_WRITE_YM2612_REG_PART_0, 0x0B, 0x01, 0x01, 0x02, 0x02 };

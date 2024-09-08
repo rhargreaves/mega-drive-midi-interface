@@ -1,4 +1,4 @@
-#include "cmocka_inc.h"
+#include "test_midi_receiver.h"
 #include "midi.h"
 #include "midi_receiver.h"
 #include "comm/comm.h"
@@ -22,18 +22,18 @@ static void init(void)
     midi_receiver_init();
 }
 
-static int test_midi_receiver_setup(UNUSED void** state)
+int test_midi_receiver_setup(UNUSED void** state)
 {
     init();
     return 0;
 }
 
-static void test_midi_receiver_initialises(UNUSED void** state)
+void test_midi_receiver_initialises(UNUSED void** state)
 {
     init();
 }
 
-static void test_midi_receiver_read_passes_note_on_to_midi_processor(UNUSED void** state)
+void test_midi_receiver_read_passes_note_on_to_midi_processor(UNUSED void** state)
 {
     const u8 expectedData = 60;
     const u8 expectedData2 = 127;
@@ -51,7 +51,7 @@ static void test_midi_receiver_read_passes_note_on_to_midi_processor(UNUSED void
     }
 }
 
-static void test_midi_receiver_read_passes_note_off_to_midi_processor(UNUSED void** state)
+void test_midi_receiver_read_passes_note_off_to_midi_processor(UNUSED void** state)
 {
     u8 expectedStatus = 0x80;
     u8 expectedData = 60;
@@ -65,7 +65,7 @@ static void test_midi_receiver_read_passes_note_off_to_midi_processor(UNUSED voi
     midi_receiver_read();
 }
 
-static void test_midi_receiver_does_nothing_for_control_change(UNUSED void** state)
+void test_midi_receiver_does_nothing_for_control_change(UNUSED void** state)
 {
     u8 expectedStatus = 0xA0;
     u8 expectedData = 106;
@@ -78,7 +78,7 @@ static void test_midi_receiver_does_nothing_for_control_change(UNUSED void** sta
     midi_receiver_read();
 }
 
-static void test_midi_receiver_sets_unknown_event_for_unknown_status(UNUSED void** state)
+void test_midi_receiver_sets_unknown_event_for_unknown_status(UNUSED void** state)
 {
     wraps_enable_logging_checks();
 
@@ -90,7 +90,7 @@ static void test_midi_receiver_sets_unknown_event_for_unknown_status(UNUSED void
     midi_receiver_read();
 }
 
-static void test_midi_receiver_sets_unknown_event_for_unknown_system_message(UNUSED void** state)
+void test_midi_receiver_sets_unknown_event_for_unknown_system_message(UNUSED void** state)
 {
     wraps_enable_logging_checks();
 
@@ -102,7 +102,7 @@ static void test_midi_receiver_sets_unknown_event_for_unknown_system_message(UNU
     midi_receiver_read();
 }
 
-static void test_midi_receiver_sets_CC(UNUSED void** state)
+void test_midi_receiver_sets_CC(UNUSED void** state)
 {
     u8 expectedStatus = STATUS_CC;
     u8 expectedController = CC_VOLUME;
@@ -117,7 +117,7 @@ static void test_midi_receiver_sets_CC(UNUSED void** state)
     midi_receiver_read();
 }
 
-static void test_midi_receiver_sets_pitch_bend(UNUSED void** state)
+void test_midi_receiver_sets_pitch_bend(UNUSED void** state)
 {
     u8 expectedStatus = STATUS_PITCH_BEND;
     u16 expectedValue = 12000;
@@ -132,7 +132,7 @@ static void test_midi_receiver_sets_pitch_bend(UNUSED void** state)
     midi_receiver_read();
 }
 
-static void test_midi_receiver_does_nothing_on_midi_clock(UNUSED void** state)
+void test_midi_receiver_does_nothing_on_midi_clock(UNUSED void** state)
 {
     u8 status = STATUS_CLOCK;
     will_return(__wrap_comm_read, status);
@@ -140,7 +140,7 @@ static void test_midi_receiver_does_nothing_on_midi_clock(UNUSED void** state)
     midi_receiver_read();
 }
 
-static void test_midi_receiver_does_nothing_on_midi_start_midi(UNUSED void** state)
+void test_midi_receiver_does_nothing_on_midi_start_midi(UNUSED void** state)
 {
     u8 status = STATUS_START;
     will_return(__wrap_comm_read, status);
@@ -148,7 +148,7 @@ static void test_midi_receiver_does_nothing_on_midi_start_midi(UNUSED void** sta
     midi_receiver_read();
 }
 
-static void test_midi_receiver_swallows_midi_stop(UNUSED void** state)
+void test_midi_receiver_swallows_midi_stop(UNUSED void** state)
 {
     u8 status = STATUS_STOP;
     will_return(__wrap_comm_read, status);
@@ -156,7 +156,7 @@ static void test_midi_receiver_swallows_midi_stop(UNUSED void** state)
     midi_receiver_read();
 }
 
-static void test_midi_receiver_swallows_midi_continue(UNUSED void** state)
+void test_midi_receiver_swallows_midi_continue(UNUSED void** state)
 {
     u8 status = STATUS_CONTINUE;
     will_return(__wrap_comm_read, status);
@@ -164,7 +164,7 @@ static void test_midi_receiver_swallows_midi_continue(UNUSED void** state)
     midi_receiver_read();
 }
 
-static void test_midi_receiver_does_nothing_on_midi_position(UNUSED void** state)
+void test_midi_receiver_does_nothing_on_midi_position(UNUSED void** state)
 {
     u8 status = STATUS_SONG_POSITION;
 
@@ -175,7 +175,7 @@ static void test_midi_receiver_does_nothing_on_midi_position(UNUSED void** state
     midi_receiver_read();
 }
 
-static void test_midi_receiver_sets_midi_program(UNUSED void** state)
+void test_midi_receiver_sets_midi_program(UNUSED void** state)
 {
     u8 status = STATUS_PROGRAM;
     u8 program = 12;
@@ -189,7 +189,7 @@ static void test_midi_receiver_sets_midi_program(UNUSED void** state)
     midi_receiver_read();
 }
 
-static void test_midi_receiver_sends_midi_reset(UNUSED void** state)
+void test_midi_receiver_sends_midi_reset(UNUSED void** state)
 {
     u8 status = STATUS_RESET;
 
@@ -200,7 +200,7 @@ static void test_midi_receiver_sends_midi_reset(UNUSED void** state)
     midi_receiver_read();
 }
 
-static void test_midi_receiver_sends_sysex_to_midi_layer(UNUSED void** state)
+void test_midi_receiver_sends_sysex_to_midi_layer(UNUSED void** state)
 {
     const u8 command = 0x12;
     will_return(__wrap_comm_read, STATUS_SYSEX_START);
@@ -215,7 +215,7 @@ static void test_midi_receiver_sends_sysex_to_midi_layer(UNUSED void** state)
     midi_receiver_read();
 }
 
-static void test_midi_receiver_handles_sysex_limits(UNUSED void** state)
+void test_midi_receiver_handles_sysex_limits(UNUSED void** state)
 {
     const u16 SYSEX_BUFFER_SIZE = 256;
     const u16 SYSEX_MESSAGE_SIZE = 300;
