@@ -237,24 +237,17 @@ system: $(SYSTEM_TESTS_TARGET)
 	$(GDB) ./$(SYSTEM_TESTS_TARGET)
 .PHONY: system
 
-$(OBJ_DIR):
-	mkdir -p $(dir $@)
-
-$(OBJ_DIR)/%.o: %.c
-	mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -MMD -c $< -o $@
-
 $(OBJ_DIR)/%.o: %.c
 	mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -MMD -c $< -o $@
 
 $(UNIT_TESTS_TARGET): $(SRC_OBJ) $(UNIT_TEST_OBJ) $(COMMON_TEST_OBJ)
 	mkdir -p $(dir $@)
-	$(CC) -MMD -o $@ $^ $(UNIT_TEST_LDFLAGS)
+	$(CC) -o $@ $^ $(UNIT_TEST_LDFLAGS)
 
 $(SYSTEM_TESTS_TARGET): $(SRC_OBJ) $(SYSTEM_TEST_OBJ) $(COMMON_TEST_OBJ)
 	mkdir -p $(dir $@)
-	$(CC) -MMD -o $@ $^ $(SYSTEM_TEST_LDFLAGS)
+	$(CC) -o $@ $^ $(SYSTEM_TEST_LDFLAGS)
 
 $(CMOCKA_DIR):
 	mkdir -p $@
