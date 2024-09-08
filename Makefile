@@ -1,6 +1,6 @@
 SGDK=/sgdk
 MAKE=make
-BUILD?=$(shell git rev-parse --short HEAD)
+export BUILD?=$(shell git rev-parse --short HEAD)
 
 all: release test
 
