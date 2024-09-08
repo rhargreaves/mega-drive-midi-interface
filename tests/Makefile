@@ -239,7 +239,9 @@ system: $(SYSTEM_TESTS_TARGET)
 
 $(OBJ_DIR)/%.o: %.c
 	mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -MMD -c $< -o $@
+	$(CC) $(CFLAGS) -MMD -MT "$@ $(basename $@).d" -c $< -o $@
+
+-include $(wildcard $(OBJ_DIR)/*.d) $(wildcard $(OBJ_DIR)/*/*.d)
 
 $(UNIT_TESTS_TARGET): $(SRC_OBJ) $(UNIT_TEST_OBJ) $(COMMON_TEST_OBJ)
 	mkdir -p $(dir $@)
