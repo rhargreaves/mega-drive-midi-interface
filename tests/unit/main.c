@@ -27,6 +27,8 @@
 #define midi_dac_test(test) cmocka_unit_test_setup(test, test_midi_dac_setup)
 #define dynamic_midi_test(test) cmocka_unit_test_setup(test, test_dynamic_midi_setup)
 #define synth_test(test) cmocka_unit_test_setup(test, test_synth_setup)
+#define synth_test_case(test, state)                                                               \
+    cmocka_unit_test_prestate_setup_teardown(test, test_synth_setup, NULL, state)
 #define comm_test(test) cmocka_unit_test_setup(test, test_comm_setup)
 #define comm_megawifi_test(test) cmocka_unit_test_setup(test, test_comm_megawifi_setup)
 #define comm_demo_test(test) cmocka_unit_test_setup(test, test_comm_demo_setup)
@@ -253,22 +255,22 @@ int main(void)
         synth_test(test_synth_disables_ch3_special_mode),
         synth_test(test_synth_sets_ch3_special_mode_operator_pitches),
         synth_test(test_synth_handles_out_of_range_ch3_special_mode_operator),
-        synth_test(
-            test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_0),
-        synth_test(
-            test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_1),
-        synth_test(
-            test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_2),
-        synth_test(
-            test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_3),
-        synth_test(
-            test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_4),
-        synth_test(
-            test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_5),
-        synth_test(
-            test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_6),
-        synth_test(
-            test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_7),
+        synth_test_case(
+            test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator, INT_PTR(0)),
+        synth_test_case(
+            test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator, INT_PTR(1)),
+        synth_test_case(
+            test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator, INT_PTR(2)),
+        synth_test_case(
+            test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator, INT_PTR(3)),
+        synth_test_case(
+            test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator, INT_PTR(4)),
+        synth_test_case(
+            test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator, INT_PTR(5)),
+        synth_test_case(
+            test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator, INT_PTR(6)),
+        synth_test_case(
+            test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator, INT_PTR(7)),
         synth_test(test_synth_enables_dac),
         synth_test(test_synth_disables_dac),
         synth_test(test_requests_Z80_bus_if_not_already_taken),

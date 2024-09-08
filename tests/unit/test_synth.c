@@ -617,20 +617,22 @@ void test_synth_handles_out_of_range_ch3_special_mode_operator(UNUSED void** sta
     __real_synth_specialModePitch(op, 4, SYNTH_NTSC_C);
 }
 
-static void synth_sets_ch3_special_mode_op_tl_only_if_output_operator(int alg)
+void test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator(UNUSED void** state)
 {
+    int algorithm = (*(int*)(*state));
+
     const u8 baseReg = 0x40;
     const u8 chan = CH_SPECIAL_MODE;
 
-    expect_ym2612_write_channel(chan, 0xB0, alg);
-    __real_synth_algorithm(chan, alg);
+    expect_ym2612_write_channel(chan, 0xB0, algorithm);
+    __real_synth_algorithm(chan, algorithm);
 
     for (u8 op = 0; op <= 2; op++) {
         // set initial TL
         expect_ym2612_write_operator(chan, op, baseReg, 2);
         __real_synth_operatorTotalLevel(chan, op, 2);
 
-        switch (alg) {
+        switch (algorithm) {
         case 0:
         case 1:
         case 2:
@@ -670,46 +672,6 @@ static void synth_sets_ch3_special_mode_op_tl_only_if_output_operator(int alg)
         }
         }
     }
-}
-
-void test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_0(UNUSED void** state)
-{
-    synth_sets_ch3_special_mode_op_tl_only_if_output_operator(0);
-}
-
-void test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_1(UNUSED void** state)
-{
-    synth_sets_ch3_special_mode_op_tl_only_if_output_operator(1);
-}
-
-void test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_2(UNUSED void** state)
-{
-    synth_sets_ch3_special_mode_op_tl_only_if_output_operator(2);
-}
-
-void test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_3(UNUSED void** state)
-{
-    synth_sets_ch3_special_mode_op_tl_only_if_output_operator(3);
-}
-
-void test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_4(UNUSED void** state)
-{
-    synth_sets_ch3_special_mode_op_tl_only_if_output_operator(4);
-}
-
-void test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_5(UNUSED void** state)
-{
-    synth_sets_ch3_special_mode_op_tl_only_if_output_operator(5);
-}
-
-void test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_6(UNUSED void** state)
-{
-    synth_sets_ch3_special_mode_op_tl_only_if_output_operator(6);
-}
-
-void test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator_alg_7(UNUSED void** state)
-{
-    synth_sets_ch3_special_mode_op_tl_only_if_output_operator(7);
 }
 
 void test_synth_enables_dac(UNUSED void** state)

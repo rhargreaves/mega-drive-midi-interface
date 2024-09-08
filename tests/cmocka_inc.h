@@ -2,5 +2,8 @@
 #include <setjmp.h>
 #include <cmocka.h>
 #include "asserts.h"
-#include "unused.h"
 #include "wraps.h"
+
+#define INT_PTR(val) (&((int) { val }))
+
+#define UNUSED __attribute__((unused))
