@@ -5,6 +5,7 @@ bin/
 *.code-workspace
 tests/cmocka/
 tests/bin/
+tests/obj/
 out/
 .idea/
 .vscode/ipch/
