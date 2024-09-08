@@ -2,8 +2,6 @@ vpath %.c ../src
 
 CC=gcc
 SGDK?=/sgdk
-VALGRIND=valgrind
-VFLAGS=--leak-check=full --trace-children=yes --error-exitcode=1
 
 ifeq ($(DEBUG),1)
 	GDB=gdbserver :2345
@@ -199,12 +197,13 @@ MD_MOCKS=SYS_setVIntCallback \
 	fix32Frac \
 	mw_uart_is_present
 
-LDFLAGS=-ggdb -ffreestanding -lcmocka -L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src
+LDFLAGS=-ggdb -ffreestanding -lcmocka \
+	-L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src \
+	-fsanitize=address -fsanitize=undefined -fsanitize=leak
 LDFLAGS+=$(foreach MOCK,$(MD_MOCKS),-Wl,--wrap=$(MOCK))
 
 SYSTEM_TEST_LDFLAGS=$(LDFLAGS)
 UNIT_TEST_LDFLAGS=$(LDFLAGS) $(foreach MOCK,$(MOCKS),-Wl,--wrap=$(MOCK))
-SANITISE_LDFLAGS=-fsanitize=address
 
 SRC=$(shell find ../src/* -maxdepth 0 -type f -name '*.c' ! -name '*main.c*' -printf '%f\n')
 SRC+=$(shell find ../src/comm/* -maxdepth 0 -type f -name '*.c' ! -name '*main.c*' -printf 'comm/%f\n')
@@ -224,12 +223,8 @@ CMOCKA_DIR=cmocka
 
 UNIT_TESTS_TARGET=$(BIN_DIR)/unit_tests
 SYSTEM_TESTS_TARGET=$(BIN_DIR)/system_tests
-UNIT_TESTS_SANITISE_TARGET=$(BIN_DIR)/unit_tests_sanitise
-SYSTEM_TESTS_SANITISE_TARGET=$(BIN_DIR)/system_tests_sanitise
 
-all: clean-target \
-	unit sanitise-unit valgrind-unit \
-	system sanitise-system valgrind-system
+all: clean-target unit system
 
 unit: $(UNIT_TESTS_TARGET)
 	$(GDB) ./$(UNIT_TESTS_TARGET)
@@ -238,26 +233,6 @@ unit: $(UNIT_TESTS_TARGET)
 system: $(SYSTEM_TESTS_TARGET)
 	$(GDB) ./$(SYSTEM_TESTS_TARGET)
 .PHONY: system
-
-valgrind-unit: $(UNIT_TESTS_TARGET)
-	$(VALGRIND) $(VFLAGS) $(UNIT_TESTS_TARGET) > /dev/null
-.PHONY: valgrind-unit
-
-valgrind-system: $(SYSTEM_TESTS_TARGET)
-	$(VALGRIND) $(VFLAGS) $(SYSTEM_TESTS_TARGET) > /dev/null
-.PHONY: valgrind-system
-
-sanitise-unit: $(UNIT_TESTS_SANITISE_TARGET)
-	if [ "$(ENABLE_SANITISE_CHECKS)" = "1" ]; then \
-		$(GDB) ./$(UNIT_TESTS_SANITISE_TARGET); \
-	fi;
-.PHONY: sanitise-unit
-
-sanitise-system: $(SYSTEM_TESTS_SANITISE_TARGET)
-	if [ "$(ENABLE_SANITISE_CHECKS)" = "1" ]; then \
-		$(GDB) ./$(SYSTEM_TESTS_SANITISE_TARGET); \
-	fi;
-.PHONY: sanitise-system
 
 $(SRC_OBJ): | $(OBJ_DIR) $(CMOCKA_DIR)
 
@@ -274,17 +249,9 @@ $(UNIT_TESTS_TARGET): $(SRC_OBJ) $(UNIT_TEST_OBJ) $(COMMON_TEST_OBJ)
 	mkdir -p $(BIN_DIR)
 	$(CC) -o $@ $^ $(UNIT_TEST_LDFLAGS)
 
-$(UNIT_TESTS_SANITISE_TARGET): $(SRC_OBJ) $(UNIT_TEST_OBJ) $(COMMON_TEST_OBJ)
-	mkdir -p $(BIN_DIR)
-	$(CC) -o $@ $^ $(UNIT_TEST_LDFLAGS) $(SANITISE_LDFLAGS)
-
 $(SYSTEM_TESTS_TARGET): $(SRC_OBJ) $(SYSTEM_TEST_OBJ) $(COMMON_TEST_OBJ)
 	mkdir -p $(BIN_DIR)
 	$(CC) -o $@ $^ $(SYSTEM_TEST_LDFLAGS)
-
-$(SYSTEM_TESTS_SANITISE_TARGET): $(SRC_OBJ) $(SYSTEM_TEST_OBJ) $(COMMON_TEST_OBJ)
-	mkdir -p $(BIN_DIR)
-	$(CC) -o $@ $^ $(SYSTEM_TEST_LDFLAGS) $(SANITISE_LDFLAGS)
 
 $(CMOCKA_DIR):
 	mkdir -p $@

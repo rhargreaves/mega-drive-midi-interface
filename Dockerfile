@@ -7,7 +7,6 @@ RUN apt-get -y update && \
     cmake \
     gdb \
     gdbserver \
-    valgrind \
     wget \
     unzip && \
     git config --global --add safe.directory "*"
