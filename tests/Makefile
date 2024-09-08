@@ -227,7 +227,7 @@ CMOCKA_DIR=cmocka
 UNIT_TESTS_TARGET=$(BIN_DIR)/unit_tests
 SYSTEM_TESTS_TARGET=$(BIN_DIR)/system_tests
 
-all: clean-target unit system
+all: unit system
 
 unit: $(UNIT_TESTS_TARGET)
 	$(GDB) ./$(UNIT_TESTS_TARGET)
