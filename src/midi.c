@@ -980,7 +980,7 @@ static void processChannelGlide(DeviceChannel* chan, u16 portamentoTime)
         return;
     }
 
-    s16 effectiveIncrement;
+    s16 effectiveIncrement = 0;
 
     if (chan->glideTargetPitch > chan->pitch) {
         effectiveIncrement = portamentoTime;

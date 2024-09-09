@@ -10,7 +10,9 @@ include $(SGDK)/makefile.gen
 
 EXTRA_FLAGS:=-DBUILD='"$(BUILD)"' \
 	-Wl,--wrap=SYS_enableInts \
-	-Wl,--wrap=SYS_disableInts
+	-Wl,--wrap=SYS_disableInts \
+	-Werror \
+	-Wextra
 
 ifeq ($(ROM_TYPE), MEGAWIFI)
 	EXTRA_FLAGS += -DMEGAWIFI
