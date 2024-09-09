@@ -2,11 +2,6 @@
 #include "cmocka_inc.h"
 #include "scheduler.h"
 
-extern void __real_scheduler_init(void);
-extern void __real_scheduler_tick(void);
-extern void __real_scheduler_addTickHandler(HandlerFunc* onTick);
-extern void __real_scheduler_addFrameHandler(HandlerFunc* onFrame);
-
 static void dummy_frame_handler()
 {
     function_called();

@@ -4,8 +4,6 @@
 
 #define DEFAULT_PITCH 69
 
-extern void __real_comm_demo_init(void);
-
 int test_comm_demo_setup(UNUSED void** state)
 {
     expect_any(__wrap_scheduler_addFrameHandler, onFrame);
