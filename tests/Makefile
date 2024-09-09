@@ -2,6 +2,10 @@ vpath %.c ../src
 
 CC=gcc
 SGDK?=/sgdk
+BIN_DIR=bin
+OBJ_DIR=obj
+CMOCKA_TAR=cmocka-1.1.7.tar.xz
+CMOCKA_DIR=cmocka
 
 ifeq ($(DEBUG),1)
 	GDB=gdbserver :2345
@@ -201,14 +205,12 @@ LDFLAGS=-ggdb -ffreestanding -lcmocka \
 	-L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src \
 	-fsanitize=address -fsanitize=undefined -fsanitize=leak
 LDFLAGS+=$(foreach MOCK,$(MD_MOCKS),-Wl,--wrap=$(MOCK))
-
 SYSTEM_TEST_LDFLAGS=$(LDFLAGS)
 UNIT_TEST_LDFLAGS=$(LDFLAGS) $(foreach MOCK,$(MOCKS),-Wl,--wrap=$(MOCK))
 
 SRC=$(wildcard ../src/*.c ../src/*/*.c)
 SRC:=$(filter-out ../src/boot/rom_head.c,$(SRC))
 SRC:=$(filter-out ../src/main.c,$(SRC))
-
 COMMON_TEST_SRC=$(wildcard *.c)
 UNIT_TEST_SRC=$(wildcard unit/*.c)
 SYSTEM_TEST_SRC=$(wildcard system/*.c)
@@ -217,11 +219,6 @@ SRC_OBJ=$(patsubst ../src/%.c,obj/%.o,$(SRC))
 COMMON_TEST_OBJ=$(patsubst %.c,obj/%.o,$(COMMON_TEST_SRC))
 UNIT_TEST_OBJ=$(patsubst %.c,obj/%.o,$(UNIT_TEST_SRC))
 SYSTEM_TEST_OBJ=$(patsubst %.c,obj/%.o,$(SYSTEM_TEST_SRC))
-BIN_DIR=bin
-OBJ_DIR=obj
-
-CMOCKA_TAR=cmocka-1.1.7.tar.xz
-CMOCKA_DIR=cmocka
 
 UNIT_TESTS_TARGET=$(BIN_DIR)/unit_tests
 SYSTEM_TESTS_TARGET=$(BIN_DIR)/system_tests
@@ -238,17 +235,17 @@ system: $(SYSTEM_TESTS_TARGET)
 .PHONY: system
 
 $(OBJ_DIR)/%.o: %.c
-	mkdir -p $(dir $@)
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -MMD -MT "$@ $(basename $@).d" -c $< -o $@
 
 -include $(wildcard $(OBJ_DIR)/*.d) $(wildcard $(OBJ_DIR)/*/*.d)
 
 $(UNIT_TESTS_TARGET): $(SRC_OBJ) $(UNIT_TEST_OBJ) $(COMMON_TEST_OBJ)
-	mkdir -p $(dir $@)
+	@mkdir -p $(dir $@)
 	$(CC) -o $@ $^ $(UNIT_TEST_LDFLAGS)
 
 $(SYSTEM_TESTS_TARGET): $(SRC_OBJ) $(SYSTEM_TEST_OBJ) $(COMMON_TEST_OBJ)
-	mkdir -p $(dir $@)
+	@mkdir -p $(dir $@)
 	$(CC) -o $@ $^ $(SYSTEM_TEST_LDFLAGS)
 
 $(CMOCKA_DIR):
