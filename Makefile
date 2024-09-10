@@ -19,7 +19,6 @@ SRC := src
 RES := res
 INCLUDE := inc
 
-
 SRC_C= $(wildcard *.c)
 SRC_C+= $(wildcard $(SRC)/*.c)
 SRC_C+= $(wildcard $(SRC)/*/*.c)
@@ -69,13 +68,11 @@ INCS:= -I$(INCLUDE) -I$(SRC) -I$(RES) -I$(INCLUDE_LIB) -I$(RES_LIB)
 DEFAULT_FLAGS= $(EXTRA_FLAGS) -DSGDK_GCC -m68000 -Wall -Wextra -Wno-shift-negative-value -Wno-main -Wno-unused-parameter -fno-builtin -fms-extensions $(INCS) -B$(BIN)
 FLAGSZ80:= -i$(SRC) -i$(INCLUDE) -i$(RES) -i$(SRC_LIB) -i$(INCLUDE_LIB) -i$(INCLUDE_LIB)/snd
 
-#release: FLAGS= $(DEFAULT_FLAGS) -Os -fomit-frame-pointer -fuse-linker-plugin -flto
 release: FLAGS= $(DEFAULT_FLAGS) -O3 -fuse-linker-plugin -fno-web -fno-gcse -fno-unit-at-a-time -fomit-frame-pointer -flto
 release: CFLAGS= $(FLAGS)
 release: AFLAGS= $(FLAGS)
 release: LIBMD= $(LIB)/libmd.a
 release: pre-build out/rom.bin out/symbol.txt
-#release: $(info $$var is [${SRC_C}])
 
 debug: FLAGS= $(DEFAULT_FLAGS) -O1 -DDEBUG=1
 debug: CFLAGS= $(FLAGS) -ggdb
@@ -94,7 +91,6 @@ ifneq ("$(wildcard $(GDK)/ext.mk)","")
     include $(GDK)/ext.mk
 endif
 
-all: release
 default: release
 
 Default: release
@@ -139,7 +135,6 @@ pre-build:
 	$(MKDIR) -p $(SRC)/boot
 	$(MKDIR) -p out
 
-
 out/rom.bin: out/rom.out
 	$(OBJCPY) -O binary out/rom.out out/rom.bin
 	$(SIZEBND) out/rom.bin -sizealign 131072 -checksum
@@ -168,7 +163,6 @@ $(SRC)/boot/sega.s: $(SRC_LIB)/boot/sega.s
 
 $(SRC)/boot/rom_head.c: $(SRC_LIB)/boot/rom_head.c
 	$(CP) $< $@
-
 
 out/%.lst: %.c
 	$(MKDIR) -p $(dir $@)
@@ -199,7 +193,6 @@ out/%.o: %.rs
 
 %.s: %.o80
 	$(BINTOS) $<
-
 
 EXTRA_FLAGS:=-DBUILD='"$(BUILD)"' \
 	-Wl,--wrap=SYS_enableInts \
