@@ -40,13 +40,8 @@ void test_midi_receiver_read_passes_note_on_to_midi_processor(UNUSED void** stat
 
     for (int chan = 0; chan < MIDI_CHANNELS; chan++) {
         u8 expectedStatus = 0x90 + chan;
-
         stub_comm_read_returns_midi_event(expectedStatus, expectedData, expectedData2);
-
-        expect_value(__wrap_midi_note_on, chan, chan);
-        expect_value(__wrap_midi_note_on, pitch, expectedData);
-        expect_value(__wrap_midi_note_on, velocity, expectedData2);
-
+        expect_midi_note_on(chan, expectedData, expectedData2);
         midi_receiver_read();
     }
 }
@@ -58,10 +53,7 @@ void test_midi_receiver_read_passes_note_off_to_midi_processor(UNUSED void** sta
     u8 expectedData2 = 127;
 
     stub_comm_read_returns_midi_event(expectedStatus, expectedData, expectedData2);
-
-    expect_value(__wrap_midi_note_off, chan, 0);
-    expect_value(__wrap_midi_note_off, pitch, expectedData);
-
+    expect_midi_note_off(0, expectedData);
     midi_receiver_read();
 }
 
@@ -109,11 +101,7 @@ void test_midi_receiver_sets_CC(UNUSED void** state)
     u8 expectedValue = 0x80;
 
     stub_comm_read_returns_midi_event(expectedStatus, expectedController, expectedValue);
-
-    expect_value(__wrap_midi_cc, chan, 0);
-    expect_value(__wrap_midi_cc, controller, expectedController);
-    expect_value(__wrap_midi_cc, value, expectedValue);
-
+    expect_midi_cc(0, expectedController, expectedValue);
     midi_receiver_read();
 }
 
@@ -125,10 +113,7 @@ void test_midi_receiver_sets_pitch_bend(UNUSED void** state)
     u8 expectedValueUpper = expectedValue >> 7;
 
     stub_comm_read_returns_midi_event(expectedStatus, expectedValueLower, expectedValueUpper);
-
-    expect_value(__wrap_midi_pitch_bend, chan, 0);
-    expect_value(__wrap_midi_pitch_bend, bend, expectedValue);
-
+    expect_midi_pitch_bend(0, expectedValue);
     midi_receiver_read();
 }
 
@@ -182,10 +167,7 @@ void test_midi_receiver_sets_midi_program(UNUSED void** state)
 
     will_return(__wrap_comm_read, status);
     will_return(__wrap_comm_read, program);
-
-    expect_value(__wrap_midi_program, chan, 0);
-    expect_value(__wrap_midi_program, program, program);
-
+    expect_midi_program(0, program);
     midi_receiver_read();
 }
 

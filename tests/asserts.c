@@ -133,20 +133,14 @@ void _expect_synth_pitch(
     expect_value_with_pos(__wrap_synth_pitch, freqNumber, freqNumber, file, line);
 }
 
-void expect_synth_volume(u8 channel, u8 volume)
+void _expect_synth_noteOn(u8 channel, const char* const file, const int line)
 {
-    expect_value(__wrap_synth_volume, channel, channel);
-    expect_value(__wrap_synth_volume, volume, volume);
+    expect_value_with_pos(__wrap_synth_noteOn, channel, channel, file, line);
 }
 
-void expect_synth_noteOn(u8 chan)
+void _expect_synth_noteOff(u8 channel, const char* const file, const int line)
 {
-    expect_value(__wrap_synth_noteOn, channel, chan);
-}
-
-void expect_synth_noteOff(u8 chan)
-{
-    expect_value(__wrap_synth_noteOff, channel, chan);
+    expect_value_with_pos(__wrap_synth_noteOff, channel, channel, file, line);
 }
 
 void _expect_ym2612_write_reg(u8 part, u8 reg, u8 data, const char* const file, const int line)
@@ -216,4 +210,78 @@ int fmchannel_equality_check(
     }
 
     return 0;
+}
+
+void _expect_synth_algorithm(u8 channel, u8 algorithm, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_synth_algorithm, channel, channel, file, line);
+    expect_value_with_pos(__wrap_synth_algorithm, algorithm, algorithm, file, line);
+}
+
+void _expect_midi_emit(u8 value, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_comm_megawifi_midiEmitCallback, midiByte, value, file, line);
+}
+
+void _expect_midi_emit_duo(u8 value1, u8 value2, const char* const file, const int line)
+{
+    _expect_midi_emit(value1, file, line);
+    _expect_midi_emit(value2, file, line);
+}
+
+void _expect_midi_emit_trio(u8 value1, u8 value2, u8 value3, const char* const file, const int line)
+{
+    _expect_midi_emit(value1, file, line);
+    _expect_midi_emit(value2, file, line);
+    _expect_midi_emit(value3, file, line);
+}
+
+void _expect_psg_tone(u8 channel, u16 value, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_PSG_setTone, channel, channel, file, line);
+    expect_value_with_pos(__wrap_PSG_setTone, value, value, file, line);
+}
+
+void _expect_psg_attenuation(u8 channel, u8 value, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_PSG_setEnvelope, channel, channel, file, line);
+    expect_value_with_pos(__wrap_PSG_setEnvelope, value, value, file, line);
+}
+
+void _expect_midi_note_on(u8 chan, u8 pitch, u8 velocity, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_midi_note_on, chan, chan, file, line);
+    expect_value_with_pos(__wrap_midi_note_on, pitch, pitch, file, line);
+    expect_value_with_pos(__wrap_midi_note_on, velocity, velocity, file, line);
+}
+
+void _expect_midi_note_off(u8 chan, u8 pitch, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_midi_note_off, chan, chan, file, line);
+    expect_value_with_pos(__wrap_midi_note_off, pitch, pitch, file, line);
+}
+
+void _expect_midi_cc(u8 chan, u8 controller, u8 value, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_midi_cc, chan, chan, file, line);
+    expect_value_with_pos(__wrap_midi_cc, controller, controller, file, line);
+    expect_value_with_pos(__wrap_midi_cc, value, value, file, line);
+}
+
+void _expect_midi_pitch_bend(u8 chan, u16 bend, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_midi_pitch_bend, chan, chan, file, line);
+    expect_value_with_pos(__wrap_midi_pitch_bend, bend, bend, file, line);
+}
+
+void _expect_midi_program(u8 chan, u8 program, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_midi_program, chan, chan, file, line);
+    expect_value_with_pos(__wrap_midi_program, program, program, file, line);
+}
+
+void _expect_synth_volume(u8 channel, u8 volume, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_synth_volume, channel, channel, file, line);
+    expect_value_with_pos(__wrap_synth_volume, volume, volume, file, line);
 }
