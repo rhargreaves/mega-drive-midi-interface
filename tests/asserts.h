@@ -24,15 +24,3 @@ void expect_memory_with_pos(const char* const function, const char* const parame
     _expect_any(#function, #parameter, file, line, 1)
 #define will_return_with_pos(function, value, file, line)                                          \
     _will_return(#function, file, line, cast_to_largest_integral_type(value), 1)
-
-// ---- synth ----
-
-// ---- log ----
-#define expect_log_info(f)                                                                         \
-    {                                                                                              \
-        expect_memory(__wrap_log_info, fmt, f, sizeof(f));                                         \
-    }
-#define expect_log_warn(f)                                                                         \
-    {                                                                                              \
-        expect_memory(__wrap_log_warn, fmt, f, sizeof(f));                                         \
-    }

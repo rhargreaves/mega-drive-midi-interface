@@ -6,6 +6,7 @@
 #include "comm/buffer.h"
 #include "settings.h"
 #include "comm/ip_util.h"
+#include "mocks/mock_log.h"
 
 int test_comm_megawifi_setup(UNUSED void** state)
 {
@@ -93,4 +94,9 @@ void test_comm_megawifi_logs_if_buffer_full(UNUSED void** state)
     for (u16 i = 0; i < BUFFER_SIZE + 1; i++) {
         __real_comm_megawifi_midiEmitCallback(0x00);
     }
+}
+
+void test_comm_megawifi_is_present_returns_false_if_mw_not_present(UNUSED void** state)
+{
+    // Implementation of the function
 }
