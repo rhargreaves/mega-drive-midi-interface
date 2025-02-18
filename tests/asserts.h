@@ -198,3 +198,35 @@ void _expect_synth_operatorAmplitudeModulation(
     _expect_synth_operatorSsgEg(channel, op, enabled, __FILE__, __LINE__)
 #define expect_synth_operatorAmplitudeModulation(channel, op, enabled)                             \
     _expect_synth_operatorAmplitudeModulation(channel, op, enabled, __FILE__, __LINE__)
+
+void _expect_synth_ams(u8 channel, u8 ams, const char* const file, const int line);
+void _expect_synth_fms(u8 channel, u8 fms, const char* const file, const int line);
+void _expect_synth_stereo(u8 channel, u8 mode, const char* const file, const int line);
+void _expect_synth_enableLfo(u8 enable, const char* const file, const int line);
+void _expect_synth_globalLfoFrequency(u8 freq, const char* const file, const int line);
+
+#define expect_synth_ams(channel, ams) _expect_synth_ams(channel, ams, __FILE__, __LINE__)
+#define expect_synth_fms(channel, fms) _expect_synth_fms(channel, fms, __FILE__, __LINE__)
+#define expect_synth_stereo(channel, mode) _expect_synth_stereo(channel, mode, __FILE__, __LINE__)
+#define expect_synth_enableLfo(enable) _expect_synth_enableLfo(enable, __FILE__, __LINE__)
+#define expect_synth_globalLfoFrequency(freq)                                                      \
+    _expect_synth_globalLfoFrequency(freq, __FILE__, __LINE__)
+
+void _expect_synth_preset(
+    u8 channel, const void* preset, size_t size, const char* const file, const int line);
+
+#define expect_synth_preset(channel, preset, size)                                                 \
+    _expect_synth_preset(channel, preset, size, __FILE__, __LINE__)
+
+void _expect_synth_specialModePitch(
+    u8 op, u8 octave, u16 freqNumber, const char* const file, const int line);
+void _expect_synth_specialModeVolume(u8 op, u8 volume, const char* const file, const int line);
+
+#define expect_synth_specialModePitch(op, octave, freqNumber)                                      \
+    _expect_synth_specialModePitch(op, octave, freqNumber, __FILE__, __LINE__)
+#define expect_synth_specialModeVolume(op, volume)                                                 \
+    _expect_synth_specialModeVolume(op, volume, __FILE__, __LINE__)
+
+void _expect_synth_setSpecialMode(bool enable, const char* const file, const int line);
+
+#define expect_synth_setSpecialMode(enable) _expect_synth_setSpecialMode(enable, __FILE__, __LINE__)

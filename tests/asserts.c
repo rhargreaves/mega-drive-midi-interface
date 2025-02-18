@@ -374,4 +374,50 @@ void _expect_synth_operatorAmplitudeModulation(
     expect_value_with_pos(
         __wrap_synth_operatorAmplitudeModulation, amplitudeModulation, enabled, file, line);
 }
+
+void _expect_synth_ams(u8 channel, u8 ams, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_synth_ams, channel, channel, file, line);
+    expect_value_with_pos(__wrap_synth_ams, ams, ams, file, line);
+}
+
+void _expect_synth_fms(u8 channel, u8 fms, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_synth_fms, channel, channel, file, line);
+    expect_value_with_pos(__wrap_synth_fms, fms, fms, file, line);
+}
+
+void _expect_synth_stereo(u8 channel, u8 mode, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_synth_stereo, channel, channel, file, line);
+    expect_value_with_pos(__wrap_synth_stereo, mode, mode, file, line);
+}
+
+void _expect_synth_enableLfo(u8 enable, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_synth_enableLfo, enable, enable, file, line);
+}
+
+void _expect_synth_globalLfoFrequency(u8 freq, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_synth_globalLfoFrequency, freq, freq, file, line);
+}
+
+void _expect_synth_specialModePitch(
+    u8 op, u8 octave, u16 freqNumber, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_synth_specialModePitch, op, op, file, line);
+    expect_value_with_pos(__wrap_synth_specialModePitch, octave, octave, file, line);
+    expect_value_with_pos(__wrap_synth_specialModePitch, freqNumber, freqNumber, file, line);
+}
+
+void _expect_synth_specialModeVolume(u8 op, u8 volume, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_synth_specialModeVolume, op, op, file, line);
+    expect_value_with_pos(__wrap_synth_specialModeVolume, volume, volume, file, line);
+}
+
+void _expect_synth_setSpecialMode(bool enable, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_synth_setSpecialMode, enable, enable, file, line);
 }

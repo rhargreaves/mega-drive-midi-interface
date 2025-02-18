@@ -180,9 +180,7 @@ void test_midi_sets_fm_feedback(UNUSED void** state)
 void test_midi_sets_channel_AMS(UNUSED void** state)
 {
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
-        expect_value(__wrap_synth_ams, channel, chan);
-        expect_value(__wrap_synth_ams, ams, 1);
-
+        expect_synth_ams(chan, 1);
         __real_midi_cc(chan, 76, 32);
     }
 }
@@ -190,9 +188,7 @@ void test_midi_sets_channel_AMS(UNUSED void** state)
 void test_midi_sets_channel_FMS(UNUSED void** state)
 {
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
-        expect_value(__wrap_synth_fms, channel, chan);
-        expect_value(__wrap_synth_fms, fms, 2);
-
+        expect_synth_fms(chan, 2);
         __real_midi_cc(chan, 75, 32);
     }
 }
@@ -217,7 +213,6 @@ void test_midi_sets_operator_multiple(UNUSED void** state)
         for (u8 cc = 20; cc <= 23; cc++) {
             u8 expectedOp = cc - 20;
             expect_synth_operatorMultiple(chan, expectedOp, expectedValue);
-
             __real_midi_cc(chan, cc, 32);
         }
     }
@@ -231,7 +226,6 @@ void test_midi_sets_operator_detune(UNUSED void** state)
         for (u8 cc = 24; cc <= 27; cc++) {
             u8 expectedOp = cc - 24;
             expect_synth_operatorDetune(chan, expectedOp, expectedValue);
-
             __real_midi_cc(chan, cc, 32);
         }
     }
@@ -324,7 +318,6 @@ void test_midi_sets_operator_release_rate(UNUSED void** state)
         for (u8 cc = 59; cc <= 62; cc++) {
             u8 expectedOp = cc - 59;
             expect_synth_operatorReleaseRate(chan, expectedOp, expectedValue);
-
             __real_midi_cc(chan, cc, 8);
         }
     }
@@ -341,7 +334,6 @@ void test_midi_sets_operator_ssg_eg(UNUSED void** state)
         for (u8 cc = MIN_CC; cc <= MAX_CC; cc++) {
             u8 expectedOp = cc - MIN_CC;
             expect_synth_operatorSsgEg(chan, expectedOp, expectedValue);
-
             __real_midi_cc(chan, cc, 88);
         }
     }
@@ -354,24 +346,20 @@ void test_midi_sets_genmdm_stereo_mode(UNUSED void** state)
     const u8 cc = 77;
 
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
-        expect_value(__wrap_synth_stereo, channel, chan);
-        expect_value(__wrap_synth_stereo, mode, expectedMode);
-
+        expect_synth_stereo(chan, expectedMode);
         __real_midi_cc(chan, cc, value);
     }
 }
 
 void test_midi_sets_global_LFO_enable(UNUSED void** state)
 {
-    expect_value(__wrap_synth_enableLfo, enable, 1);
-
+    expect_synth_enableLfo(1);
     __real_midi_cc(0, 74, 64);
 }
 
 void test_midi_sets_global_LFO_frequency(UNUSED void** state)
 {
-    expect_value(__wrap_synth_globalLfoFrequency, freq, 1);
-
+    expect_synth_globalLfoFrequency(1);
     __real_midi_cc(0, 1, 16);
 }
 
@@ -385,8 +373,8 @@ void test_midi_sets_fm_preset(UNUSED void** state)
             { 1, 2, 27, 1, 5, 1, 10, 5, 6, 8, 0 }, { 6, 5, 27, 1, 9, 0, 3, 8, 7, 9, 0 } } };
 
     expect_value(__wrap_synth_preset, channel, chan);
-    expect_memory(__wrap_synth_preset, preset, &M_BANK_0_INST_1_BRIGHTPIANO,
-        sizeof(M_BANK_0_INST_1_BRIGHTPIANO));
+    expect_check(
+        __wrap_synth_preset, preset, fmchannel_equality_check, &M_BANK_0_INST_1_BRIGHTPIANO);
 
     __real_midi_program(chan, program);
 }
@@ -396,7 +384,7 @@ void test_midi_sets_synth_pitch_bend(UNUSED void** state)
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         expect_synth_pitch(chan, 4, SYNTH_NTSC_C);
         expect_synth_volume_any();
-        expect_value(__wrap_synth_noteOn, channel, chan);
+        expect_synth_noteOn(chan);
         __real_midi_note_on(chan, 60, MAX_MIDI_VOLUME);
 
         expect_synth_pitch(chan, 3, 0x48b);
@@ -414,7 +402,7 @@ void test_midi_sets_synth_pitch_bend_before_note_on(UNUSED void** state)
         print_message("note on %d\n", chan);
         expect_synth_pitch(chan, 3, 0x48b);
         expect_synth_volume_any();
-        expect_value(__wrap_synth_noteOn, channel, chan);
+        expect_synth_noteOn(chan);
         __real_midi_note_on(chan, 60, MAX_MIDI_VOLUME);
     }
 }
@@ -428,7 +416,7 @@ void test_midi_pitch_bends_down_an_octave(UNUSED void** state)
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         expect_synth_pitch(chan, 4, SYNTH_FREQ_B3);
         expect_synth_volume_any();
-        expect_value(__wrap_synth_noteOn, channel, chan);
+        expect_synth_noteOn(chan);
         __real_midi_note_on(chan, MIDI_PITCH_B3, MAX_MIDI_VOLUME);
 
         expect_synth_pitch(chan, 3, SYNTH_FREQ_A3);
@@ -445,7 +433,7 @@ void test_midi_pitch_bends_up_an_octave(UNUSED void** state)
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         expect_synth_pitch(chan, 4, SYNTH_FREQ_B3);
         expect_synth_volume_any();
-        expect_value(__wrap_synth_noteOn, channel, chan);
+        expect_synth_noteOn(chan);
         __real_midi_note_on(chan, MIDI_PITCH_B3, MAX_MIDI_VOLUME);
 
         expect_synth_pitch(chan, 4, SYNTH_FREQ_C3);
@@ -462,7 +450,7 @@ void test_midi_pitch_bends_up_an_octave_upper_freq_limit(UNUSED void** state)
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         expect_synth_pitch(chan, 4, SYNTH_FREQ_AS4);
         expect_synth_volume_any();
-        expect_value(__wrap_synth_noteOn, channel, chan);
+        expect_synth_noteOn(chan);
         __real_midi_note_on(chan, MIDI_PITCH_AS4, MAX_MIDI_VOLUME);
 
         expect_synth_pitch(chan, 5, SYNTH_FREQ_C3);
@@ -475,7 +463,7 @@ void test_midi_persists_pitch_bend_between_notes(UNUSED void** state)
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         expect_synth_pitch(chan, 4, SYNTH_NTSC_C);
         expect_synth_volume_any();
-        expect_value(__wrap_synth_noteOn, channel, chan);
+        expect_synth_noteOn(chan);
         __real_midi_note_on(chan, 60, MAX_MIDI_VOLUME);
 
         expect_synth_pitch(chan, 3, 1163);
@@ -486,7 +474,7 @@ void test_midi_persists_pitch_bend_between_notes(UNUSED void** state)
 
         expect_synth_pitch(chan, 3, 1163);
         expect_synth_volume_any();
-        expect_value(__wrap_synth_noteOn, channel, chan);
+        expect_synth_noteOn(chan);
         __real_midi_note_on(chan, 60, MAX_MIDI_VOLUME);
     }
 }
@@ -517,7 +505,7 @@ void test_midi_fm_note_on_percussion_channel_sets_percussion_preset(UNUSED void*
 
     expect_synth_volume_any();
     expect_synth_pitch(FM_CHANNEL, 0, 0x32a);
-    expect_value(__wrap_synth_noteOn, channel, FM_CHANNEL);
+    expect_synth_noteOn(FM_CHANNEL);
 
     __real_midi_note_on(MIDI_PERCUSSION_CHANNEL, MIDI_KEY, MAX_MIDI_VOLUME);
 }
@@ -527,8 +515,7 @@ void test_midi_switching_program_retains_pan_setting(UNUSED void** state)
     const u8 program = 1;
     const u8 chan = 0;
 
-    expect_value(__wrap_synth_stereo, channel, chan);
-    expect_value(__wrap_synth_stereo, mode, 1);
+    expect_synth_stereo(chan, 1);
     __real_midi_cc(0, CC_PAN, 127);
 
     const FmChannel M_BANK_0_INST_1_BRIGHTPIANO = { 5, 7, 3, 0, 0, 0, 0,
@@ -536,8 +523,8 @@ void test_midi_switching_program_retains_pan_setting(UNUSED void** state)
             { 1, 2, 27, 1, 5, 1, 10, 5, 6, 8, 0 }, { 6, 5, 27, 1, 9, 0, 3, 8, 7, 9, 0 } } };
 
     expect_value(__wrap_synth_preset, channel, chan);
-    expect_memory(__wrap_synth_preset, preset, &M_BANK_0_INST_1_BRIGHTPIANO,
-        sizeof(M_BANK_0_INST_1_BRIGHTPIANO));
+    expect_check(
+        __wrap_synth_preset, preset, fmchannel_equality_check, &M_BANK_0_INST_1_BRIGHTPIANO);
     __real_midi_program(chan, program);
 }
 
@@ -546,7 +533,7 @@ void test_midi_enables_fm_special_mode(UNUSED void** state)
     u8 expectedController = 80;
     u8 expectedValue = 64;
 
-    expect_value(__wrap_synth_setSpecialMode, enable, true);
+    expect_synth_setSpecialMode(true);
 
     __real_midi_cc(0, expectedController, expectedValue);
 }
@@ -556,7 +543,7 @@ void test_midi_disables_fm_special_mode(UNUSED void** state)
     u8 expectedController = 80;
     u8 expectedValue = 0;
 
-    expect_value(__wrap_synth_setSpecialMode, enable, false);
+    expect_synth_setSpecialMode(false);
 
     __real_midi_cc(0, expectedController, expectedValue);
 }
@@ -566,13 +553,8 @@ void test_midi_sets_pitch_of_special_mode_ch3_operator(UNUSED void** state)
     for (u8 op = 0; op < 3; op++) {
         int midiChannel = 10 + op;
 
-        expect_value(__wrap_synth_specialModePitch, op, op);
-        expect_value(__wrap_synth_specialModePitch, octave, 4);
-        expect_value(__wrap_synth_specialModePitch, freqNumber, SYNTH_NTSC_C);
-
-        expect_value(__wrap_synth_specialModeVolume, op, op);
-        expect_value(__wrap_synth_specialModeVolume, volume, MAX_MIDI_VOLUME);
-
+        expect_synth_specialModePitch(op, 4, SYNTH_NTSC_C);
+        expect_synth_specialModeVolume(op, MAX_MIDI_VOLUME);
         __real_midi_note_on(midiChannel, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
     }
 }
@@ -582,12 +564,8 @@ void test_midi_sets_volume_of_special_mode_ch3_operator(UNUSED void** state)
     for (u8 op = 0; op < 3; op++) {
         int midiChannel = 10 + op;
 
-        expect_value(__wrap_synth_specialModePitch, op, op);
-        expect_value(__wrap_synth_specialModePitch, octave, 4);
-        expect_value(__wrap_synth_specialModePitch, freqNumber, SYNTH_NTSC_C);
-
-        expect_value(__wrap_synth_specialModeVolume, op, op);
-        expect_value(__wrap_synth_specialModeVolume, volume, 64);
+        expect_synth_specialModePitch(op, 4, SYNTH_NTSC_C);
+        expect_synth_specialModeVolume(op, 64);
 
         __real_midi_note_on(midiChannel, MIDI_PITCH_C4, 64);
     }
@@ -597,38 +575,25 @@ void test_midi_pitch_bends_special_mode_operator(UNUSED void** state)
 {
     int chan = 10;
 
-    expect_value(__wrap_synth_specialModePitch, op, 0);
-    expect_value(__wrap_synth_specialModePitch, octave, 4);
-    expect_value(__wrap_synth_specialModePitch, freqNumber, SYNTH_NTSC_C);
-    expect_value(__wrap_synth_specialModeVolume, op, 0);
-    expect_value(__wrap_synth_specialModeVolume, volume, MAX_MIDI_VOLUME);
+    expect_synth_specialModePitch(0, 4, SYNTH_NTSC_C);
+    expect_synth_specialModeVolume(0, MAX_MIDI_VOLUME);
     __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
-    expect_value(__wrap_synth_specialModePitch, op, 0);
-    expect_value(__wrap_synth_specialModePitch, octave, 4);
-    expect_value(__wrap_synth_specialModePitch, freqNumber, 0x32a);
+    expect_synth_specialModePitch(0, 4, 0x32a);
     __real_midi_pitch_bend(chan, 0x6000);
 }
 
 void test_midi_pitch_bends_special_mode_op_independent_of_other_ops(UNUSED void** state)
 {
-    expect_value(__wrap_synth_specialModePitch, op, 0);
-    expect_value(__wrap_synth_specialModePitch, octave, 4);
-    expect_value(__wrap_synth_specialModePitch, freqNumber, SYNTH_NTSC_C);
-    expect_value(__wrap_synth_specialModeVolume, op, 0);
-    expect_value(__wrap_synth_specialModeVolume, volume, MAX_MIDI_VOLUME);
+    expect_synth_specialModePitch(0, 4, SYNTH_NTSC_C);
+    expect_synth_specialModeVolume(0, MAX_MIDI_VOLUME);
     __real_midi_note_on(10, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
-    expect_value(__wrap_synth_specialModePitch, op, 0);
-    expect_value(__wrap_synth_specialModePitch, octave, 4);
-    expect_value(__wrap_synth_specialModePitch, freqNumber, 0x32a);
+    expect_synth_specialModePitch(0, 4, 0x32a);
     __real_midi_pitch_bend(10, 0x6000);
 
-    expect_value(__wrap_synth_specialModePitch, op, 1);
-    expect_value(__wrap_synth_specialModePitch, octave, 4);
-    expect_value(__wrap_synth_specialModePitch, freqNumber, SYNTH_NTSC_C);
-    expect_value(__wrap_synth_specialModeVolume, op, 1);
-    expect_value(__wrap_synth_specialModeVolume, volume, MAX_MIDI_VOLUME);
+    expect_synth_specialModePitch(1, 4, SYNTH_NTSC_C);
+    expect_synth_specialModeVolume(1, MAX_MIDI_VOLUME);
     __real_midi_note_on(11, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 }
 
@@ -636,23 +601,15 @@ void test_midi_persists_pitch_bends_for_special_mode_op_between_notes(UNUSED voi
 {
     int chan = 10;
 
-    expect_value(__wrap_synth_specialModePitch, op, 0);
-    expect_value(__wrap_synth_specialModePitch, octave, 4);
-    expect_value(__wrap_synth_specialModePitch, freqNumber, SYNTH_NTSC_C);
-    expect_value(__wrap_synth_specialModeVolume, op, 0);
-    expect_value(__wrap_synth_specialModeVolume, volume, MAX_MIDI_VOLUME);
+    expect_synth_specialModePitch(0, 4, SYNTH_NTSC_C);
+    expect_synth_specialModeVolume(0, MAX_MIDI_VOLUME);
     __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
-    expect_value(__wrap_synth_specialModePitch, op, 0);
-    expect_value(__wrap_synth_specialModePitch, octave, 4);
-    expect_value(__wrap_synth_specialModePitch, freqNumber, 0x32a);
+    expect_synth_specialModePitch(0, 4, 0x32a);
     __real_midi_pitch_bend(chan, 0x6000);
 
-    expect_value(__wrap_synth_specialModePitch, op, 0);
-    expect_value(__wrap_synth_specialModePitch, octave, 4);
-    expect_value(__wrap_synth_specialModePitch, freqNumber, 0x32a);
-    expect_value(__wrap_synth_specialModeVolume, op, 0);
-    expect_value(__wrap_synth_specialModeVolume, volume, MAX_MIDI_VOLUME);
+    expect_synth_specialModePitch(0, 4, 0x32a);
+    expect_synth_specialModeVolume(0, MAX_MIDI_VOLUME);
     __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 }
 
@@ -660,27 +617,27 @@ void test_midi_note_priority_respected_for_multiple_notes(UNUSED void** state)
 {
     expect_synth_pitch(0, 4, 0x284);
     expect_synth_volume_any();
-    expect_value(__wrap_synth_noteOn, channel, 0);
+    expect_synth_noteOn(0);
     __real_midi_note_on(0, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
     expect_synth_pitch(0, 4, 0x2a9);
     expect_synth_volume_any();
-    expect_value(__wrap_synth_noteOn, channel, 0);
+    expect_synth_noteOn(0);
     __real_midi_note_on(0, MIDI_PITCH_CS4, MAX_MIDI_VOLUME);
 
     expect_synth_pitch(0, 6, 0x47a);
     expect_synth_volume_any();
-    expect_value(__wrap_synth_noteOn, channel, 0);
+    expect_synth_noteOn(0);
     __real_midi_note_on(0, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
 
     expect_synth_pitch(0, 4, 0x2a9);
     expect_synth_volume_any();
-    expect_value(__wrap_synth_noteOn, channel, 0);
+    expect_synth_noteOn(0);
     __real_midi_note_off(0, MIDI_PITCH_AS6);
 
     expect_synth_pitch(0, 4, 0x284);
     expect_synth_volume_any();
-    expect_value(__wrap_synth_noteOn, channel, 0);
+    expect_synth_noteOn(0);
     __real_midi_note_off(0, MIDI_PITCH_CS4);
 }
 
