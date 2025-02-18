@@ -33,12 +33,14 @@ static const u8 TEST_VELOCITY_MAX = 127;
 int test_e2e_setup(void** state)
 {
     wraps_disable_checks();
+    mock_ym2612_disable_checks();
     scheduler_init();
     comm_reset_counts();
     stub_megawifi_as_not_present();
     comm_init();
     midi_init(M_BANK_0, P_BANK_0, ENVELOPES);
     wraps_enable_checks();
+    mock_ym2612_enable_checks();
     return 0;
 }
 

@@ -20,6 +20,7 @@ INCLUDE_DIRS+=-I.
 INCLUDE_DIRS+=-I../res
 INCLUDE_DIRS+=-I../src
 INCLUDE_DIRS+=-I../src/comm
+INCLUDE_DIRS+=-Imocks
 INCLUDE_DIRS+=-I$(CMOCKA_DIR)/include
 
 CFLAGS=$(INCLUDE_DIRS) \
@@ -211,7 +212,7 @@ UNIT_TEST_LDFLAGS=$(LDFLAGS) $(foreach MOCK,$(MOCKS),-Wl,--wrap=$(MOCK))
 SRC=$(wildcard ../src/*.c ../src/*/*.c)
 SRC:=$(filter-out ../src/boot/rom_head.c,$(SRC))
 SRC:=$(filter-out ../src/main.c,$(SRC))
-COMMON_TEST_SRC=$(wildcard *.c)
+COMMON_TEST_SRC=$(wildcard *.c mocks/*.c)
 UNIT_TEST_SRC=$(wildcard unit/*.c)
 SYSTEM_TEST_SRC=$(wildcard system/*.c)
 

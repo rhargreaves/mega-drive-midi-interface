@@ -2,6 +2,7 @@
 #include "synth.h"
 #include "test_midi.h"
 #include "z80_ctrl.h"
+#include "mocks/mock_ym2612.h"
 
 static bool updated = false;
 static u8 lastChan = -1;

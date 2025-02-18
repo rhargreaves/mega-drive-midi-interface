@@ -189,8 +189,7 @@ extern void __real_scheduler_addTickHandler(HandlerFunc* onTick);
 extern void __real_scheduler_addFrameHandler(HandlerFunc* onFrame);
 
 /* SDGK wraps */
-void __wrap_YM2612_writeReg(const u16 part, const u8 reg, const u8 data);
-void __wrap_YM2612_write(const u16 port, const u8 data);
+
 void __wrap_VDP_drawText(const char* str, u16 x, u16 y);
 void __wrap_SYS_setVIntCallback(VoidCallback* CB);
 void __wrap_VDP_setTextPalette(u16 palette);
