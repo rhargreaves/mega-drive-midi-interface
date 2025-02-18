@@ -203,10 +203,7 @@ void test_midi_sets_operator_total_level(UNUSED void** state)
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         for (u8 cc = 16; cc <= 19; cc++) {
             u8 expectedOp = cc - 16;
-            expect_value(__wrap_synth_operatorTotalLevel, channel, chan);
-            expect_value(__wrap_synth_operatorTotalLevel, op, expectedOp);
-            expect_value(__wrap_synth_operatorTotalLevel, totalLevel, expectedValue);
-
+            expect_synth_operatorTotalLevel(chan, expectedOp, expectedValue);
             __real_midi_cc(chan, cc, expectedValue);
         }
     }
@@ -219,9 +216,7 @@ void test_midi_sets_operator_multiple(UNUSED void** state)
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         for (u8 cc = 20; cc <= 23; cc++) {
             u8 expectedOp = cc - 20;
-            expect_value(__wrap_synth_operatorMultiple, channel, chan);
-            expect_value(__wrap_synth_operatorMultiple, op, expectedOp);
-            expect_value(__wrap_synth_operatorMultiple, multiple, expectedValue);
+            expect_synth_operatorMultiple(chan, expectedOp, expectedValue);
 
             __real_midi_cc(chan, cc, 32);
         }
@@ -235,9 +230,7 @@ void test_midi_sets_operator_detune(UNUSED void** state)
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         for (u8 cc = 24; cc <= 27; cc++) {
             u8 expectedOp = cc - 24;
-            expect_value(__wrap_synth_operatorDetune, channel, chan);
-            expect_value(__wrap_synth_operatorDetune, op, expectedOp);
-            expect_value(__wrap_synth_operatorDetune, detune, expectedValue);
+            expect_synth_operatorDetune(chan, expectedOp, expectedValue);
 
             __real_midi_cc(chan, cc, 32);
         }
@@ -251,10 +244,7 @@ void test_midi_sets_operator_rate_scaling(UNUSED void** state)
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         for (u8 cc = 39; cc <= 42; cc++) {
             u8 expectedOp = cc - 39;
-            expect_value(__wrap_synth_operatorRateScaling, channel, chan);
-            expect_value(__wrap_synth_operatorRateScaling, op, expectedOp);
-            expect_value(__wrap_synth_operatorRateScaling, rateScaling, expectedValue);
-
+            expect_synth_operatorRateScaling(chan, expectedOp, expectedValue);
             __real_midi_cc(chan, cc, 64);
         }
     }
@@ -267,10 +257,7 @@ void test_midi_sets_operator_attack_rate(UNUSED void** state)
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         for (u8 cc = 43; cc <= 46; cc++) {
             u8 expectedOp = cc - 43;
-            expect_value(__wrap_synth_operatorAttackRate, channel, chan);
-            expect_value(__wrap_synth_operatorAttackRate, op, expectedOp);
-            expect_value(__wrap_synth_operatorAttackRate, attackRate, expectedValue);
-
+            expect_synth_operatorAttackRate(chan, expectedOp, expectedValue);
             __real_midi_cc(chan, cc, 8);
         }
     }
@@ -279,13 +266,11 @@ void test_midi_sets_operator_attack_rate(UNUSED void** state)
 void test_midi_sets_operator_decay_rate(UNUSED void** state)
 {
     const u8 expectedValue = 2;
+
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         for (u8 cc = 47; cc <= 50; cc++) {
             u8 expectedOp = cc - 47;
-            expect_value(__wrap_synth_operatorDecayRate, channel, chan);
-            expect_value(__wrap_synth_operatorDecayRate, op, expectedOp);
-            expect_value(__wrap_synth_operatorDecayRate, decayRate, expectedValue);
-
+            expect_synth_operatorDecayRate(chan, expectedOp, expectedValue);
             __real_midi_cc(chan, cc, 8);
         }
     }
@@ -298,10 +283,7 @@ void test_midi_sets_operator_sustain_rate(UNUSED void** state)
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         for (u8 cc = 51; cc <= 54; cc++) {
             u8 expectedOp = cc - 51;
-            expect_value(__wrap_synth_operatorSustainRate, channel, chan);
-            expect_value(__wrap_synth_operatorSustainRate, op, expectedOp);
-            expect_value(__wrap_synth_operatorSustainRate, sustainRate, expectedValue);
-
+            expect_synth_operatorSustainRate(chan, expectedOp, expectedValue);
             __real_midi_cc(chan, cc, 8);
         }
     }
@@ -314,10 +296,7 @@ void test_midi_sets_operator_sustain_level(UNUSED void** state)
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         for (u8 cc = 55; cc <= 58; cc++) {
             u8 expectedOp = cc - 55;
-            expect_value(__wrap_synth_operatorSustainLevel, channel, chan);
-            expect_value(__wrap_synth_operatorSustainLevel, op, expectedOp);
-            expect_value(__wrap_synth_operatorSustainLevel, sustainLevel, expectedValue);
-
+            expect_synth_operatorSustainLevel(chan, expectedOp, expectedValue);
             __real_midi_cc(chan, cc, 8);
         }
     }
@@ -330,10 +309,7 @@ void test_midi_sets_operator_amplitude_modulation(UNUSED void** state)
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         for (u8 cc = 70; cc <= 73; cc++) {
             u8 expectedOp = cc - 70;
-            expect_value(__wrap_synth_operatorAmplitudeModulation, channel, chan);
-            expect_value(__wrap_synth_operatorAmplitudeModulation, op, expectedOp);
-            expect_value(
-                __wrap_synth_operatorAmplitudeModulation, amplitudeModulation, expectedValue);
+            expect_synth_operatorAmplitudeModulation(chan, expectedOp, expectedValue);
 
             __real_midi_cc(chan, cc, 96);
         }
@@ -347,9 +323,7 @@ void test_midi_sets_operator_release_rate(UNUSED void** state)
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         for (u8 cc = 59; cc <= 62; cc++) {
             u8 expectedOp = cc - 59;
-            expect_value(__wrap_synth_operatorReleaseRate, channel, chan);
-            expect_value(__wrap_synth_operatorReleaseRate, op, expectedOp);
-            expect_value(__wrap_synth_operatorReleaseRate, releaseRate, expectedValue);
+            expect_synth_operatorReleaseRate(chan, expectedOp, expectedValue);
 
             __real_midi_cc(chan, cc, 8);
         }
@@ -366,9 +340,7 @@ void test_midi_sets_operator_ssg_eg(UNUSED void** state)
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         for (u8 cc = MIN_CC; cc <= MAX_CC; cc++) {
             u8 expectedOp = cc - MIN_CC;
-            expect_value(__wrap_synth_operatorSsgEg, channel, chan);
-            expect_value(__wrap_synth_operatorSsgEg, op, expectedOp);
-            expect_value(__wrap_synth_operatorSsgEg, ssgEg, expectedValue);
+            expect_synth_operatorSsgEg(chan, expectedOp, expectedValue);
 
             __real_midi_cc(chan, cc, 88);
         }

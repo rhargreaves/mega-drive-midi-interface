@@ -285,3 +285,80 @@ void _expect_synth_volume(u8 channel, u8 volume, const char* const file, const i
     expect_value_with_pos(__wrap_synth_volume, channel, channel, file, line);
     expect_value_with_pos(__wrap_synth_volume, volume, volume, file, line);
 }
+
+void _expect_synth_operatorTotalLevel(u8 channel, u8 op, u8 totalLevel, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_synth_operatorTotalLevel, channel, channel, file, line);
+    expect_value_with_pos(__wrap_synth_operatorTotalLevel, op, op, file, line);
+    expect_value_with_pos(__wrap_synth_operatorTotalLevel, totalLevel, totalLevel, file, line);
+}
+
+void _expect_synth_operatorMultiple(u8 channel, u8 op, u8 multiple, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_synth_operatorMultiple, channel, channel, file, line);
+    expect_value_with_pos(__wrap_synth_operatorMultiple, op, op, file, line);
+    expect_value_with_pos(__wrap_synth_operatorMultiple, multiple, multiple, file, line);
+}
+
+void _expect_synth_operatorDetune(u8 channel, u8 op, u8 detune, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_synth_operatorDetune, channel, channel, file, line);
+    expect_value_with_pos(__wrap_synth_operatorDetune, op, op, file, line);
+    expect_value_with_pos(__wrap_synth_operatorDetune, detune, detune, file, line);
+}
+
+void _expect_synth_operatorRateScaling(u8 channel, u8 op, u8 rateScaling, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_synth_operatorRateScaling, channel, channel, file, line);
+    expect_value_with_pos(__wrap_synth_operatorRateScaling, op, op, file, line);
+    expect_value_with_pos(__wrap_synth_operatorRateScaling, rateScaling, rateScaling, file, line);
+}
+
+void _expect_synth_operatorAttackRate(u8 channel, u8 op, u8 rate, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_synth_operatorAttackRate, channel, channel, file, line);
+    expect_value_with_pos(__wrap_synth_operatorAttackRate, op, op, file, line);
+    expect_value_with_pos(__wrap_synth_operatorAttackRate, attackRate, rate, file, line);
+}
+
+void _expect_synth_operatorDecayRate(u8 channel, u8 op, u8 rate, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_synth_operatorDecayRate, channel, channel, file, line);
+    expect_value_with_pos(__wrap_synth_operatorDecayRate, op, op, file, line);
+    expect_value_with_pos(__wrap_synth_operatorDecayRate, decayRate, rate, file, line);
+}
+
+void _expect_synth_operatorSustainRate(u8 channel, u8 op, u8 rate, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_synth_operatorSustainRate, channel, channel, file, line);
+    expect_value_with_pos(__wrap_synth_operatorSustainRate, op, op, file, line);
+    expect_value_with_pos(__wrap_synth_operatorSustainRate, sustainRate, rate, file, line);
+}
+
+void _expect_synth_operatorSustainLevel(u8 channel, u8 op, u8 level, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_synth_operatorSustainLevel, channel, channel, file, line);
+    expect_value_with_pos(__wrap_synth_operatorSustainLevel, op, op, file, line);
+    expect_value_with_pos(__wrap_synth_operatorSustainLevel, sustainLevel, level, file, line);
+}
+
+void _expect_synth_operatorReleaseRate(u8 channel, u8 op, u8 rate, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_synth_operatorReleaseRate, channel, channel, file, line);
+    expect_value_with_pos(__wrap_synth_operatorReleaseRate, op, op, file, line);
+    expect_value_with_pos(__wrap_synth_operatorReleaseRate, releaseRate, rate, file, line);
+}
+
+void _expect_synth_operatorSsgEg(u8 channel, u8 op, u8 enabled, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_synth_operatorSsgEg, channel, channel, file, line);
+    expect_value_with_pos(__wrap_synth_operatorSsgEg, op, op, file, line);
+    expect_value_with_pos(__wrap_synth_operatorSsgEg, ssgEg, enabled, file, line);
+}
+
+void _expect_synth_operatorAmplitudeModulation(u8 channel, u8 op, u8 enabled, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_synth_operatorAmplitudeModulation, channel, channel, file, line);
+    expect_value_with_pos(__wrap_synth_operatorAmplitudeModulation, op, op, file, line);
+    expect_value_with_pos(__wrap_synth_operatorAmplitudeModulation, amplitudeModulation, enabled, file, line);
+}

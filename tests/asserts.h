@@ -156,3 +156,40 @@ void _expect_synth_volume(u8 channel, u8 volume, const char* const file, const i
 
 #define expect_synth_volume(channel, volume) \
     _expect_synth_volume(channel, volume, __FILE__, __LINE__)
+
+void _expect_synth_operatorTotalLevel(u8 channel, u8 op, u8 totalLevel, const char* const file, const int line);
+void _expect_synth_operatorMultiple(u8 channel, u8 op, u8 multiple, const char* const file, const int line);
+void _expect_synth_operatorDetune(u8 channel, u8 op, u8 detune, const char* const file, const int line);
+void _expect_synth_operatorRateScaling(u8 channel, u8 op, u8 rateScaling, const char* const file, const int line);
+
+#define expect_synth_operatorTotalLevel(channel, op, totalLevel) \
+    _expect_synth_operatorTotalLevel(channel, op, totalLevel, __FILE__, __LINE__)
+#define expect_synth_operatorMultiple(channel, op, multiple) \
+    _expect_synth_operatorMultiple(channel, op, multiple, __FILE__, __LINE__)
+#define expect_synth_operatorDetune(channel, op, detune) \
+    _expect_synth_operatorDetune(channel, op, detune, __FILE__, __LINE__)
+#define expect_synth_operatorRateScaling(channel, op, rateScaling) \
+    _expect_synth_operatorRateScaling(channel, op, rateScaling, __FILE__, __LINE__)
+
+void _expect_synth_operatorAttackRate(u8 channel, u8 op, u8 rate, const char* const file, const int line);
+void _expect_synth_operatorDecayRate(u8 channel, u8 op, u8 rate, const char* const file, const int line);
+void _expect_synth_operatorSustainRate(u8 channel, u8 op, u8 rate, const char* const file, const int line);
+void _expect_synth_operatorSustainLevel(u8 channel, u8 op, u8 level, const char* const file, const int line);
+void _expect_synth_operatorReleaseRate(u8 channel, u8 op, u8 rate, const char* const file, const int line);
+void _expect_synth_operatorSsgEg(u8 channel, u8 op, u8 enabled, const char* const file, const int line);
+void _expect_synth_operatorAmplitudeModulation(u8 channel, u8 op, u8 enabled, const char* const file, const int line);
+
+#define expect_synth_operatorAttackRate(channel, op, rate) \
+    _expect_synth_operatorAttackRate(channel, op, rate, __FILE__, __LINE__)
+#define expect_synth_operatorDecayRate(channel, op, rate) \
+    _expect_synth_operatorDecayRate(channel, op, rate, __FILE__, __LINE__)
+#define expect_synth_operatorSustainRate(channel, op, rate) \
+    _expect_synth_operatorSustainRate(channel, op, rate, __FILE__, __LINE__)
+#define expect_synth_operatorSustainLevel(channel, op, level) \
+    _expect_synth_operatorSustainLevel(channel, op, level, __FILE__, __LINE__)
+#define expect_synth_operatorReleaseRate(channel, op, rate) \
+    _expect_synth_operatorReleaseRate(channel, op, rate, __FILE__, __LINE__)
+#define expect_synth_operatorSsgEg(channel, op, enabled) \
+    _expect_synth_operatorSsgEg(channel, op, enabled, __FILE__, __LINE__)
+#define expect_synth_operatorAmplitudeModulation(channel, op, enabled) \
+    _expect_synth_operatorAmplitudeModulation(channel, op, enabled, __FILE__, __LINE__)
