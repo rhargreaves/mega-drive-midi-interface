@@ -1,5 +1,6 @@
 #include "test_midi_portamento.h"
 #include "test_midi.h"
+#include "mocks/mock_psg.h"
 
 int test_midi_portamento_setup(UNUSED void** state)
 {

@@ -1,5 +1,6 @@
 #include "test_midi_dynamic.h"
 #include "test_midi.h"
+#include "mocks/mock_psg.h"
 
 #define LENGTH_OF(x) (sizeof(x) / sizeof((x)[0]))
 

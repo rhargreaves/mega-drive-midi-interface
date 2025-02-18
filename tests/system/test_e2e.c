@@ -7,6 +7,7 @@
 #include "presets.h"
 #include "wraps.h"
 #include "scheduler.h"
+#include "mocks/mock_ym2612.h"
 
 static const u8 TEST_CC_PAN = 10;
 static const u8 TEST_CC_PORTAMENTO_TIME = 5;

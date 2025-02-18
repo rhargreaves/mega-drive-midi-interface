@@ -153,18 +153,6 @@ void _expect_midi_emit_trio(u8 value1, u8 value2, u8 value3, const char* const f
     _expect_midi_emit(value3, file, line);
 }
 
-void _expect_psg_tone(u8 channel, u16 value, const char* const file, const int line)
-{
-    expect_value_with_pos(__wrap_PSG_setTone, channel, channel, file, line);
-    expect_value_with_pos(__wrap_PSG_setTone, value, value, file, line);
-}
-
-void _expect_psg_attenuation(u8 channel, u8 value, const char* const file, const int line)
-{
-    expect_value_with_pos(__wrap_PSG_setEnvelope, channel, channel, file, line);
-    expect_value_with_pos(__wrap_PSG_setEnvelope, value, value, file, line);
-}
-
 void _expect_midi_note_on(u8 chan, u8 pitch, u8 velocity, const char* const file, const int line)
 {
     expect_value_with_pos(__wrap_midi_note_on, chan, chan, file, line);

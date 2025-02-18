@@ -25,30 +25,6 @@ void expect_memory_with_pos(const char* const function, const char* const parame
 #define will_return_with_pos(function, value, file, line)                                          \
     _will_return(#function, file, line, cast_to_largest_integral_type(value), 1)
 
-// ---- PSG ----
-void _expect_psg_tone(u8 channel, u16 value, const char* const file, const int line);
-void _expect_psg_attenuation(u8 channel, u8 value, const char* const file, const int line);
-
-#define expect_psg_tone(channel, value) _expect_psg_tone(channel, value, __FILE__, __LINE__)
-#define expect_psg_attenuation(channel, value)                                                     \
-    _expect_psg_attenuation(channel, value, __FILE__, __LINE__)
-#define expect_any_psg_tone()                                                                      \
-    {                                                                                              \
-        debug_message("expect: PSG_setTone(channel=*, value=*)\n");                                \
-        expect_any(__wrap_PSG_setTone, channel);                                                   \
-        expect_any(__wrap_PSG_setTone, value);                                                     \
-    }
-#define expect_any_psg_tone_on_channel(c)                                                          \
-    {                                                                                              \
-        expect_value(__wrap_PSG_setTone, channel, c);                                              \
-        expect_any(__wrap_PSG_setTone, value);                                                     \
-    }
-#define expect_any_psg_attenuation()                                                               \
-    {                                                                                              \
-        expect_any(__wrap_PSG_setEnvelope, channel);                                               \
-        expect_any(__wrap_PSG_setEnvelope, value);                                                 \
-    }
-
 // ---- midi ----
 void _expect_midi_emit(u8 value, const char* const file, const int line);
 void _expect_midi_emit_duo(u8 value1, u8 value2, const char* const file, const int line);
