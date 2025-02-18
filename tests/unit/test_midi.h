@@ -1,12 +1,13 @@
 #pragma once
 #include "cmocka_inc.h"
 #include "debug.h"
-#include "mocks/mock_midi.h"
 #include "midi.h"
 #include "midi_fm.h"
 #include "midi_psg.h"
 #include "synth.h"
 #include "pitchcents.h"
+#include "mocks/mock_midi.h"
+#include "mocks/mock_synth.h"
 
 #define MIDI_PITCH_A2 45
 #define MIDI_PITCH_C3 48

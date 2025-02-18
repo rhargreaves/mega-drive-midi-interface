@@ -59,8 +59,10 @@ int test_midi_setup(UNUSED void** state)
     P_BANK_0[30] = &P_BANK_0_INST_30_CASTANETS;
     wraps_disable_logging_checks();
     wraps_disable_checks();
+    mock_synth_disable_checks();
     midi_init(M_BANK_0, P_BANK_0, TEST_ENVELOPES);
     wraps_enable_checks();
+    mock_synth_enable_checks();
     wraps_set_SYS_isPAL(false);
     return 0;
 }
