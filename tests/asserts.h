@@ -100,36 +100,33 @@ int fmchannel_equality_check(
 #define will_return_with_pos(function, value, file, line)                                          \
     _will_return(#function, file, line, cast_to_largest_integral_type(value), 1)
 
-#define expect_synth_algorithm(channel, algorithm) \
+#define expect_synth_algorithm(channel, algorithm)                                                 \
     _expect_synth_algorithm(channel, algorithm, __FILE__, __LINE__)
 
 void _expect_synth_noteOn(u8 channel, const char* const file, const int line);
 void _expect_synth_noteOff(u8 channel, const char* const file, const int line);
 void _expect_midi_emit(u8 value, const char* const file, const int line);
 void _expect_midi_emit_duo(u8 value1, u8 value2, const char* const file, const int line);
-void _expect_midi_emit_trio(u8 value1, u8 value2, u8 value3, const char* const file, const int line);
+void _expect_midi_emit_trio(
+    u8 value1, u8 value2, u8 value3, const char* const file, const int line);
 void _expect_psg_tone(u8 channel, u16 value, const char* const file, const int line);
 void _expect_psg_attenuation(u8 channel, u8 value, const char* const file, const int line);
 
-#define expect_synth_noteOn(channel) \
-    _expect_synth_noteOn(channel, __FILE__, __LINE__)
+#define expect_synth_noteOn(channel) _expect_synth_noteOn(channel, __FILE__, __LINE__)
 
-#define expect_synth_noteOff(channel) \
-    _expect_synth_noteOff(channel, __FILE__, __LINE__)
+#define expect_synth_noteOff(channel) _expect_synth_noteOff(channel, __FILE__, __LINE__)
 
-#define expect_midi_emit(value) \
-    _expect_midi_emit(value, __FILE__, __LINE__)
+#define expect_midi_emit(value) _expect_midi_emit(value, __FILE__, __LINE__)
 
-#define expect_midi_emit_duo(value1, value2) \
+#define expect_midi_emit_duo(value1, value2)                                                       \
     _expect_midi_emit_duo(value1, value2, __FILE__, __LINE__)
 
-#define expect_midi_emit_trio(value1, value2, value3) \
+#define expect_midi_emit_trio(value1, value2, value3)                                              \
     _expect_midi_emit_trio(value1, value2, value3, __FILE__, __LINE__)
 
-#define expect_psg_tone(channel, value) \
-    _expect_psg_tone(channel, value, __FILE__, __LINE__)
+#define expect_psg_tone(channel, value) _expect_psg_tone(channel, value, __FILE__, __LINE__)
 
-#define expect_psg_attenuation(channel, value) \
+#define expect_psg_attenuation(channel, value)                                                     \
     _expect_psg_attenuation(channel, value, __FILE__, __LINE__)
 
 void _expect_midi_note_on(u8 chan, u8 pitch, u8 velocity, const char* const file, const int line);
@@ -139,57 +136,65 @@ void _expect_midi_pitch_bend(u8 chan, u16 bend, const char* const file, const in
 void _expect_midi_program(u8 chan, u8 program, const char* const file, const int line);
 void _expect_synth_volume(u8 channel, u8 volume, const char* const file, const int line);
 
-#define expect_midi_note_on(chan, pitch, velocity) \
+#define expect_midi_note_on(chan, pitch, velocity)                                                 \
     _expect_midi_note_on(chan, pitch, velocity, __FILE__, __LINE__)
 
-#define expect_midi_note_off(chan, pitch) \
-    _expect_midi_note_off(chan, pitch, __FILE__, __LINE__)
+#define expect_midi_note_off(chan, pitch) _expect_midi_note_off(chan, pitch, __FILE__, __LINE__)
 
-#define expect_midi_cc(chan, controller, value) \
+#define expect_midi_cc(chan, controller, value)                                                    \
     _expect_midi_cc(chan, controller, value, __FILE__, __LINE__)
 
-#define expect_midi_pitch_bend(chan, bend) \
-    _expect_midi_pitch_bend(chan, bend, __FILE__, __LINE__)
+#define expect_midi_pitch_bend(chan, bend) _expect_midi_pitch_bend(chan, bend, __FILE__, __LINE__)
 
-#define expect_midi_program(chan, program) \
-    _expect_midi_program(chan, program, __FILE__, __LINE__)
+#define expect_midi_program(chan, program) _expect_midi_program(chan, program, __FILE__, __LINE__)
 
-#define expect_synth_volume(channel, volume) \
+#define expect_synth_volume(channel, volume)                                                       \
     _expect_synth_volume(channel, volume, __FILE__, __LINE__)
 
-void _expect_synth_operatorTotalLevel(u8 channel, u8 op, u8 totalLevel, const char* const file, const int line);
-void _expect_synth_operatorMultiple(u8 channel, u8 op, u8 multiple, const char* const file, const int line);
-void _expect_synth_operatorDetune(u8 channel, u8 op, u8 detune, const char* const file, const int line);
-void _expect_synth_operatorRateScaling(u8 channel, u8 op, u8 rateScaling, const char* const file, const int line);
+void _expect_synth_operatorTotalLevel(
+    u8 channel, u8 op, u8 totalLevel, const char* const file, const int line);
+void _expect_synth_operatorMultiple(
+    u8 channel, u8 op, u8 multiple, const char* const file, const int line);
+void _expect_synth_operatorDetune(
+    u8 channel, u8 op, u8 detune, const char* const file, const int line);
+void _expect_synth_operatorRateScaling(
+    u8 channel, u8 op, u8 rateScaling, const char* const file, const int line);
 
-#define expect_synth_operatorTotalLevel(channel, op, totalLevel) \
+#define expect_synth_operatorTotalLevel(channel, op, totalLevel)                                   \
     _expect_synth_operatorTotalLevel(channel, op, totalLevel, __FILE__, __LINE__)
-#define expect_synth_operatorMultiple(channel, op, multiple) \
+#define expect_synth_operatorMultiple(channel, op, multiple)                                       \
     _expect_synth_operatorMultiple(channel, op, multiple, __FILE__, __LINE__)
-#define expect_synth_operatorDetune(channel, op, detune) \
+#define expect_synth_operatorDetune(channel, op, detune)                                           \
     _expect_synth_operatorDetune(channel, op, detune, __FILE__, __LINE__)
-#define expect_synth_operatorRateScaling(channel, op, rateScaling) \
+#define expect_synth_operatorRateScaling(channel, op, rateScaling)                                 \
     _expect_synth_operatorRateScaling(channel, op, rateScaling, __FILE__, __LINE__)
 
-void _expect_synth_operatorAttackRate(u8 channel, u8 op, u8 rate, const char* const file, const int line);
-void _expect_synth_operatorDecayRate(u8 channel, u8 op, u8 rate, const char* const file, const int line);
-void _expect_synth_operatorSustainRate(u8 channel, u8 op, u8 rate, const char* const file, const int line);
-void _expect_synth_operatorSustainLevel(u8 channel, u8 op, u8 level, const char* const file, const int line);
-void _expect_synth_operatorReleaseRate(u8 channel, u8 op, u8 rate, const char* const file, const int line);
-void _expect_synth_operatorSsgEg(u8 channel, u8 op, u8 enabled, const char* const file, const int line);
-void _expect_synth_operatorAmplitudeModulation(u8 channel, u8 op, u8 enabled, const char* const file, const int line);
+void _expect_synth_operatorAttackRate(
+    u8 channel, u8 op, u8 rate, const char* const file, const int line);
+void _expect_synth_operatorDecayRate(
+    u8 channel, u8 op, u8 rate, const char* const file, const int line);
+void _expect_synth_operatorSustainRate(
+    u8 channel, u8 op, u8 rate, const char* const file, const int line);
+void _expect_synth_operatorSustainLevel(
+    u8 channel, u8 op, u8 level, const char* const file, const int line);
+void _expect_synth_operatorReleaseRate(
+    u8 channel, u8 op, u8 rate, const char* const file, const int line);
+void _expect_synth_operatorSsgEg(
+    u8 channel, u8 op, u8 enabled, const char* const file, const int line);
+void _expect_synth_operatorAmplitudeModulation(
+    u8 channel, u8 op, u8 enabled, const char* const file, const int line);
 
-#define expect_synth_operatorAttackRate(channel, op, rate) \
+#define expect_synth_operatorAttackRate(channel, op, rate)                                         \
     _expect_synth_operatorAttackRate(channel, op, rate, __FILE__, __LINE__)
-#define expect_synth_operatorDecayRate(channel, op, rate) \
+#define expect_synth_operatorDecayRate(channel, op, rate)                                          \
     _expect_synth_operatorDecayRate(channel, op, rate, __FILE__, __LINE__)
-#define expect_synth_operatorSustainRate(channel, op, rate) \
+#define expect_synth_operatorSustainRate(channel, op, rate)                                        \
     _expect_synth_operatorSustainRate(channel, op, rate, __FILE__, __LINE__)
-#define expect_synth_operatorSustainLevel(channel, op, level) \
+#define expect_synth_operatorSustainLevel(channel, op, level)                                      \
     _expect_synth_operatorSustainLevel(channel, op, level, __FILE__, __LINE__)
-#define expect_synth_operatorReleaseRate(channel, op, rate) \
+#define expect_synth_operatorReleaseRate(channel, op, rate)                                        \
     _expect_synth_operatorReleaseRate(channel, op, rate, __FILE__, __LINE__)
-#define expect_synth_operatorSsgEg(channel, op, enabled) \
+#define expect_synth_operatorSsgEg(channel, op, enabled)                                           \
     _expect_synth_operatorSsgEg(channel, op, enabled, __FILE__, __LINE__)
-#define expect_synth_operatorAmplitudeModulation(channel, op, enabled) \
+#define expect_synth_operatorAmplitudeModulation(channel, op, enabled)                             \
     _expect_synth_operatorAmplitudeModulation(channel, op, enabled, __FILE__, __LINE__)
