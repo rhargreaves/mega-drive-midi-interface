@@ -25,30 +25,6 @@ void expect_memory_with_pos(const char* const function, const char* const parame
 #define will_return_with_pos(function, value, file, line)                                          \
     _will_return(#function, file, line, cast_to_largest_integral_type(value), 1)
 
-// ---- midi ----
-void _expect_midi_emit(u8 value, const char* const file, const int line);
-void _expect_midi_emit_duo(u8 value1, u8 value2, const char* const file, const int line);
-void _expect_midi_emit_trio(
-    u8 value1, u8 value2, u8 value3, const char* const file, const int line);
-void _expect_midi_note_on(u8 chan, u8 pitch, u8 velocity, const char* const file, const int line);
-void _expect_midi_note_off(u8 chan, u8 pitch, const char* const file, const int line);
-void _expect_midi_cc(u8 chan, u8 controller, u8 value, const char* const file, const int line);
-void _expect_midi_pitch_bend(u8 chan, u16 bend, const char* const file, const int line);
-void _expect_midi_program(u8 chan, u8 program, const char* const file, const int line);
-
-#define expect_midi_emit(value) _expect_midi_emit(value, __FILE__, __LINE__)
-#define expect_midi_emit_duo(value1, value2)                                                       \
-    _expect_midi_emit_duo(value1, value2, __FILE__, __LINE__)
-#define expect_midi_emit_trio(value1, value2, value3)                                              \
-    _expect_midi_emit_trio(value1, value2, value3, __FILE__, __LINE__)
-#define expect_midi_note_on(chan, pitch, velocity)                                                 \
-    _expect_midi_note_on(chan, pitch, velocity, __FILE__, __LINE__)
-#define expect_midi_note_off(chan, pitch) _expect_midi_note_off(chan, pitch, __FILE__, __LINE__)
-#define expect_midi_cc(chan, controller, value)                                                    \
-    _expect_midi_cc(chan, controller, value, __FILE__, __LINE__)
-#define expect_midi_pitch_bend(chan, bend) _expect_midi_pitch_bend(chan, bend, __FILE__, __LINE__)
-#define expect_midi_program(chan, program) _expect_midi_program(chan, program, __FILE__, __LINE__)
-
 // ---- synth ----
 int fmchannel_equality_check(
     const LargestIntegralType value, const LargestIntegralType check_value_data);

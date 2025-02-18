@@ -1,4 +1,5 @@
 #include "test_applemidi.h"
+#include "mocks/mock_midi.h"
 
 int test_applemidi_setup(UNUSED void** state)
 {

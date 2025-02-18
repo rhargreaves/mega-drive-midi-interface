@@ -25,3 +25,7 @@ void _expect_psg_attenuation(u8 channel, u8 value, const char* const file, const
         expect_any(__wrap_PSG_setEnvelope, channel);                                               \
         expect_any(__wrap_PSG_setEnvelope, value);                                                 \
     }
+
+void __wrap_psg_note_on(u8 channel, u16 freq);
+void __wrap_psg_note_off(u8 channel);
+void __wrap_psg_attenuation(u8 channel, u8 attenuation);

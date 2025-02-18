@@ -2,6 +2,7 @@
 #include "midi.h"
 #include "midi_receiver.h"
 #include "comm/comm.h"
+#include "mocks/mock_midi.h"
 
 #define STATUS_CC 0xB0
 #define STATUS_PITCH_BEND 0xE0

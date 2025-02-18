@@ -136,37 +136,7 @@ extern u16 __real_comm_idle_count(void);
 extern u16 __real_comm_busy_count(void);
 extern void __real_comm_reset_counts(void);
 
-void __wrap_psg_note_on(u8 channel, u16 freq);
-void __wrap_psg_note_off(u8 channel);
-void __wrap_psg_attenuation(u8 channel, u8 attenuation);
-
 void __wrap_midi_receiver_read_if_comm_ready(void);
-
-void __wrap_midi_note_off(u8 chan, u8 pitch);
-void __wrap_midi_note_on(u8 chan, u8 pitch, u8 velocity);
-void __wrap_midi_channel_volume(u8 chan, u8 volume);
-void __wrap_midi_pitch_bend(u8 chan, u16 bend);
-void __wrap_midi_setPolyphonic(bool state);
-bool __wrap_midi_getPolyphonic(void);
-void __wrap_midi_cc(u8 chan, u8 controller, u8 value);
-void __wrap_midi_program(u8 chan, u8 program);
-void __wrap_midi_sysex(u8* data, u16 length);
-bool __wrap_midi_dynamic_mode(void);
-DeviceChannel* __wrap_midi_channel_mappings(void);
-void __wrap_midi_psg_tick(void);
-void __wrap_midi_psg_load_envelope(const u8* eef);
-void __wrap_midi_reset(void);
-extern void __real_midi_note_on(u8 chan, u8 pitch, u8 velocity);
-extern void __real_midi_note_off(u8 chan, u8 pitch);
-extern void __real_midi_pitch_bend(u8 chan, u16 bend);
-extern void __real_midi_cc(u8 chan, u8 controller, u8 value);
-extern void __real_midi_program(u8 chan, u8 program);
-extern void __real_midi_sysex(const u8* data, u16 length);
-extern bool __real_midi_dynamic_mode(void);
-extern DeviceChannel* __real_midi_channel_mappings(void);
-extern void __real_midi_psg_tick(void);
-extern void __real_midi_psg_load_envelope(const u8* eef);
-extern void __real_midi_reset(void);
 
 void __wrap_ui_fm_set_parameters_visibility(u8 chan, bool show);
 void __wrap_ui_update(void);
