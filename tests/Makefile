@@ -5,7 +5,7 @@ SGDK?=/sgdk
 BIN_DIR=bin
 OBJ_DIR=obj
 CMOCKA_TAR=third_party/cmocka-1.1.7.tar.xz
-CMOCKA_DIR=cmocka
+CMOCKA_DIR=build/deps/cmocka
 
 ifeq ($(DEBUG),1)
 	GDB=gdbserver :2345
@@ -233,7 +233,7 @@ system: $(SYSTEM_TESTS_TARGET)
 	$(GDB) ./$(SYSTEM_TESTS_TARGET)
 .PHONY: system
 
-$(OBJ_DIR)/%.o: %.c
+$(OBJ_DIR)/%.o: %.c | $(CMOCKA_DIR)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -MMD -MT "$@ $(basename $@).d" -c $< -o $@
 
@@ -258,5 +258,5 @@ clean-target:
 .PHONY: clean-target
 
 clean: clean-target
-	rm -rf $(CMOCKA_DIR)
+	rm -rf build/
 .PHONY: clean

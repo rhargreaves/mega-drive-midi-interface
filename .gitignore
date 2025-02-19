@@ -3,7 +3,7 @@ bin/
 *.bin
 *.o
 *.code-workspace
-tests/cmocka/
+tests/build/
 tests/bin/
 tests/obj/
 out/
