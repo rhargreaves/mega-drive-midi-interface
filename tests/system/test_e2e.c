@@ -240,7 +240,7 @@ void test_sets_separate_ch3_operator_frequencies(void** state)
         stub_usb_receive_note_on(TEST_MIDI_CHANNEL_11 + op, 60, 120);
         expect_ym2612_write_reg(0, upperRegs[op], 0x22);
         expect_ym2612_write_reg(0, lowerRegs[op], 0x84);
-        expect_ym2612_write_operator(CH_SPECIAL_MODE, op, 0x40, tlValues[op]);
+        expect_ym2612_write_operator(CH3_SPECIAL_MODE, op, 0x40, tlValues[op]);
         midi_receiver_read();
     }
 }
@@ -259,7 +259,7 @@ void test_pitch_bends_ch3_special_mode_operators(void** state)
     stub_usb_receive_note_on(TEST_MIDI_CHANNEL_11, 60, 120);
     expect_ym2612_write_reg(0, 0xAD, 0x22);
     expect_ym2612_write_reg(0, 0xA9, 0x84);
-    expect_ym2612_write_operator_any_data(CH_SPECIAL_MODE, 0, 0x40);
+    expect_ym2612_write_operator_any_data(CH3_SPECIAL_MODE, 0, 0x40);
     midi_receiver_read();
 
     stub_usb_receive_pitch_bend(TEST_MIDI_CHANNEL_11, 0x4000);

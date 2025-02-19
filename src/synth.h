@@ -5,7 +5,7 @@
 #define MAX_FM_CHANS 6
 #define FM_ALGORITHMS 8
 
-#define CH_SPECIAL_MODE 2
+#define CH3_SPECIAL_MODE 2
 
 #define STEREO_MODE_CENTRE 3
 #define STEREO_MODE_RIGHT 1

@@ -625,7 +625,7 @@ void test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator(UNUSED void*
     int algorithm = (*(int*)(*state));
 
     const u8 baseReg = 0x40;
-    const u8 chan = CH_SPECIAL_MODE;
+    const u8 chan = CH3_SPECIAL_MODE;
 
     expect_ym2612_write_channel(chan, 0xB0, algorithm);
     __real_synth_algorithm(chan, algorithm);

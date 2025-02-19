@@ -1,6 +1,7 @@
 #include "synth.h"
 #include "bits.h"
 #include "debug.h"
+#include "ym2612_regs.h"
 
 static Global global = { .lfoEnable = 1, .lfoFrequency = 0, .specialMode = false };
 static FmChannel fmChannels[MAX_FM_CHANS];
@@ -75,13 +76,13 @@ static void updateChannel(u8 chan)
 
 void synth_noteOn(u8 channel)
 {
-    writeRegSafe(0, 0x28, 0xF0 + keyOnOffRegOffset(channel));
+    writeRegSafe(0, YM_KEY_ON_OFF, 0xF0 + keyOnOffRegOffset(channel));
     SET_BIT(noteOn, channel);
 }
 
 void synth_noteOff(u8 channel)
 {
-    writeRegSafe(0, 0x28, keyOnOffRegOffset(channel));
+    writeRegSafe(0, YM_KEY_ON_OFF, keyOnOffRegOffset(channel));
     CLEAR_BIT(noteOn, channel);
 }
 
@@ -298,69 +299,73 @@ static Operator* getOperator(u8 channel, u8 operator)
 
 static void writeGlobalLfo(void)
 {
-    writeRegSafe(0, 0x22, (global.lfoEnable << 3) | global.lfoFrequency);
+    writeRegSafe(0, YM_LFO_ENABLE, (global.lfoEnable << 3) | global.lfoFrequency);
 }
 
 static void writeOctaveAndFrequency(u8 channel)
 {
     FmChannel* chan = &fmChannels[channel];
-    writeChannelReg(channel, 0xA4, (chan->freqNumber >> 8) | (chan->octave << 3));
-    writeChannelReg(channel, 0xA0, chan->freqNumber);
+    writeChannelReg(channel, YM_BASE_FREQ_MSB_BLK, (chan->freqNumber >> 8) | (chan->octave << 3));
+    writeChannelReg(channel, YM_BASE_FREQ_LSB, chan->freqNumber);
 }
 
 static void writeAlgorithmAndFeedback(u8 channel)
 {
     FmChannel* chan = &fmChannels[channel];
-    writeChannelReg(channel, 0xB0, (chan->feedback << 3) + chan->algorithm);
+    writeChannelReg(channel, YM_BASE_ALGORITHM_FEEDBACK, (chan->feedback << 3) + chan->algorithm);
 }
 
 static void writeStereoAmsFms(u8 channel)
 {
     FmChannel* chan = &fmChannels[channel];
-    writeChannelReg(channel, 0xB4, (chan->stereo << 6) + (chan->ams << 4) + chan->fms);
+    writeChannelReg(
+        channel, YM_BASE_STEREO_AMS_PMS, (chan->stereo << 6) + (chan->ams << 4) + chan->fms);
 }
 
 static void writeOperatorMultipleAndDetune(u8 channel, u8 operator)
 {
     Operator* op = getOperator(channel, operator);
-    writeOperatorReg(channel, operator, 0x30, op->multiple + (op->detune << 4));
+    writeOperatorReg(channel, operator, YM_BASE_MULTIPLE_DETUNE, op->multiple + (op->detune << 4));
 }
 
 static void writeOperatorRateScalingAndAttackRate(u8 channel, u8 operator)
 {
     Operator* op = getOperator(channel, operator);
-    writeOperatorReg(channel, operator, 0x50, op->attackRate + (op->rateScaling << 6));
+    writeOperatorReg(channel, operator, YM_BASE_ATTACK_RATE_SCALING_RATE,
+        op->attackRate + (op->rateScaling << 6));
 }
 
 static void writeOperatorAmplitudeModulationAndDecayRate(u8 channel, u8 operator)
 {
     Operator* op = getOperator(channel, operator);
-    writeOperatorReg(channel, operator, 0x60, op->decayRate + (op->amplitudeModulation << 7));
+    writeOperatorReg(channel, operator, YM_BASE_DECAY_RATE_AM_ENABLE,
+        op->decayRate + (op->amplitudeModulation << 7));
 }
 
 static void writeOperatorSustainRate(u8 channel, u8 operator)
 {
     Operator* op = getOperator(channel, operator);
-    writeOperatorReg(channel, operator, 0x70, op->sustainRate);
+    writeOperatorReg(channel, operator, YM_BASE_SUSTAIN_RATE, op->sustainRate);
 }
 
 static void writeOperatorReleaseRateAndSustainLevel(u8 channel, u8 operator)
 {
     Operator* op = getOperator(channel, operator);
-    writeOperatorReg(channel, operator, 0x80, op->releaseRate + (op->sustainLevel << 4));
+    writeOperatorReg(channel, operator, YM_BASE_RELEASE_RATE_SUSTAIN_LEVEL,
+        op->releaseRate + (op->sustainLevel << 4));
 }
 
 static void writeOperatorSsgEg(u8 channel, u8 operator)
 {
     Operator* op = getOperator(channel, operator);
-    writeOperatorReg(channel, operator, 0x90, op->ssgEg);
+    writeOperatorReg(channel, operator, YM_BASE_SSG_EG, op->ssgEg);
 }
 
 static void writeOperatorTotalLevel(u8 channel, u8 operator)
 {
     Operator* op = getOperator(channel, operator);
-    writeOperatorReg(
-        channel, operator, 0x40, effectiveTotalLevel(channel, operator, op->totalLevel));
+    writeOperatorReg(channel, operator, YM_BASE_TOTAL_LEVEL,
+        effectiveTotalLevel(channel, operator, op->totalLevel));
 }
 
 static u8 effectiveTotalLevel(u8 channel, u8 operator, u8 totalLevel)
@@ -402,7 +407,7 @@ void synth_setParameterUpdateCallback(ParameterUpdatedCallback* cb)
 
 static void writeSpecialModeReg(void)
 {
-    writeRegSafe(0, 0x27, global.specialMode << 6);
+    writeRegSafe(0, YM_CH3_MODE, global.specialMode << 6);
 }
 
 void synth_setSpecialMode(bool enable)
@@ -415,14 +420,14 @@ void synth_setSpecialMode(bool enable)
 void synth_specialModePitch(u8 op, u8 octave, u16 freqNumber)
 {
     u8 offset = (op + 1) % 3;
-    writeRegSafe(0, 0xAC + offset, (freqNumber >> 8) | (octave << 3));
-    writeRegSafe(0, 0xA8 + offset, freqNumber);
+    writeRegSafe(0, YM_CH3SM_BASE_FREQ_MSB_BLK + offset, (freqNumber >> 8) | (octave << 3));
+    writeRegSafe(0, YM_CH3SM_BASE_FREQ_LSB + offset, freqNumber);
 }
 
 void synth_specialModeVolume(u8 operator, u8 volume)
 {
-    Operator* op = getOperator(CH_SPECIAL_MODE, operator);
-    if (!isOutputOperator(fmChannels[CH_SPECIAL_MODE].algorithm, operator)) {
+    Operator* op = getOperator(CH3_SPECIAL_MODE, operator);
+    if (!isOutputOperator(fmChannels[CH3_SPECIAL_MODE].algorithm, operator)) {
         return;
     }
 
@@ -431,8 +436,8 @@ void synth_specialModeVolume(u8 operator, u8 volume)
     u8 inverseNewTotalLevel = (u16)inverseTotalLevel * (u16)logarithmicVolume / (u16)0x7F;
     u8 newTotalLevel = 0x7F - inverseNewTotalLevel;
 
-    writeOperatorReg(CH_SPECIAL_MODE, operator, 0x40,
-        effectiveTotalLevel(CH_SPECIAL_MODE, operator, newTotalLevel));
+    writeOperatorReg(CH3_SPECIAL_MODE, operator, YM_BASE_TOTAL_LEVEL,
+        effectiveTotalLevel(CH3_SPECIAL_MODE, operator, newTotalLevel));
 }
 
 void synth_directWriteYm2612(u8 part, u8 reg, u8 data)
@@ -442,7 +447,7 @@ void synth_directWriteYm2612(u8 part, u8 reg, u8 data)
 
 void synth_enableDac(bool enable)
 {
-    writeRegSafe(0, 0x2B, enable ? 0x80 : 0);
+    writeRegSafe(0, YM_DAC_ENABLE, enable ? 0x80 : 0);
 }
 
 static void writeRegSafe(u8 part, u8 reg, u8 data)
@@ -458,6 +463,6 @@ static void writeRegSafe(u8 part, u8 reg, u8 data)
 
 static void releaseZ80Bus(void)
 {
-    YM2612_write(0, 0x2A); // Latch reg address for PCM driver
+    YM2612_write(0, YM_DAC_DATA); // Latch reg address for PCM driver
     Z80_releaseBus();
 }
