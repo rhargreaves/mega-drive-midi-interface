@@ -5,6 +5,7 @@
 #include "test_midi.h"
 #include "z80_ctrl.h"
 #include "mocks/mock_ym2612.h"
+#include "ym2612_regs.h"
 
 static bool updated = false;
 static u8 lastChan = -1;
@@ -557,7 +558,7 @@ void test_synth_calls_callback_when_lfo_freq_changes(UNUSED void** state)
 {
     synth_setParameterUpdateCallback(&updateCallback);
 
-    expect_ym2612_write_reg_any_data(0, 0x22);
+    expect_ym2612_write_reg_any_data(0, YM_LFO_ENABLE);
     __real_synth_globalLfoFrequency(1);
 
     assert_true(updated);
@@ -568,7 +569,7 @@ void test_synth_calls_callback_when_lfo_enable_changes(UNUSED void** state)
 {
     synth_setParameterUpdateCallback(&updateCallback);
 
-    expect_ym2612_write_reg_any_data(0, 0x22);
+    expect_ym2612_write_reg_any_data(0, YM_LFO_ENABLE);
     __real_synth_enableLfo(0);
 
     assert_true(updated);
@@ -579,7 +580,7 @@ void test_synth_calls_callback_when_special_mode_changes(UNUSED void** state)
 {
     synth_setParameterUpdateCallback(&updateCallback);
 
-    expect_ym2612_write_reg_any_data(0, 0x27);
+    expect_ym2612_write_reg_any_data(0, YM_CH3_MODE);
     __real_synth_setSpecialMode(true);
 
     assert_true(updated);
@@ -588,13 +589,13 @@ void test_synth_calls_callback_when_special_mode_changes(UNUSED void** state)
 
 void test_synth_enables_ch3_special_mode(UNUSED void** state)
 {
-    expect_ym2612_write_reg(0, 0x27, 0x40);
+    expect_ym2612_write_reg(0, YM_CH3_MODE, 0x40);
     __real_synth_setSpecialMode(true);
 }
 
 void test_synth_disables_ch3_special_mode(UNUSED void** state)
 {
-    expect_ym2612_write_reg(0, 0x27, 0);
+    expect_ym2612_write_reg(0, YM_CH3_MODE, 0);
     __real_synth_setSpecialMode(false);
 }
 
@@ -627,7 +628,7 @@ void test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator(UNUSED void*
     const u8 baseReg = 0x40;
     const u8 chan = CH3_SPECIAL_MODE;
 
-    expect_ym2612_write_channel(chan, 0xB0, algorithm);
+    expect_ym2612_write_channel(chan, YM_BASE_ALGORITHM_FEEDBACK, algorithm);
     __real_synth_algorithm(chan, algorithm);
 
     for (u8 op = 0; op <= 2; op++) {
