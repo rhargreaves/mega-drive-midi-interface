@@ -1,6 +1,5 @@
 #include "test_midi_polyphony.h"
 #include "test_midi.h"
-#include "mocks/mock_psg.h"
 
 void test_midi_polyphonic_mode_sends_CCs_to_all_FM_channels(UNUSED void** state)
 {

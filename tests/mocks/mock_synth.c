@@ -1,5 +1,4 @@
 #include "cmocka_inc.h"
-#include "asserts.h"
 #include "mocks/mock_synth.h"
 
 static bool disableChecks = false;

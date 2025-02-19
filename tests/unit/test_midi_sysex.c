@@ -1,6 +1,5 @@
 #include "test_midi_sysex.h"
 #include "test_midi.h"
-#include "mocks/mock_psg.h"
 
 static void remapChannel(u8 midiChannel, u8 deviceChannel)
 {

@@ -1,5 +1,4 @@
 #include "test_e2e.h"
-#include "asserts.h"
 #include "comm/comm.h"
 #include "envelopes.h"
 #include "midi.h"
@@ -9,6 +8,7 @@
 #include "scheduler.h"
 #include "mocks/mock_ym2612.h"
 #include "mocks/mock_synth.h"
+#include "mocks/mock_comm.h"
 
 static const u8 TEST_CC_PAN = 10;
 static const u8 TEST_CC_PORTAMENTO_TIME = 5;

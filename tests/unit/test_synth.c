@@ -1,5 +1,7 @@
 #include "test_synth.h"
 #include "synth.h"
+#include "mocks/mock_comm.h"
+#include "mocks/mock_synth.h"
 #include "test_midi.h"
 #include "z80_ctrl.h"
 #include "mocks/mock_ym2612.h"

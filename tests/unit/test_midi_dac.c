@@ -1,5 +1,6 @@
 #include "test_midi_dac.h"
 #include "test_midi.h"
+#include "mocks/mock_midi.h"
 #include "snd/sound.h"
 #include "snd/pcm/snd_pcm.h"
 

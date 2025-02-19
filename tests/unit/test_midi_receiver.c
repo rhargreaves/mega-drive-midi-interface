@@ -2,6 +2,7 @@
 #include "midi.h"
 #include "midi_receiver.h"
 #include "comm/comm.h"
+#include "mocks/mock_comm.h"
 #include "mocks/mock_midi.h"
 #include "mocks/mock_log.h"
 

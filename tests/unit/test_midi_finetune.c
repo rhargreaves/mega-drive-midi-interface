@@ -1,5 +1,6 @@
 #include "test_midi_finetune.h"
 #include "test_midi.h"
+#include "mocks/mock_midi.h"
 
 void test_midi_finetune_max(UNUSED void** state)
 {

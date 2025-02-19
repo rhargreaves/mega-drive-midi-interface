@@ -1,5 +1,5 @@
 #include "cmocka_inc.h"
-#include "asserts.h"
+#include "mocks/mock_comm.h"
 #include "comm/comm.h"
 
 void stub_megawifi_as_not_present(void)

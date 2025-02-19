@@ -1,5 +1,6 @@
 #include "test_midi_fm.h"
 #include "test_midi.h"
+#include "mocks/mock_midi.h"
 #include "debug.h"
 
 void test_midi_triggers_synth_note_on(UNUSED void** state)

@@ -1,5 +1,5 @@
 #include "cmocka_inc.h"
-#include "asserts.h"
+#include "mocks/mock_comm.h"
 #include "mocks/mock_psg.h"
 
 static bool disableChecks = false;

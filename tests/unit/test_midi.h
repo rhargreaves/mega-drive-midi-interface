@@ -9,6 +9,8 @@
 #include "mocks/mock_midi.h"
 #include "mocks/mock_synth.h"
 #include "mocks/mock_log.h"
+#include "mocks/mock_comm.h"
+#include "mocks/mock_psg.h"
 
 #define MIDI_PITCH_A2 45
 #define MIDI_PITCH_C3 48

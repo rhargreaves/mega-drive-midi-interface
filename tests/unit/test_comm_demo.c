@@ -1,6 +1,7 @@
 #include "test_comm_demo.h"
 #include "comm/comm_demo.h"
 #include "joy.h"
+#include "mocks/mock_comm.h"
 
 #define DEFAULT_PITCH 69
 
