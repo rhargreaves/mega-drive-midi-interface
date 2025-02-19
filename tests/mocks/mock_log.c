@@ -37,7 +37,3 @@ Log* __wrap_log_dequeue(void)
 {
     return mock_type(Log*);
 }
-
-void __wrap_VDP_clearTextArea(u16 x, u16 y, u16 w, u16 h)
-{
-}
