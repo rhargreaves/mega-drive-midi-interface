@@ -210,9 +210,7 @@ void test_midi_sysex_inverts_total_level_values(UNUSED void** state)
 
     __real_midi_sysex(sequence, sizeof(sequence));
 
-    expect_value(__wrap_synth_operatorTotalLevel, channel, 0);
-    expect_value(__wrap_synth_operatorTotalLevel, op, 0);
-    expect_value(__wrap_synth_operatorTotalLevel, totalLevel, 126);
+    expect_synth_operatorTotalLevel(0, 0, 126);
     __real_midi_cc(0, CC_GENMDM_TOTAL_LEVEL_OP1, 1);
 }
 
@@ -222,18 +220,14 @@ void test_midi_sysex_sets_original_total_level_values(UNUSED void** state)
         SYSEX_COMMAND_INVERT_TOTAL_LEVEL, 0x01 };
 
     __real_midi_sysex(invert_sequence, sizeof(invert_sequence));
-    expect_value(__wrap_synth_operatorTotalLevel, channel, 0);
-    expect_value(__wrap_synth_operatorTotalLevel, op, 0);
-    expect_value(__wrap_synth_operatorTotalLevel, totalLevel, 126);
+    expect_synth_operatorTotalLevel(0, 0, 126);
     __real_midi_cc(0, CC_GENMDM_TOTAL_LEVEL_OP1, 1);
 
     const u8 original_sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
         SYSEX_COMMAND_INVERT_TOTAL_LEVEL, 0x00 };
 
     __real_midi_sysex(original_sequence, sizeof(original_sequence));
-    expect_value(__wrap_synth_operatorTotalLevel, channel, 0);
-    expect_value(__wrap_synth_operatorTotalLevel, op, 0);
-    expect_value(__wrap_synth_operatorTotalLevel, totalLevel, 126);
+    expect_synth_operatorTotalLevel(0, 0, 126);
     __real_midi_cc(0, CC_GENMDM_TOTAL_LEVEL_OP1, 126);
 }
 
@@ -242,9 +236,7 @@ void test_midi_sysex_writes_directly_to_ym2612_regs_part_0(UNUSED void** state)
     const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
         SYSEX_COMMAND_WRITE_YM2612_REG_PART_0, 0x0B, 0x01, 0x01, 0x02 };
 
-    expect_value(__wrap_synth_directWriteYm2612, part, 0);
-    expect_value(__wrap_synth_directWriteYm2612, reg, 0xB1);
-    expect_value(__wrap_synth_directWriteYm2612, data, 0x12);
+    expect_synth_directWriteYm2612(0, 0xB1, 0x12);
     __real_midi_sysex(sequence, sizeof(sequence));
 }
 
@@ -253,9 +245,7 @@ void test_midi_sysex_writes_directly_to_ym2612_regs_part_1(UNUSED void** state)
     const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
         SYSEX_COMMAND_WRITE_YM2612_REG_PART_1, 0x0B, 0x01, 0x01, 0x02 };
 
-    expect_value(__wrap_synth_directWriteYm2612, part, 1);
-    expect_value(__wrap_synth_directWriteYm2612, reg, 0xB1);
-    expect_value(__wrap_synth_directWriteYm2612, data, 0x12);
+    expect_synth_directWriteYm2612(1, 0xB1, 0x12);
     __real_midi_sysex(sequence, sizeof(sequence));
 }
 

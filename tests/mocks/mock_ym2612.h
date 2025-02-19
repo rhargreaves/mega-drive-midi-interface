@@ -30,6 +30,10 @@ void _expect_ym2612_write_frequency(
 void _expect_ym2612_write_frequency_any_data(u8 chan, const char* const file, const int line);
 void _expect_ym2612_write_operator_volumes(
     u8 chan, const u8* volumes, u8 count, const char* const file, const int line);
+void _expect_synth_operatorTotalLevel(
+    u8 channel, u8 op, u8 totalLevel, const char* const file, const int line);
+void _expect_synth_directWriteYm2612(
+    u8 part, u8 reg, u8 data, const char* const file, const int line);
 
 #define expect_ym2612_write_reg(part, reg, data)                                                   \
     _expect_ym2612_write_reg(part, reg, data, __FILE__, __LINE__)
@@ -55,3 +59,7 @@ void _expect_ym2612_write_operator_volumes(
     _expect_ym2612_write_frequency_any_data(chan, __FILE__, __LINE__)
 #define expect_ym2612_write_operator_volumes(chan, volumes, count)                                 \
     _expect_ym2612_write_operator_volumes(chan, volumes, count, __FILE__, __LINE__)
+#define expect_synth_operatorTotalLevel(channel, op, totalLevel)                                   \
+    _expect_synth_operatorTotalLevel(channel, op, totalLevel, __FILE__, __LINE__)
+#define expect_synth_directWriteYm2612(part, reg, data)                                            \
+    _expect_synth_directWriteYm2612(part, reg, data, __FILE__, __LINE__)
