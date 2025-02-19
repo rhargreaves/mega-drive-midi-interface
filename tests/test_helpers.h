@@ -51,14 +51,19 @@
 #define YM_CH1 0
 #define YM_CH2 1
 #define YM_CH3 2
-#define YM_CH4 0
-#define YM_CH5 1
-#define YM_CH6 2
 
 #define YM_OP1 0
 #define YM_OP2 1
 #define YM_OP3 2
 #define YM_OP4 3
+
+// --- Synth ---
+#define FM_CH1 0
+#define FM_CH2 1
+#define FM_CH3 2
+#define FM_CH4 3
+#define FM_CH5 4
+#define FM_CH6 5
 
 #define SYNTH_NTSC_C 0x284
 #define SYNTH_NTSC_AS 1146

@@ -19,17 +19,13 @@ void test_midi_sysex_sends_all_notes_off(UNUSED void** state)
         __real_midi_note_on(chan, 60, 127);
     }
 
-    expect_value(__wrap_synth_noteOff, channel, 0);
-    expect_value(__wrap_synth_noteOff, channel, 1);
-    expect_value(__wrap_synth_noteOff, channel, 2);
-    expect_value(__wrap_synth_noteOff, channel, 3);
-    expect_value(__wrap_synth_noteOff, channel, 4);
-    expect_value(__wrap_synth_noteOff, channel, 5);
+    for (u8 chan = FM_CH1; chan <= FM_CH6; chan++) {
+        expect_synth_noteOff(chan);
+    }
 
-    expect_psg_attenuation(0, PSG_ATTENUATION_SILENCE);
-    expect_psg_attenuation(1, PSG_ATTENUATION_SILENCE);
-    expect_psg_attenuation(2, PSG_ATTENUATION_SILENCE);
-    expect_psg_attenuation(3, PSG_ATTENUATION_SILENCE);
+    for (u8 chan = PSG_CH1; chan <= PSG_NOISE_CH4; chan++) {
+        expect_psg_attenuation(chan, PSG_ATTENUATION_SILENCE);
+    }
 
     __real_midi_sysex(sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
 }
@@ -39,19 +35,14 @@ void test_midi_sysex_general_midi_reset_resets_synth_volume(UNUSED void** state)
     const u8 sysExGeneralMidiResetSequence[] = { 0x7E, 0x7F, 0x09, 0x01 };
 
     // Set volume to half-way
-    expect_value(__wrap_synth_volume, channel, 0);
-    expect_value(__wrap_synth_volume, volume, 64);
-    __real_midi_cc(0, CC_VOLUME, 64);
+    expect_synth_volume(FM_CH1, 64);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_VOLUME, 64);
 
     // Send General MIDI reset
-    expect_value(__wrap_synth_volume, channel, 0);
-    expect_value(__wrap_synth_volume, volume, MAX_MIDI_VOLUME);
-    expect_value(__wrap_synth_noteOff, channel, 0);
-    expect_value(__wrap_synth_noteOff, channel, 1);
-    expect_value(__wrap_synth_noteOff, channel, 2);
-    expect_value(__wrap_synth_noteOff, channel, 3);
-    expect_value(__wrap_synth_noteOff, channel, 4);
-    expect_value(__wrap_synth_noteOff, channel, 5);
+    expect_synth_volume(FM_CH1, MAX_MIDI_VOLUME);
+    for (u8 chan = FM_CH1; chan <= FM_CH6; chan++) {
+        expect_synth_noteOff(chan);
+    }
     __real_midi_sysex(sysExGeneralMidiResetSequence, sizeof(sysExGeneralMidiResetSequence));
 }
 
@@ -65,26 +56,24 @@ void test_midi_sysex_ignores_unknown_sysex(UNUSED void** state)
 void test_midi_sysex_remaps_midi_channel_to_psg(UNUSED void** state)
 {
     const u8 FM_CHAN_1 = 0;
-    const u8 MIDI_CHAN_1 = 0;
     const u8 PSG_TONE_1 = 6;
 
     remapChannel(UNASSIGNED_MIDI_CHANNEL, FM_CHAN_1);
-    remapChannel(MIDI_CHAN_1, PSG_TONE_1);
+    remapChannel(MIDI_CHANNEL_1, PSG_TONE_1);
 
-    expect_any_psg_tone_on_channel(0);
-    expect_psg_attenuation(0, PSG_ATTENUATION_LOUDEST);
+    expect_any_psg_tone_on_channel(PSG_CH1);
+    expect_psg_attenuation(PSG_CH1, PSG_ATTENUATION_LOUDEST);
 
-    __real_midi_note_on(0, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
+    __real_midi_note_on(MIDI_CHANNEL_1, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
 }
 
 void test_midi_sysex_remaps_midi_channel_to_fm(UNUSED void** state)
 {
     const u8 FM_CHAN_2 = 1;
-    const u8 MIDI_CHAN_1 = 0;
     const u8 FM_CHAN_1 = 0;
 
     remapChannel(UNASSIGNED_MIDI_CHANNEL, FM_CHAN_1);
-    remapChannel(MIDI_CHAN_1, FM_CHAN_2);
+    remapChannel(MIDI_CHANNEL_1, FM_CHAN_2);
 
     expect_value(__wrap_synth_pitch, channel, 1);
     expect_any(__wrap_synth_pitch, octave);
