@@ -1,5 +1,7 @@
 #include "cmocka_inc.h"
 
+#define SYNTH_VOLUME_MAX 0x7F
+
 int test_synth_setup(UNUSED void** state);
 void test_synth_init_sets_initial_registers(UNUSED void** state);
 void test_synth_sets_note_on_fm_reg_chan_0_to_2(UNUSED void** state);
