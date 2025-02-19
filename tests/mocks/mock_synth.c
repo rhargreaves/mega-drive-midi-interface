@@ -428,3 +428,11 @@ void _expect_synth_setSpecialMode(bool enable, const char* const file, const int
 {
     expect_value_with_pos(__wrap_synth_setSpecialMode, enable, enable, file, line);
 }
+
+void _expect_synth_directWriteYm2612(
+    u8 part, u8 reg, u8 data, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_synth_directWriteYm2612, part, part, file, line);
+    expect_value_with_pos(__wrap_synth_directWriteYm2612, reg, reg, file, line);
+    expect_value_with_pos(__wrap_synth_directWriteYm2612, data, data, file, line);
+}

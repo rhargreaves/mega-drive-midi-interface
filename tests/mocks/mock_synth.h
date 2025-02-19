@@ -111,6 +111,8 @@ void _expect_synth_specialModePitch(
     u8 op, u8 octave, u16 freqNumber, const char* const file, const int line);
 void _expect_synth_specialModeVolume(u8 op, u8 volume, const char* const file, const int line);
 void _expect_synth_setSpecialMode(bool enable, const char* const file, const int line);
+void _expect_synth_directWriteYm2612(
+    u8 part, u8 reg, u8 data, const char* const file, const int line);
 
 #define expect_synth_algorithm(channel, algorithm)                                                 \
     _expect_synth_algorithm(channel, algorithm, __FILE__, __LINE__)
@@ -159,3 +161,5 @@ void _expect_synth_setSpecialMode(bool enable, const char* const file, const int
 #define expect_synth_specialModeVolume(op, volume)                                                 \
     _expect_synth_specialModeVolume(op, volume, __FILE__, __LINE__)
 #define expect_synth_setSpecialMode(enable) _expect_synth_setSpecialMode(enable, __FILE__, __LINE__)
+#define expect_synth_directWriteYm2612(part, reg, data)                                            \
+    _expect_synth_directWriteYm2612(part, reg, data, __FILE__, __LINE__)
