@@ -75,7 +75,7 @@ void test_midi_receiver_does_nothing_for_control_change(UNUSED void** state)
 
 void test_midi_receiver_sets_unknown_event_for_unknown_status(UNUSED void** state)
 {
-    wraps_enable_logging_checks();
+    mock_log_enable_checks();
 
     u8 expectedStatus = 0xD0;
 
@@ -87,7 +87,7 @@ void test_midi_receiver_sets_unknown_event_for_unknown_status(UNUSED void** stat
 
 void test_midi_receiver_sets_unknown_event_for_unknown_system_message(UNUSED void** state)
 {
-    wraps_enable_logging_checks();
+    mock_log_enable_checks();
 
     u8 expectedStatus = 0xF1;
 

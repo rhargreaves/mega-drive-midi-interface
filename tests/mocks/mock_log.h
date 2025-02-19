@@ -1,8 +1,8 @@
 #pragma once
 #include "cmocka_inc.h"
 
-void wraps_disable_logging_checks(void);
-void wraps_enable_logging_checks(void);
+void mock_log_disable_checks(void);
+void mock_log_enable_checks(void);
 
 void __wrap_log_init(void);
 void __wrap_log_info(const char* fmt, ...);

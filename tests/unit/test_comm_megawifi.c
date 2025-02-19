@@ -11,7 +11,7 @@
 int test_comm_megawifi_setup(UNUSED void** state)
 {
     log_init();
-    wraps_enable_logging_checks();
+    mock_log_enable_checks();
     return 0;
 }
 

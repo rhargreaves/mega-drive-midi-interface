@@ -57,7 +57,7 @@ int test_midi_setup(UNUSED void** state)
     expect_any(__wrap_scheduler_addFrameHandler, onFrame);
 
     P_BANK_0[30] = &P_BANK_0_INST_30_CASTANETS;
-    wraps_disable_logging_checks();
+    mock_log_disable_checks();
     wraps_disable_checks();
     mock_synth_disable_checks();
     midi_init(M_BANK_0, P_BANK_0, TEST_ENVELOPES);
@@ -92,7 +92,7 @@ void test_midi_sets_all_sound_off(UNUSED void** state)
 
 void test_midi_sets_unknown_CC(UNUSED void** state)
 {
-    wraps_enable_logging_checks();
+    mock_log_enable_checks();
 
     u8 expectedController = 0x9;
     u8 expectedValue = 0x50;
@@ -103,7 +103,7 @@ void test_midi_sets_unknown_CC(UNUSED void** state)
 
 void test_midi_ignores_sustain_pedal_cc(UNUSED void** state)
 {
-    wraps_enable_logging_checks();
+    mock_log_enable_checks();
 
     u8 cc = 64;
 
@@ -112,7 +112,7 @@ void test_midi_ignores_sustain_pedal_cc(UNUSED void** state)
 
 void test_midi_ignores_expression_cc(UNUSED void** state)
 {
-    wraps_enable_logging_checks();
+    mock_log_enable_checks();
 
     u8 cc = 11;
 
@@ -121,7 +121,7 @@ void test_midi_ignores_expression_cc(UNUSED void** state)
 
 void test_midi_ignores_sysex_nrpn_ccs(UNUSED void** state)
 {
-    wraps_enable_logging_checks();
+    mock_log_enable_checks();
 
     __real_midi_cc(0, 6, 1);
     __real_midi_cc(0, 38, 1);

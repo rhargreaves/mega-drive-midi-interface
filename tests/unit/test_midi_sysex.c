@@ -199,7 +199,7 @@ void test_midi_sysex_disables_fm_parameter_CCs(UNUSED void** state)
 
 void test_midi_sysex_loads_psg_envelope(UNUSED void** state)
 {
-    wraps_enable_logging_checks();
+    mock_log_enable_checks();
 
     const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
         SYSEX_COMMAND_LOAD_PSG_ENVELOPE, 0x01, 0x01 };

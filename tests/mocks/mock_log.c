@@ -3,12 +3,12 @@
 
 static bool loggingChecks = false;
 
-void wraps_disable_logging_checks(void)
+void mock_log_disable_checks(void)
 {
     loggingChecks = false;
 }
 
-void wraps_enable_logging_checks(void)
+void mock_log_enable_checks(void)
 {
     loggingChecks = true;
 }

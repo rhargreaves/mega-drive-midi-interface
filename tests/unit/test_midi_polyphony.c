@@ -22,7 +22,7 @@ void test_midi_polyphonic_mode_sends_CCs_to_all_FM_channels(UNUSED void** state)
 
 void test_midi_set_overflow_flag_on_polyphony_breach(UNUSED void** state)
 {
-    wraps_enable_logging_checks();
+    mock_log_enable_checks();
     __real_midi_cc(0, CC_GENMDM_POLYPHONIC_MODE, 127);
 
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
