@@ -8,6 +8,7 @@
 #include "comm/ip_util.h"
 #include "mocks/mock_log.h"
 #include "mocks/mock_comm.h"
+#include "mocks/mock_sgdk.h"
 
 int test_comm_megawifi_setup(UNUSED void** state)
 {

@@ -1,5 +1,6 @@
 #include "test_midi_portamento.h"
 #include "test_midi.h"
+#include "mocks/mock_sgdk.h"
 
 int test_midi_portamento_setup(UNUSED void** state)
 {
@@ -427,10 +428,10 @@ void test_midi_portamento_sets_portamento_time_to_maximum(UNUSED void** state)
 
 void test_midi_portamento_default_portamento_time_set(UNUSED void** state)
 {
-    wraps_disable_checks();
+    mock_sgdk_disable_checks();
     mock_synth_disable_checks();
     __real_midi_reset();
-    wraps_enable_checks();
+    mock_sgdk_enable_checks();
     mock_synth_enable_checks();
 
     const u8 chan = 0;

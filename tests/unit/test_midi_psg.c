@@ -1,6 +1,7 @@
 #include "test_midi_psg.h"
 #include "test_midi.h"
 #include "mocks/mock_psg.h"
+#include "mocks/mock_sgdk.h"
 
 void test_midi_triggers_psg_note_on(UNUSED void** state)
 {

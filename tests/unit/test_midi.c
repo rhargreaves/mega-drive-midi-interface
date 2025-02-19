@@ -1,7 +1,7 @@
 #include "test_midi.h"
-#include "wraps.h"
 #include "mocks/mock_midi.h"
 #include "mocks/mock_ui.h"
+#include "mocks/mock_sgdk.h"
 
 static const FmChannel M_BANK_0_INST_0_GRANDPIANO = { 2, 0, 3, 0, 0, 0, 0,
     { { 1, 0, 26, 1, 7, 0, 7, 4, 1, 39, 0 }, { 4, 6, 24, 1, 9, 0, 6, 9, 7, 36, 0 },
@@ -59,10 +59,8 @@ int test_midi_setup(UNUSED void** state)
 
     P_BANK_0[30] = &P_BANK_0_INST_30_CASTANETS;
     mock_log_disable_checks();
-    wraps_disable_checks();
     mock_synth_disable_checks();
     midi_init(M_BANK_0, P_BANK_0, TEST_ENVELOPES);
-    wraps_enable_checks();
     mock_synth_enable_checks();
     wraps_set_SYS_isPAL(false);
     return 0;

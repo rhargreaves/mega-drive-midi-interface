@@ -1,8 +1,8 @@
 #pragma once
 #include "genesis.h"
 
-void wraps_disable_checks(void);
-void wraps_enable_checks(void);
+void mock_sgdk_disable_checks(void);
+void mock_sgdk_enable_checks(void);
 
 /* SDGK wraps */
 void __wrap_VDP_drawText(const char* str, u16 x, u16 y);

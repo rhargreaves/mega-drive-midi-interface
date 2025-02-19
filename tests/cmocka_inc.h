@@ -1,7 +1,6 @@
 #include "genesis.h"
 #include <setjmp.h>
 #include <cmocka.h>
-#include "wraps.h"
 
 #define INT_PTR(val) (&((int) { val }))
 

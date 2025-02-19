@@ -4,11 +4,11 @@
 #include "midi.h"
 #include "midi_receiver.h"
 #include "presets.h"
-#include "wraps.h"
 #include "scheduler.h"
 #include "mocks/mock_ym2612.h"
 #include "mocks/mock_synth.h"
 #include "mocks/mock_comm.h"
+#include "mocks/mock_sgdk.h"
 
 static const u8 TEST_CC_PAN = 10;
 static const u8 TEST_CC_PORTAMENTO_TIME = 5;
@@ -34,15 +34,17 @@ static const u8 TEST_VELOCITY_MAX = 127;
 
 int test_e2e_setup(void** state)
 {
-    wraps_disable_checks();
+    mock_sgdk_disable_checks();
     mock_ym2612_disable_checks();
     mock_synth_disable_checks();
+
     scheduler_init();
     comm_reset_counts();
     stub_megawifi_as_not_present();
     comm_init();
     midi_init(M_BANK_0, P_BANK_0, ENVELOPES);
-    wraps_enable_checks();
+
+    mock_sgdk_enable_checks();
     mock_ym2612_enable_checks();
     mock_synth_enable_checks();
     return 0;

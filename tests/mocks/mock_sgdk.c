@@ -1,17 +1,14 @@
-#include "wraps.h"
 #include "cmocka_inc.h"
-#include "debug.h"
+#include "mocks/mock_sgdk.h"
 
 static bool disableChecks = false;
 
-int _eflash;
-
-void wraps_disable_checks(void)
+void mock_sgdk_disable_checks(void)
 {
     disableChecks = true;
 }
 
-void wraps_enable_checks(void)
+void mock_sgdk_enable_checks(void)
 {
     disableChecks = false;
 }
