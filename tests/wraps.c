@@ -3,23 +3,12 @@
 #include "debug.h"
 
 static bool disableChecks = false;
-static bool loggingChecks = false;
 
 int _eflash;
 
 void wraps_disable_checks(void)
 {
     disableChecks = true;
-}
-
-void wraps_disable_logging_checks(void)
-{
-    loggingChecks = false;
-}
-
-void wraps_enable_logging_checks(void)
-{
-    loggingChecks = true;
 }
 
 void wraps_enable_checks(void)
@@ -342,35 +331,6 @@ u8 __wrap_comm_serial_write_ready(void)
 void __wrap_comm_serial_write(u8 data)
 {
     check_expected(data);
-}
-
-void __wrap_log_init(void)
-{
-}
-
-void __wrap_log_info(const char* fmt, ...)
-{
-    if (!loggingChecks) {
-        return;
-    }
-    check_expected(fmt);
-}
-
-void __wrap_log_warn(const char* fmt, ...)
-{
-    if (!loggingChecks) {
-        return;
-    }
-    check_expected(fmt);
-}
-
-Log* __wrap_log_dequeue(void)
-{
-    return mock_type(Log*);
-}
-
-void __wrap_VDP_clearTextArea(u16 x, u16 y, u16 w, u16 h)
-{
 }
 
 static u16 testIsPal = false;

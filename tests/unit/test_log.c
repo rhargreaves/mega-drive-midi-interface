@@ -1,6 +1,7 @@
 #include "test_log.h"
 #include "log.h"
 #include "string.h"
+#include "mocks/mock_log.h"
 
 int test_log_setup(UNUSED void** state)
 {
