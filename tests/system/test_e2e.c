@@ -11,20 +11,7 @@
 #include "mocks/mock_sgdk.h"
 #include "mocks/mock_psg.h"
 #include "ym2612_regs.h"
-#include "ym2612_helper.h"
-
-static const u8 POLYPHONIC_ON = 0x7F;
-static const u8 SPECIAL_MODE_ON = 64;
-static const u8 DEVICE_SELECT_PSG = 64;
-
-static const u8 MIDI_CHANNEL_PSG_1 = 6;
-static const u8 MIDI_CHANNEL_1 = 0;
-static const u8 MIDI_CHANNEL_3 = 2;
-static const u8 MIDI_CHANNEL_6 = 5;
-static const u8 MIDI_CHANNEL_11 = 10;
-
-static const u8 MIDI_VOLUME_MAX = 127;
-static const u8 MIDI_VELOCITY_MAX = 127;
+#include "test_helpers.h"
 
 int test_e2e_setup(void** state)
 {
@@ -352,36 +339,18 @@ void test_midi_changing_program_retains_pan(void** state)
     midi_receiver_read();
 
     stub_usb_receive_program(MIDI_CHANNEL_1, 1);
-    expect_ym2612_write_channel_any_data(chan, 0xB0);
-    expect_ym2612_write_channel(chan, 0xB4, 0x80); // pan, alg, fb
-    expect_ym2612_write_channel_any_data(chan, 0x30);
-    expect_ym2612_write_channel_any_data(chan, 0x50);
-    expect_ym2612_write_channel_any_data(chan, 0x60);
-    expect_ym2612_write_channel_any_data(chan, 0x70);
-    expect_ym2612_write_channel_any_data(chan, 0x80);
-    expect_ym2612_write_channel_any_data(chan, 0x40);
-    expect_ym2612_write_channel_any_data(chan, 0x90);
-    expect_ym2612_write_channel_any_data(chan, 0x38);
-    expect_ym2612_write_channel_any_data(chan, 0x58);
-    expect_ym2612_write_channel_any_data(chan, 0x68);
-    expect_ym2612_write_channel_any_data(chan, 0x78);
-    expect_ym2612_write_channel_any_data(chan, 0x88);
-    expect_ym2612_write_channel_any_data(chan, 0x48);
-    expect_ym2612_write_channel_any_data(chan, 0x98);
-    expect_ym2612_write_channel_any_data(chan, 0x34);
-    expect_ym2612_write_channel_any_data(chan, 0x54);
-    expect_ym2612_write_channel_any_data(chan, 0x64);
-    expect_ym2612_write_channel_any_data(chan, 0x74);
-    expect_ym2612_write_channel_any_data(chan, 0x84);
-    expect_ym2612_write_channel_any_data(chan, 0x44);
-    expect_ym2612_write_channel_any_data(chan, 0x94);
-    expect_ym2612_write_channel_any_data(chan, 0x3C);
-    expect_ym2612_write_channel_any_data(chan, 0x5C);
-    expect_ym2612_write_channel_any_data(chan, 0x6C);
-    expect_ym2612_write_channel_any_data(chan, 0x7C);
-    expect_ym2612_write_channel_any_data(chan, 0x8C);
-    expect_ym2612_write_channel_any_data(chan, 0x4C);
-    expect_ym2612_write_channel_any_data(chan, 0x9C);
+    expect_ym2612_write_channel_any_data(chan, YM_BASE_ALGORITHM_FEEDBACK);
+    expect_ym2612_write_channel(chan, YM_BASE_STEREO_AMS_PMS, 0x80); // pan, alg, fb
+
+    for (u8 op = YM_OP1; op <= YM_OP4; op++) {
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_MULTIPLE_DETUNE, op));
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_ATTACK_RATE_SCALING_RATE, op));
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_DECAY_RATE_AM_ENABLE, op));
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_SUSTAIN_RATE, op));
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_RELEASE_RATE_SUSTAIN_LEVEL, op));
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_TOTAL_LEVEL, op));
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_SSG_EG, op));
+    }
     midi_receiver_read();
 }
 
@@ -397,36 +366,19 @@ void test_midi_changing_program_retains_volume(void** state)
     midi_receiver_read();
 
     stub_usb_receive_program(MIDI_CHANNEL_1, 1);
-    expect_ym2612_write_channel_any_data(chan, 0xB0);
-    expect_ym2612_write_channel_any_data(chan, 0xB4);
-    expect_ym2612_write_channel_any_data(chan, 0x30);
-    expect_ym2612_write_channel_any_data(chan, 0x50);
-    expect_ym2612_write_channel_any_data(chan, 0x60);
-    expect_ym2612_write_channel_any_data(chan, 0x70);
-    expect_ym2612_write_channel_any_data(chan, 0x80);
-    expect_ym2612_write_channel(chan, 0x40, 0x21);
-    expect_ym2612_write_channel_any_data(chan, 0x90);
-    expect_ym2612_write_channel_any_data(chan, 0x38);
-    expect_ym2612_write_channel_any_data(chan, 0x58);
-    expect_ym2612_write_channel_any_data(chan, 0x68);
-    expect_ym2612_write_channel_any_data(chan, 0x78);
-    expect_ym2612_write_channel_any_data(chan, 0x88);
-    expect_ym2612_write_channel(chan, 0x48, YM_TOTAL_LEVEL_SILENCE);
-    expect_ym2612_write_channel_any_data(chan, 0x98);
-    expect_ym2612_write_channel_any_data(chan, 0x34);
-    expect_ym2612_write_channel_any_data(chan, 0x54);
-    expect_ym2612_write_channel_any_data(chan, 0x64);
-    expect_ym2612_write_channel_any_data(chan, 0x74);
-    expect_ym2612_write_channel_any_data(chan, 0x84);
-    expect_ym2612_write_channel(chan, 0x44, YM_TOTAL_LEVEL_SILENCE);
-    expect_ym2612_write_channel_any_data(chan, 0x94);
-    expect_ym2612_write_channel_any_data(chan, 0x3C);
-    expect_ym2612_write_channel_any_data(chan, 0x5C);
-    expect_ym2612_write_channel_any_data(chan, 0x6C);
-    expect_ym2612_write_channel_any_data(chan, 0x7C);
-    expect_ym2612_write_channel_any_data(chan, 0x8C);
-    expect_ym2612_write_channel(chan, 0x4C, YM_TOTAL_LEVEL_SILENCE);
-    expect_ym2612_write_channel_any_data(chan, 0x9C);
+    expect_ym2612_write_channel_any_data(chan, YM_BASE_ALGORITHM_FEEDBACK);
+    expect_ym2612_write_channel_any_data(chan, YM_BASE_STEREO_AMS_PMS);
+
+    for (u8 op = YM_OP1; op <= YM_OP4; op++) {
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_MULTIPLE_DETUNE, op));
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_ATTACK_RATE_SCALING_RATE, op));
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_DECAY_RATE_AM_ENABLE, op));
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_SUSTAIN_RATE, op));
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_RELEASE_RATE_SUSTAIN_LEVEL, op));
+        expect_ym2612_write_channel(
+            chan, YM_REG3(YM_BASE_TOTAL_LEVEL, op), op == YM_OP1 ? 0x21 : YM_TOTAL_LEVEL_SILENCE);
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_SSG_EG, op));
+    }
     midi_receiver_read();
 }
 

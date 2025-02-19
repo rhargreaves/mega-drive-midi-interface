@@ -6,7 +6,7 @@
 #include "z80_ctrl.h"
 #include "mocks/mock_ym2612.h"
 #include "ym2612_regs.h"
-#include "ym2612_helper.h"
+#include "test_helpers.h"
 
 static bool updated = false;
 static u8 lastChan = -1;

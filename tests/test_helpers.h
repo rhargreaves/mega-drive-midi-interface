@@ -1,9 +1,25 @@
 #pragma once
 
-#define YM_CH3SM_OP_SELECT(baseReg, op) (baseReg + ((op + 1) % 3))
-#define YM_REG(baseReg, channel) (baseReg + (channel % 3))
+// --- MIDI ---
+#define POLYPHONIC_ON 0x7F
+#define SPECIAL_MODE_ON 64
+#define DEVICE_SELECT_PSG 64
+
+#define MIDI_CHANNEL_PSG_1 6
+#define MIDI_CHANNEL_1 0
+#define MIDI_CHANNEL_3 2
+#define MIDI_CHANNEL_6 5
+#define MIDI_CHANNEL_11 10
+
+#define MIDI_VOLUME_MAX 127
+#define MIDI_VELOCITY_MAX 127
+
+// --- YM2612 ---
 #define YM_OP_REG_INDEX(op) ((op) == 1 ? 2 : ((op) == 2 ? 1 : (op)))
-#define YM_OP_SELECT(baseReg, op) (baseReg + (YM_OP_REG_INDEX(op) * 4))
+#define YM_REG(baseReg, channel) (baseReg + (channel % 3))
+#define YM_REG2(baseReg, channel, op) (baseReg + (channel % 3) + (YM_OP_REG_INDEX(op) * 4))
+#define YM_REG3(baseReg, op) (baseReg + (YM_OP_REG_INDEX(op) * 4))
+#define YM_REG_CH3SM(baseReg, op) (baseReg + ((op + 1) % 3))
 
 #define YM_CH3SM_OP1_FREQ_LSB 0xA9
 #define YM_CH3SM_OP1_FREQ_MSB_BLK 0xAD
@@ -29,6 +45,7 @@
 #define YM_OP3 2
 #define YM_OP4 3
 
+// --- PSG ---
 #define PSG_CH1 0
 #define PSG_CH2 1
 #define PSG_CH3 2
