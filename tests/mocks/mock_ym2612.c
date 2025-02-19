@@ -135,11 +135,10 @@ void _expect_ym2612_note_off(u8 chan, const char* const file, const int line)
     _expect_ym2612_write_reg(0, YM_KEY_ON_OFF, KEY_ON_OFF_CH_INDEX(chan), file, line);
 }
 
-void _expect_ym2612_write_frequency(
-    u8 chan, u16 msb, u16 lsb, const char* const file, const int line)
+void _expect_ym2612_write_frequency(u8 chan, u16 freqNumBlk, const char* const file, const int line)
 {
-    _expect_ym2612_write_channel(chan, YM_BASE_FREQ_MSB_BLK, msb, file, line);
-    _expect_ym2612_write_channel(chan, YM_BASE_FREQ_LSB, lsb, file, line);
+    _expect_ym2612_write_channel(chan, YM_BASE_FREQ_MSB_BLK, (freqNumBlk >> 8), file, line);
+    _expect_ym2612_write_channel(chan, YM_BASE_FREQ_LSB, (freqNumBlk & 0xFF), file, line);
 }
 
 void _expect_ym2612_write_frequency_any_data(u8 chan, const char* const file, const int line)
