@@ -44,31 +44,6 @@ void __wrap_VDP_setBackgroundColor(u8 index)
 {
 }
 
-void __wrap_PSG_setEnvelope(u8 channel, u8 value)
-{
-    if (disableChecks)
-        return;
-    check_expected(channel);
-    check_expected(value);
-}
-
-void __wrap_PSG_setFrequency(u8 channel, u16 value)
-{
-    if (disableChecks)
-        return;
-    check_expected(channel);
-    check_expected(value);
-}
-
-void __wrap_PSG_setTone(u8 channel, u16 value)
-{
-    debug_message("call: PSG_setTone(%d, %d)\n", channel, value);
-    if (disableChecks)
-        return;
-    check_expected(channel);
-    check_expected(value);
-}
-
 Sprite* __wrap_SPR_addSprite(const SpriteDefinition* spriteDef, s16 x, s16 y, u16 attribut)
 {
     return mock_type(Sprite*);

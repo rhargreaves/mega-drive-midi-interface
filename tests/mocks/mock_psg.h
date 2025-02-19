@@ -3,6 +3,9 @@
 #include "debug.h"
 #include "cmocka.h"
 
+void __wrap_PSG_setEnvelope(u8 channel, u8 value);
+void __wrap_PSG_setTone(u8 channel, u16 value);
+
 void _expect_psg_tone(u8 channel, u16 value, const char* const file, const int line);
 void _expect_psg_attenuation(u8 channel, u8 value, const char* const file, const int line);
 

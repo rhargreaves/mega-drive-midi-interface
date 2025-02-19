@@ -14,6 +14,23 @@ void mock_psg_enable_checks(void)
     disableChecks = false;
 }
 
+void __wrap_PSG_setEnvelope(u8 channel, u8 value)
+{
+    if (disableChecks)
+        return;
+    check_expected(channel);
+    check_expected(value);
+}
+
+void __wrap_PSG_setTone(u8 channel, u16 value)
+{
+    debug_message("call: PSG_setTone(%d, %d)\n", channel, value);
+    if (disableChecks)
+        return;
+    check_expected(channel);
+    check_expected(value);
+}
+
 void _expect_psg_tone(u8 channel, u16 value, const char* const file, const int line)
 {
     expect_value_with_pos(__wrap_PSG_setTone, channel, channel, file, line);

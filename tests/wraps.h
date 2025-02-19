@@ -4,15 +4,12 @@
 void wraps_disable_checks(void);
 void wraps_enable_checks(void);
 
-void __wrap_ui_fm_set_parameters_visibility(u8 chan, bool show);
-
 /* SDGK wraps */
 void __wrap_VDP_drawText(const char* str, u16 x, u16 y);
 void __wrap_SYS_setVIntCallback(VoidCallback* CB);
 void __wrap_VDP_setTextPalette(u16 palette);
 void __wrap_VDP_clearText(u16 x, u16 y, u16 w);
-void __wrap_PSG_setEnvelope(u8 channel, u8 value);
-void __wrap_PSG_setTone(u8 channel, u16 value);
+
 Sprite* __wrap_SPR_addSprite(const SpriteDefinition* spriteDef, s16 x, s16 y, u16 attribut);
 void __wrap_SPR_update();
 void __wrap_SYS_disableInts();
