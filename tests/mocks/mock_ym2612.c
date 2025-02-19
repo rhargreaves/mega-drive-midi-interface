@@ -1,10 +1,12 @@
 #include "cmocka_inc.h"
 #include "mocks/mock_ym2612.h"
+#include "ym2612_regs.h"
 
 static bool disableChecks = false;
 
 #define REG_PART(chan) (chan < 3 ? 0 : 1)
 #define REG_OFFSET(chan) (chan % 3)
+#define KEY_ON_OFF_CH_INDEX(chan) (chan < 3 ? chan : chan + 1)
 
 void mock_ym2612_disable_checks(void)
 {
@@ -114,4 +116,32 @@ void _expect_ym2612_write_channel_any_data(
     u8 chan, u8 baseReg, const char* const file, const int line)
 {
     _expect_ym2612_write_reg_any_data(REG_PART(chan), baseReg + REG_OFFSET(chan), file, line);
+}
+
+void _expect_ym2612_write_all_operators(
+    u8 chan, u8 baseReg, u8 data, const char* const file, const int line)
+{
+    for (u8 op = 0; op < 4; op++) {
+        _expect_ym2612_write_operator(chan, op, baseReg, data, file, line);
+    }
+}
+
+void _expect_ym2612_write_all_operators_any_data(
+    u8 chan, u8 baseReg, const char* const file, const int line)
+{
+    for (u8 op = 0; op < 4; op++) {
+        expect_ym2612_write_operator_any_data(chan, op, baseReg);
+    }
+}
+
+void _expect_ym2612_note_on(u8 chan, const char* const file, const int line)
+{
+    u8 data = 0xF0 + KEY_ON_OFF_CH_INDEX(chan);
+    _expect_ym2612_write_reg(0, YM_KEY_ON_OFF, data, file, line);
+}
+
+void _expect_ym2612_note_off(u8 chan, const char* const file, const int line)
+{
+    u8 data = KEY_ON_OFF_CH_INDEX(chan);
+    _expect_ym2612_write_reg(0, YM_KEY_ON_OFF, data, file, line);
 }
