@@ -132,18 +132,16 @@ void _expect_ym2612_write_all_operators_any_data(
     u8 chan, u8 baseReg, const char* const file, const int line)
 {
     for (u8 op = 0; op < 4; op++) {
-        expect_ym2612_write_operator_any_data(chan, op, baseReg);
+        _expect_ym2612_write_operator_any_data(chan, op, baseReg, file, line);
     }
 }
 
 void _expect_ym2612_note_on(u8 chan, const char* const file, const int line)
 {
-    u8 data = 0xF0 + KEY_ON_OFF_CH_INDEX(chan);
-    _expect_ym2612_write_reg(0, YM_KEY_ON_OFF, data, file, line);
+    _expect_ym2612_write_reg(0, YM_KEY_ON_OFF, 0xF0 + KEY_ON_OFF_CH_INDEX(chan), file, line);
 }
 
 void _expect_ym2612_note_off(u8 chan, const char* const file, const int line)
 {
-    u8 data = KEY_ON_OFF_CH_INDEX(chan);
-    _expect_ym2612_write_reg(0, YM_KEY_ON_OFF, data, file, line);
+    _expect_ym2612_write_reg(0, YM_KEY_ON_OFF, KEY_ON_OFF_CH_INDEX(chan), file, line);
 }
