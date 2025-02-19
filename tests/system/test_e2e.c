@@ -9,6 +9,7 @@
 #include "mocks/mock_synth.h"
 #include "mocks/mock_comm.h"
 #include "mocks/mock_sgdk.h"
+#include "mocks/mock_psg.h"
 
 static const u8 TEST_CC_PAN = 10;
 static const u8 TEST_CC_PORTAMENTO_TIME = 5;
@@ -84,10 +85,8 @@ void test_psg_audible_if_note_on_event_triggered(void** state)
 {
     stub_everdrive_as_present();
     stub_usb_receive_note_on(TEST_MIDI_CHANNEL_PSG_1, 60, TEST_VELOCITY_MAX);
-    expect_any(__wrap_PSG_setTone, channel);
-    expect_any(__wrap_PSG_setTone, value);
-    expect_any(__wrap_PSG_setEnvelope, channel);
-    expect_any(__wrap_PSG_setEnvelope, value);
+    expect_any_psg_tone();
+    expect_any_psg_attenuation();
     midi_receiver_read();
 }
 
@@ -113,10 +112,8 @@ void test_general_midi_reset_sysex_stops_all_notes(void** state)
 
     // PSG note
     stub_usb_receive_note_on(TEST_MIDI_CHANNEL_PSG_1, noteOnKey, TEST_VELOCITY_MAX);
-    expect_value(__wrap_PSG_setTone, channel, 0);
-    expect_any(__wrap_PSG_setTone, value);
-    expect_value(__wrap_PSG_setEnvelope, channel, 0);
-    expect_value(__wrap_PSG_setEnvelope, value, 0);
+    expect_psg_tone(0, 0x357);
+    expect_psg_attenuation(0, 0);
     midi_receiver_read();
 
     // Send General MIDI reset
@@ -130,8 +127,7 @@ void test_general_midi_reset_sysex_stops_all_notes(void** state)
     expect_ym2612_write_reg(0, 0x28, 0x04);
     expect_ym2612_write_reg(0, 0x28, 0x05);
     expect_ym2612_write_reg(0, 0x28, 0x06);
-    expect_value(__wrap_PSG_setEnvelope, channel, 0);
-    expect_value(__wrap_PSG_setEnvelope, value, 0xF);
+    expect_psg_attenuation(0, 0xF);
     midi_receiver_read();
 }
 
@@ -159,10 +155,8 @@ void test_remap_midi_channel_1_to_psg_channel_1()
     midi_receiver_read();
 
     stub_usb_receive_note_on(TEST_MIDI_CHANNEL_1, 48, TEST_VELOCITY_MAX);
-    expect_value(__wrap_PSG_setTone, channel, 0);
-    expect_any(__wrap_PSG_setTone, value);
-    expect_value(__wrap_PSG_setEnvelope, channel, 0);
-    expect_value(__wrap_PSG_setEnvelope, value, 0);
+    expect_psg_tone(0, 0x357);
+    expect_psg_attenuation(0, 0);
     midi_receiver_read();
 }
 
@@ -176,10 +170,8 @@ void test_set_device_for_midi_channel_1_to_psg()
     midi_receiver_read();
 
     stub_usb_receive_note_on(TEST_MIDI_CHANNEL_1, 48, TEST_VELOCITY_MAX);
-    expect_value(__wrap_PSG_setTone, channel, 0);
-    expect_any(__wrap_PSG_setTone, value);
-    expect_value(__wrap_PSG_setEnvelope, channel, 0);
-    expect_value(__wrap_PSG_setEnvelope, value, 0);
+    expect_psg_tone(0, 0x357);
+    expect_psg_attenuation(0, 0);
     midi_receiver_read();
 }
 
@@ -216,10 +208,8 @@ void test_loads_psg_envelope()
     midi_receiver_read();
 
     stub_usb_receive_note_on(TEST_MIDI_CHANNEL_PSG_1, 60, TEST_VELOCITY_MAX);
-    expect_value(__wrap_PSG_setTone, channel, 0);
-    expect_value(__wrap_PSG_setTone, value, 0x17c);
-    expect_value(__wrap_PSG_setEnvelope, channel, 0);
-    expect_value(__wrap_PSG_setEnvelope, value, 6);
+    expect_psg_tone(0, 0x17c);
+    expect_psg_attenuation(0, 6);
     midi_receiver_read();
 }
 

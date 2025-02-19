@@ -3,7 +3,6 @@
 #include <cmocka.h>
 
 #define INT_PTR(val) (&((int) { val }))
-
 #define UNUSED __attribute__((unused))
 
 #define expect_value_with_pos(function, parameter, value, file, line)                              \
