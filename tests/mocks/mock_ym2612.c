@@ -35,17 +35,6 @@ void __wrap_YM2612_write(const u16 port, const u8 data)
     check_expected(data);
 }
 
-static u8 regOpIndex(u8 op)
-{
-    if (op == 1) {
-        return 2;
-    } else if (op == 2) {
-        return 1;
-    } else {
-        return op;
-    }
-}
-
 void _expect_ym2612_write_reg_any_data(u8 part, u8 reg, const char* const file, const int line)
 {
 #ifdef DEBUG
@@ -71,8 +60,8 @@ void _expect_ym2612_write_operator_any_data(
     will_return_with_pos(__wrap_Z80_getAndRequestBus, false, file, line);
 
     expect_value_with_pos(__wrap_YM2612_writeReg, part, REG_PART(chan), file, line);
-    expect_value_with_pos(
-        __wrap_YM2612_writeReg, reg, baseReg + REG_OFFSET(chan) + (regOpIndex(op) * 4), file, line);
+    expect_value_with_pos(__wrap_YM2612_writeReg, reg,
+        baseReg + REG_OFFSET(chan) + (YM_OP_REG_INDEX(op) * 4), file, line);
     expect_any_with_pos(__wrap_YM2612_writeReg, data, file, line);
 
     expect_value_with_pos(__wrap_YM2612_write, port, 0, file, line);
@@ -103,7 +92,7 @@ void _expect_ym2612_write_operator(
     u8 chan, u8 op, u8 baseReg, u8 data, const char* const file, const int line)
 {
     u8 part = REG_PART(chan);
-    u8 reg = baseReg + REG_OFFSET(chan) + (regOpIndex(op) * 4);
+    u8 reg = baseReg + REG_OFFSET(chan) + (YM_OP_REG_INDEX(op) * 4);
 
     _expect_ym2612_write_reg(part, reg, data, file, line);
 }
@@ -123,7 +112,7 @@ void _expect_ym2612_write_channel_any_data(
 void _expect_ym2612_write_all_operators(
     u8 chan, u8 baseReg, u8 data, const char* const file, const int line)
 {
-    for (u8 op = 0; op < 4; op++) {
+    for (u8 op = YM_OP1; op <= YM_OP4; op++) {
         _expect_ym2612_write_operator(chan, op, baseReg, data, file, line);
     }
 }
@@ -131,7 +120,7 @@ void _expect_ym2612_write_all_operators(
 void _expect_ym2612_write_all_operators_any_data(
     u8 chan, u8 baseReg, const char* const file, const int line)
 {
-    for (u8 op = 0; op < 4; op++) {
+    for (u8 op = YM_OP1; op <= YM_OP4; op++) {
         _expect_ym2612_write_operator_any_data(chan, op, baseReg, file, line);
     }
 }
@@ -144,4 +133,25 @@ void _expect_ym2612_note_on(u8 chan, const char* const file, const int line)
 void _expect_ym2612_note_off(u8 chan, const char* const file, const int line)
 {
     _expect_ym2612_write_reg(0, YM_KEY_ON_OFF, KEY_ON_OFF_CH_INDEX(chan), file, line);
+}
+
+void _expect_ym2612_write_frequency(
+    u8 chan, u16 msb, u16 lsb, const char* const file, const int line)
+{
+    _expect_ym2612_write_channel(chan, YM_BASE_FREQ_MSB_BLK, msb, file, line);
+    _expect_ym2612_write_channel(chan, YM_BASE_FREQ_LSB, lsb, file, line);
+}
+
+void _expect_ym2612_write_frequency_any_data(u8 chan, const char* const file, const int line)
+{
+    _expect_ym2612_write_channel_any_data(chan, YM_BASE_FREQ_MSB_BLK, file, line);
+    _expect_ym2612_write_channel_any_data(chan, YM_BASE_FREQ_LSB, file, line);
+}
+
+void _expect_ym2612_write_operator_volumes(
+    u8 chan, const u8* volumes, u8 count, const char* const file, const int line)
+{
+    for (u8 op = 0; op < count; op++) {
+        _expect_ym2612_write_operator(chan, op, YM_BASE_TOTAL_LEVEL, volumes[op], file, line);
+    }
 }
