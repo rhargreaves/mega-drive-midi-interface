@@ -1,6 +1,7 @@
 #include "test_scheduler.h"
 #include "cmocka_inc.h"
 #include "scheduler.h"
+#include "mocks/mock_scheduler.h"
 
 static void dummy_frame_handler()
 {

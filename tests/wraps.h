@@ -15,14 +15,6 @@ void __wrap_midi_receiver_read_if_comm_ready(void);
 void __wrap_ui_fm_set_parameters_visibility(u8 chan, bool show);
 void __wrap_ui_update(void);
 
-void __wrap_scheduler_tick(void);
-void __wrap_scheduler_addTickHandler(HandlerFunc* onTick);
-void __wrap_scheduler_addFrameHandler(HandlerFunc* onFrame);
-extern void __real_scheduler_init(void);
-extern void __real_scheduler_tick(void);
-extern void __real_scheduler_addTickHandler(HandlerFunc* onTick);
-extern void __real_scheduler_addFrameHandler(HandlerFunc* onFrame);
-
 /* SDGK wraps */
 
 void __wrap_VDP_drawText(const char* str, u16 x, u16 y);

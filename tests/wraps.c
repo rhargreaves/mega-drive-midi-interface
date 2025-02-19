@@ -288,21 +288,6 @@ void __wrap_midi_receiver_read_if_comm_ready(void)
     function_called();
 }
 
-void __wrap_scheduler_tick(void)
-{
-    function_called();
-}
-
-void __wrap_scheduler_addTickHandler(HandlerFunc* onTick)
-{
-    check_expected(onTick);
-}
-
-void __wrap_scheduler_addFrameHandler(HandlerFunc* onFrame)
-{
-    check_expected(onFrame);
-}
-
 enum lsd_status __wrap_lsd_recv(char* buf, int16_t len, void* ctx, lsd_recv_cb recv_cb)
 {
     if (disableChecks)
