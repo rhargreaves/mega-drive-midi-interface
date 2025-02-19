@@ -1,5 +1,6 @@
 #include "test_comm.h"
 #include "comm/comm.h"
+#include "mocks/mock_comm.h"
 
 static const u16 MAX_COMM_IDLE = 0x28F;
 static const u16 MAX_COMM_BUSY = 0x28F;

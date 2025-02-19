@@ -21,39 +21,6 @@ void __wrap_synth_enableDac(bool enable)
     check_expected(enable);
 }
 
-void __wrap_comm_write(u8 data)
-{
-    check_expected(data);
-}
-
-bool __wrap_comm_read_ready(void)
-{
-    return mock_type(bool);
-}
-
-u8 __wrap_comm_read(void)
-{
-    return mock_type(u8);
-}
-
-u16 __wrap_comm_idle_count(void)
-{
-    return mock_type(u16);
-}
-
-u16 __wrap_comm_busy_count(void)
-{
-    return mock_type(u16);
-}
-
-void __wrap_comm_reset_counts(void)
-{
-}
-
-void __wrap_comm_megawifi_init(void)
-{
-}
-
 void __wrap_ui_fm_set_parameters_visibility(u8 chan, bool show)
 {
     check_expected(chan);
@@ -147,122 +114,6 @@ void __wrap_VDP_setPaletteColors(u16 index, const u16* values, u16 count)
 {
 }
 
-void __wrap_comm_everdrive_init(void)
-{
-}
-
-bool __wrap_comm_everdrive_is_present(void)
-{
-    return mock_type(bool);
-}
-
-u8 __wrap_comm_everdrive_read_ready(void)
-{
-    return mock_type(u8);
-}
-
-u8 __wrap_comm_everdrive_read(void)
-{
-    return mock_type(u8);
-}
-
-u8 __wrap_comm_everdrive_write_ready(void)
-{
-    return mock_type(u8);
-}
-
-void __wrap_comm_everdrive_write(u8 data)
-{
-    check_expected(data);
-}
-
-void __wrap_comm_everdrive_pro_init(void)
-{
-}
-
-bool __wrap_comm_everdrive_pro_is_present(void)
-{
-    return mock_type(bool);
-}
-
-u8 __wrap_comm_everdrive_pro_read_ready(void)
-{
-    return mock_type(u8);
-}
-
-u8 __wrap_comm_everdrive_pro_read(void)
-{
-    return mock_type(u8);
-}
-
-u8 __wrap_comm_everdrive_pro_write_ready(void)
-{
-    return mock_type(u8);
-}
-
-void __wrap_comm_everdrive_pro_write(u8 data)
-{
-    check_expected(data);
-}
-
-void __wrap_comm_demo_init(void)
-{
-}
-
-bool __wrap_comm_demo_is_present(void)
-{
-    return mock_type(bool);
-}
-
-u8 __wrap_comm_demo_read_ready(void)
-{
-    return mock_type(u8);
-}
-
-u8 __wrap_comm_demo_read(void)
-{
-    return mock_type(u8);
-}
-
-u8 __wrap_comm_demo_write_ready(void)
-{
-    return mock_type(u8);
-}
-
-void __wrap_comm_demo_write(u8 data)
-{
-}
-
-void __wrap_comm_demo_vsync(void)
-{
-    function_called();
-}
-
-bool __wrap_comm_megawifi_is_present(void)
-{
-    return mock_type(bool);
-}
-
-u8 __wrap_comm_megawifi_read_ready(void)
-{
-    return mock_type(u8);
-}
-
-u8 __wrap_comm_megawifi_read(void)
-{
-    return mock_type(u8);
-}
-
-u8 __wrap_comm_megawifi_write_ready(void)
-{
-    return mock_type(u8);
-}
-
-void __wrap_comm_megawifi_write(u8 data)
-{
-    check_expected(data);
-}
-
 bool __wrap_mw_uart_is_present(void)
 {
     return mock_type(bool);
@@ -300,39 +151,6 @@ void __wrap_SYS_setInterruptMaskLevel(u16 value)
 {
 }
 
-void __wrap_comm_init(void)
-{
-}
-
-void __wrap_comm_serial_init(void)
-{
-}
-
-bool __wrap_comm_serial_is_present(void)
-{
-    return mock_type(bool);
-}
-
-u8 __wrap_comm_serial_read_ready(void)
-{
-    return mock_type(u8);
-}
-
-u8 __wrap_comm_serial_read(void)
-{
-    return mock_type(u8);
-}
-
-u8 __wrap_comm_serial_write_ready(void)
-{
-    return mock_type(u8);
-}
-
-void __wrap_comm_serial_write(u8 data)
-{
-    check_expected(data);
-}
-
 static u16 testIsPal = false;
 u16 __wrap_SYS_isPAL(void)
 {
@@ -342,11 +160,6 @@ u16 __wrap_SYS_isPAL(void)
 void wraps_set_SYS_isPAL(bool isPal)
 {
     testIsPal = isPal;
-}
-
-void __wrap_comm_megawifi_midiEmitCallback(u8 midiByte)
-{
-    check_expected(midiByte);
 }
 
 mw_err __wrap_mediator_recv_event(void)
@@ -488,18 +301,6 @@ void __wrap_scheduler_addTickHandler(HandlerFunc* onTick)
 void __wrap_scheduler_addFrameHandler(HandlerFunc* onFrame)
 {
     check_expected(onFrame);
-}
-
-void __wrap_comm_megawifi_tick(void)
-{
-    function_called();
-}
-
-void __wrap_comm_megawifi_send(u8 ch, char* data, u16 len)
-{
-    check_expected(ch);
-    check_expected(data);
-    check_expected(len);
 }
 
 enum lsd_status __wrap_lsd_recv(char* buf, int16_t len, void* ctx, lsd_recv_cb recv_cb)

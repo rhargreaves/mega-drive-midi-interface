@@ -2,6 +2,205 @@
 #include "mocks/mock_comm.h"
 #include "comm/comm.h"
 
+void __wrap_comm_init(void)
+{
+}
+
+void __wrap_comm_write(u8 data)
+{
+    check_expected(data);
+}
+
+bool __wrap_comm_read_ready(void)
+{
+    return mock_type(bool);
+}
+
+u8 __wrap_comm_read(void)
+{
+    return mock_type(u8);
+}
+
+u16 __wrap_comm_idle_count(void)
+{
+    return mock_type(u16);
+}
+
+u16 __wrap_comm_busy_count(void)
+{
+    return mock_type(u16);
+}
+
+void __wrap_comm_reset_counts(void)
+{
+}
+
+void __wrap_comm_megawifi_init(void)
+{
+}
+
+void __wrap_comm_serial_init(void)
+{
+}
+
+bool __wrap_comm_serial_is_present(void)
+{
+    return mock_type(bool);
+}
+
+u8 __wrap_comm_serial_read_ready(void)
+{
+    return mock_type(u8);
+}
+
+u8 __wrap_comm_serial_read(void)
+{
+    return mock_type(u8);
+}
+
+u8 __wrap_comm_serial_write_ready(void)
+{
+    return mock_type(u8);
+}
+
+void __wrap_comm_serial_write(u8 data)
+{
+    check_expected(data);
+}
+
+void __wrap_comm_everdrive_init(void)
+{
+}
+
+bool __wrap_comm_everdrive_is_present(void)
+{
+    return mock_type(bool);
+}
+
+u8 __wrap_comm_everdrive_read_ready(void)
+{
+    return mock_type(u8);
+}
+
+u8 __wrap_comm_everdrive_read(void)
+{
+    return mock_type(u8);
+}
+
+u8 __wrap_comm_everdrive_write_ready(void)
+{
+    return mock_type(u8);
+}
+
+void __wrap_comm_everdrive_write(u8 data)
+{
+    check_expected(data);
+}
+
+void __wrap_comm_everdrive_pro_init(void)
+{
+}
+
+bool __wrap_comm_everdrive_pro_is_present(void)
+{
+    return mock_type(bool);
+}
+
+u8 __wrap_comm_everdrive_pro_read_ready(void)
+{
+    return mock_type(u8);
+}
+
+u8 __wrap_comm_everdrive_pro_read(void)
+{
+    return mock_type(u8);
+}
+
+u8 __wrap_comm_everdrive_pro_write_ready(void)
+{
+    return mock_type(u8);
+}
+
+void __wrap_comm_everdrive_pro_write(u8 data)
+{
+    check_expected(data);
+}
+
+void __wrap_comm_demo_init(void)
+{
+}
+
+bool __wrap_comm_demo_is_present(void)
+{
+    return mock_type(bool);
+}
+
+u8 __wrap_comm_demo_read_ready(void)
+{
+    return mock_type(u8);
+}
+
+u8 __wrap_comm_demo_read(void)
+{
+    return mock_type(u8);
+}
+
+u8 __wrap_comm_demo_write_ready(void)
+{
+    return mock_type(u8);
+}
+
+void __wrap_comm_demo_write(u8 data)
+{
+}
+
+void __wrap_comm_demo_vsync(void)
+{
+    function_called();
+}
+
+bool __wrap_comm_megawifi_is_present(void)
+{
+    return mock_type(bool);
+}
+
+u8 __wrap_comm_megawifi_read_ready(void)
+{
+    return mock_type(u8);
+}
+
+u8 __wrap_comm_megawifi_read(void)
+{
+    return mock_type(u8);
+}
+
+u8 __wrap_comm_megawifi_write_ready(void)
+{
+    return mock_type(u8);
+}
+
+void __wrap_comm_megawifi_write(u8 data)
+{
+    check_expected(data);
+}
+
+void __wrap_comm_megawifi_tick(void)
+{
+    function_called();
+}
+
+void __wrap_comm_megawifi_send(u8 ch, char* data, u16 len)
+{
+    check_expected(ch);
+    check_expected(data);
+    check_expected(len);
+}
+
+void __wrap_comm_megawifi_midiEmitCallback(u8 midiByte)
+{
+    check_expected(midiByte);
+}
+
 void stub_megawifi_as_not_present(void)
 {
     will_return(__wrap_mw_uart_is_present, false);
