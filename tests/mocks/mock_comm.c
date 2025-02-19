@@ -201,6 +201,11 @@ void __wrap_comm_megawifi_midiEmitCallback(u8 midiByte)
     check_expected(midiByte);
 }
 
+bool __wrap_mw_uart_is_present(void)
+{
+    return mock_type(bool);
+}
+
 void stub_megawifi_as_not_present(void)
 {
     will_return(__wrap_mw_uart_is_present, false);

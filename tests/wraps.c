@@ -16,20 +16,10 @@ void wraps_enable_checks(void)
     disableChecks = false;
 }
 
-void __wrap_synth_enableDac(bool enable)
-{
-    check_expected(enable);
-}
-
 void __wrap_ui_fm_set_parameters_visibility(u8 chan, bool show)
 {
     check_expected(chan);
     check_expected(show);
-}
-
-void __wrap_ui_update(void)
-{
-    function_called();
 }
 
 void __wrap_VDP_drawText(const char* str, u16 x, u16 y)
@@ -112,11 +102,6 @@ void __wrap_SPR_setVisibility(Sprite* sprite, SpriteVisibility value)
 
 void __wrap_VDP_setPaletteColors(u16 index, const u16* values, u16 count)
 {
-}
-
-bool __wrap_mw_uart_is_present(void)
-{
-    return mock_type(bool);
 }
 
 void __wrap_SPR_setAnim(Sprite* sprite, s16 anim)
@@ -281,11 +266,6 @@ mw_err __wrap_mw_sock_conn_wait(uint8_t ch, int tout_frames)
     check_expected(ch);
     check_expected(tout_frames);
     return mock_type(mw_err);
-}
-
-void __wrap_midi_receiver_read_if_comm_ready(void)
-{
-    function_called();
 }
 
 enum lsd_status __wrap_lsd_recv(char* buf, int16_t len, void* ctx, lsd_recv_cb recv_cb)

@@ -96,7 +96,6 @@ MOCKS=midi_process \
 	log_warn \
 	log_dequeue \
 	ui_fm_set_parameters_visibility \
-	ui_update \
 	scheduler_init \
 	scheduler_tick \
 	scheduler_addTickHandler \
@@ -104,8 +103,7 @@ MOCKS=midi_process \
 	comm_megawifi_midiEmitCallback \
 	comm_megawifi_init \
 	comm_megawifi_tick \
-	comm_megawifi_send \
-	midi_receiver_read_if_comm_ready
+	comm_megawifi_send
 
 MD_MOCKS=SYS_setVIntCallback \
 	VDP_setTextPalette \

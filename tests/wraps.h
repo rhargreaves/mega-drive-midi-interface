@@ -1,22 +1,12 @@
 #pragma once
 #include "genesis.h"
-#include "midi.h"
-#include "log.h"
-#include "synth.h"
-#include "scheduler.h"
 
 void wraps_disable_checks(void);
 void wraps_enable_checks(void);
 
-bool __wrap_mw_uart_is_present(void);
-
-void __wrap_midi_receiver_read_if_comm_ready(void);
-
 void __wrap_ui_fm_set_parameters_visibility(u8 chan, bool show);
-void __wrap_ui_update(void);
 
 /* SDGK wraps */
-
 void __wrap_VDP_drawText(const char* str, u16 x, u16 y);
 void __wrap_SYS_setVIntCallback(VoidCallback* CB);
 void __wrap_VDP_setTextPalette(u16 palette);

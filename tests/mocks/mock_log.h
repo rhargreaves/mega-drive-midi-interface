@@ -1,5 +1,6 @@
 #pragma once
 #include "cmocka_inc.h"
+#include "log.h"
 
 void mock_log_disable_checks(void);
 void mock_log_enable_checks(void);

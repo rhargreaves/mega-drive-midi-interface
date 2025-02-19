@@ -2,6 +2,7 @@
 #include "genesis.h"
 #include "debug.h"
 #include "cmocka.h"
+#include "midi.h"
 
 void __wrap_midi_note_off(u8 chan, u8 pitch);
 void __wrap_midi_note_on(u8 chan, u8 pitch, u8 velocity);
