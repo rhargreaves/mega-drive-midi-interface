@@ -16,12 +16,6 @@ void wraps_enable_checks(void)
     disableChecks = false;
 }
 
-void __wrap_ui_fm_set_parameters_visibility(u8 chan, bool show)
-{
-    check_expected(chan);
-    check_expected(show);
-}
-
 void __wrap_VDP_drawText(const char* str, u16 x, u16 y)
 {
 }

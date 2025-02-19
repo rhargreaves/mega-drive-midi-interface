@@ -1,6 +1,7 @@
 #include "test_midi.h"
 #include "wraps.h"
 #include "mocks/mock_midi.h"
+#include "mocks/mock_ui.h"
 
 static const FmChannel M_BANK_0_INST_0_GRANDPIANO = { 2, 0, 3, 0, 0, 0, 0,
     { { 1, 0, 26, 1, 7, 0, 7, 4, 1, 39, 0 }, { 4, 6, 24, 1, 9, 0, 6, 9, 7, 36, 0 },
