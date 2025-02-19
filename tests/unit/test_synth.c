@@ -26,7 +26,7 @@ static void set_initial_registers(void)
     }
 
     expect_value(__wrap_YM2612_write, port, 0);
-    expect_value(__wrap_YM2612_write, data, 0x2A);
+    expect_value(__wrap_YM2612_write, data, YM_DAC_DATA);
     expect_function_call(__wrap_Z80_releaseBus);
 
     const FmChannel M_BANK_0_INST_0_GRANDPIANO = { 0, 0, 3, 0, 0, 0, 0,
@@ -285,36 +285,18 @@ void test_synth_sets_preset(UNUSED void** state)
         { { 1, 1, 31, 2, 0, 1, 0, 1, 6, 28, 0 }, { 1, 3, 31, 2, 0, 0, 0, 1, 7, 33, 0 },
             { 1, 5, 31, 3, 0, 1, 0, 0, 2, 30, 0 }, { 1, 7, 31, 0, 6, 0, 4, 6, 7, 6, 0 } } };
 
-    expect_ym2612_write_channel_any_data(chan, 0xB0);
-    expect_ym2612_write_channel_any_data(chan, 0xB4);
-    expect_ym2612_write_channel_any_data(chan, 0x30);
-    expect_ym2612_write_channel_any_data(chan, 0x50);
-    expect_ym2612_write_channel_any_data(chan, 0x60);
-    expect_ym2612_write_channel_any_data(chan, 0x70);
-    expect_ym2612_write_channel_any_data(chan, 0x80);
-    expect_ym2612_write_channel_any_data(chan, 0x40);
-    expect_ym2612_write_channel_any_data(chan, 0x90);
-    expect_ym2612_write_channel_any_data(chan, 0x38);
-    expect_ym2612_write_channel_any_data(chan, 0x58);
-    expect_ym2612_write_channel_any_data(chan, 0x68);
-    expect_ym2612_write_channel_any_data(chan, 0x78);
-    expect_ym2612_write_channel_any_data(chan, 0x88);
-    expect_ym2612_write_channel_any_data(chan, 0x48);
-    expect_ym2612_write_channel_any_data(chan, 0x98);
-    expect_ym2612_write_channel_any_data(chan, 0x34);
-    expect_ym2612_write_channel_any_data(chan, 0x54);
-    expect_ym2612_write_channel_any_data(chan, 0x64);
-    expect_ym2612_write_channel_any_data(chan, 0x74);
-    expect_ym2612_write_channel_any_data(chan, 0x84);
-    expect_ym2612_write_channel_any_data(chan, 0x44);
-    expect_ym2612_write_channel_any_data(chan, 0x94);
-    expect_ym2612_write_channel_any_data(chan, 0x3C);
-    expect_ym2612_write_channel_any_data(chan, 0x5C);
-    expect_ym2612_write_channel_any_data(chan, 0x6C);
-    expect_ym2612_write_channel_any_data(chan, 0x7C);
-    expect_ym2612_write_channel_any_data(chan, 0x8C);
-    expect_ym2612_write_channel_any_data(chan, 0x4C);
-    expect_ym2612_write_channel_any_data(chan, 0x9C);
+    expect_ym2612_write_channel_any_data(chan, YM_BASE_ALGORITHM_FEEDBACK);
+    expect_ym2612_write_channel_any_data(chan, YM_BASE_STEREO_AMS_PMS);
+
+    for (u8 op = YM_OP1; op <= YM_OP4; op++) {
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_MULTIPLE_DETUNE, op));
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_ATTACK_RATE_SCALING_RATE, op));
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_DECAY_RATE_AM_ENABLE, op));
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_SUSTAIN_RATE, op));
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_RELEASE_RATE_SUSTAIN_LEVEL, op));
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_TOTAL_LEVEL, op));
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_SSG_EG, op));
+    }
 
     __real_synth_preset(chan, &M_BANK_0_INST_7_CLAVINET);
 }
@@ -323,43 +305,25 @@ void test_synth_sets_preset_retaining_pan(UNUSED void** state)
 {
     const u8 chan = 0;
 
-    expect_ym2612_write_channel(chan, 0xB4, 0x80);
+    expect_ym2612_write_channel(chan, YM_BASE_STEREO_AMS_PMS, 0x80);
     __real_synth_stereo(chan, STEREO_MODE_LEFT);
 
     const FmChannel M_BANK_0_INST_7_CLAVINET = { 1, 7, 3, 0, 0, 0, 0,
         { { 1, 1, 31, 2, 0, 1, 0, 1, 6, 28, 0 }, { 1, 3, 31, 2, 0, 0, 0, 1, 7, 33, 0 },
             { 1, 5, 31, 3, 0, 1, 0, 0, 2, 30, 0 }, { 1, 7, 31, 0, 6, 0, 4, 6, 7, 6, 0 } } };
 
-    expect_ym2612_write_channel_any_data(chan, 0xB0);
-    expect_ym2612_write_channel(chan, 0xB4, 0x80);
-    expect_ym2612_write_channel_any_data(chan, 0x30);
-    expect_ym2612_write_channel_any_data(chan, 0x50);
-    expect_ym2612_write_channel_any_data(chan, 0x60);
-    expect_ym2612_write_channel_any_data(chan, 0x70);
-    expect_ym2612_write_channel_any_data(chan, 0x80);
-    expect_ym2612_write_channel_any_data(chan, 0x40);
-    expect_ym2612_write_channel_any_data(chan, 0x90);
-    expect_ym2612_write_channel_any_data(chan, 0x38);
-    expect_ym2612_write_channel_any_data(chan, 0x58);
-    expect_ym2612_write_channel_any_data(chan, 0x68);
-    expect_ym2612_write_channel_any_data(chan, 0x78);
-    expect_ym2612_write_channel_any_data(chan, 0x88);
-    expect_ym2612_write_channel_any_data(chan, 0x48);
-    expect_ym2612_write_channel_any_data(chan, 0x98);
-    expect_ym2612_write_channel_any_data(chan, 0x34);
-    expect_ym2612_write_channel_any_data(chan, 0x54);
-    expect_ym2612_write_channel_any_data(chan, 0x64);
-    expect_ym2612_write_channel_any_data(chan, 0x74);
-    expect_ym2612_write_channel_any_data(chan, 0x84);
-    expect_ym2612_write_channel_any_data(chan, 0x44);
-    expect_ym2612_write_channel_any_data(chan, 0x94);
-    expect_ym2612_write_channel_any_data(chan, 0x3C);
-    expect_ym2612_write_channel_any_data(chan, 0x5C);
-    expect_ym2612_write_channel_any_data(chan, 0x6C);
-    expect_ym2612_write_channel_any_data(chan, 0x7C);
-    expect_ym2612_write_channel_any_data(chan, 0x8C);
-    expect_ym2612_write_channel_any_data(chan, 0x4C);
-    expect_ym2612_write_channel_any_data(chan, 0x9C);
+    expect_ym2612_write_channel_any_data(chan, YM_BASE_ALGORITHM_FEEDBACK);
+    expect_ym2612_write_channel(chan, YM_BASE_STEREO_AMS_PMS, 0x80);
+
+    for (u8 op = YM_OP1; op <= YM_OP4; op++) {
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_MULTIPLE_DETUNE, op));
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_ATTACK_RATE_SCALING_RATE, op));
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_DECAY_RATE_AM_ENABLE, op));
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_SUSTAIN_RATE, op));
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_RELEASE_RATE_SUSTAIN_LEVEL, op));
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_TOTAL_LEVEL, op));
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_SSG_EG, op));
+    }
     __real_synth_preset(chan, &M_BANK_0_INST_7_CLAVINET);
 }
 
@@ -562,8 +526,9 @@ void test_synth_disables_ch3_special_mode(UNUSED void** state)
 
 void test_synth_sets_ch3_special_mode_operator_pitches(UNUSED void** state)
 {
-    const u8 upperRegs[] = { 0xAD, 0xAE, 0xAC };
-    const u8 lowerRegs[] = { 0xA9, 0xAA, 0xA8 };
+    const u8 upperRegs[]
+        = { YM_CH3SM_OP1_FREQ_MSB_BLK, YM_CH3SM_OP3_FREQ_MSB_BLK, YM_CH3SM_OP2_FREQ_MSB_BLK };
+    const u8 lowerRegs[] = { YM_CH3SM_OP1_FREQ_LSB, YM_CH3SM_OP3_FREQ_LSB, YM_CH3SM_OP2_FREQ_LSB };
 
     for (u8 op = 0; op < 3; op++) {
         expect_ym2612_write_reg(0, upperRegs[op], 0x22);
@@ -576,8 +541,8 @@ void test_synth_sets_ch3_special_mode_operator_pitches(UNUSED void** state)
 void test_synth_handles_out_of_range_ch3_special_mode_operator(UNUSED void** state)
 {
     const u8 op = 3; // invalid op
-    expect_ym2612_write_reg(0, 0xAD, 0x22); // safely wrap to valid reg
-    expect_ym2612_write_reg(0, 0xA9, 0x84);
+    expect_ym2612_write_reg(0, YM_CH3SM_OP1_FREQ_MSB_BLK, 0x22); // safely wrap to valid reg
+    expect_ym2612_write_reg(0, YM_CH3SM_OP1_FREQ_LSB, 0x84);
 
     __real_synth_specialModePitch(op, 4, SYNTH_NTSC_C);
 }
@@ -656,14 +621,14 @@ void test_requests_Z80_bus_if_not_already_taken(UNUSED void** state)
     will_return(__wrap_Z80_getAndRequestBus, false);
 
     expect_value(__wrap_YM2612_writeReg, part, 0);
-    expect_value(__wrap_YM2612_writeReg, reg, 0x2B);
+    expect_value(__wrap_YM2612_writeReg, reg, YM_DAC_ENABLE);
     expect_value(__wrap_YM2612_writeReg, data, 0);
 
     expect_value(__wrap_YM2612_write, port, 0);
-    expect_value(__wrap_YM2612_write, data, 0x2A);
+    expect_value(__wrap_YM2612_write, data, YM_DAC_DATA);
     expect_function_call(__wrap_Z80_releaseBus);
 
-    __real_synth_directWriteYm2612(0, 0x2B, 0);
+    __real_synth_directWriteYm2612(0, YM_DAC_ENABLE, 0);
 }
 
 void test_does_not_release_Z80_bus_when_taken_prior_to_call(UNUSED void** state)
@@ -672,8 +637,8 @@ void test_does_not_release_Z80_bus_when_taken_prior_to_call(UNUSED void** state)
     will_return(__wrap_Z80_getAndRequestBus, true);
 
     expect_value(__wrap_YM2612_writeReg, part, 0);
-    expect_value(__wrap_YM2612_writeReg, reg, 0x2B);
+    expect_value(__wrap_YM2612_writeReg, reg, YM_DAC_ENABLE);
     expect_value(__wrap_YM2612_writeReg, data, 0);
 
-    __real_synth_directWriteYm2612(0, 0x2B, 0);
+    __real_synth_directWriteYm2612(0, YM_DAC_ENABLE, 0);
 }

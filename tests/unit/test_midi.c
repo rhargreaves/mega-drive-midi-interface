@@ -68,25 +68,25 @@ int test_midi_setup(UNUSED void** state)
 
 void test_midi_polyphonic_mode_returns_state(UNUSED void** state)
 {
-    __real_midi_cc(0, CC_GENMDM_POLYPHONIC_MODE, 127);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_GENMDM_POLYPHONIC_MODE, 127);
 
     assert_true(__real_midi_dynamic_mode());
 
-    __real_midi_cc(0, CC_GENMDM_POLYPHONIC_MODE, 0);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_GENMDM_POLYPHONIC_MODE, 0);
 }
 
 void test_midi_sets_all_notes_off(UNUSED void** state)
 {
-    expect_value(__wrap_synth_noteOff, channel, 0);
+    expect_synth_noteOff(0);
 
-    __real_midi_cc(0, CC_ALL_NOTES_OFF, 0);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_ALL_NOTES_OFF, 0);
 }
 
 void test_midi_sets_all_sound_off(UNUSED void** state)
 {
-    expect_value(__wrap_synth_noteOff, channel, 0);
+    expect_synth_noteOff(0);
 
-    __real_midi_cc(0, CC_ALL_SOUND_OFF, 0);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_ALL_SOUND_OFF, 0);
 }
 
 void test_midi_sets_unknown_CC(UNUSED void** state)
@@ -97,37 +97,33 @@ void test_midi_sets_unknown_CC(UNUSED void** state)
     u8 expectedValue = 0x50;
 
     expect_log_warn("Ch %d: CC 0x%02X 0x%02X?");
-    __real_midi_cc(0, expectedController, expectedValue);
+    __real_midi_cc(MIDI_CHANNEL_1, expectedController, expectedValue);
 }
 
 void test_midi_ignores_sustain_pedal_cc(UNUSED void** state)
 {
     mock_log_enable_checks();
 
-    u8 cc = 64;
-
-    __real_midi_cc(0, cc, 1);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_SUSTAIN_PEDAL, 1);
 }
 
 void test_midi_ignores_expression_cc(UNUSED void** state)
 {
     mock_log_enable_checks();
 
-    u8 cc = 11;
-
-    __real_midi_cc(0, cc, 1);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_EXPRESSION, 1);
 }
 
 void test_midi_ignores_sysex_nrpn_ccs(UNUSED void** state)
 {
     mock_log_enable_checks();
 
-    __real_midi_cc(0, 6, 1);
-    __real_midi_cc(0, 38, 1);
-    __real_midi_cc(0, 98, 1);
-    __real_midi_cc(0, 99, 1);
-    __real_midi_cc(0, 100, 1);
-    __real_midi_cc(0, 101, 1);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_DATA_ENTRY_MSB, 1);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_DATA_ENTRY_LSB, 1);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_NRPN_LSB, 1);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_NRPN_MSB, 1);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_RPN_LSB, 1);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_RPN_MSB, 1);
 }
 
 void test_midi_shows_fm_parameter_ui(UNUSED void** state)
@@ -157,8 +153,7 @@ void test_midi_hides_fm_parameter_ui(UNUSED void** state)
 void test_midi_resets_fm_values_to_defaults(UNUSED void** state)
 {
     for (u8 ch = 0; ch < 6; ch++) {
-        expect_value(__wrap_synth_volume, channel, ch);
-        expect_value(__wrap_synth_volume, volume, 60);
+        expect_synth_volume(ch, 60);
 
         __real_midi_cc(ch, CC_VOLUME, 60);
 
@@ -169,8 +164,7 @@ void test_midi_resets_fm_values_to_defaults(UNUSED void** state)
     expect_any(__wrap_synth_init, defaultPreset);
 
     for (u8 ch = 0; ch < 6; ch++) {
-        expect_value(__wrap_synth_volume, channel, ch);
-        expect_value(__wrap_synth_volume, volume, 127);
+        expect_synth_volume(ch, 127);
     }
 
     __real_midi_reset();

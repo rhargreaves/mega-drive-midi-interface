@@ -14,6 +14,21 @@
 #define MIDI_VOLUME_MAX 127
 #define MIDI_VELOCITY_MAX 127
 
+#define MIDI_PITCH_A2 45
+#define MIDI_PITCH_C3 48
+#define MIDI_PITCH_C4 60
+#define MIDI_PITCH_CS4 61
+#define MIDI_PITCH_AS6 94
+#define MIDI_PITCH_B6 95
+
+#define SYSEX_DYNAMIC_AUTO 0x02
+#define SYSEX_DYNAMIC_ENABLED 0x01
+#define SYSEX_DYNAMIC_DISABLED 0x00
+#define SYSEX_NON_GENERAL_MIDI_CCS_ENABLED 0x01
+#define SYSEX_NON_GENERAL_MIDI_CCS_DISABLED 0x00
+
+#define UNASSIGNED_MIDI_CHANNEL 0x7F
+
 // --- YM2612 ---
 #define YM_OP_REG_INDEX(op) ((op) == 1 ? 2 : ((op) == 2 ? 1 : (op)))
 #define YM_REG(baseReg, channel) (baseReg + (channel % 3))
@@ -45,8 +60,18 @@
 #define YM_OP3 2
 #define YM_OP4 3
 
+#define SYNTH_NTSC_C 0x284
+#define SYNTH_NTSC_AS 1146
+#define SYNTH_PAL_C 649
+
 // --- PSG ---
 #define PSG_CH1 0
 #define PSG_CH2 1
 #define PSG_CH3 2
 #define PSG_NOISE_CH4 3
+
+#define TONE_NTSC_AS4 479
+#define TONE_NTSC_C4 427
+#define TONE_NTSC_CS4 403
+#define TONE_NTSC_DS4 380
+#define TONE_NTSC_A2 1016
