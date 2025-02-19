@@ -4,7 +4,7 @@ CC=gcc
 SGDK?=/sgdk
 BIN_DIR=bin
 OBJ_DIR=obj
-CMOCKA_TAR=cmocka-1.1.7.tar.xz
+CMOCKA_TAR=third_party/cmocka-1.1.7.tar.xz
 CMOCKA_DIR=cmocka
 
 ifeq ($(DEBUG),1)
