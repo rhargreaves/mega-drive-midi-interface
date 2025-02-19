@@ -5,9 +5,10 @@
             "includePath": [
                 "${workspaceFolder}/src",
                 "${workspaceFolder}/res",
-                "${workspaceFolder}/tests/cmocka/include",
+                "${workspaceFolder}/tests/build/deps/cmocka/include",
                 "${workspaceFolder}/tests/unit",
                 "${workspaceFolder}/tests/system",
+                "${workspaceFolder}/tests/mocks",
                 "${workspaceFolder}/tests",
                 "/sgdk/inc/**",
                 "/sgdk/res"
