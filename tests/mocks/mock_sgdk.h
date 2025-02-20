@@ -28,7 +28,7 @@ void __wrap_SYS_setExtIntCallback(VoidCallback* CB);
 void __wrap_SYS_setInterruptMaskLevel(u16 value);
 void __wrap_VDP_clearTextArea(u16 x, u16 y, u16 w, u16 h);
 u16 __wrap_SYS_isPAL(void);
-void wraps_set_SYS_isPAL(bool isPal);
+void mock_sgdk_set_SYS_isPAL(bool isPal);
 void __wrap_SYS_die(char* err);
 void __wrap_SYS_doVBlankProcessEx(VBlankProcessTime processTime);
 void __wrap_VDP_setTileMapXY(VDPPlane plane, u16 tile, u16 x, u16 y);

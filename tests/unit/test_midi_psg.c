@@ -32,7 +32,7 @@ void test_midi_uses_PAL_tones_if_system_is_in_that_region(UNUSED void** state)
 
     const u16 TONE_PAL_C4 = 423;
 
-    wraps_set_SYS_isPAL(true);
+    mock_sgdk_set_SYS_isPAL(true);
 
     expect_psg_tone(expectedPsgChan, TONE_PAL_C4);
     expect_psg_attenuation(expectedPsgChan, 0);

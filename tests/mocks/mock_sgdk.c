@@ -112,7 +112,7 @@ u16 __wrap_SYS_isPAL(void)
     return testIsPal;
 }
 
-void wraps_set_SYS_isPAL(bool isPal)
+void mock_sgdk_set_SYS_isPAL(bool isPal)
 {
     testIsPal = isPal;
 }
