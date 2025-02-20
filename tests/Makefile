@@ -125,9 +125,7 @@ MD_MOCKS=SYS_setVIntCallback \
 	SYS_setExtIntCallback \
 	SYS_setInterruptMaskLevel \
 	SPR_init \
-	SPR_setAnim \
 	SPR_setFrame \
-	SPR_setAnimAndFrame \
 	SPR_setVisibility \
 	comm_megawifi_is_present \
 	comm_megawifi_read_ready \

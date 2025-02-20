@@ -74,19 +74,8 @@ void __wrap_VDP_setPaletteColors(u16 index, const u16* values, u16 count)
 {
 }
 
-void __wrap_SPR_setAnim(Sprite* sprite, s16 anim)
-{
-}
-
 void __wrap_SPR_setFrame(Sprite* sprite, s16 frame)
 {
-}
-
-void __wrap_SPR_setAnimAndFrame(Sprite* sprite, s16 anim, s16 frame)
-{
-    check_expected(sprite);
-    check_expected(anim);
-    check_expected(frame);
 }
 
 void __wrap_VDP_setReg(u16 reg, u8 value)
