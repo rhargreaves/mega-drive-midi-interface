@@ -1,6 +1,7 @@
 #include "cmocka_inc.h"
 #include "mocks/mock_ym2612.h"
 #include "ym2612_regs.h"
+#include "test_helpers.h"
 
 static bool disableChecks = false;
 
