@@ -1,5 +1,4 @@
 #include "ui.h"
-#include "comm/buffer.h"
 #include "comm/comm.h"
 #include "comm/comm_everdrive.h"
 #include "comm/comm_everdrive_pro.h"

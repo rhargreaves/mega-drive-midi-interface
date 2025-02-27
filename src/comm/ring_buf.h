@@ -6,49 +6,49 @@
  * - The producer (interrupt/main thread) only writes to the buffer
  * - The consumer (main thread) only reads from the buffer
  * - One slot is always kept empty to distinguish between full and empty states
- * - Maximum capacity is BUFFER_CAPACITY elements
+ * - Maximum capacity is RING_BUF_CAPACITY elements
  */
 
-#define BUFFER_SIZE 4096
-#define BUFFER_CAPACITY (BUFFER_SIZE - 1)
+#define RING_BUF_SIZE 4096
+#define RING_BUF_CAPACITY (RING_BUF_SIZE - 1)
 
-typedef enum { BUFFER_OK = 0, BUFFER_EMPTY, BUFFER_FULL, BUFFER_ERROR } buffer_status_t;
+typedef enum { RING_BUF_OK = 0, RING_BUF_EMPTY, RING_BUF_FULL, RING_BUF_ERROR } ring_buf_status_t;
 
-void buffer_init(void);
+void ring_buf_init(void);
 
 /**
  * Write a byte to the buffer
  * MUST be called ONLY from the producer (interrupt/main thread)
  * @param data The byte to write
- * @return BUFFER_OK if successful, BUFFER_FULL if buffer was full
+ * @return RING_BUF_OK if successful, RING_BUF_FULL if buffer was full
  */
-buffer_status_t buffer_write(u8 data);
+ring_buf_status_t ring_buf_write(u8 data);
 
 /**
  * Read a byte from the buffer
  * MUST be called ONLY from the consumer (main thread)
  * @param data Pointer to store the read byte
- * @return BUFFER_OK if successful, BUFFER_EMPTY if buffer was empty
+ * @return RING_BUF_OK if successful, RING_BUF_EMPTY if buffer was empty
  */
-buffer_status_t buffer_read(u8* data);
+ring_buf_status_t ring_buf_read(u8* data);
 
 /**
  * Check if the buffer has data to read
  * Can be called from either context
  * @return true if buffer has data, false if empty
  */
-bool buffer_can_read(void);
+bool ring_buf_can_read(void);
 
 /**
  * Check if the buffer has space to write
  * Can be called from either context
  * @return true if buffer has space, false if full
  */
-bool buffer_can_write(void);
+bool ring_buf_can_write(void);
 
 /**
  * Get the number of free bytes in the buffer
  * Can be called from either context
  * @return Number of bytes that can be written
  */
-u16 buffer_available(void);
+u16 ring_buf_available(void);

@@ -3,7 +3,7 @@
 #include "log.h"
 #include "mw_uart.h"
 #include "settings.h"
-#include "buffer.h"
+#include "ring_buf.h"
 #include "ip_util.h"
 #include "scheduler.h"
 
@@ -157,20 +157,21 @@ u8 comm_megawifi_read_ready(void)
 {
     if (!recvData)
         return false;
-    return buffer_can_read();
+    return ring_buf_can_read();
 }
 
 u8 comm_megawifi_read(void)
 {
     u8 data = 0;
-    buffer_status_t status = buffer_read(&data);
-    if (status == BUFFER_OK) {
+    ring_buf_status_t status = ring_buf_read(&data);
+    if (status == RING_BUF_OK) {
         return data;
     }
 
-    if (status == BUFFER_EMPTY) {
+    if (status == RING_BUF_EMPTY) {
         log_warn("MW: Attempted read from empty buffer");
     }
+
     return 0;
 }
 
@@ -286,8 +287,8 @@ void comm_megawifi_tick(void)
 void comm_megawifi_midiEmitCallback(u8 data)
 {
     recvData = true;
-    buffer_status_t status = buffer_write(data);
-    if (status == BUFFER_FULL) {
+    ring_buf_status_t status = ring_buf_write(data);
+    if (status == RING_BUF_FULL) {
         log_warn("MW: MIDI buffer full!");
     }
 }

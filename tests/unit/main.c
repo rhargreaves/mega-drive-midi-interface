@@ -1,6 +1,5 @@
 #include "cmocka_inc.h"
 #include "test_applemidi.h"
-#include "test_buffer.h"
 #include "test_comm.h"
 #include "test_comm_megawifi.h"
 #include "test_comm_demo.h"
@@ -19,6 +18,7 @@
 #include "test_synth.h"
 #include "test_note_priority.h"
 #include "test_pitchcents.h"
+#include "test_ring_buf.h"
 
 #define midi_test(test) cmocka_unit_test_setup(test, test_midi_setup)
 #define midi_pcm_test(test) cmocka_unit_test_setup(test, test_midi_setup)
@@ -35,7 +35,7 @@
 #define log_test(test) cmocka_unit_test_setup(test, test_log_setup)
 #define scheduler_test(test) cmocka_unit_test_setup(test, test_scheduler_setup)
 #define applemidi_test(test) cmocka_unit_test_setup(test, test_applemidi_setup)
-#define buffer_test(test) cmocka_unit_test_setup(test, test_buffer_setup)
+#define ring_buf_test(test) cmocka_unit_test_setup(test, test_ring_buf_setup)
 #define midi_receiver_test(test) cmocka_unit_test_setup(test, test_midi_receiver_setup)
 #define note_priority_test(test) cmocka_unit_test_setup(test, test_note_priority_setup)
 #define pitchcents_test(test) cmocka_unit_test(test)
@@ -381,16 +381,16 @@ int main(void)
         applemidi_test(test_applemidi_does_not_read_beyond_length),
         applemidi_test(test_applemidi_parses_rtpmidi_packet_with_system_reset),
 
-        buffer_test(test_buffer_reads_and_writes_single_byte),
-        buffer_test(test_buffer_reads_and_writes_circularly_over_capacity),
-        buffer_test(test_buffer_available_returns_correct_value),
-        buffer_test(test_buffer_available_returns_correct_value_when_empty),
-        buffer_test(test_buffer_available_returns_correct_value_when_full),
-        buffer_test(test_buffer_returns_cannot_write_if_full),
-        buffer_test(test_buffer_returns_can_write_if_empty),
-        buffer_test(test_buffer_write_returns_full_when_buffer_is_full),
-        buffer_test(test_buffer_read_returns_empty_when_buffer_is_empty),
-        buffer_test(test_buffer_read_returns_error_with_null_pointer),
+        ring_buf_test(test_ring_buf_reads_and_writes_single_byte),
+        ring_buf_test(test_ring_buf_reads_and_writes_circularly_over_capacity),
+        ring_buf_test(test_ring_buf_available_returns_correct_value),
+        ring_buf_test(test_ring_buf_available_returns_correct_value_when_empty),
+        ring_buf_test(test_ring_buf_available_returns_correct_value_when_full),
+        ring_buf_test(test_ring_buf_returns_cannot_write_if_full),
+        ring_buf_test(test_ring_buf_returns_can_write_if_empty),
+        ring_buf_test(test_ring_buf_write_returns_full_when_buffer_is_full),
+        ring_buf_test(test_ring_buf_read_returns_empty_when_buffer_is_empty),
+        ring_buf_test(test_ring_buf_read_returns_error_with_null_pointer),
 
         note_priority_test(test_note_priority_ignores_push_when_full),
         note_priority_test(test_note_priority_indicates_when_full),

@@ -1,5 +1,5 @@
 #include "comm_serial.h"
-#include "buffer.h"
+#include "ring_buf.h"
 #include "serial.h"
 #include "log.h"
 #include "settings.h"
@@ -25,8 +25,8 @@ static void updateBuffer(void)
     while (serial_readyToReceive()) {
         recvData = true;
 
-        buffer_status_t status = buffer_write(serial_receive());
-        if (status == BUFFER_FULL) {
+        ring_buf_status_t status = ring_buf_write(serial_receive());
+        if (status == RING_BUF_FULL) {
             log_warn("Serial: Buffer overflow!");
             break;
         }
@@ -47,7 +47,7 @@ static void flushRRDY(void)
 
 void comm_serial_init(void)
 {
-    buffer_init();
+    ring_buf_init();
     serial_init(SCTRL_4800_BPS | SCTRL_SIN | SCTRL_SOUT | SCTRL_RINT);
     serial_setReadyToReceiveCallback(&recvReadyCallback);
     flushRRDY();
@@ -65,24 +65,25 @@ u8 comm_serial_read_ready(void)
 {
     if (!recvData)
         return false;
-    return buffer_can_read();
+    return ring_buf_can_read();
 }
 
 u8 comm_serial_read(void)
 {
     u8 data = 0;
-    buffer_status_t status = buffer_read(&data);
-    if (status == BUFFER_OK) {
-        u16 bufferAvailable = buffer_available();
+    ring_buf_status_t status = ring_buf_read(&data);
+    if (status == RING_BUF_OK) {
+        u16 bufferAvailable = ring_buf_available();
         if (bufferAvailable < 32) {
             log_warn("Serial: Buffer free = %d bytes", bufferAvailable);
         }
         return data;
     }
 
-    if (status == BUFFER_EMPTY) {
+    if (status == RING_BUF_EMPTY) {
         log_warn("Serial: Attempted read from empty buffer");
     }
+
     return 0;
 }
 
