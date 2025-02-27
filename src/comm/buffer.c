@@ -1,8 +1,8 @@
 #include "buffer.h"
 
-static u16 readHead = 0;
+static volatile u16 readHead = 0;
 static volatile u16 writeHead = 0;
-static volatile char buffer[BUFFER_SIZE];
+static volatile u8 buffer[BUFFER_SIZE];
 
 void buffer_init(void)
 {
@@ -32,7 +32,6 @@ buffer_status_t buffer_read(u8* data)
 buffer_status_t buffer_write(u8 data)
 {
     u16 nextWriteHead = (writeHead + 1) % BUFFER_SIZE;
-
     if (nextWriteHead == readHead) {
         return BUFFER_FULL;
     }
