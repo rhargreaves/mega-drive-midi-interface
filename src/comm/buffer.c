@@ -3,13 +3,11 @@
 static u16 readHead = 0;
 static volatile u16 writeHead = 0;
 static volatile char buffer[BUFFER_SIZE];
-static u16 length = 0;
 
 void buffer_init(void)
 {
     readHead = 0;
     writeHead = 0;
-    length = 0;
 }
 
 buffer_status_t buffer_read(u8* data)
@@ -18,12 +16,11 @@ buffer_status_t buffer_read(u8* data)
         return BUFFER_ERROR;
     }
 
-    if (length == 0) {
+    if (readHead == writeHead) {
         return BUFFER_EMPTY;
     }
 
     *data = buffer[readHead];
-    length--;
 
     readHead++;
     if (readHead == BUFFER_SIZE) {
@@ -34,31 +31,36 @@ buffer_status_t buffer_read(u8* data)
 
 buffer_status_t buffer_write(u8 data)
 {
-    if (length == BUFFER_SIZE) {
+    u16 nextWriteHead = (writeHead + 1) % BUFFER_SIZE;
+
+    if (nextWriteHead == readHead) {
         return BUFFER_FULL;
     }
 
     buffer[writeHead] = data;
-    length++;
+    writeHead = nextWriteHead;
 
-    writeHead++;
-    if (writeHead == BUFFER_SIZE) {
-        writeHead = 0;
-    }
     return BUFFER_OK;
 }
 
 bool buffer_can_read(void)
 {
-    return length != 0;
+    return readHead != writeHead;
 }
 
 u16 buffer_available(void)
 {
-    return BUFFER_SIZE - length;
+    if (readHead == writeHead) {
+        return BUFFER_CAPACITY;
+    } else if (readHead < writeHead) {
+        return BUFFER_CAPACITY - (writeHead - readHead);
+    } else {
+        return readHead - writeHead - 1;
+    }
 }
 
 bool buffer_can_write(void)
 {
-    return length != BUFFER_SIZE;
+    u16 nextWriteHead = (writeHead + 1) % BUFFER_SIZE;
+    return nextWriteHead != readHead;
 }

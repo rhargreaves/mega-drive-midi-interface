@@ -5,9 +5,12 @@
  * Lock-free ring buffer implementation for Single Producer Single Consumer (SPSC) scenario.
  * - The producer (interrupt/main thread) only writes to the buffer
  * - The consumer (main thread) only reads from the buffer
+ * - One slot is always kept empty to distinguish between full and empty states
+ * - Maximum capacity is BUFFER_SIZE-1 elements
  */
 
 #define BUFFER_SIZE 4096
+#define BUFFER_CAPACITY (BUFFER_SIZE - 1)
 
 typedef enum { BUFFER_OK = 0, BUFFER_EMPTY, BUFFER_FULL, BUFFER_ERROR } buffer_status_t;
 

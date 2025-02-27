@@ -94,7 +94,7 @@ void test_comm_megawifi_logs_if_buffer_full(UNUSED void** state)
 {
     expect_log_warn("MW: MIDI buffer full!");
 
-    for (u16 i = 0; i < BUFFER_SIZE + 1; i++) {
+    for (u16 i = 0; i < BUFFER_CAPACITY + 1; i++) {
         __real_comm_megawifi_midiEmitCallback(0x00);
     }
 }
