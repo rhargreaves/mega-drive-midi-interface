@@ -162,7 +162,16 @@ u8 comm_megawifi_read_ready(void)
 
 u8 comm_megawifi_read(void)
 {
-    return buffer_read();
+    u8 data = 0;
+    buffer_status_t status = buffer_read(&data);
+    if (status == BUFFER_OK) {
+        return data;
+    }
+
+    if (status == BUFFER_EMPTY) {
+        log_warn("MW: Attempted read from empty buffer");
+    }
+    return 0;
 }
 
 u8 comm_megawifi_write_ready(void)
@@ -277,11 +286,10 @@ void comm_megawifi_tick(void)
 void comm_megawifi_midiEmitCallback(u8 data)
 {
     recvData = true;
-    if (!buffer_can_write()) {
+    buffer_status_t status = buffer_write(data);
+    if (status == BUFFER_FULL) {
         log_warn("MW: MIDI buffer full!");
-        return;
     }
-    buffer_write(data);
 }
 
 void send_complete_cb(enum lsd_status stat, void* ctx)

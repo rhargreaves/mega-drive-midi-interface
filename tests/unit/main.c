@@ -296,6 +296,7 @@ int main(void)
         comm_megawifi_test(test_comm_megawifi_initialises),
         comm_megawifi_test(test_comm_megawifi_reads_midi_message),
         comm_megawifi_test(test_comm_megawifi_logs_if_buffer_full),
+        comm_megawifi_test(test_comm_megawifi_returns_zero_when_buffer_empty),
 
         dynamic_midi_test(test_midi_dynamic_uses_all_channels),
         dynamic_midi_test(test_midi_routing_switches_to_dynamic_on_gm_reset),
@@ -387,6 +388,9 @@ int main(void)
         buffer_test(test_buffer_available_returns_correct_value_when_full),
         buffer_test(test_buffer_returns_cannot_write_if_full),
         buffer_test(test_buffer_returns_can_write_if_empty),
+        buffer_test(test_buffer_write_returns_full_when_buffer_is_full),
+        buffer_test(test_buffer_read_returns_empty_when_buffer_is_empty),
+        buffer_test(test_buffer_read_returns_error_with_null_pointer),
 
         note_priority_test(test_note_priority_ignores_push_when_full),
         note_priority_test(test_note_priority_indicates_when_full),

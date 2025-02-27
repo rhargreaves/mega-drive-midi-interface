@@ -13,6 +13,7 @@
 int test_comm_megawifi_setup(UNUSED void** state)
 {
     log_init();
+    buffer_init();
     mock_log_enable_checks();
     return 0;
 }
@@ -98,7 +99,12 @@ void test_comm_megawifi_logs_if_buffer_full(UNUSED void** state)
     }
 }
 
-void test_comm_megawifi_is_present_returns_false_if_mw_not_present(UNUSED void** state)
+void test_comm_megawifi_returns_zero_when_buffer_empty(UNUSED void** state)
 {
-    // Implementation of the function
+    megawifi_init();
+
+    expect_log_warn("MW: Attempted read from empty buffer");
+    u8 data = __real_comm_megawifi_read();
+
+    assert_int_equal(data, 0);
 }

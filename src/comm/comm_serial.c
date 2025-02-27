@@ -24,7 +24,12 @@ static void updateBuffer(void)
 {
     while (serial_readyToReceive()) {
         recvData = true;
-        buffer_write(serial_receive());
+
+        buffer_status_t status = buffer_write(serial_receive());
+        if (status == BUFFER_FULL) {
+            log_warn("Serial: Buffer overflow!");
+            break;
+        }
     }
 }
 
@@ -65,12 +70,20 @@ u8 comm_serial_read_ready(void)
 
 u8 comm_serial_read(void)
 {
-    u8 data = buffer_read();
-    u16 bufferAvailable = buffer_available();
-    if (bufferAvailable < 32) {
-        log_warn("Serial: Buffer free = %d bytes", bufferAvailable);
+    u8 data = 0;
+    buffer_status_t status = buffer_read(&data);
+    if (status == BUFFER_OK) {
+        u16 bufferAvailable = buffer_available();
+        if (bufferAvailable < 32) {
+            log_warn("Serial: Buffer free = %d bytes", bufferAvailable);
+        }
+        return data;
     }
-    return data;
+
+    if (status == BUFFER_EMPTY) {
+        log_warn("Serial: Attempted read from empty buffer");
+    }
+    return 0;
 }
 
 u8 comm_serial_write_ready(void)

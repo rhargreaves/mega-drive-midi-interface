@@ -12,20 +12,32 @@ void buffer_init(void)
     length = 0;
 }
 
-u8 buffer_read(void)
+buffer_status_t buffer_read(u8* data)
 {
-    u8 data = buffer[readHead];
+    if (data == NULL) {
+        return BUFFER_ERROR;
+    }
+
+    if (length == 0) {
+        return BUFFER_EMPTY;
+    }
+
+    *data = buffer[readHead];
     length--;
 
     readHead++;
     if (readHead == BUFFER_SIZE) {
         readHead = 0;
     }
-    return data;
+    return BUFFER_OK;
 }
 
-void buffer_write(u8 data)
+buffer_status_t buffer_write(u8 data)
 {
+    if (length == BUFFER_SIZE) {
+        return BUFFER_FULL;
+    }
+
     buffer[writeHead] = data;
     length++;
 
@@ -33,6 +45,7 @@ void buffer_write(u8 data)
     if (writeHead == BUFFER_SIZE) {
         writeHead = 0;
     }
+    return BUFFER_OK;
 }
 
 bool buffer_can_read(void)
