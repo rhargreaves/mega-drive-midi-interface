@@ -21,11 +21,7 @@ buffer_status_t buffer_read(u8* data)
     }
 
     *data = buffer[readHead];
-
-    readHead++;
-    if (readHead == BUFFER_SIZE) {
-        readHead = 0;
-    }
+    readHead = (readHead + 1) % BUFFER_SIZE;
     return BUFFER_OK;
 }
 
@@ -38,7 +34,6 @@ buffer_status_t buffer_write(u8 data)
 
     buffer[writeHead] = data;
     writeHead = nextWriteHead;
-
     return BUFFER_OK;
 }
 
