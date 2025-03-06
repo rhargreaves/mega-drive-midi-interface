@@ -13,12 +13,17 @@ void __wrap_comm_write(u8 data)
 
 bool __wrap_comm_read_ready(void)
 {
-    return mock_type(bool);
+    return (bool)mock();
 }
 
-u8 __wrap_comm_read(void)
+CommStatus __wrap_comm_read(u8* data, u16 attempts)
 {
-    return mock_type(u8);
+    check_expected(attempts);
+    CommStatus status = (CommStatus)mock();
+    if (status == COMM_OK) {
+        *data = (u8)mock();
+    }
+    return status;
 }
 
 u16 __wrap_comm_idle_count(void)
@@ -270,9 +275,11 @@ void expect_usb_sent_byte(u8 value)
     expect_value(__wrap_comm_everdrive_write, data, value);
 }
 
-void stub_comm_read_returns_midi_event(u8 status, u8 data, u8 data2)
+void expect_comm_read(CommStatus status, u8 data, u16 attempts)
 {
+    expect_value(__wrap_comm_read, attempts, attempts);
     will_return(__wrap_comm_read, status);
-    will_return(__wrap_comm_read, data);
-    will_return(__wrap_comm_read, data2);
+    if (status == COMM_OK) {
+        will_return(__wrap_comm_read, data);
+    }
 }

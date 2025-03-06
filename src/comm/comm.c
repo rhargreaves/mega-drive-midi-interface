@@ -93,14 +93,33 @@ bool comm_read_ready(void)
     return readReady();
 }
 
-u8 comm_read(void)
+CommStatus comm_read(u8* data, u16 attempts)
 {
-    while (!readReady())
-        ;
+    if (attempts == 0) {
+        if (!readReady()) {
+            return COMM_NOT_READY;
+        }
+
+        if (countsInBounds()) {
+            reads++;
+        }
+        *data = activeCommType->read();
+        return COMM_OK;
+    }
+
+    u16 timeout_counter = 0;
+    while (!readReady()) {
+        timeout_counter++;
+        if (timeout_counter >= attempts) {
+            return COMM_TIMEOUT;
+        }
+    }
+
     if (countsInBounds()) {
         reads++;
     }
-    return activeCommType->read();
+    *data = activeCommType->read();
+    return COMM_OK;
 }
 
 u16 comm_idle_count(void)

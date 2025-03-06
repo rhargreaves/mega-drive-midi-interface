@@ -33,6 +33,7 @@ static void systemMessage(u8 status);
 static void program(u8 status);
 static u16 read14bitValue(void);
 static void readSysEx(void);
+static void processStatus(u8 status);
 
 void midi_receiver_init(void)
 {
@@ -41,8 +42,13 @@ void midi_receiver_init(void)
 
 void midi_receiver_read_if_comm_ready(void)
 {
+    u8 data;
     while (comm_read_ready()) {
-        midi_receiver_read();
+        if (comm_read(&data, 0) == COMM_OK) {
+            processStatus(data);
+        } else {
+            break;
+        }
     }
 }
 
@@ -62,7 +68,16 @@ static void debugPrintEvent(u8 status, u8 data1, u8 data2)
 
 void midi_receiver_read(void)
 {
-    u8 status = comm_read();
+    u8 status;
+    if (comm_read(&status, COMM_DEFAULT_ATTEMPTS) != COMM_OK) {
+        return;
+    }
+
+    processStatus(status);
+}
+
+static void processStatus(u8 status)
+{
     u8 event = STATUS_UPPER(status);
     switch (event) {
     case EVENT_NOTE_ON:
@@ -92,8 +107,18 @@ void midi_receiver_read(void)
 static void controlChange(u8 status)
 {
     u8 chan = STATUS_LOWER(status);
-    u8 controller = comm_read();
-    u8 value = comm_read();
+    u8 controller, value;
+
+    if (comm_read(&controller, COMM_DEFAULT_ATTEMPTS) != COMM_OK) {
+        log_warn("MIDIRecv: Failed to read CC");
+        return;
+    }
+
+    if (comm_read(&value, COMM_DEFAULT_ATTEMPTS) != COMM_OK) {
+        log_warn("MIDIRecv: Failed to read CC value");
+        return;
+    }
+
     debugPrintEvent(status, controller, value);
     midi_cc(chan, controller, value);
 }
@@ -101,8 +126,18 @@ static void controlChange(u8 status)
 static void noteOn(u8 status)
 {
     u8 chan = STATUS_LOWER(status);
-    u8 pitch = comm_read();
-    u8 velocity = comm_read();
+    u8 pitch, velocity;
+
+    if (comm_read(&pitch, COMM_DEFAULT_ATTEMPTS) != COMM_OK) {
+        log_warn("MIDIRecv: Failed to read note on pitch");
+        return;
+    }
+
+    if (comm_read(&velocity, COMM_DEFAULT_ATTEMPTS) != COMM_OK) {
+        log_warn("MIDIRecv: Failed to read note on velocity");
+        return;
+    }
+
     debugPrintEvent(status, pitch, velocity);
     midi_note_on(chan, pitch, velocity);
 }
@@ -110,8 +145,18 @@ static void noteOn(u8 status)
 static void noteOff(u8 status)
 {
     u8 chan = STATUS_LOWER(status);
-    u8 pitch = comm_read();
-    comm_read();
+    u8 pitch, velocity;
+
+    if (comm_read(&pitch, COMM_DEFAULT_ATTEMPTS) != COMM_OK) {
+        log_warn("MIDIRecv: Failed to read note off pitch");
+        return;
+    }
+
+    if (comm_read(&velocity, COMM_DEFAULT_ATTEMPTS) != COMM_OK) {
+        log_warn("MIDIRecv: Failed to read note off velocity");
+        return;
+    }
+
     debugPrintEvent(status, pitch, 0);
     midi_note_off(chan, pitch);
 }
@@ -127,15 +172,31 @@ static void pitchBend(u8 status)
 static void program(u8 status)
 {
     u8 chan = STATUS_LOWER(status);
-    u8 program = comm_read();
+    u8 program;
+
+    if (comm_read(&program, COMM_DEFAULT_ATTEMPTS) != COMM_OK) {
+        log_warn("MIDIRecv: Failed to read program");
+        return;
+    }
+
     debugPrintEvent(status, program, 0);
     midi_program(chan, program);
 }
 
 static u16 read14bitValue(void)
 {
-    u16 lower = comm_read();
-    u16 upper = comm_read();
+    u8 lower, upper;
+
+    if (comm_read(&lower, COMM_DEFAULT_ATTEMPTS) != COMM_OK) {
+        log_warn("MIDIRecv: Failed to read 14bit value lower");
+        return 0;
+    }
+
+    if (comm_read(&upper, COMM_DEFAULT_ATTEMPTS) != COMM_OK) {
+        log_warn("MIDIRecv: Failed to read 14bit value upper");
+        return 0;
+    }
+
     return (upper << 7) + lower;
 }
 
@@ -171,8 +232,19 @@ static void readSysEx(void)
     u8 buffer[BUFFER_LENGTH];
     u8 data;
     u16 index = 0;
-    while (index < BUFFER_LENGTH && (data = comm_read()) != SYSEX_END) {
+
+    while (index < BUFFER_LENGTH) {
+        if (comm_read(&data, COMM_DEFAULT_ATTEMPTS) != COMM_OK) {
+            log_warn("MIDIRecv: Failed to read sysex");
+            break;
+        }
+
+        if (data == SYSEX_END) {
+            break;
+        }
+
         buffer[index++] = data;
     }
+
     midi_sysex(buffer, index);
 }

@@ -1,10 +1,11 @@
 #pragma once
 #include "genesis.h"
 #include "cmocka.h"
+#include "comm/comm.h"
 
 void __wrap_comm_init(void);
 bool __wrap_comm_read_ready(void);
-u8 __wrap_comm_read(void);
+CommStatus __wrap_comm_read(u8* data, u16 attempts);
 void __wrap_comm_write(u8 data);
 void __wrap_comm_serial_init(void);
 bool __wrap_comm_serial_is_present(void);
@@ -57,7 +58,7 @@ extern u8 __real_comm_megawifi_write_ready(void);
 extern void __real_comm_megawifi_write(u8 data);
 extern void __real_comm_init(void);
 extern void __real_comm_write(u8 data);
-extern u8 __real_comm_read(void);
+extern CommStatus __real_comm_read(u8* data, u16 attempts);
 extern u16 __real_comm_idle_count(void);
 extern u16 __real_comm_busy_count(void);
 extern void __real_comm_reset_counts(void);
@@ -72,4 +73,4 @@ void stub_usb_receive_cc(u8 chan, u8 cc, u8 value);
 void stub_usb_receive_note_on(u8 chan, u8 key, u8 velocity);
 void stub_usb_receive_note_off(u8 chan, u8 key);
 void stub_usb_receive_pitch_bend(u8 chan, u16 bend);
-void stub_comm_read_returns_midi_event(u8 status, u8 data, u8 data2);
+void expect_comm_read(CommStatus status, u8 data, u16 attempts);
