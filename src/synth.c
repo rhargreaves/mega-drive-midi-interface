@@ -50,6 +50,7 @@ void synth_init(const FmChannel* initialPreset)
 {
     Z80_loadDriver(Z80_DRIVER_PCM, true);
     Z80_requestBus(TRUE);
+    writeDacReg();
     writeSpecialModeReg();
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         volumes[chan] = MAX_VOLUME;

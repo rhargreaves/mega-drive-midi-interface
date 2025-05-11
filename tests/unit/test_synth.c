@@ -16,7 +16,7 @@ static void set_initial_registers(void)
 {
     expect_value(__wrap_Z80_requestBus, wait, TRUE);
 
-    const u16 count = 188;
+    const u16 count = 189;
     for (u16 i = 0; i < count; i++) {
         expect_value(__wrap_Z80_getAndRequestBus, wait, TRUE);
         will_return(__wrap_Z80_getAndRequestBus, true);
