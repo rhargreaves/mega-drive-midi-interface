@@ -16,11 +16,16 @@ static void set_initial_registers(void)
 {
     expect_value(__wrap_Z80_requestBus, wait, TRUE);
 
+    // Global
     expect_ym2612_write_reg_at_init(0, 0x2B, 0x0); // #1
     expect_ym2612_write_reg_at_init(0, 0x27, 0x0); // #2
-    expect_ym2612_write_reg_at_init(0, 0x28, 0x0); // #3
+
+    // Chan 1
+    expect_ym2612_write_reg_at_init(0, YM_KEY_ON_OFF, 0x0); // #3
     expect_ym2612_write_reg_at_init(0, 0xB0, 0x0); // #4
     expect_ym2612_write_reg_at_init(0, 0xB4, 0xC0); // #5
+
+    // Chan 1 Op 1
     expect_ym2612_write_reg_at_init(0, 0x30, 0x1); // #6
     expect_ym2612_write_reg_at_init(0, 0x50, 0x5A); // #7
     expect_ym2612_write_reg_at_init(0, 0x60, 0x7); // #8
@@ -28,6 +33,8 @@ static void set_initial_registers(void)
     expect_ym2612_write_reg_at_init(0, 0x80, 0x71); // #10
     expect_ym2612_write_reg_at_init(0, 0x40, 0x23); // #11
     expect_ym2612_write_reg_at_init(0, 0x90, 0x0); // #12
+
+    // Chan 1 Op 2
     expect_ym2612_write_reg_at_init(0, 0x38, 0x64); // #13
     expect_ym2612_write_reg_at_init(0, 0x58, 0x58); // #14
     expect_ym2612_write_reg_at_init(0, 0x68, 0x9); // #15
@@ -35,6 +42,8 @@ static void set_initial_registers(void)
     expect_ym2612_write_reg_at_init(0, 0x88, 0x67); // #17
     expect_ym2612_write_reg_at_init(0, 0x48, 0x23); // #18
     expect_ym2612_write_reg_at_init(0, 0x98, 0x0); // #19
+
+    // Chan 1 Op 3
     expect_ym2612_write_reg_at_init(0, 0x34, 0x72); // #20
     expect_ym2612_write_reg_at_init(0, 0x54, 0xDF); // #21
     expect_ym2612_write_reg_at_init(0, 0x64, 0x17); // #22
@@ -42,6 +51,8 @@ static void set_initial_registers(void)
     expect_ym2612_write_reg_at_init(0, 0x84, 0x91); // #24
     expect_ym2612_write_reg_at_init(0, 0x44, 0x23); // #25
     expect_ym2612_write_reg_at_init(0, 0x94, 0x0); // #26
+
+    // Chan 1 Op 4
     expect_ym2612_write_reg_at_init(0, 0x3C, 0x31); // #27
     expect_ym2612_write_reg_at_init(0, 0x5C, 0x9B); // #28
     expect_ym2612_write_reg_at_init(0, 0x6C, 0x4); // #29
@@ -49,9 +60,13 @@ static void set_initial_registers(void)
     expect_ym2612_write_reg_at_init(0, 0x8C, 0xA6); // #31
     expect_ym2612_write_reg_at_init(0, 0x4C, 0x23); // #32
     expect_ym2612_write_reg_at_init(0, 0x9C, 0x0); // #33
-    expect_ym2612_write_reg_at_init(0, 0x28, 0x1); // #34
+
+    // Chan 2
+    expect_ym2612_write_reg_at_init(0, YM_KEY_ON_OFF, 0x1); // #34
     expect_ym2612_write_reg_at_init(0, 0xB1, 0x0); // #35
     expect_ym2612_write_reg_at_init(0, 0xB5, 0xC0); // #36
+
+    // Chan 2 Op 1
     expect_ym2612_write_reg_at_init(0, 0x31, 0x1); // #37
     expect_ym2612_write_reg_at_init(0, 0x51, 0x5A); // #38
     expect_ym2612_write_reg_at_init(0, 0x61, 0x7); // #39
@@ -59,6 +74,8 @@ static void set_initial_registers(void)
     expect_ym2612_write_reg_at_init(0, 0x81, 0x71); // #41
     expect_ym2612_write_reg_at_init(0, 0x41, 0x23); // #42
     expect_ym2612_write_reg_at_init(0, 0x91, 0x0); // #43
+
+    // Chan 2 Op 2
     expect_ym2612_write_reg_at_init(0, 0x39, 0x64); // #44
     expect_ym2612_write_reg_at_init(0, 0x59, 0x58); // #45
     expect_ym2612_write_reg_at_init(0, 0x69, 0x9); // #46
@@ -66,6 +83,8 @@ static void set_initial_registers(void)
     expect_ym2612_write_reg_at_init(0, 0x89, 0x67); // #48
     expect_ym2612_write_reg_at_init(0, 0x49, 0x23); // #49
     expect_ym2612_write_reg_at_init(0, 0x99, 0x0); // #50
+
+    // Chan 2 Op 3
     expect_ym2612_write_reg_at_init(0, 0x35, 0x72); // #51
     expect_ym2612_write_reg_at_init(0, 0x55, 0xDF); // #52
     expect_ym2612_write_reg_at_init(0, 0x65, 0x17); // #53
@@ -73,6 +92,8 @@ static void set_initial_registers(void)
     expect_ym2612_write_reg_at_init(0, 0x85, 0x91); // #55
     expect_ym2612_write_reg_at_init(0, 0x45, 0x23); // #56
     expect_ym2612_write_reg_at_init(0, 0x95, 0x0); // #57
+
+    // Chan 2 Op 4
     expect_ym2612_write_reg_at_init(0, 0x3D, 0x31); // #58
     expect_ym2612_write_reg_at_init(0, 0x5D, 0x9B); // #59
     expect_ym2612_write_reg_at_init(0, 0x6D, 0x4); // #60
@@ -80,9 +101,13 @@ static void set_initial_registers(void)
     expect_ym2612_write_reg_at_init(0, 0x8D, 0xA6); // #62
     expect_ym2612_write_reg_at_init(0, 0x4D, 0x23); // #63
     expect_ym2612_write_reg_at_init(0, 0x9D, 0x0); // #64
-    expect_ym2612_write_reg_at_init(0, 0x28, 0x2); // #65
+
+    // Chan 3
+    expect_ym2612_write_reg_at_init(0, YM_KEY_ON_OFF, 0x2); // #65
     expect_ym2612_write_reg_at_init(0, 0xB2, 0x0); // #66
     expect_ym2612_write_reg_at_init(0, 0xB6, 0xC0); // #67
+
+    // Chan 3 Op 1
     expect_ym2612_write_reg_at_init(0, 0x32, 0x1); // #68
     expect_ym2612_write_reg_at_init(0, 0x52, 0x5A); // #69
     expect_ym2612_write_reg_at_init(0, 0x62, 0x7); // #70
@@ -90,6 +115,8 @@ static void set_initial_registers(void)
     expect_ym2612_write_reg_at_init(0, 0x82, 0x71); // #72
     expect_ym2612_write_reg_at_init(0, 0x42, 0x23); // #73
     expect_ym2612_write_reg_at_init(0, 0x92, 0x0); // #74
+
+    // Chan 3 Op 2
     expect_ym2612_write_reg_at_init(0, 0x3A, 0x64); // #75
     expect_ym2612_write_reg_at_init(0, 0x5A, 0x58); // #76
     expect_ym2612_write_reg_at_init(0, 0x6A, 0x9); // #77
@@ -97,6 +124,8 @@ static void set_initial_registers(void)
     expect_ym2612_write_reg_at_init(0, 0x8A, 0x67); // #79
     expect_ym2612_write_reg_at_init(0, 0x4A, 0x23); // #80
     expect_ym2612_write_reg_at_init(0, 0x9A, 0x0); // #81
+
+    // Chan 3 Op 3
     expect_ym2612_write_reg_at_init(0, 0x36, 0x72); // #82
     expect_ym2612_write_reg_at_init(0, 0x56, 0xDF); // #83
     expect_ym2612_write_reg_at_init(0, 0x66, 0x17); // #84
@@ -104,6 +133,8 @@ static void set_initial_registers(void)
     expect_ym2612_write_reg_at_init(0, 0x86, 0x91); // #86
     expect_ym2612_write_reg_at_init(0, 0x46, 0x23); // #87
     expect_ym2612_write_reg_at_init(0, 0x96, 0x0); // #88
+
+    // Chan 3 Op 4
     expect_ym2612_write_reg_at_init(0, 0x3E, 0x31); // #89
     expect_ym2612_write_reg_at_init(0, 0x5E, 0x9B); // #90
     expect_ym2612_write_reg_at_init(0, 0x6E, 0x4); // #91
@@ -111,9 +142,13 @@ static void set_initial_registers(void)
     expect_ym2612_write_reg_at_init(0, 0x8E, 0xA6); // #93
     expect_ym2612_write_reg_at_init(0, 0x4E, 0x23); // #94
     expect_ym2612_write_reg_at_init(0, 0x9E, 0x0); // #95
-    expect_ym2612_write_reg_at_init(0, 0x28, 0x4); // #96
+
+    // Chan 4
+    expect_ym2612_write_reg_at_init(0, YM_KEY_ON_OFF, 0x4); // #96
     expect_ym2612_write_reg_at_init(1, 0xB0, 0x0); // #97
     expect_ym2612_write_reg_at_init(1, 0xB4, 0xC0); // #98
+
+    // Chan 4 Op 1
     expect_ym2612_write_reg_at_init(1, 0x30, 0x1); // #99
     expect_ym2612_write_reg_at_init(1, 0x50, 0x5A); // #100
     expect_ym2612_write_reg_at_init(1, 0x60, 0x7); // #101
@@ -121,6 +156,8 @@ static void set_initial_registers(void)
     expect_ym2612_write_reg_at_init(1, 0x80, 0x71); // #103
     expect_ym2612_write_reg_at_init(1, 0x40, 0x23); // #104
     expect_ym2612_write_reg_at_init(1, 0x90, 0x0); // #105
+
+    // Chan 4 Op 2
     expect_ym2612_write_reg_at_init(1, 0x38, 0x64); // #106
     expect_ym2612_write_reg_at_init(1, 0x58, 0x58); // #107
     expect_ym2612_write_reg_at_init(1, 0x68, 0x9); // #108
@@ -128,6 +165,8 @@ static void set_initial_registers(void)
     expect_ym2612_write_reg_at_init(1, 0x88, 0x67); // #110
     expect_ym2612_write_reg_at_init(1, 0x48, 0x23); // #111
     expect_ym2612_write_reg_at_init(1, 0x98, 0x0); // #112
+
+    // Chan 4 Op 3
     expect_ym2612_write_reg_at_init(1, 0x34, 0x72); // #113
     expect_ym2612_write_reg_at_init(1, 0x54, 0xDF); // #114
     expect_ym2612_write_reg_at_init(1, 0x64, 0x17); // #115
@@ -135,6 +174,8 @@ static void set_initial_registers(void)
     expect_ym2612_write_reg_at_init(1, 0x84, 0x91); // #117
     expect_ym2612_write_reg_at_init(1, 0x44, 0x23); // #118
     expect_ym2612_write_reg_at_init(1, 0x94, 0x0); // #119
+
+    // Chan 4 Op 4
     expect_ym2612_write_reg_at_init(1, 0x3C, 0x31); // #120
     expect_ym2612_write_reg_at_init(1, 0x5C, 0x9B); // #121
     expect_ym2612_write_reg_at_init(1, 0x6C, 0x4); // #122
@@ -142,9 +183,13 @@ static void set_initial_registers(void)
     expect_ym2612_write_reg_at_init(1, 0x8C, 0xA6); // #124
     expect_ym2612_write_reg_at_init(1, 0x4C, 0x23); // #125
     expect_ym2612_write_reg_at_init(1, 0x9C, 0x0); // #126
-    expect_ym2612_write_reg_at_init(0, 0x28, 0x5); // #127
+
+    // Chan 5
+    expect_ym2612_write_reg_at_init(0, YM_KEY_ON_OFF, 0x5); // #127
     expect_ym2612_write_reg_at_init(1, 0xB1, 0x0); // #128
     expect_ym2612_write_reg_at_init(1, 0xB5, 0xC0); // #129
+
+    // Chan 5 Op 1
     expect_ym2612_write_reg_at_init(1, 0x31, 0x1); // #130
     expect_ym2612_write_reg_at_init(1, 0x51, 0x5A); // #131
     expect_ym2612_write_reg_at_init(1, 0x61, 0x7); // #132
@@ -152,6 +197,8 @@ static void set_initial_registers(void)
     expect_ym2612_write_reg_at_init(1, 0x81, 0x71); // #134
     expect_ym2612_write_reg_at_init(1, 0x41, 0x23); // #135
     expect_ym2612_write_reg_at_init(1, 0x91, 0x0); // #136
+
+    // Chan 5 Op 2
     expect_ym2612_write_reg_at_init(1, 0x39, 0x64); // #137
     expect_ym2612_write_reg_at_init(1, 0x59, 0x58); // #138
     expect_ym2612_write_reg_at_init(1, 0x69, 0x9); // #139
@@ -159,6 +206,8 @@ static void set_initial_registers(void)
     expect_ym2612_write_reg_at_init(1, 0x89, 0x67); // #141
     expect_ym2612_write_reg_at_init(1, 0x49, 0x23); // #142
     expect_ym2612_write_reg_at_init(1, 0x99, 0x0); // #143
+
+    // Chan 5 Op 3
     expect_ym2612_write_reg_at_init(1, 0x35, 0x72); // #144
     expect_ym2612_write_reg_at_init(1, 0x55, 0xDF); // #145
     expect_ym2612_write_reg_at_init(1, 0x65, 0x17); // #146
@@ -166,6 +215,8 @@ static void set_initial_registers(void)
     expect_ym2612_write_reg_at_init(1, 0x85, 0x91); // #148
     expect_ym2612_write_reg_at_init(1, 0x45, 0x23); // #149
     expect_ym2612_write_reg_at_init(1, 0x95, 0x0); // #150
+
+    // Chan 5 Op 4
     expect_ym2612_write_reg_at_init(1, 0x3D, 0x31); // #151
     expect_ym2612_write_reg_at_init(1, 0x5D, 0x9B); // #152
     expect_ym2612_write_reg_at_init(1, 0x6D, 0x4); // #153
@@ -173,9 +224,13 @@ static void set_initial_registers(void)
     expect_ym2612_write_reg_at_init(1, 0x8D, 0xA6); // #155
     expect_ym2612_write_reg_at_init(1, 0x4D, 0x23); // #156
     expect_ym2612_write_reg_at_init(1, 0x9D, 0x0); // #157
-    expect_ym2612_write_reg_at_init(0, 0x28, 0x6); // #158
+
+    // Chan 6
+    expect_ym2612_write_reg_at_init(0, YM_KEY_ON_OFF, 0x6); // #158
     expect_ym2612_write_reg_at_init(1, 0xB2, 0x0); // #159
     expect_ym2612_write_reg_at_init(1, 0xB6, 0xC0); // #160
+
+    // Chan 6 Op 1
     expect_ym2612_write_reg_at_init(1, 0x32, 0x1); // #161
     expect_ym2612_write_reg_at_init(1, 0x52, 0x5A); // #162
     expect_ym2612_write_reg_at_init(1, 0x62, 0x7); // #163
@@ -183,6 +238,8 @@ static void set_initial_registers(void)
     expect_ym2612_write_reg_at_init(1, 0x82, 0x71); // #165
     expect_ym2612_write_reg_at_init(1, 0x42, 0x23); // #166
     expect_ym2612_write_reg_at_init(1, 0x92, 0x0); // #167
+
+    // Chan 6 Op 2
     expect_ym2612_write_reg_at_init(1, 0x3A, 0x64); // #168
     expect_ym2612_write_reg_at_init(1, 0x5A, 0x58); // #169
     expect_ym2612_write_reg_at_init(1, 0x6A, 0x9); // #170
@@ -190,6 +247,8 @@ static void set_initial_registers(void)
     expect_ym2612_write_reg_at_init(1, 0x8A, 0x67); // #172
     expect_ym2612_write_reg_at_init(1, 0x4A, 0x23); // #173
     expect_ym2612_write_reg_at_init(1, 0x9A, 0x0); // #174
+
+    // Chan 6 Op 3
     expect_ym2612_write_reg_at_init(1, 0x36, 0x72); // #175
     expect_ym2612_write_reg_at_init(1, 0x56, 0xDF); // #176
     expect_ym2612_write_reg_at_init(1, 0x66, 0x17); // #177
@@ -197,6 +256,8 @@ static void set_initial_registers(void)
     expect_ym2612_write_reg_at_init(1, 0x86, 0x91); // #179
     expect_ym2612_write_reg_at_init(1, 0x46, 0x23); // #180
     expect_ym2612_write_reg_at_init(1, 0x96, 0x0); // #181
+
+    // Chan 6 Op 4
     expect_ym2612_write_reg_at_init(1, 0x3E, 0x31); // #182
     expect_ym2612_write_reg_at_init(1, 0x5E, 0x9B); // #183
     expect_ym2612_write_reg_at_init(1, 0x6E, 0x4); // #184
