@@ -40,6 +40,7 @@ typedef struct Global {
     u8 lfoEnable : 1;
     u8 lfoFrequency : 3;
     bool specialMode : 1;
+    bool dacEnable : 1;
 } Global;
 
 typedef enum ParameterUpdated { Channel, Lfo, SpecialMode } ParameterUpdated;

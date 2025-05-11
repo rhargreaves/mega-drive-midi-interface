@@ -3,7 +3,8 @@
 #include "debug.h"
 #include "ym2612_regs.h"
 
-static Global global = { .lfoEnable = 1, .lfoFrequency = 0, .specialMode = false };
+static Global global
+    = { .lfoEnable = 1, .lfoFrequency = 0, .specialMode = false, .dacEnable = false };
 static FmChannel fmChannels[MAX_FM_CHANS];
 static u8 noteOn;
 static u8 volumes[MAX_FM_CHANS];
@@ -21,6 +22,7 @@ static const u8 VOLUME_TO_TOTAL_LEVELS[] = { 127, 122, 117, 113, 108, 104, 100, 
 
 static void updateChannel(u8 chan);
 static void writeGlobalLfo(void);
+static void writeDacReg(void);
 static void writeAlgorithmAndFeedback(u8 channel);
 static void writeOperatorMultipleAndDetune(u8 channel, u8 operator);
 static void writeOperatorRateScalingAndAttackRate(u8 channel, u8 operator);
@@ -302,6 +304,11 @@ static void writeGlobalLfo(void)
     writeRegSafe(0, YM_LFO_ENABLE, (global.lfoEnable << 3) | global.lfoFrequency);
 }
 
+static void writeDacReg(void)
+{
+    writeRegSafe(0, YM_DAC_ENABLE, global.dacEnable ? 0x80 : 0);
+}
+
 static void writeOctaveAndFrequency(u8 channel)
 {
     FmChannel* chan = &fmChannels[channel];
@@ -447,7 +454,8 @@ void synth_directWriteYm2612(u8 part, u8 reg, u8 data)
 
 void synth_enableDac(bool enable)
 {
-    writeRegSafe(0, YM_DAC_ENABLE, enable ? 0x80 : 0);
+    global.dacEnable = enable;
+    writeDacReg();
 }
 
 static void writeRegSafe(u8 part, u8 reg, u8 data)
