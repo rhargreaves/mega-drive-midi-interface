@@ -3,8 +3,7 @@
 #include "debug.h"
 #include "ym2612_regs.h"
 
-static Global global
-    = { .lfoEnable = 1, .lfoFrequency = 0, .specialMode = false, .dacEnable = false };
+static Global global;
 static FmChannel fmChannels[MAX_FM_CHANS];
 static u8 noteOn;
 static u8 volumes[MAX_FM_CHANS];
@@ -20,6 +19,7 @@ static const u8 VOLUME_TO_TOTAL_LEVELS[] = { 127, 122, 117, 113, 108, 104, 100, 
     3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0 };
 
+static void initGlobal(void);
 static void updateChannel(u8 chan);
 static void writeGlobalLfo(void);
 static void writeDacReg(void);
@@ -48,6 +48,7 @@ static void releaseZ80Bus(void);
 
 void synth_init(const FmChannel* initialPreset)
 {
+    initGlobal();
     Z80_loadDriver(Z80_DRIVER_PCM, true);
     Z80_requestBus(TRUE);
     writeDacReg();
@@ -75,6 +76,14 @@ static void updateChannel(u8 chan)
         writeOperatorTotalLevel(chan, op);
         writeOperatorSsgEg(chan, op);
     }
+}
+
+static void initGlobal(void)
+{
+    global.lfoEnable = 1;
+    global.lfoFrequency = 0;
+    global.specialMode = false;
+    global.dacEnable = false;
 }
 
 void synth_noteOn(u8 channel)

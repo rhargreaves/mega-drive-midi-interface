@@ -5,10 +5,16 @@
 
 void mock_ym2612_disable_checks(void);
 void mock_ym2612_enable_checks(void);
+void mock_ym2612_enable_reg_output(void);
+void mock_ym2612_disable_reg_output(void);
 
 void __wrap_YM2612_writeReg(const u16 part, const u8 reg, const u8 data);
 void __wrap_YM2612_write(const u16 port, const u8 data);
 
+void _expect_ym2612_write_reg_at_init(
+    u8 part, u8 reg, u8 data, const char* const file, const int line);
+void _expect_ym2612_write_reg_any_data_at_init(
+    u8 part, u8 reg, const char* const file, const int line);
 void _expect_ym2612_write_reg(u8 part, u8 reg, u8 data, const char* const file, const int line);
 void _expect_ym2612_write_reg_any_data(u8 part, u8 reg, const char* const file, const int line);
 void _expect_ym2612_write_channel(
@@ -31,6 +37,10 @@ void _expect_ym2612_write_frequency_any_data(u8 chan, const char* const file, co
 void _expect_ym2612_write_operator_volumes(
     u8 chan, const u8* volumes, u8 count, const char* const file, const int line);
 
+#define expect_ym2612_write_reg_any_data_at_init(part, reg)                                        \
+    _expect_ym2612_write_reg_any_data_at_init(part, reg, __FILE__, __LINE__)
+#define expect_ym2612_write_reg_at_init(part, reg, data)                                           \
+    _expect_ym2612_write_reg_at_init(part, reg, data, __FILE__, __LINE__)
 #define expect_ym2612_write_reg(part, reg, data)                                                   \
     _expect_ym2612_write_reg(part, reg, data, __FILE__, __LINE__)
 #define expect_ym2612_write_reg_any_data(part, reg)                                                \

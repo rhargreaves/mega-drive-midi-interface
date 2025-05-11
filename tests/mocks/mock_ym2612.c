@@ -4,6 +4,8 @@
 #include "test_helpers.h"
 
 static bool disableChecks = false;
+static bool outputRegs = false;
+static int regWrites = 0;
 
 #define REG_PART(chan) (chan < 3 ? 0 : 1)
 #define REG_OFFSET(chan) (chan % 3)
@@ -19,8 +21,24 @@ void mock_ym2612_enable_checks(void)
     disableChecks = false;
 }
 
+void mock_ym2612_enable_reg_output(void)
+{
+    outputRegs = true;
+    regWrites = 0;
+}
+
+void mock_ym2612_disable_reg_output(void)
+{
+    outputRegs = false;
+}
+
 void __wrap_YM2612_writeReg(const u16 part, const u8 reg, const u8 data)
 {
+    if (outputRegs) {
+        print_message("call: YM2612_writeReg(part=%d, reg=0x%X, data=0x%X) #%d\n", part, reg, data,
+            ++regWrites);
+    }
+
     if (disableChecks)
         return;
     check_expected(part);
@@ -69,6 +87,34 @@ void _expect_ym2612_write_operator_any_data(
     expect_value_with_pos(__wrap_YM2612_write, data, 0x2A, file, line);
 
     expect_function_call(__wrap_Z80_releaseBus);
+}
+
+void _expect_ym2612_write_reg_at_init(
+    u8 part, u8 reg, u8 data, const char* const file, const int line)
+{
+#ifdef DEBUG
+    print_message("expect: YM2612_writeReg(part=%d, reg=0x%X, data=0x%X)\n", part, reg, data);
+#endif
+    expect_value_with_pos(__wrap_Z80_getAndRequestBus, wait, TRUE, file, line);
+    will_return_with_pos(__wrap_Z80_getAndRequestBus, true, file, line);
+
+    expect_value_with_pos(__wrap_YM2612_writeReg, part, part, file, line);
+    expect_value_with_pos(__wrap_YM2612_writeReg, reg, reg, file, line);
+    expect_value_with_pos(__wrap_YM2612_writeReg, data, data, file, line);
+}
+
+void _expect_ym2612_write_reg_any_data_at_init(
+    u8 part, u8 reg, const char* const file, const int line)
+{
+#ifdef DEBUG
+    print_message("expect: YM2612_writeReg(part=%d, reg=0x%X, data=*)\n", part, reg);
+#endif
+    expect_value_with_pos(__wrap_Z80_getAndRequestBus, wait, TRUE, file, line);
+    will_return_with_pos(__wrap_Z80_getAndRequestBus, true, file, line);
+
+    expect_value_with_pos(__wrap_YM2612_writeReg, part, part, file, line);
+    expect_value_with_pos(__wrap_YM2612_writeReg, reg, reg, file, line);
+    expect_any_with_pos(__wrap_YM2612_writeReg, data, file, line);
 }
 
 void _expect_ym2612_write_reg(u8 part, u8 reg, u8 data, const char* const file, const int line)
