@@ -12,6 +12,7 @@
 #include "note_priority.h"
 #include "scheduler.h"
 #include "pitchcents.h"
+#include "settings.h"
 
 #define MIN_MIDI_VELOCITY 0
 #define RANGE(value, range) (value / (128 / range))
@@ -114,8 +115,8 @@ static void reset(void)
     midi_psg_reset();
     midi_fm_reset();
     midi_fm_sm_reset();
-    mappingModePref = MappingMode_Auto;
-    dynamicMode = false;
+    mappingModePref = DEFAULT_MAPPING_MODE;
+    dynamicMode = mappingModePref == MappingMode_Dynamic;
     disableNonGeneralMidiCCs = false;
     stickToDeviceType = false;
     resetAllState();

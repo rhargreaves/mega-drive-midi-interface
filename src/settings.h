@@ -12,6 +12,8 @@ bool settings_debug_ticks(void);
 #define COMM_SERIAL 1
 #define COMM_MEGAWIFI 1
 
+#define DEFAULT_MAPPING_MODE MappingMode_Auto
+
 #define DEBUG_MEGAWIFI_SEND 0
 #define DEBUG_MEGAWIFI_INIT 0
 #define DEBUG_MEGAWIFI_SYNC 0
