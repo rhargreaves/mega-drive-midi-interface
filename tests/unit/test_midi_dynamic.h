@@ -10,6 +10,7 @@ void test_midi_reports_dynamic_mode_enabled(UNUSED void** state);
 void test_midi_reports_dynamic_mode_disabled(UNUSED void** state);
 void test_midi_exposes_dynamic_mode_mappings(UNUSED void** state);
 void test_midi_dynamic_enables_percussive_mode_if_needed(UNUSED void** state);
+void test_midi_dynamic_reapplies_program_on_non_percussion_channel(UNUSED void** state);
 void test_midi_sets_presets_on_dynamic_channels(UNUSED void** state);
 void test_midi_dynamic_does_not_send_percussion_to_psg_channels(UNUSED void** state);
 void test_midi_sysex_resets_dynamic_mode_state(UNUSED void** state);

@@ -405,25 +405,34 @@ static void setDownstreamNoteOn(DeviceChannel* devChan, u8 velocity)
     devChan->ops->noteOn(devChan->number, pc.pitch, pc.cents, velocity);
 }
 
-void midi_note_on(u8 chan, u8 pitch, u8 velocity)
+static void reapplyProgramIfChannelWasFormerlyPercussive(DeviceChannel* devChan, u8 midiChan)
+{
+    u8 prevMidiChan = devChan->midiChannel;
+    if (prevMidiChan == GENERAL_MIDI_PERCUSSION_CHANNEL
+        && midiChan != GENERAL_MIDI_PERCUSSION_CHANNEL) {
+        devChan->ops->program(devChan->number, midiChannels[midiChan].program);
+    }
+}
+
+void midi_note_on(u8 midiChan, u8 pitch, u8 velocity)
 {
     if (velocity == MIN_MIDI_VELOCITY) {
-        midi_note_off(chan, pitch);
+        midi_note_off(midiChan, pitch);
         return;
     }
-    if (tooManyPercussiveNotes(chan)) {
+    if (tooManyPercussiveNotes(midiChan)) {
         return;
     }
-    DeviceChannel* devChan = findSuitableDeviceChannel(chan);
+    DeviceChannel* devChan = findSuitableDeviceChannel(midiChan);
     if (devChan == NULL) {
-        log_warn("Ch %d: Dropped note %d", chan + 1, pitch);
+        log_warn("Ch %d: Dropped note %d", midiChan + 1, pitch);
         return;
     }
 
-    MidiChannel* midiChannel = &midiChannels[chan];
+    MidiChannel* midiChannel = &midiChannels[midiChan];
     if (!dynamicMode) {
         if (note_priority_isFull(&midiChannel->notePriority)) {
-            log_warn("Ch %d: Note priority stack full", chan + 1);
+            log_warn("Ch %d: Note priority stack full", midiChan + 1);
             return;
         }
         note_priority_push(&midiChannel->notePriority, pitch);
@@ -436,7 +445,8 @@ void midi_note_on(u8 chan, u8 pitch, u8 velocity)
         devChan->glideTargetPitch = 0;
     }
 
-    devChan->midiChannel = chan;
+    reapplyProgramIfChannelWasFormerlyPercussive(devChan, midiChan);
+    devChan->midiChannel = midiChan;
     devChan->noteOn = true;
     devChan->cents = 0;
     devChan->pitch = pitch;

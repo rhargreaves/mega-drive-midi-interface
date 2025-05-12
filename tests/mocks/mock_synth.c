@@ -32,6 +32,7 @@ void __wrap_synth_globalLfoFrequency(u8 freq)
 
 void __wrap_synth_noteOn(u8 channel)
 {
+    debug_message("call: synth_noteOn(%d)\n", channel);
     if (disableChecks)
         return;
     check_expected(channel);
@@ -39,6 +40,7 @@ void __wrap_synth_noteOn(u8 channel)
 
 void __wrap_synth_noteOff(u8 channel)
 {
+    debug_message("call: synth_noteOff(%d)\n", channel);
     if (disableChecks)
         return;
     check_expected(channel);
@@ -171,6 +173,7 @@ void __wrap_synth_operatorSsgEg(u8 channel, u8 op, u8 ssgEg)
 
 void __wrap_synth_preset(u8 channel, const FmChannel* preset)
 {
+    debug_message("call: synth_preset(%d, %p)\n", channel, preset);
     if (disableChecks)
         return;
     check_expected(channel);
@@ -246,6 +249,8 @@ void _expect_synth_pitch_any(const char* const file, const int line)
 void _expect_synth_pitch(
     u8 channel, u8 octave, u16 freqNumber, const char* const file, const int line)
 {
+    debug_message(
+        "expect: synth_pitch(channel=%d, octave=%d, freqNumber=%d)\n", channel, octave, freqNumber);
     expect_value_with_pos(__wrap_synth_pitch, channel, channel, file, line);
     expect_value_with_pos(__wrap_synth_pitch, octave, octave, file, line);
     expect_value_with_pos(__wrap_synth_pitch, freqNumber, freqNumber, file, line);
@@ -253,11 +258,13 @@ void _expect_synth_pitch(
 
 void _expect_synth_noteOn(u8 channel, const char* const file, const int line)
 {
+    debug_message("expect: synth_noteOn(%d)\n", channel);
     expect_value_with_pos(__wrap_synth_noteOn, channel, channel, file, line);
 }
 
 void _expect_synth_noteOff(u8 channel, const char* const file, const int line)
 {
+    debug_message("expect: synth_noteOff(%d)\n", channel);
     expect_value_with_pos(__wrap_synth_noteOff, channel, channel, file, line);
 }
 
@@ -435,4 +442,11 @@ void _expect_synth_directWriteYm2612(
     expect_value_with_pos(__wrap_synth_directWriteYm2612, part, part, file, line);
     expect_value_with_pos(__wrap_synth_directWriteYm2612, reg, reg, file, line);
     expect_value_with_pos(__wrap_synth_directWriteYm2612, data, data, file, line);
+}
+
+void _expect_synth_preset(
+    u8 channel, const FmChannel* preset, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_synth_preset, channel, channel, file, line);
+    expect_value_with_pos(__wrap_synth_preset, preset, preset, file, line);
 }

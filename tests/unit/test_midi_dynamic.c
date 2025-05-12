@@ -155,20 +155,39 @@ void test_midi_dynamic_enables_percussive_mode_if_needed(UNUSED void** state)
     const u8 MIDI_KEY = 30;
 
     // Playing first drum
-    expect_value(__wrap_synth_preset, channel, 0);
-    expect_any(__wrap_synth_preset, preset);
+    expect_synth_preset(0, &TEST_P_BANK_0_INST_30_CASTANETS.channel);
     expect_synth_pitch_any();
     expect_synth_volume_any();
-    expect_value(__wrap_synth_noteOn, channel, 0);
+    expect_synth_noteOn(0);
     __real_midi_note_on(GENERAL_MIDI_PERCUSSION_CHANNEL, MIDI_KEY, MAX_MIDI_VOLUME);
 
     // Playing second drum
-    expect_value(__wrap_synth_preset, channel, 1);
-    expect_any(__wrap_synth_preset, preset);
+    expect_synth_preset(1, &TEST_P_BANK_0_INST_30_CASTANETS.channel);
     expect_synth_pitch_any();
     expect_synth_volume_any();
-    expect_value(__wrap_synth_noteOn, channel, 1);
+    expect_synth_noteOn(1);
     __real_midi_note_on(GENERAL_MIDI_PERCUSSION_CHANNEL, MIDI_KEY, MAX_MIDI_VOLUME);
+}
+
+void test_midi_dynamic_reapplies_program_on_non_percussion_channel(UNUSED void** state)
+{
+    const u8 MIDI_KEY = 30;
+
+    // Play and stop drum
+    expect_synth_preset(0, &TEST_P_BANK_0_INST_30_CASTANETS.channel);
+    expect_synth_pitch_any();
+    expect_synth_volume_any();
+    expect_synth_noteOn(0);
+    __real_midi_note_on(GENERAL_MIDI_PERCUSSION_CHANNEL, MIDI_KEY, MAX_MIDI_VOLUME);
+    expect_synth_noteOff(0);
+    __real_midi_note_off(GENERAL_MIDI_PERCUSSION_CHANNEL, MIDI_KEY);
+
+    // Play non-percussion note
+    expect_synth_preset(0, &TEST_M_BANK_0_INST_0_GRANDPIANO);
+    expect_synth_pitch_any();
+    expect_synth_volume_any();
+    expect_synth_noteOn(0);
+    __real_midi_note_on(MIDI_CHANNEL_1, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
 }
 
 void test_midi_sets_presets_on_dynamic_channels(UNUSED void** state)

@@ -306,6 +306,7 @@ int main(void)
         dynamic_midi_test(test_midi_reports_dynamic_mode_disabled),
         dynamic_midi_test(test_midi_exposes_dynamic_mode_mappings),
         dynamic_midi_test(test_midi_dynamic_enables_percussive_mode_if_needed),
+        dynamic_midi_test(test_midi_dynamic_reapplies_program_on_non_percussion_channel),
         dynamic_midi_test(test_midi_sets_presets_on_dynamic_channels),
         dynamic_midi_test(
             test_midi_dynamic_does_not_send_percussion_to_psg_channels),
@@ -333,6 +334,7 @@ int main(void)
         dynamic_midi_test(test_midi_assign_channel_to_psg_device),
         dynamic_midi_test(test_midi_assign_channel_to_fm_device_only),
         dynamic_midi_test(test_midi_assign_channel_to_psg_noise),
+
 
         log_test(test_log_info_writes_to_log_buffer),
         log_test(test_log_warn_writes_to_log_buffer),

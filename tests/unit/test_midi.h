@@ -12,6 +12,11 @@
 #include "mocks/mock_comm.h"
 #include "mocks/mock_psg.h"
 #include "test_helpers.h"
+
+extern const FmChannel TEST_M_BANK_0_INST_0_GRANDPIANO;
+extern const FmChannel TEST_M_BANK_0_INST_1_BRIGHTPIANO;
+extern const PercussionPreset TEST_P_BANK_0_INST_30_CASTANETS;
+
 int test_midi_setup(UNUSED void** state);
 void test_midi_polyphonic_mode_returns_state(UNUSED void** state);
 void test_midi_sets_all_sound_off(UNUSED void** state);
