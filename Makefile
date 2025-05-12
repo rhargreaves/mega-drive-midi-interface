@@ -81,7 +81,8 @@ else
 	LTO_FLAGS:=-flto
 endif
 
-CHECK_FLAGS := out/last-flags.$(shell echo $(EXTRA_FLAGS) | md5sum | awk '{ print $$1 }')
+LAST_FLAGS := out/last_flags
+CHECK_FLAGS := $(LAST_FLAGS)_$(shell echo $(EXTRA_FLAGS) | md5sum | awk '{ print $$1 }')
 
 release: FLAGS= $(DEFAULT_FLAGS) -O3 -fuse-linker-plugin -fno-web -fno-gcse \
 	-fno-unit-at-a-time -fomit-frame-pointer $(LTO_FLAGS)
@@ -216,8 +217,8 @@ res/samples:
 out/rom.s: out/rom.out
 	m68k-elf-objdump -D -S $^ > $@
 
-out/last-flags.%:
-	-rm out/last-flags.*
+$(LAST_FLAGS)_%:
+	-rm $(LAST_FLAGS)_*
 	touch $@
 
 unit-test:
