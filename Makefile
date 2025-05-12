@@ -81,6 +81,8 @@ else
 	LTO_FLAGS:=-flto
 endif
 
+CHECK_FLAGS := out/last-flags.$(shell echo $(EXTRA_FLAGS) | md5sum | awk '{ print $$1 }')
+
 release: FLAGS= $(DEFAULT_FLAGS) -O3 -fuse-linker-plugin -fno-web -fno-gcse \
 	-fno-unit-at-a-time -fomit-frame-pointer $(LTO_FLAGS)
 release: CFLAGS= $(FLAGS)
@@ -157,7 +159,7 @@ out/rom.bin: out/rom.out
 out/symbol.txt: out/rom.out
 	$(NM) $(LTO_PLUGIN) -n out/rom.out > out/symbol.txt
 
-out/rom.out: out/sega.o $(OBJS) $(LIBMD)
+out/rom.out: $(CHECK_FLAGS) out/sega.o $(OBJS) $(LIBMD)
 	$(CC) -m68000 -B$(BIN) -n -T $(GDK)/md.ld -nostdlib out/sega.o $(OBJS) $(LIBMD) $(LIBGCC) -o out/rom.out -Wl,--gc-sections -flto
 
 out/sega.o: $(SRC)/boot/sega.s out/rom_head.bin
@@ -213,6 +215,10 @@ res/samples:
 
 out/rom.s: out/rom.out
 	m68k-elf-objdump -D -S $^ > $@
+
+out/last-flags.%:
+	-rm out/last-flags.*
+	touch $@
 
 unit-test:
 	$(MAKE) -C tests unit
