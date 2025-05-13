@@ -12,7 +12,7 @@
 #include "note_priority.h"
 #include "scheduler.h"
 #include "pitchcents.h"
-#include "settings.h"
+#include "user_prefs.h"
 
 #define MIN_MIDI_VELOCITY 0
 #define RANGE(value, range) (value / (128 / range))

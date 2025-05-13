@@ -1,4 +1,5 @@
 #include "settings.h"
+#include "user_prefs.h"
 
 static const u8 startup_midi_sequence[] = STARTUP_MIDI_SEQUENCE;
 
