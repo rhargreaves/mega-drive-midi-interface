@@ -9,22 +9,22 @@
 
 #define STATUS_UPPER(status) (status >> 4)
 
-static bool isLongHeader(u8* commandSection)
+static bool is_long_header(u8* commandSection)
 {
     return (u8)commandSection[0] >> 7;
 }
 
-static u16 fourBitMidiLength(u8* commandSection)
+static u16 four_bit_midi_length(u8* commandSection)
 {
     return commandSection[0] & 0x0F;
 }
 
-static u16 twelveBitMidiLength(u8* commandSection)
+static u16 twelve_bit_midi_length(u8* commandSection)
 {
     return (((u16)commandSection[0] << 12) + (u16)commandSection[1]);
 }
 
-static u8 bytesToEmit(u8 status)
+static u8 bytes_to_emit(u8 status)
 {
     if (STATUS_UPPER(status) == 0xC || STATUS_UPPER(status) == 0xD || status == 0xF1
         || status == 0xF3) {
@@ -34,10 +34,10 @@ static u8 bytesToEmit(u8 status)
     }
 }
 
-static void emitMidiEvent(u8 status, u8** cursor)
+static void emit_midi_event(u8 status, u8** cursor)
 {
     comm_megawifi_midiEmitCallback(status);
-    u8 count = bytesToEmit(status);
+    u8 count = bytes_to_emit(status);
     for (u8 i = 0; i < count; i++) {
         comm_megawifi_midiEmitCallback(**cursor);
         if (i < count - 1) {
@@ -46,7 +46,7 @@ static void emitMidiEvent(u8 status, u8** cursor)
     };
 }
 
-static void processSysEx(u8** cursor)
+static void process_sysex(u8** cursor)
 {
     do {
         comm_megawifi_midiEmitCallback(**cursor);
@@ -55,7 +55,7 @@ static void processSysEx(u8** cursor)
     comm_megawifi_midiEmitCallback(MIDI_SYSEX_END);
 }
 
-static void processMiddleSysEx(u8** cursor)
+static void process_middle_sysex(u8** cursor)
 {
     // we're ignoring these for now...
     do {
@@ -63,12 +63,12 @@ static void processMiddleSysEx(u8** cursor)
     } while (!(**cursor == MIDI_SYSEX_END || **cursor == MIDI_SYSEX_START));
 }
 
-static u16 sequenceNumber(char* buffer)
+static u16 sequence_number(char* buffer)
 {
     return ((u8)buffer[2] << 8) + (u8)buffer[3];
 }
 
-static bool isFinalDeltaByte(u8 value)
+static bool is_final_delta_byte(u8 value)
 {
     return !CHECK_BIT(value, 7);
 }
@@ -76,11 +76,11 @@ static bool isFinalDeltaByte(u8 value)
 enum mw_err rtpmidi_processRtpMidiPacket(char* buffer, u16 length, u16* lastSeqNum)
 {
     (void)length; // TODO: Probably shouldn't ignore length...
-    u16 seqNum = sequenceNumber(buffer);
+    u16 seqNum = sequence_number(buffer);
     u8* commandSection = (u8*)&buffer[RTP_MIDI_HEADER_LEN];
-    bool longHeader = isLongHeader(commandSection);
-    u16 midiLength
-        = longHeader ? twelveBitMidiLength(commandSection) : fourBitMidiLength(commandSection);
+    bool longHeader = is_long_header(commandSection);
+    u16 midiLength = longHeader ? twelve_bit_midi_length(commandSection)
+                                : four_bit_midi_length(commandSection);
     u8* midiStart = &commandSection[longHeader ? 2 : 1];
     u8* midiEnd = midiStart + (midiLength - 1);
     u8 status = 0;
@@ -88,13 +88,13 @@ enum mw_err rtpmidi_processRtpMidiPacket(char* buffer, u16 length, u16* lastSeqN
 
     bool walkingOverDeltas = false;
     while (cursor <= midiEnd) {
-        if (walkingOverDeltas && isFinalDeltaByte(*cursor)) {
+        if (walkingOverDeltas && is_final_delta_byte(*cursor)) {
             walkingOverDeltas = false;
         } else if (*cursor == MIDI_SYSEX_START) {
-            processSysEx(&cursor);
+            process_sysex(&cursor);
             walkingOverDeltas = true;
         } else if (*cursor == MIDI_SYSEX_END) {
-            processMiddleSysEx(&cursor);
+            process_middle_sysex(&cursor);
             walkingOverDeltas = true;
         } else if (*cursor == MIDI_RESET) {
             comm_megawifi_midiEmitCallback(*cursor);
@@ -102,7 +102,7 @@ enum mw_err rtpmidi_processRtpMidiPacket(char* buffer, u16 length, u16* lastSeqN
         } else if (CHECK_BIT(*cursor, 7)) { // status bit present
             status = *cursor;
         } else {
-            emitMidiEvent(status, &cursor);
+            emit_midi_event(status, &cursor);
             walkingOverDeltas = true;
         }
         cursor++;

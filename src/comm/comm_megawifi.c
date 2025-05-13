@@ -32,7 +32,7 @@ static MegaWifiStatus status;
 
 static void recv_complete_cb(enum lsd_status stat, uint8_t ch, char* data, uint16_t len, void* ctx);
 
-static enum mw_err associateAp(void)
+static enum mw_err associate_ap(void)
 {
     int16_t def_ap = mw_def_ap_cfg_get();
     def_ap = def_ap < 0 ? 0 : def_ap;
@@ -48,7 +48,7 @@ static enum mw_err associateAp(void)
     return MW_ERR_NONE;
 }
 
-static enum mw_err displayLocalIp(void)
+static enum mw_err display_local_ip(void)
 {
     struct mw_ip_cfg* ip_cfg;
     enum mw_err err = mw_ip_current(&ip_cfg);
@@ -81,7 +81,7 @@ static bool detect_mw(void)
     return true;
 }
 
-static enum mw_err listenOnUdpPort(u8 ch, u16 src_port)
+static enum mw_err listen_on_udp_port(u8 ch, u16 src_port)
 {
     char src_port_str[6];
     sprintf(src_port_str, "%u", src_port);
@@ -104,7 +104,7 @@ static void tasking_init(void)
     TSK_userSet(idle_tsk);
 }
 
-static void initMegaWiFi(void)
+static void init_mega_wifi(void)
 {
     enum mw_err err = mw_init(cmd_buf, MW_BUFLEN);
     if (err != MW_ERR_NONE) {
@@ -118,16 +118,16 @@ static void initMegaWiFi(void)
     }
     status = Detected;
 
-    associateAp();
-    displayLocalIp();
-    err = listenOnUdpPort(CH_CONTROL_PORT, UDP_CONTROL_PORT);
+    associate_ap();
+    display_local_ip();
+    err = listen_on_udp_port(CH_CONTROL_PORT, UDP_CONTROL_PORT);
     if (err != MW_ERR_NONE) {
         return;
     }
 #if DEBUG_MEGAWIFI_INIT
     log_info("MW: Control UDP port %u open", UDP_CONTROL_PORT);
 #endif
-    err = listenOnUdpPort(CH_MIDI_PORT, UDP_MIDI_PORT);
+    err = listen_on_udp_port(CH_MIDI_PORT, UDP_MIDI_PORT);
     if (err != MW_ERR_NONE) {
         return;
     }
@@ -144,7 +144,7 @@ void comm_megawifi_init(void)
 
     status = NotDetected;
     if (comm_megawifi_is_present()) {
-        initMegaWiFi();
+        init_mega_wifi();
     }
 }
 
@@ -185,7 +185,7 @@ void comm_megawifi_write(u8 data)
     (void)data;
 }
 
-static void processUdpData(u8 ch, char* buffer, u16 length)
+static void process_udp_data(u8 ch, char* buffer, u16 length)
 {
     (void)buffer;
     enum mw_err err = MW_ERR_NONE;
@@ -206,7 +206,7 @@ static u32 remoteIp = 0;
 static u16 remoteControlPort = 0;
 static u16 remoteMidiPort = 0;
 
-static void persistRemoteEndpoint(u8 ch, u32 ip, u16 port)
+static void persist_remote_endpoint(u8 ch, u32 ip, u16 port)
 {
     remoteIp = ip;
     if (ch == CH_CONTROL_PORT) {
@@ -216,7 +216,7 @@ static void persistRemoteEndpoint(u8 ch, u32 ip, u16 port)
     }
 }
 
-static void restoreRemoteEndpoint(u8 ch, u32* ip, u16* port)
+static void restore_remote_endpoint(u8 ch, u32* ip, u16* port)
 {
     *ip = remoteIp;
     *port = (ch == CH_CONTROL_PORT) ? remoteControlPort : remoteMidiPort;
@@ -233,8 +233,8 @@ static void recv_complete_cb(enum lsd_status stat, uint8_t ch, char* data, uint1
         uint32_to_ip_str(udp->remote_ip, remote_ip_str);
         log_info("MW: Remote=%s:%u", remote_ip_str, udp->remote_port);
 #endif
-        persistRemoteEndpoint(ch, udp->remote_ip, udp->remote_port);
-        processUdpData(ch, udp->payload, len);
+        persist_remote_endpoint(ch, udp->remote_ip, udp->remote_port);
+        process_udp_data(ch, udp->payload, len);
     } else {
         log_warn("MW: recv_complete_cb() = %d", stat);
     }
@@ -250,7 +250,7 @@ void comm_megawifi_vsync(void)
 
 static u16 lastSeqNum = 0;
 
-static void sendReceiverFeedback(void)
+static void send_receiver_feedback(void)
 {
     if (frame < RECEIVER_FEEDBACK_FRAME_FREQUENCY) {
         return;
@@ -272,7 +272,7 @@ void comm_megawifi_tick(void)
     if (awaitingRecv || awaitingSend) {
         return;
     }
-    sendReceiverFeedback();
+    send_receiver_feedback();
 
     awaitingRecv = true;
     struct mw_reuse_payload* pkt = (struct mw_reuse_payload* const)recvBuffer;
@@ -305,7 +305,7 @@ void send_complete_cb(enum lsd_status stat, void* ctx)
 void comm_megawifi_send(u8 ch, char* data, u16 len)
 {
     struct mw_reuse_payload* udp = (struct mw_reuse_payload*)sendBuffer;
-    restoreRemoteEndpoint(ch, &udp->remote_ip, &udp->remote_port);
+    restore_remote_endpoint(ch, &udp->remote_ip, &udp->remote_port);
     memcpy(udp->payload, data, len);
 
     status = Connected;

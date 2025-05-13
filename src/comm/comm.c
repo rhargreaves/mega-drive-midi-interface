@@ -12,7 +12,7 @@ static u16 reads = 0;
 static const u16 MAX_COMM_IDLE = 0x28F;
 static const u16 MAX_COMM_BUSY = 0x28F;
 
-static bool countsInBounds(void);
+static bool counts_in_bounds(void);
 
 typedef struct CommVTable {
     void (*init)(void);
@@ -68,7 +68,7 @@ void comm_init(void)
     activeCommType = NULL;
 }
 
-static bool readReady(void)
+static bool read_ready(void)
 {
     if (activeCommType == NULL) {
         for (u16 i = 0; i < COMM_TYPES; i++) {
@@ -81,7 +81,7 @@ static bool readReady(void)
     } else if (activeCommType->read_ready()) {
         return true;
     } else {
-        if (countsInBounds()) {
+        if (counts_in_bounds()) {
             idle++;
         }
         return false;
@@ -90,14 +90,14 @@ static bool readReady(void)
 
 bool comm_read_ready(void)
 {
-    return readReady();
+    return read_ready();
 }
 
 u8 comm_read(void)
 {
-    while (!readReady())
+    while (!read_ready())
         ;
-    if (countsInBounds()) {
+    if (counts_in_bounds()) {
         reads++;
     }
     return activeCommType->read();
@@ -143,7 +143,7 @@ CommMode comm_mode(void)
     }
 }
 
-static bool countsInBounds(void)
+static bool counts_in_bounds(void)
 {
     return idle != MAX_COMM_IDLE && reads != MAX_COMM_BUSY;
 }

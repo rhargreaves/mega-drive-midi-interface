@@ -84,7 +84,7 @@ u8 comm_demo_read(void)
     return data;
 }
 
-static void decrementWait(void)
+static void decrement_wait(void)
 {
     if (wait != 0) {
         wait--;
@@ -93,7 +93,7 @@ static void decrementWait(void)
 
 void comm_demo_vsync(void)
 {
-    decrementWait();
+    decrement_wait();
 
     JOY_update();
     u16 curState = JOY_readJoypad(JOY_1);
