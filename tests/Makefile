@@ -105,7 +105,8 @@ MOCKS=midi_process \
 	comm_megawifi_midiEmitCallback \
 	comm_megawifi_init \
 	comm_megawifi_tick \
-	comm_megawifi_send
+	comm_megawifi_send \
+	settings_startup_midi_sequence
 
 MD_MOCKS=SYS_setVIntCallback \
 	VDP_setTextPalette \

@@ -18,3 +18,5 @@ void test_midi_receiver_sets_midi_program(UNUSED void** state);
 void test_midi_receiver_sends_midi_reset(UNUSED void** state);
 void test_midi_receiver_sends_sysex_to_midi_layer(UNUSED void** state);
 void test_midi_receiver_handles_sysex_limits(UNUSED void** state);
+void test_midi_receiver_runs_configured_startup_sequence(UNUSED void** state);
+void test_midi_receiver_runs_startup_sequence_on_midi_reset(UNUSED void** state);

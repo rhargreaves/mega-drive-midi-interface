@@ -64,6 +64,7 @@ int main(void)
         midi_receiver_test(test_midi_receiver_sends_sysex_to_midi_layer),
         midi_receiver_test(test_midi_receiver_handles_sysex_limits),
         midi_receiver_test(test_midi_receiver_sends_midi_reset),
+        midi_receiver_test(test_midi_receiver_runs_startup_sequence_on_midi_reset),
 
         midi_test(test_midi_triggers_synth_note_on),
         midi_test(test_midi_triggers_synth_note_on_with_velocity),

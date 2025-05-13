@@ -1,5 +1,13 @@
 #include "settings.h"
 
+static const u8 startup_midi_sequence[] = STARTUP_MIDI_SEQUENCE;
+
+const u8* settings_startup_midi_sequence(size_t* length)
+{
+    *length = sizeof(startup_midi_sequence);
+    return startup_midi_sequence;
+}
+
 bool settings_is_megawifi_rom(void)
 {
 #if MEGAWIFI

@@ -21,6 +21,7 @@ int main()
     comm_init();
     everdrive_led_init();
     midi_receiver_init();
+    midi_receiver_run_startup_sequence();
     SYS_setVIntCallback(scheduler_vsync);
     scheduler_run();
 }
