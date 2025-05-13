@@ -6,19 +6,19 @@
 
 static VoidCallback* readReadyCallback;
 
-static void extIntCallback(void)
+static void ext_int_callback(void)
 {
     readReadyCallback();
 }
 
-static void setSCtrl(u16 value)
+static void set_sctrl(u16 value)
 {
     vu8* pb;
     pb = (u8*)PORT2_SCTRL;
     *pb = value;
 }
 
-static void setCtrl(u16 value)
+static void set_ctrl(u16 value)
 {
     vu8* pb;
     pb = (u8*)PORT2_CTRL;
@@ -51,12 +51,12 @@ void serial_setReadyToReceiveCallback(VoidCallback* cb)
 
 void serial_init(u8 sctrlFlags)
 {
-    setSCtrl(sctrlFlags);
-    setCtrl(CTRL_PCS_OUT);
+    set_sctrl(sctrlFlags);
+    set_ctrl(CTRL_PCS_OUT);
     if (sctrlFlags & SCTRL_RINT) {
         SYS_setInterruptMaskLevel(INT_MASK_LEVEL_ENABLE_ALL);
         VDP_setReg(VDP_MODE_REG_3, VDP_getReg(VDP_MODE_REG_3) | VDP_IE2);
-        SYS_setExtIntCallback(&extIntCallback);
+        SYS_setExtIntCallback(&ext_int_callback);
     }
 }
 

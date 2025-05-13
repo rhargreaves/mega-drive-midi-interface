@@ -51,11 +51,11 @@ static const u8** envelopes;
 static u8 audible;
 static MidiPsgChannel psgChannels[MAX_PSG_CHANS];
 
-static u16 toneForMidiKey(u8 midiKey);
-static MidiPsgChannel* psgChannel(u8 psgChan);
-static void initEnvelope(MidiPsgChannel* psgChan);
-static void applyAttenuation(MidiPsgChannel* psgChan, u8 newAtt);
-static u16 envelopeTone(MidiPsgChannel* psgChan);
+static u16 tone_for_midi_key(u8 midiKey);
+static MidiPsgChannel* psg_channel(u8 psgChan);
+static void init_envelope(MidiPsgChannel* psgChan);
+static void apply_attenuation(MidiPsgChannel* psgChan, u8 newAtt);
+static u16 envelope_tone(MidiPsgChannel* psgChan);
 void midi_psg_reset(void);
 
 void midi_psg_init(const u8** defaultEnvelopes)
@@ -69,7 +69,7 @@ void midi_psg_reset(void)
 {
     userDefinedEnvelopePtr = NULL;
     for (u8 chan = 0; chan < MAX_PSG_CHANS; chan++) {
-        MidiPsgChannel* psgChan = psgChannel(chan);
+        MidiPsgChannel* psgChan = psg_channel(chan);
         psgChan->attenuation = PSG_ATTENUATION_SILENCE;
         psgChan->chanNum = chan;
         psgChan->noteOn = false;
@@ -80,18 +80,18 @@ void midi_psg_reset(void)
         psgChan->freq = 0;
         psgChan->pitch = 0;
         psgChan->cents = 0;
-        initEnvelope(psgChan);
+        init_envelope(psgChan);
     }
 }
 
-static void initEnvelope(MidiPsgChannel* psgChan)
+static void init_envelope(MidiPsgChannel* psgChan)
 {
     psgChan->envelopeStep
         = userDefinedEnvelopePtr != NULL ? userDefinedEnvelopePtr : envelopes[psgChan->envelope];
     psgChan->envelopeLoopStart = NULL;
 }
 
-static u8 effectiveAttenuation(MidiPsgChannel* psgChan)
+static u8 effective_attenuation(MidiPsgChannel* psgChan)
 {
     u8 att = ATTENUATIONS[(psgChan->volume * psgChan->velocity) / MAX_MIDI_VOLUME];
     u8 invAtt = MAX_ATTENUATION - att;
@@ -101,23 +101,23 @@ static u8 effectiveAttenuation(MidiPsgChannel* psgChan)
     return MAX_ATTENUATION - invEffectiveAtt;
 }
 
-static void noteOff(MidiPsgChannel* psgChan)
+static void note_off(MidiPsgChannel* psgChan)
 {
-    applyAttenuation(psgChan, PSG_ATTENUATION_SILENCE);
+    apply_attenuation(psgChan, PSG_ATTENUATION_SILENCE);
     psgChan->noteOn = false;
     psgChan->noteReleased = false;
 }
 
-static u16 toneFromPitchCents(PitchCents pc)
+static u16 tone_from_pitch_cents(PitchCents pc)
 {
-    u16 tone = toneForMidiKey(pc.pitch);
+    u16 tone = tone_for_midi_key(pc.pitch);
     if (pc.cents == 0) {
         return tone;
     }
-    return tone + (((toneForMidiKey(pc.pitch + 1) - tone) * pc.cents) / 100);
+    return tone + (((tone_for_midi_key(pc.pitch + 1) - tone) * pc.cents) / 100);
 }
 
-static u16 envelopeTone(MidiPsgChannel* psgChan)
+static u16 envelope_tone(MidiPsgChannel* psgChan)
 {
     PitchCents pc = { .pitch = psgChan->pitch, .cents = psgChan->cents };
     u8 shift = *psgChan->envelopeStep >> 4;
@@ -167,10 +167,10 @@ static u16 envelopeTone(MidiPsgChannel* psgChan)
         pc.pitch -= 5;
         break;
     }
-    return toneFromPitchCents(pc);
+    return tone_from_pitch_cents(pc);
 }
 
-static void applyTone(MidiPsgChannel* psgChan, u16 newFreq)
+static void apply_tone(MidiPsgChannel* psgChan, u16 newFreq)
 {
     if (newFreq != psgChan->freq) {
         PSG_setTone(psgChan->chanNum, newFreq);
@@ -178,7 +178,7 @@ static void applyTone(MidiPsgChannel* psgChan, u16 newFreq)
     }
 }
 
-static void applyAttenuation(MidiPsgChannel* psgChan, u8 newAtt)
+static void apply_attenuation(MidiPsgChannel* psgChan, u8 newAtt)
 {
     if (newAtt != psgChan->attenuation) {
         PSG_setEnvelope(psgChan->chanNum, newAtt);
@@ -191,7 +191,7 @@ static void applyAttenuation(MidiPsgChannel* psgChan, u8 newAtt)
     }
 }
 
-static void applyEnvelopeStep(MidiPsgChannel* psgChan)
+static void apply_envelope_step(MidiPsgChannel* psgChan)
 {
     if (*psgChan->envelopeStep == EEF_LOOP_START) {
         psgChan->envelopeStep++;
@@ -207,12 +207,12 @@ static void applyEnvelopeStep(MidiPsgChannel* psgChan)
         if (psgChan->envelopeLoopStart != NULL && !psgChan->noteReleased) {
             psgChan->envelopeStep = psgChan->envelopeLoopStart;
         } else {
-            noteOff(psgChan);
+            note_off(psgChan);
             return;
         }
     }
-    applyTone(psgChan, envelopeTone(psgChan));
-    applyAttenuation(psgChan, effectiveAttenuation(psgChan));
+    apply_tone(psgChan, envelope_tone(psgChan));
+    apply_attenuation(psgChan, effective_attenuation(psgChan));
 }
 
 void midi_psg_note_on(u8 chan, u8 pitch, s8 cents, u8 velocity)
@@ -220,45 +220,45 @@ void midi_psg_note_on(u8 chan, u8 pitch, s8 cents, u8 velocity)
     if (pitch < MIN_MIDI_KEY) {
         return;
     }
-    MidiPsgChannel* psgChan = psgChannel(chan);
+    MidiPsgChannel* psgChan = psg_channel(chan);
     psgChan->noteReleased = false;
     psgChan->pitch = pitch;
     psgChan->cents = cents;
     psgChan->velocity = velocity;
     psgChan->noteOn = true;
-    initEnvelope(psgChan);
-    applyEnvelopeStep(psgChan);
+    init_envelope(psgChan);
+    apply_envelope_step(psgChan);
 }
 
 void midi_psg_note_off(u8 chan, u8 pitch)
 {
-    MidiPsgChannel* psgChan = psgChannel(chan);
+    MidiPsgChannel* psgChan = psg_channel(chan);
     if (psgChan->noteOn) {
         if (psgChan->envelopeLoopStart != NULL) {
             psgChan->noteReleased = true;
         } else {
-            noteOff(psgChan);
+            note_off(psgChan);
         }
     }
 }
 
 void midi_psg_all_notes_off(u8 chan)
 {
-    midi_psg_note_off(chan, psgChannel(chan)->pitch);
+    midi_psg_note_off(chan, psg_channel(chan)->pitch);
 }
 
 void midi_psg_channel_volume(u8 chan, u8 volume)
 {
-    MidiPsgChannel* psgChan = psgChannel(chan);
+    MidiPsgChannel* psgChan = psg_channel(chan);
     psgChan->volume = volume;
     if (psgChan->noteOn) {
-        applyAttenuation(psgChan, effectiveAttenuation(psgChan));
+        apply_attenuation(psgChan, effective_attenuation(psgChan));
     }
 }
 
 void midi_psg_program(u8 chan, u8 program)
 {
-    MidiPsgChannel* psgChan = psgChannel(chan);
+    MidiPsgChannel* psgChan = psg_channel(chan);
     psgChan->envelope = program;
 }
 
@@ -268,20 +268,20 @@ void midi_psg_pan(u8 chan, u8 pan)
     (void)pan;
 }
 
-static void incrementEnvelopeStep(MidiPsgChannel* chan)
+static void increment_envelope_step(MidiPsgChannel* chan)
 {
     if (*chan->envelopeStep != EEF_END) {
         chan->envelopeStep++;
     }
-    applyEnvelopeStep(chan);
+    apply_envelope_step(chan);
 }
 
 void midi_psg_tick(void)
 {
     for (u8 chan = 0; chan < MAX_PSG_CHANS; chan++) {
-        MidiPsgChannel* psgChan = psgChannel(chan);
+        MidiPsgChannel* psgChan = psg_channel(chan);
         if (psgChan->noteOn) {
-            incrementEnvelopeStep(psgChan);
+            increment_envelope_step(psgChan);
         }
     }
 }
@@ -299,7 +299,7 @@ void midi_psg_load_envelope(const u8* eef)
     userDefinedEnvelopePtr = userDefinedEnvelope;
 }
 
-static u16 toneForMidiKey(u8 midiKey)
+static u16 tone_for_midi_key(u8 midiKey)
 {
     const u16* tones = SYS_isPAL() ? TONES_PAL : TONES_NTSC;
     if (midiKey < MIN_MIDI_KEY) {
@@ -311,7 +311,7 @@ static u16 toneForMidiKey(u8 midiKey)
     return tones[midiKey - MIN_MIDI_KEY];
 }
 
-static MidiPsgChannel* psgChannel(u8 chan)
+static MidiPsgChannel* psg_channel(u8 chan)
 {
     return &psgChannels[chan];
 }
@@ -323,8 +323,8 @@ u8 midi_psg_busy(void)
 
 void midi_psg_pitch(u8 chan, u8 pitch, s8 cents)
 {
-    MidiPsgChannel* psgChan = psgChannel(chan);
+    MidiPsgChannel* psgChan = psg_channel(chan);
     psgChan->pitch = pitch;
     psgChan->cents = cents;
-    applyTone(psgChan, envelopeTone(psgChan));
+    apply_tone(psgChan, envelope_tone(psgChan));
 }

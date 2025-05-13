@@ -20,10 +20,10 @@ typedef struct MidiFmChannel {
 
 static MidiFmChannel fmChannels[MAX_FM_CHANS];
 
-static u8 pitchIsOutOfRange(u8 pitch);
-static u8 effectiveVolume(MidiFmChannel* channelState);
-static void updatePan(u8 chan);
-static u16 lookupFreqNum(u8 pitch, u8 offset);
+static u8 pitch_is_out_of_range(u8 pitch);
+static u8 effective_volume(MidiFmChannel* channelState);
+static void update_pan(u8 chan);
+static u16 lookup_freq_num(u8 pitch, u8 offset);
 void midi_fm_reset(void);
 
 static const FmChannel** presets;
@@ -52,12 +52,12 @@ void midi_fm_reset(void)
 
 u16 midi_fm_pitchCentsToFreqNum(u8 pitch, s8 cents)
 {
-    u16 freq = lookupFreqNum(pitch, 0);
-    u16 nextFreq = lookupFreqNum(pitch, 1);
+    u16 freq = lookup_freq_num(pitch, 0);
+    u16 nextFreq = lookup_freq_num(pitch, 1);
     return freq + (((nextFreq - freq) * cents) / 100);
 }
 
-static void setSynthPitch(u8 chan)
+static void set_synth_pitch(u8 chan)
 {
     MidiFmChannel* fmChan = &fmChannels[chan];
     synth_pitch(chan, midi_fm_pitchToOctave(fmChan->pitch),
@@ -66,7 +66,7 @@ static void setSynthPitch(u8 chan)
 
 void midi_fm_note_on(u8 chan, u8 pitch, s8 cents, u8 velocity)
 {
-    if (pitchIsOutOfRange(pitch)) {
+    if (pitch_is_out_of_range(pitch)) {
         return;
     }
     MidiFmChannel* fmChan = &fmChannels[chan];
@@ -76,11 +76,11 @@ void midi_fm_note_on(u8 chan, u8 pitch, s8 cents, u8 velocity)
         pitch = percussionPreset->key;
     }
     fmChan->velocity = velocity;
-    synth_volume(chan, effectiveVolume(fmChan));
+    synth_volume(chan, effective_volume(fmChan));
     fmChan->pitch = pitch;
     fmChan->cents = cents;
 
-    setSynthPitch(chan);
+    set_synth_pitch(chan);
     synth_noteOn(chan);
 }
 
@@ -94,7 +94,7 @@ void midi_fm_channel_volume(u8 chan, u8 volume)
 {
     MidiFmChannel* fmChan = &fmChannels[chan];
     fmChan->volume = volume;
-    synth_volume(chan, effectiveVolume(fmChan));
+    synth_volume(chan, effective_volume(fmChan));
 }
 
 void midi_fm_program(u8 chan, u8 program)
@@ -118,10 +118,10 @@ void midi_fm_pan(u8 chan, u8 pan)
 {
     MidiFmChannel* fmChan = &fmChannels[chan];
     fmChan->pan = pan;
-    updatePan(chan);
+    update_pan(chan);
 }
 
-static void updatePan(u8 chan)
+static void update_pan(u8 chan)
 {
     MidiFmChannel* fmChan = &fmChannels[chan];
     if (fmChan->pan > 95) {
@@ -138,17 +138,17 @@ u8 midi_fm_pitchToOctave(u8 pitch)
     return (pitch - MIN_MIDI_PITCH) / SEMITONES;
 }
 
-static u16 lookupFreqNum(u8 pitch, u8 offset)
+static u16 lookup_freq_num(u8 pitch, u8 offset)
 {
     return FREQS[((u8)(pitch - MIN_MIDI_PITCH) % SEMITONES) + offset];
 }
 
-static u8 pitchIsOutOfRange(u8 pitch)
+static u8 pitch_is_out_of_range(u8 pitch)
 {
     return pitch < MIN_MIDI_PITCH || pitch > MAX_MIDI_PITCH;
 }
 
-static u8 effectiveVolume(MidiFmChannel* fmChan)
+static u8 effective_volume(MidiFmChannel* fmChan)
 {
     return (fmChan->volume * fmChan->velocity) / 0x7F;
 }
@@ -158,5 +158,5 @@ void midi_fm_pitch(u8 chan, u8 pitch, s8 cents)
     MidiFmChannel* fmChan = &fmChannels[chan];
     fmChan->pitch = pitch;
     fmChan->cents = cents;
-    setSynthPitch(chan);
+    set_synth_pitch(chan);
 }

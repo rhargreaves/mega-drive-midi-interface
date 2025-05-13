@@ -20,7 +20,7 @@ u16 baud_rate(void)
     }
 }
 
-static void updateBuffer(void)
+static void update_buffer(void)
 {
     while (serial_readyToReceive()) {
         recvData = true;
@@ -33,12 +33,12 @@ static void updateBuffer(void)
     }
 }
 
-static void recvReadyCallback(void)
+static void recv_ready_callback(void)
 {
-    updateBuffer();
+    update_buffer();
 }
 
-static void flushRRDY(void)
+static void flush_rrdy(void)
 {
     while (serial_readyToReceive()) {
         serial_receive();
@@ -49,8 +49,8 @@ void comm_serial_init(void)
 {
     ring_buf_init();
     serial_init(SCTRL_4800_BPS | SCTRL_SIN | SCTRL_SOUT | SCTRL_RINT);
-    serial_setReadyToReceiveCallback(&recvReadyCallback);
-    flushRRDY();
+    serial_setReadyToReceiveCallback(&recv_ready_callback);
+    flush_rrdy();
     if (settings_debug_serial()) {
         log_info("Serial: Baud = %i", baud_rate());
     }

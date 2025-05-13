@@ -32,7 +32,7 @@ void scheduler_vsync(void)
     frame++;
 }
 
-static void onFrame(void)
+static void on_frame(void)
 {
     for (u16 i = 0; i < frameHandlersLength; i++) {
         frameHandlers[i]();
@@ -44,7 +44,7 @@ u16 scheduler_ticks(void)
     return ticks;
 }
 
-static void onTick(void)
+static void on_tick(void)
 {
     ticks++;
     for (u16 i = 0; i < tickHandlersLength; i++) {
@@ -54,9 +54,9 @@ static void onTick(void)
 
 void scheduler_tick(void)
 {
-    onTick();
+    on_tick();
     if (frame != previousFrame) {
-        onFrame();
+        on_frame();
         previousFrame = frame;
     }
 }
