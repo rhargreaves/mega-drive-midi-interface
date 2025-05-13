@@ -7,7 +7,7 @@
 #include "log.h"
 #include "memcmp.h"
 #include "midi.h"
-#include "midi_receiver.h"
+#include "midi_rx.h"
 #include "comm/serial.h"
 #include "synth.h"
 #include "ui_fm.h"

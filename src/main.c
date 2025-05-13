@@ -3,7 +3,7 @@
 #include "envelopes.h"
 #include "log.h"
 #include "midi.h"
-#include "midi_receiver.h"
+#include "midi_rx.h"
 #include "presets.h"
 #include "scheduler.h"
 #include "ui.h"
@@ -20,8 +20,8 @@ int main()
     ui_init();
     comm_init();
     everdrive_led_init();
-    midi_receiver_init();
-    midi_receiver_run_startup_sequence();
+    midi_rx_init();
+    midi_rx_run_startup_sequence();
     SYS_setVIntCallback(scheduler_vsync);
     scheduler_run();
 }

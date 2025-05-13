@@ -2,7 +2,7 @@
 #include "comm/everdrive_led.h"
 #include "midi_psg.h"
 #include "ui.h"
-#include "midi_receiver.h"
+#include "midi_rx.h"
 #include "comm/comm_megawifi.h"
 #include "comm/comm_demo.h"
 

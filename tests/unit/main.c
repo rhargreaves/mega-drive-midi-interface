@@ -12,7 +12,7 @@
 #include "test_midi_polyphony.h"
 #include "test_midi_portamento.h"
 #include "test_midi_psg.h"
-#include "test_midi_receiver.h"
+#include "test_midi_rx.h"
 #include "test_midi_sysex.h"
 #include "test_scheduler.h"
 #include "test_synth.h"
@@ -36,7 +36,7 @@
 #define scheduler_test(test) cmocka_unit_test_setup(test, test_scheduler_setup)
 #define applemidi_test(test) cmocka_unit_test_setup(test, test_applemidi_setup)
 #define ring_buf_test(test) cmocka_unit_test_setup(test, test_ring_buf_setup)
-#define midi_receiver_test(test) cmocka_unit_test_setup(test, test_midi_receiver_setup)
+#define midi_rx_test(test) cmocka_unit_test_setup(test, test_midi_rx_setup)
 #define note_priority_test(test) cmocka_unit_test_setup(test, test_note_priority_setup)
 #define pitchcents_test(test) cmocka_unit_test(test)
 
@@ -44,27 +44,27 @@ int main(void)
 {
     const struct CMUnitTest tests[] = {
         // clang-format off
-        midi_receiver_test(
-            test_midi_receiver_read_passes_note_on_to_midi_processor),
-        midi_receiver_test(
-            test_midi_receiver_read_passes_note_off_to_midi_processor),
-        midi_receiver_test(test_midi_receiver_does_nothing_for_control_change),
-        midi_receiver_test(
-            test_midi_receiver_sets_unknown_event_for_unknown_status),
-        midi_receiver_test(
-            test_midi_receiver_sets_unknown_event_for_unknown_system_message),
-        midi_receiver_test(test_midi_receiver_sets_CC),
-        midi_receiver_test(test_midi_receiver_sets_pitch_bend),
-        midi_receiver_test(test_midi_receiver_does_nothing_on_midi_clock),
-        midi_receiver_test(test_midi_receiver_does_nothing_on_midi_start_midi),
-        midi_receiver_test(test_midi_receiver_swallows_midi_stop),
-        midi_receiver_test(test_midi_receiver_swallows_midi_continue),
-        midi_receiver_test(test_midi_receiver_does_nothing_on_midi_position),
-        midi_receiver_test(test_midi_receiver_sets_midi_program),
-        midi_receiver_test(test_midi_receiver_sends_sysex_to_midi_layer),
-        midi_receiver_test(test_midi_receiver_handles_sysex_limits),
-        midi_receiver_test(test_midi_receiver_sends_midi_reset),
-        midi_receiver_test(test_midi_receiver_runs_startup_sequence_on_midi_reset),
+        midi_rx_test(
+            test_midi_rx_read_passes_note_on_to_midi_processor),
+        midi_rx_test(
+            test_midi_rx_read_passes_note_off_to_midi_processor),
+        midi_rx_test(test_midi_rx_does_nothing_for_control_change),
+        midi_rx_test(
+            test_midi_rx_sets_unknown_event_for_unknown_status),
+        midi_rx_test(
+            test_midi_rx_sets_unknown_event_for_unknown_system_message),
+        midi_rx_test(test_midi_rx_sets_CC),
+        midi_rx_test(test_midi_rx_sets_pitch_bend),
+        midi_rx_test(test_midi_rx_does_nothing_on_midi_clock),
+        midi_rx_test(test_midi_rx_does_nothing_on_midi_start_midi),
+        midi_rx_test(test_midi_rx_swallows_midi_stop),
+        midi_rx_test(test_midi_rx_swallows_midi_continue),
+        midi_rx_test(test_midi_rx_does_nothing_on_midi_position),
+        midi_rx_test(test_midi_rx_sets_midi_program),
+        midi_rx_test(test_midi_rx_sends_sysex_to_midi_layer),
+        midi_rx_test(test_midi_rx_handles_sysex_limits),
+        midi_rx_test(test_midi_rx_sends_midi_reset),
+        midi_rx_test(test_midi_rx_runs_startup_sequence_on_midi_reset),
 
         midi_test(test_midi_triggers_synth_note_on),
         midi_test(test_midi_triggers_synth_note_on_with_velocity),

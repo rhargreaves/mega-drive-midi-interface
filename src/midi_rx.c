@@ -1,4 +1,5 @@
-#include "midi_receiver.h"
+
+#include "midi_rx.h"
 #include "comm/comm.h"
 #include "midi.h"
 #include "scheduler.h"
@@ -42,19 +43,19 @@ static size_t startup_sequence_length = 0;
 static size_t startup_sequence_index = 0;
 static const u8* startup_sequence = NULL;
 
-void midi_receiver_init(void)
+void midi_rx_init(void)
 {
-    scheduler_addTickHandler(midi_receiver_read_if_comm_ready);
+    scheduler_addTickHandler(midi_rx_read_if_comm_ready);
 }
 
-void midi_receiver_read_if_comm_ready(void)
+void midi_rx_read_if_comm_ready(void)
 {
     while (comm_read_ready()) {
-        midi_receiver_read();
+        midi_rx_read();
     }
 }
 
-void midi_receiver_read(void)
+void midi_rx_read(void)
 {
     read_message(comm_read);
 }
@@ -68,7 +69,7 @@ static u8 read_startup_sequence(void)
     return startup_sequence[startup_sequence_index++];
 }
 
-void midi_receiver_run_startup_sequence(void)
+void midi_rx_run_startup_sequence(void)
 {
     startup_sequence_index = 0;
     startup_sequence = settings_startup_midi_sequence(&startup_sequence_length);
@@ -189,7 +190,7 @@ static void read_system_message(u8 status, Reader reader)
     case SYSTEM_RESET:
         log_warn("Reset all");
         midi_reset();
-        midi_receiver_run_startup_sequence();
+        midi_rx_run_startup_sequence();
         break;
     default:
         log_warn("System Status? %02X", status);
