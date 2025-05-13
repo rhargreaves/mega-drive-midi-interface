@@ -153,7 +153,7 @@ pre-build:
 	@$(MKDIR) -p $(SRC)/boot
 	@$(MKDIR) -p out
 
-out/rom.bin: $(CHECK_FLAGS) out/rom.out
+out/rom.bin: out/rom.out | $(CHECK_FLAGS)
 	$(OBJCPY) -O binary out/rom.out out/rom.bin
 	$(SIZEBND) out/rom.bin -sizealign 524288 -checksum
 
@@ -163,13 +163,13 @@ out/symbol.txt: out/rom.out
 out/rom.out: out/sega.o $(OBJS) $(LIBMD)
 	$(CC) -m68000 -B$(BIN) -n -T $(GDK)/md.ld -nostdlib out/sega.o $(OBJS) $(LIBMD) $(LIBGCC) -o out/rom.out -Wl,--gc-sections -flto
 
-out/sega.o: $(SRC)/boot/sega.s out/rom_head.bin
+out/sega.o: $(SRC)/boot/sega.s out/rom_head.bin | $(CHECK_FLAGS)
 	$(CC) -x assembler-with-cpp -Wa,--register-prefix-optional,--bitwise-or $(AFLAGS) -c $(SRC)/boot/sega.s -o $@
 
-out/rom_head.bin: out/rom_head.o
+out/rom_head.bin: out/rom_head.o | $(CHECK_FLAGS)
 	$(OBJCPY) -O binary $< $@
 
-out/rom_head.o: $(SRC)/boot/rom_head.c
+out/rom_head.o: $(SRC)/boot/rom_head.c | $(CHECK_FLAGS)
 	$(CC) $(DEFAULT_FLAGS) -c $< -o $@
 
 $(SRC)/boot/sega.s: $(SRC_LIB)/boot/sega.s
