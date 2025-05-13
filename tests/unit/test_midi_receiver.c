@@ -47,7 +47,7 @@ void test_midi_receiver_read_passes_note_on_to_midi_processor(UNUSED void** stat
         u8 expectedStatus = 0x90 + chan;
         stub_comm_read_returns_midi_event(expectedStatus, expectedData, expectedData2);
         expect_midi_note_on(chan, expectedData, expectedData2);
-        midi_receiver_read_once();
+        midi_receiver_read();
     }
 }
 
@@ -59,7 +59,7 @@ void test_midi_receiver_read_passes_note_off_to_midi_processor(UNUSED void** sta
 
     stub_comm_read_returns_midi_event(expectedStatus, expectedData, expectedData2);
     expect_midi_note_off(0, expectedData);
-    midi_receiver_read_once();
+    midi_receiver_read();
 }
 
 void test_midi_receiver_does_nothing_for_control_change(UNUSED void** state)
@@ -70,9 +70,9 @@ void test_midi_receiver_does_nothing_for_control_change(UNUSED void** state)
 
     stub_comm_read_returns_midi_event(expectedStatus, expectedData, expectedData2);
 
-    midi_receiver_read_once();
-    midi_receiver_read_once();
-    midi_receiver_read_once();
+    midi_receiver_read();
+    midi_receiver_read();
+    midi_receiver_read();
 }
 
 void test_midi_receiver_sets_unknown_event_for_unknown_status(UNUSED void** state)
@@ -84,7 +84,7 @@ void test_midi_receiver_sets_unknown_event_for_unknown_status(UNUSED void** stat
     will_return(__wrap_comm_read, expectedStatus);
     expect_log_warn("Status? %02X");
 
-    midi_receiver_read_once();
+    midi_receiver_read();
 }
 
 void test_midi_receiver_sets_unknown_event_for_unknown_system_message(UNUSED void** state)
@@ -96,7 +96,7 @@ void test_midi_receiver_sets_unknown_event_for_unknown_system_message(UNUSED voi
     will_return(__wrap_comm_read, expectedStatus);
     expect_log_warn("System Status? %02X");
 
-    midi_receiver_read_once();
+    midi_receiver_read();
 }
 
 void test_midi_receiver_sets_CC(UNUSED void** state)
@@ -107,7 +107,7 @@ void test_midi_receiver_sets_CC(UNUSED void** state)
 
     stub_comm_read_returns_midi_event(expectedStatus, expectedController, expectedValue);
     expect_midi_cc(0, expectedController, expectedValue);
-    midi_receiver_read_once();
+    midi_receiver_read();
 }
 
 void test_midi_receiver_sets_pitch_bend(UNUSED void** state)
@@ -119,7 +119,7 @@ void test_midi_receiver_sets_pitch_bend(UNUSED void** state)
 
     stub_comm_read_returns_midi_event(expectedStatus, expectedValueLower, expectedValueUpper);
     expect_midi_pitch_bend(0, expectedValue);
-    midi_receiver_read_once();
+    midi_receiver_read();
 }
 
 void test_midi_receiver_does_nothing_on_midi_clock(UNUSED void** state)
@@ -127,7 +127,7 @@ void test_midi_receiver_does_nothing_on_midi_clock(UNUSED void** state)
     u8 status = STATUS_CLOCK;
     will_return(__wrap_comm_read, status);
 
-    midi_receiver_read_once();
+    midi_receiver_read();
 }
 
 void test_midi_receiver_does_nothing_on_midi_start_midi(UNUSED void** state)
@@ -135,7 +135,7 @@ void test_midi_receiver_does_nothing_on_midi_start_midi(UNUSED void** state)
     u8 status = STATUS_START;
     will_return(__wrap_comm_read, status);
 
-    midi_receiver_read_once();
+    midi_receiver_read();
 }
 
 void test_midi_receiver_swallows_midi_stop(UNUSED void** state)
@@ -143,7 +143,7 @@ void test_midi_receiver_swallows_midi_stop(UNUSED void** state)
     u8 status = STATUS_STOP;
     will_return(__wrap_comm_read, status);
 
-    midi_receiver_read_once();
+    midi_receiver_read();
 }
 
 void test_midi_receiver_swallows_midi_continue(UNUSED void** state)
@@ -151,7 +151,7 @@ void test_midi_receiver_swallows_midi_continue(UNUSED void** state)
     u8 status = STATUS_CONTINUE;
     will_return(__wrap_comm_read, status);
 
-    midi_receiver_read_once();
+    midi_receiver_read();
 }
 
 void test_midi_receiver_does_nothing_on_midi_position(UNUSED void** state)
@@ -162,7 +162,7 @@ void test_midi_receiver_does_nothing_on_midi_position(UNUSED void** state)
     will_return(__wrap_comm_read, 0);
     will_return(__wrap_comm_read, 0);
 
-    midi_receiver_read_once();
+    midi_receiver_read();
 }
 
 void test_midi_receiver_sets_midi_program(UNUSED void** state)
@@ -173,7 +173,7 @@ void test_midi_receiver_sets_midi_program(UNUSED void** state)
     will_return(__wrap_comm_read, status);
     will_return(__wrap_comm_read, program);
     expect_midi_program(0, program);
-    midi_receiver_read_once();
+    midi_receiver_read();
 }
 
 void test_midi_receiver_sends_midi_reset(UNUSED void** state)
@@ -184,7 +184,7 @@ void test_midi_receiver_sends_midi_reset(UNUSED void** state)
     expect_function_call(__wrap_midi_reset);
     expect_log_warn("Reset all");
 
-    midi_receiver_read_once();
+    midi_receiver_read();
 }
 
 void test_midi_receiver_runs_startup_sequence_on_midi_reset(UNUSED void** state)
@@ -198,7 +198,7 @@ void test_midi_receiver_runs_startup_sequence_on_midi_reset(UNUSED void** state)
     expect_function_call(__wrap_midi_reset);
     expect_log_warn("Reset all");
 
-    midi_receiver_read_once();
+    midi_receiver_read();
 }
 
 void test_midi_receiver_sends_sysex_to_midi_layer(UNUSED void** state)
@@ -213,7 +213,7 @@ void test_midi_receiver_sends_sysex_to_midi_layer(UNUSED void** state)
     expect_memory(__wrap_midi_sysex, data, &data, 1);
     expect_value(__wrap_midi_sysex, length, 1);
 
-    midi_receiver_read_once();
+    midi_receiver_read();
 }
 
 void test_midi_receiver_handles_sysex_limits(UNUSED void** state)
@@ -236,7 +236,7 @@ void test_midi_receiver_handles_sysex_limits(UNUSED void** state)
     expect_memory(__wrap_midi_sysex, data, &data, SYSEX_BUFFER_SIZE);
     expect_value(__wrap_midi_sysex, length, SYSEX_BUFFER_SIZE);
 
-    midi_receiver_read_once();
+    midi_receiver_read();
 
     for (u16 i = 0; i < SYSEX_MESSAGE_SIZE - SYSEX_BUFFER_SIZE + 1; i++) {
         comm_read();

@@ -26,17 +26,17 @@
 #define SYSTEM_SYSEX 0x0
 #define SYSTEM_RESET 0xF
 
-typedef u8 (*ReadFunc)(void);
+typedef u8 (*Reader)(void);
 
-static void noteOn(u8 status, ReadFunc reader);
-static void noteOff(u8 status, ReadFunc reader);
-static void controlChange(u8 status, ReadFunc reader);
-static void pitchBend(u8 status, ReadFunc reader);
-static void systemMessage(u8 status, ReadFunc reader);
-static void program(u8 status, ReadFunc reader);
-static u16 read14bitValue(ReadFunc reader);
-static void readSysEx(ReadFunc reader);
-static void midi_receiver_read(ReadFunc reader);
+static void readNoteOn(u8 status, Reader reader);
+static void readNoteOff(u8 status, Reader reader);
+static void readControlChange(u8 status, Reader reader);
+static void readPitchBend(u8 status, Reader reader);
+static void readSystemMessage(u8 status, Reader reader);
+static void readProgram(u8 status, Reader reader);
+static u16 read14bitValue(Reader reader);
+static void readSysEx(Reader reader);
+static void readMessage(Reader reader);
 
 static size_t startup_sequence_length = 0;
 static size_t startup_sequence_index = 0;
@@ -50,16 +50,16 @@ void midi_receiver_init(void)
 void midi_receiver_read_if_comm_ready(void)
 {
     while (comm_read_ready()) {
-        midi_receiver_read(comm_read);
+        midi_receiver_read();
     }
 }
 
-void midi_receiver_read_once(void)
+void midi_receiver_read(void)
 {
-    midi_receiver_read(comm_read);
+    readMessage(comm_read);
 }
 
-u8 read_startup_sequence(void)
+static u8 read_startup_sequence(void)
 {
     const u8* startup_sequence = settings_startup_midi_sequence(&startup_sequence_length);
     if (startup_sequence_index >= startup_sequence_length) {
@@ -73,7 +73,7 @@ void midi_receiver_run_startup_sequence(void)
     startup_sequence_index = 0;
     startup_sequence = settings_startup_midi_sequence(&startup_sequence_length);
     while (startup_sequence_index < startup_sequence_length) {
-        midi_receiver_read(read_startup_sequence);
+        readMessage(read_startup_sequence);
     }
 }
 
@@ -91,28 +91,28 @@ static void debugPrintEvent(u8 status, u8 data1, u8 data2)
 #endif
 }
 
-static void midi_receiver_read(ReadFunc reader)
+static void readMessage(Reader reader)
 {
     u8 status = reader();
     u8 event = STATUS_UPPER(status);
     switch (event) {
     case EVENT_NOTE_ON:
-        noteOn(status, reader);
+        readNoteOn(status, reader);
         break;
     case EVENT_NODE_OFF:
-        noteOff(status, reader);
+        readNoteOff(status, reader);
         break;
     case EVENT_CC:
-        controlChange(status, reader);
+        readControlChange(status, reader);
         break;
     case EVENT_PITCH_BEND:
-        pitchBend(status, reader);
+        readPitchBend(status, reader);
         break;
     case EVENT_PROGRAM:
-        program(status, reader);
+        readProgram(status, reader);
         break;
     case EVENT_SYSTEM:
-        systemMessage(status, reader);
+        readSystemMessage(status, reader);
         break;
     default:
         log_warn("Status? %02X", status);
@@ -120,7 +120,7 @@ static void midi_receiver_read(ReadFunc reader)
     }
 }
 
-static void controlChange(u8 status, ReadFunc reader)
+static void readControlChange(u8 status, Reader reader)
 {
     u8 chan = STATUS_LOWER(status);
     u8 controller = reader();
@@ -129,7 +129,7 @@ static void controlChange(u8 status, ReadFunc reader)
     midi_cc(chan, controller, value);
 }
 
-static void noteOn(u8 status, ReadFunc reader)
+static void readNoteOn(u8 status, Reader reader)
 {
     u8 chan = STATUS_LOWER(status);
     u8 pitch = reader();
@@ -138,7 +138,7 @@ static void noteOn(u8 status, ReadFunc reader)
     midi_note_on(chan, pitch, velocity);
 }
 
-static void noteOff(u8 status, ReadFunc reader)
+static void readNoteOff(u8 status, Reader reader)
 {
     u8 chan = STATUS_LOWER(status);
     u8 pitch = reader();
@@ -147,7 +147,7 @@ static void noteOff(u8 status, ReadFunc reader)
     midi_note_off(chan, pitch);
 }
 
-static void pitchBend(u8 status, ReadFunc reader)
+static void readPitchBend(u8 status, Reader reader)
 {
     u8 chan = STATUS_LOWER(status);
     u16 bend = read14bitValue(reader);
@@ -155,7 +155,7 @@ static void pitchBend(u8 status, ReadFunc reader)
     midi_pitch_bend(chan, bend);
 }
 
-static void program(u8 status, ReadFunc reader)
+static void readProgram(u8 status, Reader reader)
 {
     u8 chan = STATUS_LOWER(status);
     u8 program = reader();
@@ -163,14 +163,14 @@ static void program(u8 status, ReadFunc reader)
     midi_program(chan, program);
 }
 
-static u16 read14bitValue(ReadFunc reader)
+static u16 read14bitValue(Reader reader)
 {
     u16 lower = reader();
     u16 upper = reader();
     return (upper << 7) + lower;
 }
 
-static void systemMessage(u8 status, ReadFunc reader)
+static void readSystemMessage(u8 status, Reader reader)
 {
     u8 type = STATUS_LOWER(status);
     debugPrintEvent(status, 0, 0);
@@ -197,7 +197,7 @@ static void systemMessage(u8 status, ReadFunc reader)
     }
 }
 
-static void readSysEx(ReadFunc reader)
+static void readSysEx(Reader reader)
 {
     const u16 BUFFER_LENGTH = 256;
     u8 buffer[BUFFER_LENGTH];
