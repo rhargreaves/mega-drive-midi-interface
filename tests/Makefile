@@ -50,36 +50,36 @@ MOCKS=midi_process \
 	comm_reset_counts \
 	comm_read_ready \
 	synth_init \
-	synth_noteOn \
-	synth_noteOff \
+	synth_note_on \
+	synth_note_off \
 	synth_pitch \
 	synth_stereo \
 	synth_algorithm \
 	synth_feedback \
 	synth_ams \
 	synth_fms \
-	synth_operatorTotalLevel \
-	synth_operatorMultiple \
-	synth_operatorDetune \
-	synth_operatorRateScaling \
-	synth_operatorAttackRate \
-	synth_operatorDecayRate \
-	synth_operatorSustainRate \
-	synth_operatorSustainLevel \
-	synth_operatorAmplitudeModulation \
-	synth_operatorReleaseRate \
-	synth_operatorSsgEg \
-	synth_enableLfo \
-	synth_globalLfoFrequency \
+	synth_operator_total_level \
+	synth_operator_multiple \
+	synth_operator_detune \
+	synth_operator_rate_scaling \
+	synth_operator_attack_rate \
+	synth_operator_decay_rate \
+	synth_operator_sustain_rate \
+	synth_operator_sustain_level \
+	synth_operator_amplitude_modulation \
+	synth_operator_release_rate \
+	synth_operator_ssg_eg \
+	synth_enable_lfo \
+	synth_global_lfo_frequency \
 	synth_preset \
 	synth_volume \
-	synth_channelParameters \
-	synth_globalParameters \
-	synth_setSpecialMode \
-	synth_specialModePitch \
-	synth_specialModeVolume \
-	synth_directWriteYm2612 \
-	synth_enableDac \
+	synth_channel_parameters \
+	synth_global_parameters \
+	synth_set_special_mode \
+	synth_special_mode_pitch \
+	synth_special_mode_volume \
+	synth_direct_write_ym2612 \
+	synth_enable_dac \
 	midi_note_off \
 	midi_note_on \
 	midi_pitch_bend \

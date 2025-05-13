@@ -74,24 +74,24 @@ static bool disableNonGeneralMidiCCs;
 static bool stickToDeviceType;
 static bool invertTotalLevel;
 
-static void allNotesOff(u8 chan);
-static void generalMidiReset(void);
-static void applyDynamicMode(void);
-static void sendPong(void);
-static void setInvertTotalLevel(bool enabled);
-static void setDynamicMode(MappingMode mode);
-static void setOperatorTotalLevel(u8 chan, u8 op, u8 value);
-static void updateDeviceChannelFromAssociatedMidiChannel(DeviceChannel* devChan);
+static void all_notes_off(u8 chan);
+static void general_midi_reset(void);
+static void apply_dynamic_mode(void);
+static void send_pong(void);
+static void set_invert_total_level(bool enabled);
+static void set_dynamic_mode(MappingMode mode);
+static void set_operator_total_level(u8 chan, u8 op, u8 value);
+static void update_device_channel_from_associated_midi_channel(DeviceChannel* devChan);
 static DeviceChannel* deviceChannelByMidiChannel(u8 midiChannel);
-static void initAllDeviceChannels(void);
-static void resetAllState(void);
-static void initMidiChannel(u8 midiChan);
-static void initDeviceChannel(u8 devChan);
+static void init_all_device_channels(void);
+static void reset_all_state(void);
+static void init_midi_channel(u8 midiChan);
+static void init_device_channel(u8 devChan);
 static void reset(void);
 static void init(void);
-static void devChanNoteOn(DeviceChannel* devChan, u8 pitch, u8 velocity);
-static void devChanNoteOff(DeviceChannel* devChan, u8 pitch);
-static void setDownstreamPitch(DeviceChannel* devChan);
+static void dev_chan_note_on(DeviceChannel* devChan, u8 pitch, u8 velocity);
+static void dev_chan_note_off(DeviceChannel* devChan, u8 pitch);
+static void set_downstream_pitch(DeviceChannel* devChan);
 
 void midi_init(
     const FmChannel** presets, const PercussionPreset** percussionPresets, const u8** envelopes)
@@ -119,19 +119,19 @@ static void reset(void)
     dynamicMode = mappingModePref == MappingMode_Dynamic;
     disableNonGeneralMidiCCs = false;
     stickToDeviceType = false;
-    resetAllState();
+    reset_all_state();
 }
 
-static void resetAllState(void)
+static void reset_all_state(void)
 {
     for (u8 i = 0; i < MIDI_CHANNELS; i++) {
-        initMidiChannel(i);
+        init_midi_channel(i);
     }
-    initAllDeviceChannels();
-    applyDynamicMode();
+    init_all_device_channels();
+    apply_dynamic_mode();
 }
 
-static void initMidiChannel(u8 midiChan)
+static void init_midi_channel(u8 midiChan)
 {
     MidiChannel* chan = &midiChannels[midiChan];
     chan->program = 0;
@@ -146,14 +146,14 @@ static void initMidiChannel(u8 midiChan)
     chan->fineTune = 0;
 }
 
-static void initAllDeviceChannels(void)
+static void init_all_device_channels(void)
 {
     for (u16 i = 0; i < DEV_CHANS; i++) {
-        initDeviceChannel(i);
+        init_device_channel(i);
     }
 }
 
-static void initDeviceChannel(u8 devChan)
+static void init_device_channel(u8 devChan)
 {
     DeviceChannel* chan = &deviceChannels[devChan];
     if (devChan <= DEV_CHAN_MAX_FM) {
@@ -172,7 +172,7 @@ static void initDeviceChannel(u8 devChan)
     chan->cents = 0;
     chan->pitchBend = DEFAULT_MIDI_PITCH_BEND;
     chan->glideTargetPitch = 0;
-    updateDeviceChannelFromAssociatedMidiChannel(chan);
+    update_device_channel_from_associated_midi_channel(chan);
 }
 
 static bool isChannelPlayingNote(DeviceChannel* devChan, u8 pitch)
@@ -264,7 +264,7 @@ static DeviceChannel* findDeviceSpecificChannel(u8 incomingMidiChan, u8 minDevCh
     return NULL;
 }
 
-static void setDeviceMinMaxChans(u8 incomingMidiChan, u8* minDevChan, u8* maxDevChan)
+static void set_device_min_max_chans(u8 incomingMidiChan, u8* minDevChan, u8* maxDevChan)
 {
     MidiChannel* midiChannel = &midiChannels[incomingMidiChan];
     if (midiChannel->deviceSelect == Auto) {
@@ -286,7 +286,7 @@ static DeviceChannel* findFreeChannel(u8 incomingMidiChan)
 {
     u8 minDevChan;
     u8 maxDevChan;
-    setDeviceMinMaxChans(incomingMidiChan, &minDevChan, &maxDevChan);
+    set_device_min_max_chans(incomingMidiChan, &minDevChan, &maxDevChan);
     DeviceChannel* chan = findFreeMidiAssignedChannel(incomingMidiChan, minDevChan, maxDevChan);
     if (chan != NULL) {
         return chan;
@@ -326,7 +326,7 @@ static bool tooManyPercussiveNotes(u8 midiChan)
     return false;
 }
 
-static void updateVolume(MidiChannel* midiChannel, DeviceChannel* devChan)
+static void update_volume(MidiChannel* midiChannel, DeviceChannel* devChan)
 {
     if (devChan->volume != midiChannel->volume) {
         devChan->ops->channelVolume(devChan->number, midiChannel->volume);
@@ -334,7 +334,7 @@ static void updateVolume(MidiChannel* midiChannel, DeviceChannel* devChan)
     }
 }
 
-static void updatePan(MidiChannel* midiChannel, DeviceChannel* devChan)
+static void update_pan(MidiChannel* midiChannel, DeviceChannel* devChan)
 {
     if (devChan->pan != midiChannel->pan) {
         devChan->ops->pan(devChan->number, midiChannel->pan);
@@ -342,15 +342,15 @@ static void updatePan(MidiChannel* midiChannel, DeviceChannel* devChan)
     }
 }
 
-static void updatePitchBend(MidiChannel* midiChannel, DeviceChannel* devChan)
+static void update_pitch_bend(MidiChannel* midiChannel, DeviceChannel* devChan)
 {
     if (devChan->pitchBend != midiChannel->pitchBend) {
         devChan->pitchBend = midiChannel->pitchBend;
-        setDownstreamPitch(devChan);
+        set_downstream_pitch(devChan);
     }
 }
 
-static void updateProgram(MidiChannel* midiChannel, DeviceChannel* devChan)
+static void update_program(MidiChannel* midiChannel, DeviceChannel* devChan)
 {
     if (devChan->program != midiChannel->program) {
         devChan->ops->program(devChan->number, midiChannel->program);
@@ -358,7 +358,7 @@ static void updateProgram(MidiChannel* midiChannel, DeviceChannel* devChan)
     }
 }
 
-static void channelDeviceSelect(u8 midiChan, DeviceSelect deviceSelect)
+static void channel_device_select(u8 midiChan, DeviceSelect deviceSelect)
 {
     MidiChannel* midiChannel = &midiChannels[midiChan];
     midiChannel->deviceSelect = deviceSelect;
@@ -372,14 +372,14 @@ static DeviceChannel* deviceChannelByMidiChannel(u8 midiChannel)
     return NULL;
 }
 
-static void updateDeviceChannelFromAssociatedMidiChannel(DeviceChannel* devChan)
+static void update_device_channel_from_associated_midi_channel(DeviceChannel* devChan)
 {
     MidiChannel* midiChannel = &midiChannels[devChan->midiChannel];
     midi_fm_percussive(devChan->number, devChan->midiChannel == GENERAL_MIDI_PERCUSSION_CHANNEL);
-    updateVolume(midiChannel, devChan);
-    updatePan(midiChannel, devChan);
-    updateProgram(midiChannel, devChan);
-    updatePitchBend(midiChannel, devChan);
+    update_volume(midiChannel, devChan);
+    update_pan(midiChannel, devChan);
+    update_program(midiChannel, devChan);
+    update_pitch_bend(midiChannel, devChan);
 }
 
 static DeviceChannel* findSuitableDeviceChannel(u8 midiChan)
@@ -393,19 +393,19 @@ static PitchCents effectivePitchCents(DeviceChannel* devChan)
     return pitchcents_shift(pc, midiChannels[devChan->midiChannel].fineTune);
 }
 
-static void setDownstreamPitch(DeviceChannel* devChan)
+static void set_downstream_pitch(DeviceChannel* devChan)
 {
     PitchCents pc = effectivePitchCents(devChan);
     devChan->ops->pitch(devChan->number, pc.pitch, pc.cents);
 }
 
-static void setDownstreamNoteOn(DeviceChannel* devChan, u8 velocity)
+static void set_downstream_note_on(DeviceChannel* devChan, u8 velocity)
 {
     PitchCents pc = effectivePitchCents(devChan);
     devChan->ops->noteOn(devChan->number, pc.pitch, pc.cents, velocity);
 }
 
-static void reapplyProgramIfChannelWasFormerlyPercussive(DeviceChannel* devChan, u8 midiChan)
+static void reapply_program_if_channel_was_formerly_percussive(DeviceChannel* devChan, u8 midiChan)
 {
     u8 prevMidiChan = devChan->midiChannel;
     if (prevMidiChan == GENERAL_MIDI_PERCUSSION_CHANNEL
@@ -445,13 +445,13 @@ void midi_note_on(u8 midiChan, u8 pitch, u8 velocity)
         devChan->glideTargetPitch = 0;
     }
 
-    reapplyProgramIfChannelWasFormerlyPercussive(devChan, midiChan);
+    reapply_program_if_channel_was_formerly_percussive(devChan, midiChan);
     devChan->midiChannel = midiChan;
     devChan->noteOn = true;
     devChan->cents = 0;
     devChan->pitch = pitch;
-    updateDeviceChannelFromAssociatedMidiChannel(devChan);
-    setDownstreamNoteOn(devChan, velocity);
+    update_device_channel_from_associated_midi_channel(devChan);
+    set_downstream_note_on(devChan, velocity);
 }
 
 void midi_note_off(u8 chan, u8 pitch)
@@ -467,58 +467,58 @@ void midi_note_off(u8 chan, u8 pitch)
                     note_priority_push(&midiChannel->notePriority, nextMostRecentPitch);
                     devChan->glideTargetPitch = nextMostRecentPitch;
                 } else {
-                    devChanNoteOn(devChan, nextMostRecentPitch, midiChannel->lastVelocity);
+                    dev_chan_note_on(devChan, nextMostRecentPitch, midiChannel->lastVelocity);
                 }
             } else {
-                devChanNoteOff(devChan, pitch);
+                dev_chan_note_off(devChan, pitch);
             }
         }
     }
 }
 
-static void devChanNoteOn(DeviceChannel* devChan, u8 pitch, u8 velocity)
+static void dev_chan_note_on(DeviceChannel* devChan, u8 pitch, u8 velocity)
 {
     devChan->noteOn = true;
     devChan->cents = 0;
     devChan->pitch = pitch;
-    setDownstreamNoteOn(devChan, velocity);
+    set_downstream_note_on(devChan, velocity);
 }
 
-static void devChanNoteOff(DeviceChannel* devChan, u8 pitch)
+static void dev_chan_note_off(DeviceChannel* devChan, u8 pitch)
 {
     devChan->noteOn = false;
     devChan->pitch = 0;
     devChan->ops->noteOff(devChan->number, pitch);
 }
 
-static void channelPan(u8 chan, u8 pan)
+static void channel_pan(u8 chan, u8 pan)
 {
     MidiChannel* midiChannel = &midiChannels[chan];
     midiChannel->pan = pan;
     FOREACH_DEV_CHAN_WITH_MIDI(chan, devChan) {
-        updatePan(midiChannel, devChan);
+        update_pan(midiChannel, devChan);
     }
 }
 
-static void channelVolume(u8 chan, u8 volume)
+static void channel_volume(u8 chan, u8 volume)
 {
     MidiChannel* midiChannel = &midiChannels[chan];
     midiChannel->volume = volume;
     FOREACH_DEV_CHAN_WITH_MIDI(chan, devChan) {
-        updateVolume(midiChannel, devChan);
+        update_volume(midiChannel, devChan);
     }
 }
 
 void resetAllControllers(u8 chan)
 {
-    initMidiChannel(chan);
+    init_midi_channel(chan);
     for (u8 i = 0; i < DEV_CHANS; i++) {
         DeviceChannel* state = &deviceChannels[i];
         if (state->midiChannel == chan) {
-            initDeviceChannel(i);
+            init_device_channel(i);
         }
     }
-    setDynamicMode(dynamicMode);
+    set_dynamic_mode(dynamicMode);
 }
 
 static bool isIgnoringNonGeneralMidiCCs(void)
@@ -526,9 +526,9 @@ static bool isIgnoringNonGeneralMidiCCs(void)
     return disableNonGeneralMidiCCs;
 }
 
-static void setPolyphonicMode(bool enable)
+static void set_polyphonic_mode(bool enable)
 {
-    setDynamicMode(enable);
+    set_dynamic_mode(enable);
     if (enable) {
         for (u8 chan = 0; chan <= DEV_CHAN_MAX_FM; chan++) {
             midi_remap_channel(0, chan);
@@ -542,7 +542,7 @@ void midi_pitch_bend(u8 chan, u16 bend)
     midiChannel->pitchBend = bend;
     FOREACH_DEV_CHAN_WITH_MIDI(chan, state) {
         if (state->noteOn) {
-            updatePitchBend(midiChannel, state);
+            update_pitch_bend(midiChannel, state);
         }
     }
 }
@@ -552,7 +552,7 @@ void midi_program(u8 chan, u8 program)
     MidiChannel* midiChannel = &midiChannels[chan];
     midiChannel->program = program;
     FOREACH_DEV_CHAN_WITH_MIDI(chan, state) {
-        updateProgram(midiChannel, state);
+        update_program(midiChannel, state);
     }
 }
 
@@ -566,7 +566,7 @@ DeviceChannel* midi_channel_mappings(void)
     return deviceChannels;
 }
 
-static void allNotesOff(u8 chan)
+static void all_notes_off(u8 chan)
 {
     FOREACH_DEV_CHAN_WITH_MIDI(chan, devChan) {
         devChan->noteOn = false;
@@ -575,17 +575,17 @@ static void allNotesOff(u8 chan)
     }
 }
 
-static void setNonGeneralMidiCCs(bool enable)
+static void set_non_general_midi_ccs(bool enable)
 {
     disableNonGeneralMidiCCs = !enable;
 }
 
-static void setStickToDeviceType(bool enable)
+static void set_stick_to_device_type(bool enable)
 {
     stickToDeviceType = enable;
 }
 
-static void loadPsgEnvelope(const u8* data, u16 length)
+static void load_psg_envelope(const u8* data, u16 length)
 {
     u8 buffer[256];
     u16 eefStepIndex = 0;
@@ -597,24 +597,24 @@ static void loadPsgEnvelope(const u8* data, u16 length)
     log_info("Loaded User Defined Envelope");
 }
 
-static void incrementSysExCursor(const u8** data, u16* length, u8 value)
+static void increment_sysex_cursor(const u8** data, u16* length, u8 value)
 {
     (*data) += value;
     (*length) -= value;
 }
 
-static void directWriteYm2612(u8 part, const u8* data, u16 length)
+static void direct_write_ym2612(u8 part, const u8* data, u16 length)
 {
     if (length != 4) {
         return;
     }
-    synth_directWriteYm2612(part, data[0] << 4 | data[1], data[2] << 4 | data[3]);
+    synth_direct_write_ym2612(part, data[0] << 4 | data[1], data[2] << 4 | data[3]);
 }
 
-static void handleCustomSysEx(const u8* data, u16 length)
+static void handle_custom_sysex(const u8* data, u16 length)
 {
     u8 command = *data;
-    incrementSysExCursor(&data, &length, 1);
+    increment_sysex_cursor(&data, &length, 1);
     switch (command) {
     case SYSEX_COMMAND_REMAP:
         if (length == 2) {
@@ -623,37 +623,37 @@ static void handleCustomSysEx(const u8* data, u16 length)
         break;
     case SYSEX_COMMAND_PING:
         if (length == 0) {
-            sendPong();
+            send_pong();
         }
         break;
     case SYSEX_COMMAND_DYNAMIC:
         if (length == 1) {
-            setDynamicMode((bool)data[0]);
+            set_dynamic_mode((bool)data[0]);
         }
         break;
     case SYSEX_COMMAND_NON_GENERAL_MIDI_CCS:
         if (length == 1) {
-            setNonGeneralMidiCCs((bool)data[0]);
+            set_non_general_midi_ccs((bool)data[0]);
         }
         break;
     case SYSEX_COMMAND_STICK_TO_DEVICE_TYPE:
         if (length == 1) {
-            setStickToDeviceType((bool)data[0]);
+            set_stick_to_device_type((bool)data[0]);
         }
         break;
     case SYSEX_COMMAND_INVERT_TOTAL_LEVEL:
         if (length == 1) {
-            setInvertTotalLevel((bool)data[0]);
+            set_invert_total_level((bool)data[0]);
         }
         break;
     case SYSEX_COMMAND_LOAD_PSG_ENVELOPE:
-        loadPsgEnvelope(data, length);
+        load_psg_envelope(data, length);
         break;
     case SYSEX_COMMAND_WRITE_YM2612_REG_PART_0:
-        directWriteYm2612(0, data, length);
+        direct_write_ym2612(0, data, length);
         break;
     case SYSEX_COMMAND_WRITE_YM2612_REG_PART_1:
-        directWriteYm2612(1, data, length);
+        direct_write_ym2612(1, data, length);
         break;
     }
 }
@@ -665,18 +665,18 @@ void midi_sysex(const u8* data, u16 length)
         return;
     }
     if (memcmp(data, GENERAL_MIDI_RESET_SEQ, LENGTH_OF(GENERAL_MIDI_RESET_SEQ)) == 0) {
-        generalMidiReset();
+        general_midi_reset();
         return;
     }
 
     const u8 CUSTOM_SYSEX_SEQ[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID };
     if (memcmp(data, CUSTOM_SYSEX_SEQ, LENGTH_OF(CUSTOM_SYSEX_SEQ)) == 0) {
-        incrementSysExCursor(&data, &length, LENGTH_OF(CUSTOM_SYSEX_SEQ));
-        handleCustomSysEx(data, length);
+        increment_sysex_cursor(&data, &length, LENGTH_OF(CUSTOM_SYSEX_SEQ));
+        handle_custom_sysex(data, length);
     }
 }
 
-static void sendPong(void)
+static void send_pong(void)
 {
     const u8 pongSequence[]
         = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID, SYSEX_COMMAND_PONG };
@@ -699,18 +699,18 @@ void midi_remap_channel(u8 midiChan, u8 devChan)
     chan->midiChannel = midiChan;
 }
 
-static void generalMidiReset(void)
+static void general_midi_reset(void)
 {
     for (u8 chan = 0; chan < MIDI_CHANNELS; chan++) {
-        allNotesOff(chan);
+        all_notes_off(chan);
     }
     if (mappingModePref == MappingMode_Auto) {
         dynamicMode = true;
     }
-    resetAllState();
+    reset_all_state();
 }
 
-static void applyDynamicMode(void)
+static void apply_dynamic_mode(void)
 {
     for (u8 chan = 0; chan < DEV_CHANS; chan++) {
         DeviceChannel* devChan = &deviceChannels[chan];
@@ -718,35 +718,35 @@ static void applyDynamicMode(void)
     }
 }
 
-static void setDynamicMode(MappingMode mode)
+static void set_dynamic_mode(MappingMode mode)
 {
     mappingModePref = mode;
     if (mode == MappingMode_Dynamic) {
         dynamicMode = true;
-        applyDynamicMode();
+        apply_dynamic_mode();
     } else if (mode == MappingMode_Static) {
         dynamicMode = false;
-        applyDynamicMode();
+        apply_dynamic_mode();
     }
 }
 
-static void setOperatorTotalLevel(u8 chan, u8 op, u8 value)
+static void set_operator_total_level(u8 chan, u8 op, u8 value)
 {
     const u8 MAX_TOTAL_LEVEL = 127;
 
     if (invertTotalLevel) {
         value = MAX_TOTAL_LEVEL - value;
     }
-    synth_operatorTotalLevel(chan, op, value);
+    synth_operator_total_level(chan, op, value);
 }
 
-static void enableDac(bool enable)
+static void enable_dac(bool enable)
 {
     deviceChannels[5].ops = enable ? &DAC_VTable : &FM_VTable;
-    synth_enableDac(enable);
+    synth_enable_dac(enable);
 }
 
-static void setFmChanParameter(DeviceChannel* devChan, u8 controller, u8 value)
+static void set_fm_chan_parameter(DeviceChannel* devChan, u8 controller, u8 value)
 {
     switch (controller) {
     case CC_GENMDM_FM_ALGORITHM:
@@ -765,7 +765,7 @@ static void setFmChanParameter(DeviceChannel* devChan, u8 controller, u8 value)
     case CC_GENMDM_TOTAL_LEVEL_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        setOperatorTotalLevel(devChan->number, controller - CC_GENMDM_TOTAL_LEVEL_OP1, value);
+        set_operator_total_level(devChan->number, controller - CC_GENMDM_TOTAL_LEVEL_OP1, value);
         break;
     case CC_GENMDM_MULTIPLE_OP1:
     case CC_GENMDM_MULTIPLE_OP2:
@@ -773,7 +773,7 @@ static void setFmChanParameter(DeviceChannel* devChan, u8 controller, u8 value)
     case CC_GENMDM_MULTIPLE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorMultiple(
+        synth_operator_multiple(
             devChan->number, controller - CC_GENMDM_MULTIPLE_OP1, RANGE(value, 16));
         break;
     case CC_GENMDM_DETUNE_OP1:
@@ -782,7 +782,7 @@ static void setFmChanParameter(DeviceChannel* devChan, u8 controller, u8 value)
     case CC_GENMDM_DETUNE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorDetune(devChan->number, controller - CC_GENMDM_DETUNE_OP1, RANGE(value, 8));
+        synth_operator_detune(devChan->number, controller - CC_GENMDM_DETUNE_OP1, RANGE(value, 8));
         break;
     case CC_GENMDM_RATE_SCALING_OP1:
     case CC_GENMDM_RATE_SCALING_OP2:
@@ -790,7 +790,7 @@ static void setFmChanParameter(DeviceChannel* devChan, u8 controller, u8 value)
     case CC_GENMDM_RATE_SCALING_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorRateScaling(
+        synth_operator_rate_scaling(
             devChan->number, controller - CC_GENMDM_RATE_SCALING_OP1, RANGE(value, 4));
         break;
     case CC_GENMDM_ATTACK_RATE_OP1:
@@ -799,7 +799,7 @@ static void setFmChanParameter(DeviceChannel* devChan, u8 controller, u8 value)
     case CC_GENMDM_ATTACK_RATE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorAttackRate(
+        synth_operator_attack_rate(
             devChan->number, controller - CC_GENMDM_ATTACK_RATE_OP1, RANGE(value, 32));
         break;
     case CC_GENMDM_DECAY_RATE_OP1:
@@ -808,7 +808,7 @@ static void setFmChanParameter(DeviceChannel* devChan, u8 controller, u8 value)
     case CC_GENMDM_DECAY_RATE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorDecayRate(
+        synth_operator_decay_rate(
             devChan->number, controller - CC_GENMDM_DECAY_RATE_OP1, RANGE(value, 32));
         break;
     case CC_GENMDM_SUSTAIN_RATE_OP1:
@@ -817,7 +817,7 @@ static void setFmChanParameter(DeviceChannel* devChan, u8 controller, u8 value)
     case CC_GENMDM_SUSTAIN_RATE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorSustainRate(
+        synth_operator_sustain_rate(
             devChan->number, controller - CC_GENMDM_SUSTAIN_RATE_OP1, RANGE(value, 16));
         break;
     case CC_GENMDM_SUSTAIN_LEVEL_OP1:
@@ -826,7 +826,7 @@ static void setFmChanParameter(DeviceChannel* devChan, u8 controller, u8 value)
     case CC_GENMDM_SUSTAIN_LEVEL_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorSustainLevel(
+        synth_operator_sustain_level(
             devChan->number, controller - CC_GENMDM_SUSTAIN_LEVEL_OP1, RANGE(value, 16));
         break;
     case CC_GENMDM_RELEASE_RATE_OP1:
@@ -835,7 +835,7 @@ static void setFmChanParameter(DeviceChannel* devChan, u8 controller, u8 value)
     case CC_GENMDM_RELEASE_RATE_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorReleaseRate(
+        synth_operator_release_rate(
             devChan->number, controller - CC_GENMDM_RELEASE_RATE_OP1, RANGE(value, 16));
         break;
     case CC_GENMDM_AMPLITUDE_MODULATION_OP1:
@@ -844,7 +844,7 @@ static void setFmChanParameter(DeviceChannel* devChan, u8 controller, u8 value)
     case CC_GENMDM_AMPLITUDE_MODULATION_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorAmplitudeModulation(
+        synth_operator_amplitude_modulation(
             devChan->number, controller - CC_GENMDM_AMPLITUDE_MODULATION_OP1, RANGE(value, 2));
         break;
     case CC_GENMDM_SSG_EG_OP1:
@@ -853,17 +853,17 @@ static void setFmChanParameter(DeviceChannel* devChan, u8 controller, u8 value)
     case CC_GENMDM_SSG_EG_OP4:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_operatorSsgEg(devChan->number, controller - CC_GENMDM_SSG_EG_OP1, RANGE(value, 16));
+        synth_operator_ssg_eg(devChan->number, controller - CC_GENMDM_SSG_EG_OP1, RANGE(value, 16));
         break;
     case CC_GENMDM_GLOBAL_LFO_ENABLE:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_enableLfo(RANGE(value, 2));
+        synth_enable_lfo(RANGE(value, 2));
         break;
     case CC_GENMDM_GLOBAL_LFO_FREQUENCY:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        synth_globalLfoFrequency(RANGE(value, 8));
+        synth_global_lfo_frequency(RANGE(value, 8));
         break;
     case CC_GENMDM_AMS:
         if (isIgnoringNonGeneralMidiCCs())
@@ -883,7 +883,7 @@ static void setFmChanParameter(DeviceChannel* devChan, u8 controller, u8 value)
     case CC_GENMDM_ENABLE_DAC:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        enableDac(RANGE(value, 2));
+        enable_dac(RANGE(value, 2));
         break;
     case CC_EXPRESSION:
     case CC_SUSTAIN_PEDAL:
@@ -900,31 +900,31 @@ static void setFmChanParameter(DeviceChannel* devChan, u8 controller, u8 value)
     }
 }
 
-static void setInvertTotalLevel(bool invert)
+static void set_invert_total_level(bool invert)
 {
     invertTotalLevel = invert;
 }
 
-static void fmParameterCC(u8 chan, u8 controller, u8 value)
+static void fm_parameter_cc(u8 chan, u8 controller, u8 value)
 {
     FOREACH_DEV_CHAN_WITH_MIDI(chan, devChan) {
-        setFmChanParameter(devChan, controller, value);
+        set_fm_chan_parameter(devChan, controller, value);
     }
 }
 
-static void setPortamentoMode(u8 chan, bool enable)
+static void set_portamento_mode(u8 chan, bool enable)
 {
     MidiChannel* midiChannel = &midiChannels[chan];
     midiChannel->portamento = enable;
 }
 
-static void setPortamentoTime(u8 chan, u8 value)
+static void set_portamento_time(u8 chan, u8 value)
 {
     MidiChannel* midiChannel = &midiChannels[chan];
     midiChannel->portamentoInterval = portaTimeToInterval[value];
 }
 
-static void setFineTune(u8 chan, u8 value)
+static void set_fine_tune(u8 chan, u8 value)
 {
     MidiChannel* midiChannel = &midiChannels[chan];
     midiChannel->fineTune = value - 64;
@@ -934,23 +934,23 @@ void midi_cc(u8 chan, u8 controller, u8 value)
 {
     switch (controller) {
     case CC_PORTAMENTO_TIME_MSB:
-        setPortamentoTime(chan, value);
+        set_portamento_time(chan, value);
         break;
     case CC_VOLUME:
-        channelVolume(chan, value);
+        channel_volume(chan, value);
         break;
     case CC_PAN:
-        channelPan(chan, value);
+        channel_pan(chan, value);
         break;
     case CC_ALL_NOTES_OFF:
     case CC_ALL_SOUND_OFF:
-        allNotesOff(chan);
+        all_notes_off(chan);
         break;
     case CC_GENMDM_POLYPHONIC_MODE:
-        setPolyphonicMode(RANGE(value, 2) != 0);
+        set_polyphonic_mode(RANGE(value, 2) != 0);
         break;
     case CC_GENMDM_CH3_SPECIAL_MODE:
-        synth_setSpecialMode(RANGE(value, 2) != 0);
+        synth_set_special_mode(RANGE(value, 2) != 0);
         break;
     case CC_RESET_ALL_CONTROLLERS:
         resetAllControllers(chan);
@@ -963,18 +963,18 @@ void midi_cc(u8 chan, u8 controller, u8 value)
     case CC_DEVICE_SELECT:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        channelDeviceSelect(chan, RANGE(value, 4));
+        channel_device_select(chan, RANGE(value, 4));
         break;
     case CC_PORTAMENTO_ENABLE:
-        setPortamentoMode(chan, RANGE(value, 2));
+        set_portamento_mode(chan, RANGE(value, 2));
         break;
     case CC_FINE_TUNE:
         if (isIgnoringNonGeneralMidiCCs())
             break;
-        setFineTune(chan, value);
+        set_fine_tune(chan, value);
         break;
     default:
-        fmParameterCC(chan, controller, value);
+        fm_parameter_cc(chan, controller, value);
         break;
     }
 }
@@ -984,7 +984,7 @@ void midi_reset(void)
     reset();
 }
 
-static void processChannelGlide(DeviceChannel* chan, u16 portamentoTime)
+static void process_channel_glide(DeviceChannel* chan, u16 portamentoTime)
 {
     if (chan->glideTargetPitch == 0
         || (chan->glideTargetPitch == chan->pitch && chan->cents == 0)) {
@@ -1012,10 +1012,10 @@ static void processChannelGlide(DeviceChannel* chan, u16 portamentoTime)
 
     chan->pitch = pc.pitch;
     chan->cents = pc.cents;
-    setDownstreamPitch(chan);
+    set_downstream_pitch(chan);
 }
 
-static void processPortamento(void)
+static void process_portamento(void)
 {
     FOREACH_DEV_CHAN(chan) {
         if (chan->midiChannel == UNASSIGNED_MIDI_CHANNEL) {
@@ -1023,12 +1023,12 @@ static void processPortamento(void)
         }
         MidiChannel* midiChannel = &midiChannels[chan->midiChannel];
         if (midiChannel->portamento && chan->noteOn) {
-            processChannelGlide(chan, midiChannel->portamentoInterval);
+            process_channel_glide(chan, midiChannel->portamentoInterval);
         }
     }
 }
 
 void midi_tick(void)
 {
-    processPortamento();
+    process_portamento();
 }

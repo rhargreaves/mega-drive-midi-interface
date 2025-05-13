@@ -8,7 +8,7 @@ void test_midi_polyphonic_mode_sends_CCs_to_all_FM_channels(UNUSED void** state)
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         expect_synth_pitch_any();
         expect_synth_volume_any();
-        expect_synth_noteOn(chan);
+        expect_synth_note_on(chan);
 
         __real_midi_note_on(0, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
     }
@@ -27,7 +27,7 @@ void test_midi_set_overflow_flag_on_polyphony_breach(UNUSED void** state)
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         expect_synth_pitch(chan, 6, SYNTH_NTSC_AS);
         expect_synth_volume_any();
-        expect_synth_noteOn(chan);
+        expect_synth_note_on(chan);
         __real_midi_note_on(chan, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
     }
     for (int chan = MIN_PSG_CHAN; chan <= MAX_PSG_CHAN - 1; chan++) {
@@ -47,21 +47,21 @@ void test_midi_polyphonic_mode_uses_multiple_fm_channels(UNUSED void** state)
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         expect_synth_pitch(0, 6, SYNTH_NTSC_AS);
         expect_synth_volume_any();
-        expect_synth_noteOn(0);
+        expect_synth_note_on(0);
 
         __real_midi_note_on(chan, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
 
         expect_synth_pitch(1, 7, 0x25f);
         expect_synth_volume_any();
-        expect_synth_noteOn(1);
+        expect_synth_note_on(1);
 
         __real_midi_note_on(chan, MIDI_PITCH_B6, MAX_MIDI_VOLUME);
 
-        expect_synth_noteOff(0);
+        expect_synth_note_off(0);
 
         __real_midi_note_off(chan, MIDI_PITCH_AS6);
 
-        expect_synth_noteOff(1);
+        expect_synth_note_off(1);
 
         __real_midi_note_off(chan, MIDI_PITCH_B6);
     }
@@ -76,18 +76,18 @@ void test_midi_polyphonic_mode_note_off_silences_all_matching_pitch(UNUSED void*
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
         expect_synth_pitch(0, 6, SYNTH_NTSC_AS);
         expect_synth_volume_any();
-        expect_synth_noteOn(0);
+        expect_synth_note_on(0);
 
         __real_midi_note_on(chan, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
 
         expect_synth_pitch(1, 6, SYNTH_NTSC_AS);
         expect_synth_volume_any();
-        expect_synth_noteOn(1);
+        expect_synth_note_on(1);
 
         __real_midi_note_on(chan, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
 
-        expect_synth_noteOff(0);
-        expect_synth_noteOff(1);
+        expect_synth_note_off(0);
+        expect_synth_note_off(1);
 
         __real_midi_note_off(chan, MIDI_PITCH_AS6);
     }
@@ -103,7 +103,7 @@ void test_midi_sets_all_notes_off_in_polyphonic_mode(UNUSED void** state)
     expect_any(__wrap_synth_pitch, octave);
     expect_any(__wrap_synth_pitch, freqNumber);
     expect_synth_volume_any();
-    expect_synth_noteOn(0);
+    expect_synth_note_on(0);
 
     __real_midi_note_on(0, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
 
@@ -111,12 +111,12 @@ void test_midi_sets_all_notes_off_in_polyphonic_mode(UNUSED void** state)
     expect_any(__wrap_synth_pitch, octave);
     expect_any(__wrap_synth_pitch, freqNumber);
     expect_synth_volume_any();
-    expect_synth_noteOn(1);
+    expect_synth_note_on(1);
 
     __real_midi_note_on(0, MIDI_PITCH_B6, MAX_MIDI_VOLUME);
 
     for (int chan = FM_CH1; chan <= FM_CH6; chan++) {
-        expect_synth_noteOff(chan);
+        expect_synth_note_off(chan);
     }
 
     __real_midi_cc(0, CC_ALL_NOTES_OFF, 0);

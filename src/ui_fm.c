@@ -33,7 +33,7 @@ static bool update_fm_value(
 
 void ui_fm_init(void)
 {
-    synth_setParameterUpdateCallback(synth_parameter_updated);
+    synth_set_parameter_update_callback(synth_parameter_updated);
     init_algorithm_sprites();
 }
 
@@ -259,8 +259,8 @@ static void update_op_values(const FmChannel* channel, bool forceRefresh)
 
 static void update_fm_values(void)
 {
-    const FmChannel* channel = synth_channelParameters(chanParasFmChan);
-    const Global* global = synth_globalParameters();
+    const FmChannel* channel = synth_channel_parameters(chanParasFmChan);
+    const Global* global = synth_global_parameters();
 
     const u8 COL1_VALUE_X = FM_HEADING_X + 4;
     const u8 COL2_VALUE_X = FM_HEADING_X + 11;

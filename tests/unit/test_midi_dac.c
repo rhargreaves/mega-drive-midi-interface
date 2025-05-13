@@ -12,7 +12,7 @@ int test_midi_dac_setup(UNUSED void** state)
 {
     test_midi_setup(state);
 
-    expect_value(__wrap_synth_enableDac, enable, true);
+    expect_value(__wrap_synth_enable_dac, enable, true);
     __real_midi_cc(0, 78, 0x7F);
 
     return 0;
@@ -20,14 +20,14 @@ int test_midi_dac_setup(UNUSED void** state)
 
 void test_midi_enables_dac(UNUSED void** state)
 {
-    expect_value(__wrap_synth_enableDac, enable, true);
+    expect_value(__wrap_synth_enable_dac, enable, true);
 
     __real_midi_cc(0, 78, 0x7F);
 }
 
 void test_midi_disables_dac(UNUSED void** state)
 {
-    expect_value(__wrap_synth_enableDac, enable, false);
+    expect_value(__wrap_synth_enable_dac, enable, false);
 
     __real_midi_cc(0, 78, 0);
 }

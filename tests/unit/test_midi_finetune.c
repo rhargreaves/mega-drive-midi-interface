@@ -10,7 +10,7 @@ void test_midi_finetune_max(UNUSED void** state)
 
         expect_synth_pitch(chan, 2, 0x461);
         expect_synth_volume_any();
-        expect_synth_noteOn(chan);
+        expect_synth_note_on(chan);
         __real_midi_note_on(chan, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
     }
 }
@@ -23,7 +23,7 @@ void test_midi_finetune_min(UNUSED void** state)
 
         expect_synth_pitch(chan, 2, 0x412);
         expect_synth_volume_any();
-        expect_synth_noteOn(chan);
+        expect_synth_note_on(chan);
         __real_midi_note_on(chan, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
     }
 }
@@ -39,7 +39,7 @@ void test_midi_finetune_with_pitchbend(UNUSED void** state)
 
         expect_synth_pitch(chan, 2, 0x492);
         expect_synth_volume_any();
-        expect_synth_noteOn(chan);
+        expect_synth_note_on(chan);
         __real_midi_note_on(chan, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
     }
 }

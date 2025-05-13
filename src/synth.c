@@ -55,7 +55,7 @@ void synth_init(const FmChannel* initialPreset)
     write_special_mode_reg();
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         volumes[chan] = MAX_VOLUME;
-        synth_noteOff(chan);
+        synth_note_off(chan);
         memcpy(&fmChannels[chan], initialPreset, sizeof(FmChannel));
         update_channel(chan);
     }
@@ -86,13 +86,13 @@ static void init_global(void)
     global.dacEnable = false;
 }
 
-void synth_noteOn(u8 channel)
+void synth_note_on(u8 channel)
 {
     write_reg_safe(0, YM_KEY_ON_OFF, 0xF0 + key_on_off_reg_offset(channel));
     SET_BIT(noteOn, channel);
 }
 
-void synth_noteOff(u8 channel)
+void synth_note_off(u8 channel)
 {
     write_reg_safe(0, YM_KEY_ON_OFF, key_on_off_reg_offset(channel));
     CLEAR_BIT(noteOn, channel);
@@ -138,7 +138,7 @@ void synth_feedback(u8 channel, u8 feedback)
     channel_parameter_updated(channel);
 }
 
-void synth_operatorTotalLevel(u8 channel, u8 op, u8 totalLevel)
+void synth_operator_total_level(u8 channel, u8 op, u8 totalLevel)
 {
     Operator* oper = get_operator(channel, op);
     if (oper->totalLevel == totalLevel) {
@@ -149,84 +149,84 @@ void synth_operatorTotalLevel(u8 channel, u8 op, u8 totalLevel)
     channel_parameter_updated(channel);
 }
 
-void synth_operatorMultiple(u8 channel, u8 op, u8 multiple)
+void synth_operator_multiple(u8 channel, u8 op, u8 multiple)
 {
     get_operator(channel, op)->multiple = multiple;
     write_operator_multiple_and_detune(channel, op);
     channel_parameter_updated(channel);
 }
 
-void synth_operatorDetune(u8 channel, u8 op, u8 detune)
+void synth_operator_detune(u8 channel, u8 op, u8 detune)
 {
     get_operator(channel, op)->detune = detune;
     write_operator_multiple_and_detune(channel, op);
     channel_parameter_updated(channel);
 }
 
-void synth_operatorRateScaling(u8 channel, u8 op, u8 rateScaling)
+void synth_operator_rate_scaling(u8 channel, u8 op, u8 rateScaling)
 {
     get_operator(channel, op)->rateScaling = rateScaling;
     write_operator_rate_scaling_and_attack_rate(channel, op);
     channel_parameter_updated(channel);
 }
 
-void synth_operatorAttackRate(u8 channel, u8 op, u8 attackRate)
+void synth_operator_attack_rate(u8 channel, u8 op, u8 attackRate)
 {
     get_operator(channel, op)->attackRate = attackRate;
     write_operator_rate_scaling_and_attack_rate(channel, op);
     channel_parameter_updated(channel);
 }
 
-void synth_operatorSustainRate(u8 channel, u8 op, u8 sustainRate)
+void synth_operator_sustain_rate(u8 channel, u8 op, u8 sustainRate)
 {
     get_operator(channel, op)->sustainRate = sustainRate;
     write_operator_sustain_rate(channel, op);
     channel_parameter_updated(channel);
 }
 
-void synth_operatorReleaseRate(u8 channel, u8 op, u8 releaseRate)
+void synth_operator_release_rate(u8 channel, u8 op, u8 releaseRate)
 {
     get_operator(channel, op)->releaseRate = releaseRate;
     write_operator_release_rate_and_sustain_level(channel, op);
     channel_parameter_updated(channel);
 }
 
-void synth_operatorSsgEg(u8 channel, u8 op, u8 ssgEg)
+void synth_operator_ssg_eg(u8 channel, u8 op, u8 ssgEg)
 {
     get_operator(channel, op)->ssgEg = ssgEg;
     write_operator_ssg_eg(channel, op);
     channel_parameter_updated(channel);
 }
 
-void synth_operatorSustainLevel(u8 channel, u8 op, u8 sustainLevel)
+void synth_operator_sustain_level(u8 channel, u8 op, u8 sustainLevel)
 {
     get_operator(channel, op)->sustainLevel = sustainLevel;
     write_operator_release_rate_and_sustain_level(channel, op);
     channel_parameter_updated(channel);
 }
 
-void synth_operatorDecayRate(u8 channel, u8 op, u8 decayRate)
+void synth_operator_decay_rate(u8 channel, u8 op, u8 decayRate)
 {
     get_operator(channel, op)->decayRate = decayRate;
     write_operator_amplitude_modulation_and_decay_rate(channel, op);
     channel_parameter_updated(channel);
 }
 
-void synth_operatorAmplitudeModulation(u8 channel, u8 op, u8 amplitudeModulation)
+void synth_operator_amplitude_modulation(u8 channel, u8 op, u8 amplitudeModulation)
 {
     get_operator(channel, op)->amplitudeModulation = amplitudeModulation;
     write_operator_amplitude_modulation_and_decay_rate(channel, op);
     channel_parameter_updated(channel);
 }
 
-void synth_enableLfo(u8 enable)
+void synth_enable_lfo(u8 enable)
 {
     global.lfoEnable = enable;
     write_global_lfo();
     other_parameter_updated(0, Lfo);
 }
 
-void synth_globalLfoFrequency(u8 freq)
+void synth_global_lfo_frequency(u8 freq)
 {
     global.lfoFrequency = freq;
     write_global_lfo();
@@ -408,17 +408,17 @@ static u8 volume_adjusted_total_level(u8 channel, u8 totalLevel)
     return 0x7F - inverseNewTotalLevel;
 }
 
-const FmChannel* synth_channelParameters(u8 channel)
+const FmChannel* synth_channel_parameters(u8 channel)
 {
     return &fmChannels[channel];
 }
 
-const Global* synth_globalParameters()
+const Global* synth_global_parameters()
 {
     return &global;
 }
 
-void synth_setParameterUpdateCallback(ParameterUpdatedCallback* cb)
+void synth_set_parameter_update_callback(ParameterUpdatedCallback* cb)
 {
     parameterUpdatedCallback = cb;
 }
@@ -428,21 +428,21 @@ static void write_special_mode_reg(void)
     write_reg_safe(0, YM_CH3_MODE, global.specialMode << 6);
 }
 
-void synth_setSpecialMode(bool enable)
+void synth_set_special_mode(bool enable)
 {
     global.specialMode = enable;
     write_special_mode_reg();
     other_parameter_updated(0, SpecialMode);
 }
 
-void synth_specialModePitch(u8 op, u8 octave, u16 freqNumber)
+void synth_special_mode_pitch(u8 op, u8 octave, u16 freqNumber)
 {
     u8 offset = (op + 1) % 3;
     write_reg_safe(0, YM_CH3SM_BASE_FREQ_MSB_BLK + offset, (freqNumber >> 8) | (octave << 3));
     write_reg_safe(0, YM_CH3SM_BASE_FREQ_LSB + offset, freqNumber);
 }
 
-void synth_specialModeVolume(u8 operator, u8 volume)
+void synth_special_mode_volume(u8 operator, u8 volume)
 {
     Operator* op = get_operator(CH3_SPECIAL_MODE, operator);
     if (!is_output_operator(fmChannels[CH3_SPECIAL_MODE].algorithm, operator)) {
@@ -458,12 +458,12 @@ void synth_specialModeVolume(u8 operator, u8 volume)
         effective_total_level(CH3_SPECIAL_MODE, operator, newTotalLevel));
 }
 
-void synth_directWriteYm2612(u8 part, u8 reg, u8 data)
+void synth_direct_write_ym2612(u8 part, u8 reg, u8 data)
 {
     write_reg_safe(part, reg, data);
 }
 
-void synth_enableDac(bool enable)
+void synth_enable_dac(bool enable)
 {
     global.dacEnable = enable;
     write_dac_reg();

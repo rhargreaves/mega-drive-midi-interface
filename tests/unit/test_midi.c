@@ -77,14 +77,14 @@ void test_midi_polyphonic_mode_returns_state(UNUSED void** state)
 
 void test_midi_sets_all_notes_off(UNUSED void** state)
 {
-    expect_synth_noteOff(0);
+    expect_synth_note_off(0);
 
     __real_midi_cc(MIDI_CHANNEL_1, CC_ALL_NOTES_OFF, 0);
 }
 
 void test_midi_sets_all_sound_off(UNUSED void** state)
 {
-    expect_synth_noteOff(0);
+    expect_synth_note_off(0);
 
     __real_midi_cc(MIDI_CHANNEL_1, CC_ALL_SOUND_OFF, 0);
 }

@@ -20,7 +20,7 @@ void test_midi_portamento_glides_note_up(UNUSED void** state)
 
         expect_synth_pitch(chan, 2, 0x439);
         expect_synth_volume_any();
-        expect_synth_noteOn(chan);
+        expect_synth_note_on(chan);
         __real_midi_note_on(chan, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
         __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
@@ -45,7 +45,7 @@ void test_midi_portamento_glides_note_down(UNUSED void** state)
 
     expect_synth_pitch(0, 4, 644);
     expect_synth_volume_any();
-    expect_synth_noteOn(0);
+    expect_synth_note_on(0);
 
     __real_midi_note_on(0, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
     __real_midi_note_on(0, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
@@ -72,7 +72,7 @@ void test_midi_portamento_glides_note_up_and_down_on_early_release(UNUSED void**
 
     expect_synth_pitch(chan, 2, 0x439);
     expect_synth_volume_any();
-    expect_synth_noteOn(chan);
+    expect_synth_note_on(chan);
     __real_midi_note_on(chan, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
     __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
@@ -105,7 +105,7 @@ void test_midi_portamento_glide_ignores_unassigned_channels(UNUSED void** state)
 
         expect_synth_pitch(chan, 2, 0x439);
         expect_synth_volume_any();
-        expect_synth_noteOn(chan);
+        expect_synth_note_on(chan);
         __real_midi_note_on(chan, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
         __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
@@ -122,7 +122,7 @@ void test_midi_portamento_glides_note_up_down_and_back_up(UNUSED void** state)
 
     expect_synth_pitch(chan, 2, 0x439);
     expect_synth_volume_any();
-    expect_synth_noteOn(chan);
+    expect_synth_note_on(chan);
     __real_midi_note_on(chan, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
     __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
@@ -163,7 +163,7 @@ void test_midi_portamento_glides_only_if_target_set(UNUSED void** state)
 
     expect_synth_pitch(chan, 2, 0x439);
     expect_synth_volume_any();
-    expect_synth_noteOn(chan);
+    expect_synth_note_on(chan);
     __real_midi_note_on(chan, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
 
     midi_tick();
@@ -178,7 +178,7 @@ void test_midi_portamento_glide_ends_after_both_notes_off(UNUSED void** state)
 
     expect_synth_pitch(chan, 2, 0x439);
     expect_synth_volume_any();
-    expect_synth_noteOn(chan);
+    expect_synth_note_on(chan);
     __real_midi_note_on(chan, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
     __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
@@ -197,14 +197,14 @@ void test_midi_portamento_glide_ends_after_both_notes_off(UNUSED void** state)
     }
 
     debug_message("note off\n");
-    expect_value(__wrap_synth_noteOff, channel, 0);
+    expect_value(__wrap_synth_note_off, channel, 0);
     __real_midi_note_off(chan, MIDI_PITCH_A2);
 
     midi_tick();
 
     expect_synth_pitch(chan, 3, 0x284);
     expect_synth_volume_any();
-    expect_synth_noteOn(chan);
+    expect_synth_note_on(chan);
     __real_midi_note_on(chan, MIDI_PITCH_C3, MAX_MIDI_VOLUME);
 
     midi_tick();
@@ -219,7 +219,7 @@ void test_midi_portamento_glides_fully_up_and_down(UNUSED void** state)
 
     expect_synth_pitch(chan, 2, 0x439);
     expect_synth_volume_any();
-    expect_synth_noteOn(chan);
+    expect_synth_note_on(chan);
     __real_midi_note_on(chan, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
     __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
@@ -250,13 +250,13 @@ void test_midi_portamento_synth_note_off_triggered(UNUSED void** state)
 
     expect_synth_pitch(chan, 2, 0x439);
     expect_synth_volume_any();
-    expect_synth_noteOn(chan);
+    expect_synth_note_on(chan);
     __real_midi_note_on(chan, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
 
     midi_tick();
 
     debug_message("note off\n");
-    expect_value(__wrap_synth_noteOff, channel, chan);
+    expect_value(__wrap_synth_note_off, channel, chan);
     __real_midi_note_off(chan, MIDI_PITCH_A2);
     midi_tick();
 }
@@ -269,7 +269,7 @@ void test_midi_portamento_zeros_any_residual_cents(UNUSED void** state)
 
     expect_synth_pitch(chan, 2, 0x439);
     expect_synth_volume_any();
-    expect_synth_noteOn(chan);
+    expect_synth_note_on(chan);
     __real_midi_note_on(chan, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
     __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
@@ -280,7 +280,7 @@ void test_midi_portamento_zeros_any_residual_cents(UNUSED void** state)
         midi_tick();
     }
 
-    expect_value(__wrap_synth_noteOff, channel, chan);
+    expect_value(__wrap_synth_note_off, channel, chan);
     __real_midi_note_off(chan, MIDI_PITCH_C4);
     __real_midi_note_off(chan, MIDI_PITCH_A2);
 
@@ -288,7 +288,7 @@ void test_midi_portamento_zeros_any_residual_cents(UNUSED void** state)
 
     expect_synth_pitch(chan, 2, 0x439);
     expect_synth_volume_any();
-    expect_synth_noteOn(chan);
+    expect_synth_note_on(chan);
     __real_midi_note_on(chan, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
     __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
@@ -332,7 +332,7 @@ void test_midi_portamento_glides_note_up_with_pitch_bend(UNUSED void** state)
 
         expect_synth_pitch(chan, 2, 0x439);
         expect_synth_volume_any();
-        expect_synth_noteOn(chan);
+        expect_synth_note_on(chan);
         __real_midi_note_on(chan, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
 
         expect_synth_pitch(chan, 2, 0x47a);
@@ -363,7 +363,7 @@ void test_midi_portamento_glides_note_down_with_pitch_bend(UNUSED void** state)
 
         expect_synth_pitch(chan, 4, 0x284);
         expect_synth_volume_any();
-        expect_synth_noteOn(chan);
+        expect_synth_note_on(chan);
         __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
         expect_synth_pitch(chan, 4, 0x25f);
@@ -394,7 +394,7 @@ void test_midi_portamento_sets_portamento_time_to_minimum(UNUSED void** state)
 
     expect_synth_pitch(chan, 2, 0x439);
     expect_synth_volume_any();
-    expect_synth_noteOn(chan);
+    expect_synth_note_on(chan);
     __real_midi_note_on(chan, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
     __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
@@ -415,7 +415,7 @@ void test_midi_portamento_sets_portamento_time_to_maximum(UNUSED void** state)
 
     expect_synth_pitch(chan, 2, 0x439);
     expect_synth_volume_any();
-    expect_synth_noteOn(chan);
+    expect_synth_note_on(chan);
     __real_midi_note_on(chan, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
     __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
@@ -439,7 +439,7 @@ void test_midi_portamento_default_portamento_time_set(UNUSED void** state)
 
     expect_synth_pitch(chan, 2, 0x439);
     expect_synth_volume_any();
-    expect_synth_noteOn(chan);
+    expect_synth_note_on(chan);
     __real_midi_note_on(chan, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
     __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
@@ -455,7 +455,7 @@ void test_midi_portamento_glides_with_fine_tune(UNUSED void** state)
 
     expect_synth_pitch(chan, 2, 0x461);
     expect_synth_volume_any();
-    expect_synth_noteOn(chan);
+    expect_synth_note_on(chan);
     __real_midi_note_on(chan, MIDI_PITCH_A2, MAX_MIDI_VOLUME);
     __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 

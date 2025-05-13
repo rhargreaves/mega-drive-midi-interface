@@ -50,7 +50,7 @@ void midi_fm_reset(void)
     synth_init(presets[0]);
 }
 
-u16 midi_fm_pitchCentsToFreqNum(u8 pitch, s8 cents)
+u16 midi_fm_pitch_cents_to_freq_num(u8 pitch, s8 cents)
 {
     u16 freq = lookup_freq_num(pitch, 0);
     u16 nextFreq = lookup_freq_num(pitch, 1);
@@ -60,8 +60,8 @@ u16 midi_fm_pitchCentsToFreqNum(u8 pitch, s8 cents)
 static void set_synth_pitch(u8 chan)
 {
     MidiFmChannel* fmChan = &fmChannels[chan];
-    synth_pitch(chan, midi_fm_pitchToOctave(fmChan->pitch),
-        midi_fm_pitchCentsToFreqNum(fmChan->pitch, fmChan->cents));
+    synth_pitch(chan, midi_fm_pitch_to_octave(fmChan->pitch),
+        midi_fm_pitch_cents_to_freq_num(fmChan->pitch, fmChan->cents));
 }
 
 void midi_fm_note_on(u8 chan, u8 pitch, s8 cents, u8 velocity)
@@ -81,13 +81,13 @@ void midi_fm_note_on(u8 chan, u8 pitch, s8 cents, u8 velocity)
     fmChan->cents = cents;
 
     set_synth_pitch(chan);
-    synth_noteOn(chan);
+    synth_note_on(chan);
 }
 
 void midi_fm_note_off(u8 chan, u8 pitch)
 {
     (void)pitch;
-    synth_noteOff(chan);
+    synth_note_off(chan);
 }
 
 void midi_fm_channel_volume(u8 chan, u8 volume)
@@ -133,7 +133,7 @@ static void update_pan(u8 chan)
     }
 }
 
-u8 midi_fm_pitchToOctave(u8 pitch)
+u8 midi_fm_pitch_to_octave(u8 pitch)
 {
     return (pitch - MIN_MIDI_PITCH) / SEMITONES;
 }
