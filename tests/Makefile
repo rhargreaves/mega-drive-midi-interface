@@ -105,8 +105,7 @@ MOCKS=midi_process \
 	comm_megawifi_midiEmitCallback \
 	comm_megawifi_init \
 	comm_megawifi_tick \
-	comm_megawifi_send \
-	settings_startup_midi_sequence
+	comm_megawifi_send
 
 MD_MOCKS=SYS_setVIntCallback \
 	VDP_setTextPalette \
@@ -199,7 +198,8 @@ MD_MOCKS=SYS_setVIntCallback \
 	fix32ToInt \
 	fix16Frac \
 	fix32Frac \
-	mw_uart_is_present
+	mw_uart_is_present \
+	settings_startup_midi_sequence
 
 LDFLAGS=-ggdb -ffreestanding -lcmocka \
 	-L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src \
