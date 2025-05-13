@@ -6,7 +6,7 @@
 #include "midi_psg.h"
 #include "midi_fm_sm.h"
 #include "midi_dac.h"
-#include "midi_sender.h"
+#include "midi_tx.h"
 #include "synth.h"
 #include "ui_fm.h"
 #include "note_priority.h"
@@ -681,7 +681,7 @@ static void sendPong(void)
     const u8 pongSequence[]
         = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID, SYSEX_COMMAND_PONG };
 
-    midi_sender_send_sysex(pongSequence, sizeof(pongSequence));
+    midi_tx_send_sysex(pongSequence, sizeof(pongSequence));
 }
 
 void midi_remap_channel(u8 midiChan, u8 devChan)

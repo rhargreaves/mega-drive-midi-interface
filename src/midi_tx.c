@@ -1,8 +1,8 @@
-#include "midi_sender.h"
+#include "midi_tx.h"
 #include "midi.h"
 #include "comm/comm.h"
 
-void midi_sender_send_sysex(const u8* data, u16 length)
+void midi_tx_send_sysex(const u8* data, u16 length)
 {
     comm_write(SYSEX_START);
     for (u16 i = 0; i < length; i++) {
