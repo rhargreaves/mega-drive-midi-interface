@@ -39,6 +39,7 @@ CFLAGS=$(INCLUDE_DIRS) \
 	-Wno-unused-function \
 	-fsigned-char
 
+
  # list of function signature to mock
 MOCKS=midi_process \
 	comm_init \
@@ -206,6 +207,10 @@ LDFLAGS+=$(foreach MOCK,$(MD_MOCKS),-Wl,--wrap=$(MOCK))
 SYSTEM_TEST_LDFLAGS=$(LDFLAGS)
 UNIT_TEST_LDFLAGS=$(LDFLAGS) $(foreach MOCK,$(MOCKS),-Wl,--wrap=$(MOCK))
 
+LAST_FLAGS := bin/last_flags
+CHECK_FLAGS := $(LAST_FLAGS)_$(shell echo $(CFLAGS) \
+	$(SYSTEM_TEST_LDFLAGS) $(UNIT_TEST_LDFLAGS) | md5sum | awk '{ print $$1 }')
+
 SRC=$(wildcard ../src/*.c ../src/*/*.c)
 SRC:=$(filter-out ../src/boot/rom_head.c,$(SRC))
 SRC:=$(filter-out ../src/main.c,$(SRC))
@@ -224,11 +229,11 @@ SYSTEM_TESTS_TARGET=$(BIN_DIR)/system_tests
 all: unit system
 .PHONY: all
 
-unit: $(UNIT_TESTS_TARGET)
+unit: $(UNIT_TESTS_TARGET) $(CHECK_FLAGS)
 	$(GDB) ./$(UNIT_TESTS_TARGET)
 .PHONY: unit
 
-system: $(SYSTEM_TESTS_TARGET)
+system: $(SYSTEM_TESTS_TARGET) $(CHECK_FLAGS)
 	$(GDB) ./$(SYSTEM_TESTS_TARGET)
 .PHONY: system
 
@@ -238,11 +243,11 @@ $(OBJ_DIR)/%.o: %.c | $(CMOCKA_DIR)
 
 -include $(wildcard $(OBJ_DIR)/*.d) $(wildcard $(OBJ_DIR)/*/*.d)
 
-$(UNIT_TESTS_TARGET): $(SRC_OBJ) $(UNIT_TEST_OBJ) $(COMMON_TEST_OBJ)
+$(UNIT_TESTS_TARGET): $(SRC_OBJ) $(UNIT_TEST_OBJ) $(COMMON_TEST_OBJ) $(CHECK_FLAGS)
 	@mkdir -p $(dir $@)
 	$(CC) -o $@ $^ $(UNIT_TEST_LDFLAGS)
 
-$(SYSTEM_TESTS_TARGET): $(SRC_OBJ) $(SYSTEM_TEST_OBJ) $(COMMON_TEST_OBJ)
+$(SYSTEM_TESTS_TARGET): $(SRC_OBJ) $(SYSTEM_TEST_OBJ) $(COMMON_TEST_OBJ) $(CHECK_FLAGS)
 	@mkdir -p $(dir $@)
 	$(CC) -o $@ $^ $(SYSTEM_TEST_LDFLAGS)
 
@@ -251,6 +256,10 @@ $(CMOCKA_DIR):
 	tar -xf $(CMOCKA_TAR) -C $@ --strip-components 1 --no-same-owner
 	mkdir -p $@/build
 	@(cd $@/build && cmake ../ && make -s)
+
+$(LAST_FLAGS)_%:
+	-rm $(LAST_FLAGS)_*
+	touch $@
 
 clean-target:
 	rm -rf $(UNIT_TESTS_TARGET) $(SYSTEM_TESTS_TARGET) $(OBJ_DIR)
