@@ -50,7 +50,7 @@ static const CommVTable* commTypes[] = {
 #if COMM_SERIAL == 1
     &Serial_VTable,
 #endif
-#if COMM_MEGAWIFI == 1
+#if MEGAWIFI && COMM_MEGAWIFI == 1
     &Megawifi_VTable,
 #endif
     &Demo_VTable
