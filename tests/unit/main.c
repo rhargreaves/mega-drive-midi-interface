@@ -355,6 +355,11 @@ int main(void)
             test_scheduler_errors_if_too_many_frame_handlers_are_registered),
         scheduler_test(
             test_scheduler_errors_if_too_many_tick_handlers_are_registered),
+        scheduler_test(
+            test_scheduler_yield_processes_pending_events),
+        scheduler_test(test_scheduler_passes_delta_to_frame_handlers),
+        scheduler_test(
+            test_scheduler_passes_delta_given_multiple_vsyncs_to_frame_handlers),
 
         applemidi_test(
             test_applemidi_parses_rtpmidi_packet_with_single_midi_event),

@@ -156,4 +156,4 @@ bool midi_dynamic_mode(void);
 DeviceChannel* midi_channel_mappings(void);
 void midi_remap_channel(u8 midiChannel, u8 deviceChannel);
 void midi_reset(void);
-void midi_tick(void);
+void midi_tick(u16 delta);

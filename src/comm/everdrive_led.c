@@ -26,7 +26,7 @@ void everdrive_led_init(void)
     scheduler_addFrameHandler(everdrive_led_tick);
 }
 
-void everdrive_led_tick(void)
+void everdrive_led_tick(u16 delta)
 {
     if (ledOn) {
         led_off();

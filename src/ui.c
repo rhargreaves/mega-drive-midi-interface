@@ -182,12 +182,13 @@ static void print_ticks(void)
     draw_text(t, 0, 1);
 }
 
-void ui_update(void)
+void ui_update(u16 delta)
 {
     update_key_on_off();
 
-    static u8 activityFrame = 0;
-    if (++activityFrame == FRAMES_BEFORE_UPDATE_ACTIVITY) {
+    static u16 activityFrame = 0;
+    activityFrame += delta;
+    if (activityFrame >= FRAMES_BEFORE_UPDATE_ACTIVITY) {
         activityFrame = 0;
         print_mappings();
         print_comm_mode();
@@ -198,14 +199,16 @@ void ui_update(void)
         }
     }
 
-    static u8 loadCalculationFrame = 0;
-    if (++loadCalculationFrame == FRAMES_BEFORE_UPDATE_LOAD_PERCENT) {
+    static u16 loadCalculationFrame = 0;
+    loadCalculationFrame += delta;
+    if (loadCalculationFrame >= FRAMES_BEFORE_UPDATE_LOAD_PERCENT) {
         loadCalculationFrame = 0;
         loadPercentSum += load_percent();
     }
 
-    static u8 loadFrame = 0;
-    if (++loadFrame == FRAMES_BEFORE_UPDATE_LOAD) {
+    static u16 loadFrame = 0;
+    loadFrame += delta;
+    if (loadFrame >= FRAMES_BEFORE_UPDATE_LOAD) {
         loadFrame = 0;
         update_load();
     }
@@ -330,6 +333,7 @@ static void print_megawifi_info(void)
 {
     const Image* MW_IMAGES[] = { &img_megawifi_not_detected, &img_megawifi_detected,
         &img_megawifi_listening, &img_megawifi_connected };
+
     u16 index = 0;
     switch (comm_megawifi_status()) {
     case NotDetected:
@@ -346,6 +350,7 @@ static void print_megawifi_info(void)
         break;
     }
 
+    VDP_clearTextArea(17, MAX_EFFECTIVE_Y + 1, 15, 1);
     VDP_drawImageEx(BG_A, MW_IMAGES[index],
         TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_MEGAWIFI_STATUS_INDEX), 17, MAX_EFFECTIVE_Y + 1,
         FALSE, FALSE);

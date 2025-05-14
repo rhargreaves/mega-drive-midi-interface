@@ -82,7 +82,7 @@ void __wrap_midi_reset(void)
     function_called();
 }
 
-void __wrap_midi_psg_tick(void)
+void __wrap_midi_psg_tick(u16 delta)
 {
     function_called();
 }

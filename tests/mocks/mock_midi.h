@@ -15,7 +15,7 @@ void __wrap_midi_program(u8 chan, u8 program);
 void __wrap_midi_sysex(u8* data, u16 length);
 bool __wrap_midi_dynamic_mode(void);
 DeviceChannel* __wrap_midi_channel_mappings(void);
-void __wrap_midi_psg_tick(void);
+void __wrap_midi_psg_tick(u16 delta);
 void __wrap_midi_psg_load_envelope(const u8* eef);
 void __wrap_midi_reset(void);
 extern void __real_midi_note_on(u8 chan, u8 pitch, u8 velocity);

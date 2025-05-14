@@ -276,7 +276,7 @@ static void increment_envelope_step(MidiPsgChannel* chan)
     apply_envelope_step(chan);
 }
 
-void midi_psg_tick(void)
+void midi_psg_tick(u16 delta)
 {
     for (u8 chan = 0; chan < MAX_PSG_CHANS; chan++) {
         MidiPsgChannel* psgChan = psg_channel(chan);

@@ -22,7 +22,7 @@ void midi_psg_all_notes_off(u8 chan);
 void midi_psg_channel_volume(u8 chan, u8 volume);
 void midi_psg_program(u8 chan, u8 program);
 void midi_psg_pan(u8 chan, u8 pan);
-void midi_psg_tick(void);
+void midi_psg_tick(u16 delta);
 void midi_psg_load_envelope(const u8* eef);
 u8 midi_psg_busy(void);
 void midi_psg_pitch(u8 chan, u8 pitch, s8 cents);

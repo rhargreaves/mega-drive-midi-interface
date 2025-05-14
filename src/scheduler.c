@@ -9,8 +9,8 @@
 #define MAX_TICK_HANDLERS 3
 #define MAX_FRAME_HANDLERS 6
 
-static HandlerFunc* tickHandlers[MAX_TICK_HANDLERS];
-static HandlerFunc* frameHandlers[MAX_FRAME_HANDLERS];
+static TickHandlerFunc* tickHandlers[MAX_TICK_HANDLERS];
+static FrameHandlerFunc* frameHandlers[MAX_FRAME_HANDLERS];
 
 static u16 previousFrame;
 static volatile u16 frame;
@@ -32,10 +32,10 @@ void scheduler_vsync(void)
     frame++;
 }
 
-static void on_frame(void)
+static void on_frame(u16 delta)
 {
     for (u16 i = 0; i < frameHandlersLength; i++) {
-        frameHandlers[i]();
+        frameHandlers[i](delta);
     }
 }
 
@@ -52,11 +52,16 @@ static void on_tick(void)
     }
 }
 
+void scheduler_yield(void)
+{
+    scheduler_tick();
+}
+
 void scheduler_tick(void)
 {
     on_tick();
     if (frame != previousFrame) {
-        on_frame();
+        on_frame(frame - previousFrame);
         previousFrame = frame;
     }
 }
@@ -68,7 +73,7 @@ void scheduler_run(void)
     }
 }
 
-void scheduler_addTickHandler(HandlerFunc* onTick)
+void scheduler_addTickHandler(TickHandlerFunc* onTick)
 {
     if (tickHandlersLength == MAX_TICK_HANDLERS) {
         SYS_die("Too many tick handlers registered.");
@@ -77,7 +82,7 @@ void scheduler_addTickHandler(HandlerFunc* onTick)
     tickHandlers[tickHandlersLength++] = onTick;
 }
 
-void scheduler_addFrameHandler(HandlerFunc* onFrame)
+void scheduler_addFrameHandler(FrameHandlerFunc* onFrame)
 {
     if (frameHandlersLength == MAX_FRAME_HANDLERS) {
         SYS_die("Too many frame handlers registered.");

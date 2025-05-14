@@ -102,6 +102,7 @@ MOCKS=midi_process \
 	scheduler_tick \
 	scheduler_addTickHandler \
 	scheduler_addFrameHandler \
+	scheduler_yield \
 	comm_megawifi_midiEmitCallback \
 	comm_megawifi_init \
 	comm_megawifi_tick \

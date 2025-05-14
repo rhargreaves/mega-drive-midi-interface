@@ -1028,7 +1028,7 @@ static void process_portamento(void)
     }
 }
 
-void midi_tick(void)
+void midi_tick(u16 delta)
 {
     process_portamento();
 }

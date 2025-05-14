@@ -91,7 +91,7 @@ static void decrement_wait(void)
     }
 }
 
-void comm_demo_vsync(void)
+void comm_demo_vsync(u16 wait)
 {
     decrement_wait();
 

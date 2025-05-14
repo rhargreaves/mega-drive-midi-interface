@@ -9,6 +9,7 @@
 #include "mocks/mock_log.h"
 #include "mocks/mock_comm.h"
 #include "mocks/mock_sgdk.h"
+#include "mocks/mock_scheduler.h"
 
 int test_comm_megawifi_setup(UNUSED void** state)
 {
@@ -72,6 +73,7 @@ static void megawifi_init(void)
     expect_mw_detect();
     expect_ap_connection();
     expect_ip_log();
+    expect_scheduler_yield();
     expect_udp_port_open(CH_CONTROL_PORT, "5006");
     expect_udp_port_open(CH_MIDI_PORT, "5007");
     if (settings_debug_megawifi_init()) {

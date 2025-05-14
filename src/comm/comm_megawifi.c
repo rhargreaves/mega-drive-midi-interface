@@ -6,6 +6,7 @@
 #include "ring_buf.h"
 #include "ip_util.h"
 #include "scheduler.h"
+#include "ui.h"
 
 #define UDP_CONTROL_PORT 5006
 #define UDP_MIDI_PORT (UDP_CONTROL_PORT + 1)
@@ -59,6 +60,7 @@ static enum mw_err display_local_ip(void)
     uint32_to_ip_str(ip_cfg->addr.addr, ip_str);
 #if DEBUG_MEGAWIFI_INIT
     log_info("MW: IP: %s", ip_str);
+    scheduler_yield();
 #endif
     return err;
 }
@@ -77,6 +79,7 @@ static bool detect_mw(void)
     }
     if (settings_debug_megawifi_init()) {
         log_info("MW: Detected v%d.%d", ver_major, ver_minor);
+        scheduler_yield();
     }
     return true;
 }
@@ -117,24 +120,30 @@ static void init_mega_wifi(void)
         return;
     }
     status = Detected;
+    scheduler_yield();
+    VDP_drawText("MW: Detected", 10, 10);
 
     associate_ap();
     display_local_ip();
+
     err = listen_on_udp_port(CH_CONTROL_PORT, UDP_CONTROL_PORT);
     if (err != MW_ERR_NONE) {
         return;
     }
 #if DEBUG_MEGAWIFI_INIT
     log_info("MW: Control UDP port %u open", UDP_CONTROL_PORT);
+    scheduler_yield();
 #endif
+
     err = listen_on_udp_port(CH_MIDI_PORT, UDP_MIDI_PORT);
     if (err != MW_ERR_NONE) {
         return;
     }
+    status = Listening;
 #if DEBUG_MEGAWIFI_INIT
     log_info("MW: MIDI UDP port %u open", UDP_MIDI_PORT);
+    scheduler_yield();
 #endif
-    status = Listening;
 }
 
 void comm_megawifi_init(void)
@@ -243,9 +252,9 @@ static void recv_complete_cb(enum lsd_status stat, uint8_t ch, char* data, uint1
 
 static u16 frame = 0;
 
-void comm_megawifi_vsync(void)
+void comm_megawifi_vsync(u16 delta)
 {
-    frame++;
+    frame += delta;
 }
 
 static u16 lastSeqNum = 0;

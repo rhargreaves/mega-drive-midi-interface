@@ -3,4 +3,4 @@
 
 void everdrive_led_init(void);
 void everdrive_led_blink(void);
-void everdrive_led_tick(void);
+void everdrive_led_tick(u16 delta);
