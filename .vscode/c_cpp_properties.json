@@ -17,6 +17,7 @@
                 "DEBUG",
                 "DEBUG_EVENTS",
                 "DEBUG_TICKS",
+                "MEGAWIFI",
                 "BUILD=\"dev\""
             ],
             "cStandard": "c11",
