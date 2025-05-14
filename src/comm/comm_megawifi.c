@@ -118,7 +118,7 @@ static void init_mega_wifi(void)
     if (!mwDetected) {
         return;
     }
-    status = Detected;
+    status = Initialising;
     scheduler_yield();
 
     associate_ap();

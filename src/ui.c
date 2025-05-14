@@ -331,7 +331,7 @@ static void print_chan_activity(u16 busy)
 
 static void print_megawifi_info(void)
 {
-    const Image* MW_IMAGES[] = { &img_megawifi_not_detected, &img_megawifi_detected,
+    const Image* MW_IMAGES[] = { &img_megawifi_not_detected, &img_megawifi_initialising,
         &img_megawifi_listening, &img_megawifi_connected };
 
     u16 index = 0;
@@ -339,7 +339,7 @@ static void print_megawifi_info(void)
     case NotDetected:
         index = 0;
         break;
-    case Detected:
+    case Initialising:
         index = 1;
         break;
     case Listening:
