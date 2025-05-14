@@ -15,6 +15,7 @@ Control the Yamaha YM2612 and PSG of the Sega Mega Drive via MIDI.
 - Supports MIDI 1.0 CCs & events (e.g. panning, volume, pitch bending)
 - Polyphony via dynamic FM channel mapping
 - Portamento (glide)
+- Experimental DAC support
 - Connectivity via:
   - [Mega EverDrive X7](https://krikzz.com/store/home/33-mega-everdrive-x7.html) USB port.
   - [Mega EverDrive PRO](https://krikzz.com/store/home/59-mega-everdrive-pro.html) USB port.
@@ -32,14 +33,12 @@ Unit & system tests are compiled and ran as x86 binaries using CMocka. Mega Driv
 
 There are two flavours of ROM:
 
-- The standard build is intended for use in EverDrives or any generic flash ROM cart.
-- The MegaWiFi build is intended for use with the BlastEm emulator or MegaWiFi hardware.
-
-The key difference between the two builds is the console header. The standard build has `SEGA SSF` as the console string in the ROM header which will instruct an EverDrive to expose its SSF API to the ROM as required for USB communication. The MegaWiFi build has `SEGA MEGAWIFI` which will instruct BlastEm and the MegaWiFi Hardware to expose the MegaWiFi APIs to the ROM.
+- **Standard**: for EverDrives or other flash cart.
+- **MegaWiFi**: for use with the BlastEm emulator or MegaWiFi hardware.
 
 ### Docker:
 
-Build EverDrive / Generic Flash ROM:
+Build Standard ROM:
 
 ```sh
 ./docker-make release
