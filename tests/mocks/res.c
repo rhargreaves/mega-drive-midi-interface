@@ -26,6 +26,7 @@ const Image img_megawifi_connected = {};
 const Image img_megawifi_initialising = {};
 const Image img_megawifi_not_detected = {};
 const Image img_megawifi_listening = {};
+const Image img_megawifi_detecting = {};
 const Image img_wait_edpro = {};
 const Image img_wait_edx7 = {};
 const u8 pcm_BellRide[0] = {};

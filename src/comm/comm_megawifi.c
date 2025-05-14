@@ -28,7 +28,7 @@ static bool awaitingSend = false;
 #define FPS 60
 #define MS_TO_FRAMES(ms) (((ms) * FPS / 500 + 1) / 2)
 
-static MegaWifiStatus status;
+static MegaWifiStatus status = Detecting;
 
 static void recv_complete_cb(enum lsd_status stat, uint8_t ch, char* data, uint16_t len, void* ctx);
 
@@ -110,12 +110,14 @@ static void init_mega_wifi(void)
 {
     enum mw_err err = mw_init(cmd_buf, MW_BUFLEN);
     if (err != MW_ERR_NONE) {
+        status = NotDetected;
         return;
     }
     tasking_init();
 
     mwDetected = detect_mw();
     if (!mwDetected) {
+        status = NotDetected;
         return;
     }
     status = Initialising;
@@ -149,9 +151,13 @@ void comm_megawifi_init(void)
     scheduler_addTickHandler(comm_megawifi_tick);
     scheduler_addFrameHandler(comm_megawifi_vsync);
 
-    status = NotDetected;
     if (comm_megawifi_is_present()) {
+        status = Detecting;
+        scheduler_yield();
         init_mega_wifi();
+    } else {
+        status = NotDetected;
+        scheduler_yield();
     }
 }
 

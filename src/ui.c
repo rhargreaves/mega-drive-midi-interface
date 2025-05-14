@@ -15,6 +15,8 @@
 #include "scheduler.h"
 #include "settings.h"
 
+#define LENGTH_OF(x) (sizeof(x) / sizeof(x[0]))
+
 #define MAX_EFFECTIVE_X (MAX_X - MARGIN_X - MARGIN_X)
 #define MAX_EFFECTIVE_Y (MAX_Y - MARGIN_Y - MARGIN_Y)
 #define MAX_ERROR_X 30
@@ -331,23 +333,13 @@ static void print_chan_activity(u16 busy)
 
 static void print_megawifi_info(void)
 {
-    const Image* MW_IMAGES[] = { &img_megawifi_not_detected, &img_megawifi_initialising,
-        &img_megawifi_listening, &img_megawifi_connected };
+    const Image* MW_IMAGES[] = { &img_megawifi_detecting, &img_megawifi_not_detected,
+        &img_megawifi_initialising, &img_megawifi_listening, &img_megawifi_connected };
 
-    u16 index = 0;
-    switch (comm_megawifi_status()) {
-    case NotDetected:
-        index = 0;
-        break;
-    case Initialising:
-        index = 1;
-        break;
-    case Listening:
-        index = 2;
-        break;
-    case Connected:
-        index = 3;
-        break;
+    u16 index = comm_megawifi_status();
+    if (index >= LENGTH_OF(MW_IMAGES)) {
+        log_warn("Invalid MegaWiFi status: %d", index);
+        return;
     }
 
     VDP_clearTextArea(17, MAX_EFFECTIVE_Y + 1, 15, 1);

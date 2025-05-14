@@ -24,5 +24,6 @@ IMAGE img_megawifi_connected "sprite/megawifi_connected.bmp" FAST ALL
 IMAGE img_megawifi_initialising "sprite/megawifi_initialising.bmp" FAST ALL
 IMAGE img_megawifi_listening "sprite/megawifi_listening.bmp" FAST ALL
 IMAGE img_megawifi_not_detected "sprite/megawifi_not_detected.bmp" FAST ALL
+IMAGE img_megawifi_detecting "sprite/megawifi_detecting.bmp" FAST ALL
 IMAGE img_wait_edpro "sprite/wait_edpro.bmp" FAST ALL
 IMAGE img_wait_edx7 "sprite/wait_edx7.bmp" FAST ALL
