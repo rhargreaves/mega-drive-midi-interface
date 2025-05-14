@@ -160,16 +160,16 @@ out/rom.bin: out/rom.out | $(CHECK_FLAGS)
 out/symbol.txt: out/rom.out
 	$(NM) $(LTO_PLUGIN) -n out/rom.out > out/symbol.txt
 
-out/rom.out: out/sega.o $(OBJS) $(LIBMD) | $(CHECK_FLAGS)
+out/rom.out: out/sega.o $(OBJS) $(LIBMD) $(CHECK_FLAGS)
 	$(CC) -m68000 -B$(BIN) -n -T $(GDK)/md.ld -nostdlib out/sega.o $(OBJS) $(LIBMD) $(LIBGCC) -o out/rom.out -Wl,--gc-sections -flto
 
-out/sega.o: $(SRC)/boot/sega.s out/rom_head.bin | $(CHECK_FLAGS)
+out/sega.o: $(SRC)/boot/sega.s out/rom_head.bin $(CHECK_FLAGS)
 	$(CC) -x assembler-with-cpp -Wa,--register-prefix-optional,--bitwise-or $(AFLAGS) -c $(SRC)/boot/sega.s -o $@
 
 out/rom_head.bin: out/rom_head.o | $(CHECK_FLAGS)
 	$(OBJCPY) -O binary $< $@
 
-out/rom_head.o: $(SRC)/boot/rom_head.c | $(CHECK_FLAGS)
+out/rom_head.o: $(SRC)/boot/rom_head.c $(CHECK_FLAGS)
 	$(CC) $(DEFAULT_FLAGS) -c $< -o $@
 
 $(SRC)/boot/sega.s: $(SRC_LIB)/boot/sega.s
