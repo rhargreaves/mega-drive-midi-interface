@@ -6,7 +6,6 @@
 #include "ring_buf.h"
 #include "ip_util.h"
 #include "scheduler.h"
-#include "ui.h"
 
 #define UDP_CONTROL_PORT 5006
 #define UDP_MIDI_PORT (UDP_CONTROL_PORT + 1)
@@ -121,7 +120,6 @@ static void init_mega_wifi(void)
     }
     status = Detected;
     scheduler_yield();
-    VDP_drawText("MW: Detected", 10, 10);
 
     associate_ap();
     display_local_ip();
