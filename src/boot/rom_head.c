@@ -7,7 +7,7 @@ __attribute__((externally_visible)) const ROMHeader rom_header = {
 #else
     "SEGA SSF        ",
 #endif
-    "(C)ROB H. 2024  ",
+    "(C)ROB H. GPLv3 ",
     "MEGA DRIVE MIDI INTERFACE                       ",
     "MEGA DRIVE MIDI INTERFACE                       ",
     "GM 00000000-00",
