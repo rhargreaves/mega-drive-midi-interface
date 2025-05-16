@@ -76,16 +76,13 @@ EXTRA_FLAGS:=-DBUILD='"$(BUILD)"' \
 
 ifeq ($(ROM_TYPE), MEGAWIFI)
 	EXTRA_FLAGS += -DMEGAWIFI
-	LTO_FLAGS:=
-else
-	LTO_FLAGS:=-flto
 endif
 
 LAST_FLAGS := out/last_flags
 CHECK_FLAGS := $(LAST_FLAGS)_$(shell echo $(EXTRA_FLAGS) | md5sum | awk '{ print $$1 }')
 
 release: FLAGS= $(DEFAULT_FLAGS) -O3 -fuse-linker-plugin -fno-web -fno-gcse \
-	-fno-unit-at-a-time -fomit-frame-pointer $(LTO_FLAGS)
+	-fno-unit-at-a-time -fomit-frame-pointer -flto
 release: CFLAGS= $(FLAGS)
 release: AFLAGS= $(FLAGS)
 release: LIBMD= $(LIB)/libmd.a

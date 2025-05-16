@@ -81,7 +81,7 @@ static bool detect_mw(void)
     return true;
 }
 
-static enum mw_err listen_on_udp_port(u8 ch, u16 src_port)
+__attribute__((optimize("O1"))) static enum mw_err listen_on_udp_port(u8 ch, u16 src_port)
 {
     char src_port_str[6];
     sprintf(src_port_str, "%u", src_port);
