@@ -13,8 +13,6 @@
 #define MW_BUFLEN 1460
 #define MAX_UDP_DATA_LENGTH MW_BUFLEN
 static u16 cmd_buf[MW_BUFLEN];
-
-static bool mwDetected = false;
 static bool recvData = false;
 
 #define REUSE_PAYLOAD_HEADER_LEN 6
@@ -115,8 +113,7 @@ static void init_mega_wifi(void)
     }
     tasking_init();
 
-    mwDetected = detect_mw();
-    if (!mwDetected) {
+    if (!detect_mw()) {
         status = NotDetected;
         return;
     }
@@ -279,8 +276,10 @@ static void send_receiver_feedback(void)
 
 void comm_megawifi_tick(void)
 {
-    if (!mwDetected)
+    if (status != Connected && status != Listening) {
         return;
+    }
+
     mw_process();
     if (awaitingRecv || awaitingSend) {
         return;

@@ -43,6 +43,7 @@ void __wrap_comm_megawifi_write(u8 data);
 bool __wrap_mw_uart_is_present(void);
 extern void __real_comm_megawifi_midiEmitCallback(u8 midiByte);
 extern void __real_comm_megawifi_init(void);
+extern void __real_comm_megawifi_tick(void);
 extern bool __real_comm_read_ready(void);
 extern void __real_comm_demo_init(void);
 extern u8 __real_comm_demo_read_ready(void);

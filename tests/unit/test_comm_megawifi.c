@@ -130,3 +130,8 @@ void test_comm_megawifi_sets_status_to_not_detected_when_not_present(UNUSED void
 
     assert_int_equal(comm_megawifi_status(), NotDetected);
 }
+
+void test_comm_megawifi_tick_does_nothing_when_not_listening_or_connected(UNUSED void** state)
+{
+    __real_comm_megawifi_tick();
+}
