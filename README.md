@@ -19,7 +19,7 @@ Control the Yamaha YM2612 and PSG of the Sega Mega Drive via MIDI.
 - Connectivity via:
   - [Mega EverDrive X7](https://krikzz.com/store/home/33-mega-everdrive-x7.html) USB port.
   - [Mega EverDrive PRO](https://krikzz.com/store/home/59-mega-everdrive-pro.html) USB port.
-  - [Controller port via custom USB serial cable](https://github.com/rhargreaves/mega-drive-serial-port#hardware).
+  - [Controller or ext/modem port via custom USB serial cable](https://github.com/rhargreaves/mega-drive-serial-port#hardware).
   - [MegaWiFi cartridge / BlastEm emulator](https://github.com/rhargreaves/mega-drive-midi-interface/wiki/BlastEm-&-MegaWiFi-Guide) (experimental)
   - Control of YM2612 registers via [GenMDM-style CCs](https://catskullelectronics.com/pages/genmdm-manual)
 
