@@ -1,4 +1,5 @@
 #include "serial.h"
+#include "mem.h"
 
 #define VDP_MODE_REG_3 0xB
 #define VDP_IE2 0x08
@@ -11,37 +12,29 @@ static void ext_int_callback(void)
     readReadyCallback();
 }
 
-static void set_sctrl(u16 value)
+static void set_sctrl(u8 value)
 {
-    vu8* pb;
-    pb = (u8*)PORT2_SCTRL;
-    *pb = value;
+    mem_write_u8(PORT2_SCTRL, value);
 }
 
-static void set_ctrl(u16 value)
+static void set_ctrl(u8 value)
 {
-    vu8* pb;
-    pb = (u8*)PORT2_CTRL;
-    *pb = value;
+    mem_write_u8(PORT2_CTRL, value);
 }
 
 u8 serial_sctrl(void)
 {
-    vu8* pb;
-    pb = (u8*)PORT2_SCTRL;
-    return *pb;
+    return mem_read_u8(PORT2_SCTRL);
 }
 
 bool serial_readyToReceive(void)
 {
-    vu8* pb = (u8*)PORT2_SCTRL;
-    return *pb & SCTRL_RRDY;
+    return mem_read_u8(PORT2_SCTRL) & SCTRL_RRDY;
 }
 
 u8 serial_receive(void)
 {
-    vu8* pb = (u8*)PORT2_RX;
-    return *pb;
+    return mem_read_u8(PORT2_RX);
 }
 
 void serial_setReadyToReceiveCallback(VoidCallback* cb)
@@ -62,14 +55,12 @@ void serial_init(u8 sctrlFlags)
 
 void serial_send(u8 data)
 {
-    vu8* pb = (vu8*)PORT2_TX;
-    *pb = data;
+    mem_write_u8(PORT2_TX, data);
 }
 
 bool serial_readyToSend(void)
 {
-    vu8* pb = (vu8*)PORT2_SCTRL;
-    return !(*pb & SCTRL_TFUL);
+    return !(mem_read_u8(PORT2_SCTRL) & SCTRL_TFUL);
 }
 
 void serial_sendWhenReady(u8 data)

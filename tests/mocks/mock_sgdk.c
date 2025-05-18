@@ -80,19 +80,24 @@ void __wrap_SPR_setFrame(Sprite* sprite, s16 frame)
 
 void __wrap_VDP_setReg(u16 reg, u8 value)
 {
+    check_expected(reg);
+    check_expected(value);
 }
 
 u8 __wrap_VDP_getReg(u16 reg)
 {
-    return 0;
+    check_expected(reg);
+    return mock_type(u8);
 }
 
 void __wrap_SYS_setExtIntCallback(VoidCallback* CB)
 {
+    check_expected(CB);
 }
 
 void __wrap_SYS_setInterruptMaskLevel(u16 value)
 {
+    check_expected(value);
 }
 
 static u16 testIsPal = false;

@@ -19,6 +19,7 @@
 #include "test_note_priority.h"
 #include "test_pitchcents.h"
 #include "test_ring_buf.h"
+#include "test_serial.h"
 
 #define midi_test(test) cmocka_unit_test_setup(test, test_midi_setup)
 #define midi_pcm_test(test) cmocka_unit_test_setup(test, test_midi_setup)
@@ -39,6 +40,7 @@
 #define midi_rx_test(test) cmocka_unit_test_setup(test, test_midi_rx_setup)
 #define note_priority_test(test) cmocka_unit_test_setup(test, test_note_priority_setup)
 #define pitchcents_test(test) cmocka_unit_test(test)
+#define serial_test(test) cmocka_unit_test_setup(test, test_serial_setup)
 
 int main(void)
 {
@@ -339,7 +341,6 @@ int main(void)
         dynamic_midi_test(test_midi_assign_channel_to_fm_device_only),
         dynamic_midi_test(test_midi_assign_channel_to_psg_noise),
 
-
         log_test(test_log_info_writes_to_log_buffer),
         log_test(test_log_warn_writes_to_log_buffer),
         log_test(test_log_stores_two_logs),
@@ -427,6 +428,17 @@ int main(void)
         midi_finetune_test(test_midi_finetune_max),
         midi_finetune_test(test_midi_finetune_min),
         midi_finetune_test(test_midi_finetune_with_pitchbend),
+
+        serial_test(test_serial_readyToReceive_when_not_ready),
+        serial_test(test_serial_readyToReceive_when_ready),
+        serial_test(test_serial_receive),
+        serial_test(test_serial_inits),
+        serial_test(test_serial_sends),
+        serial_test(test_serial_readyToSend_when_not_ready),
+        serial_test(test_serial_readyToSend_when_ready),
+        serial_test(test_serial_sendWhenReady),
+        serial_test(test_serial_sendWhenReady_waits_until_ready),
+        serial_test(test_serial_setReadyToReceiveCallback),
         // clang-format on
     };
 
