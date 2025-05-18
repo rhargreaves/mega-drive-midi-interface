@@ -202,7 +202,9 @@ MD_MOCKS=SYS_setVIntCallback \
 	mw_uart_is_present \
 	settings_startup_midi_sequence \
 	mem_read_u8 \
-	mem_write_u8
+	mem_write_u8 \
+	mem_read_u16 \
+	mem_write_u16
 
 LDFLAGS=-ggdb -ffreestanding -lcmocka \
 	-L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src \

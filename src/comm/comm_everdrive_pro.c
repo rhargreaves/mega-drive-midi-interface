@@ -1,19 +1,19 @@
 #include "comm_everdrive_pro.h"
 #include "everdrive_led.h"
+#include "mem.h"
 
-#define CMD_USB_WR 0x22
-
-#define REG_FIFO_DATA *((vu16*)0xA130D0) // fifo data register
-#define REG_FIFO_STAT *((vu16*)0xA130D2) // fifo status register. shows if fifo can be readed.
-#define REG_SYS_STAT *((vu16*)0xA130D4)
+#define REG_FIFO_DATA 0xA130D0
+#define REG_FIFO_STAT 0xA130D2
+#define REG_SYS_STAT 0xA130D4
 
 #define FIFO_CPU_RXF 0x8000 // fifo flags. system cpu can read
 #define FIFO_RXF_MSK 0x7FF
 #define STAT_PRO_PRESENT 0x55A0
+#define CMD_USB_WR 0x22
 
 static u8 bi_fifo_busy(void)
 {
-    return (REG_FIFO_STAT & FIFO_CPU_RXF) ? 1 : 0;
+    return (mem_read_u16(REG_FIFO_STAT) & FIFO_CPU_RXF) ? 1 : 0;
 }
 
 static void bi_fifo_rd(void* data, u16 len)
@@ -23,21 +23,21 @@ static void bi_fifo_rd(void* data, u16 len)
 
     while (len) {
 
-        block = REG_FIFO_STAT & FIFO_RXF_MSK;
+        block = mem_read_u16(REG_FIFO_STAT) & FIFO_RXF_MSK;
         if (block > len)
             block = len;
         len -= block;
 
         while (block >= 4) {
-            *data8++ = REG_FIFO_DATA;
-            *data8++ = REG_FIFO_DATA;
-            *data8++ = REG_FIFO_DATA;
-            *data8++ = REG_FIFO_DATA;
+            *data8++ = mem_read_u16(REG_FIFO_DATA);
+            *data8++ = mem_read_u16(REG_FIFO_DATA);
+            *data8++ = mem_read_u16(REG_FIFO_DATA);
+            *data8++ = mem_read_u16(REG_FIFO_DATA);
             block -= 4;
         }
 
         while (block--)
-            *data8++ = REG_FIFO_DATA;
+            *data8++ = mem_read_u16(REG_FIFO_DATA);
     }
 }
 
@@ -46,7 +46,7 @@ static void bi_fifo_wr(void* data, u16 len)
     u8* data8 = data;
 
     while (len--) {
-        REG_FIFO_DATA = *data8++;
+        mem_write_u16(REG_FIFO_DATA, *data8++);
     }
 }
 
@@ -73,7 +73,7 @@ void comm_everdrive_pro_init(void)
 
 bool comm_everdrive_pro_is_present(void)
 {
-    return (REG_SYS_STAT & 0xFFF0) == STAT_PRO_PRESENT;
+    return (mem_read_u16(REG_SYS_STAT) & 0xFFF0) == STAT_PRO_PRESENT;
 }
 
 u8 comm_everdrive_pro_read_ready(void)

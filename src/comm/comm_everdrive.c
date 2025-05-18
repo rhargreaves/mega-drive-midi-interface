@@ -1,7 +1,7 @@
 #include "comm_everdrive.h"
 #include "everdrive_led.h"
-
-#define SSF_REG16(reg) *((volatile u16*)(0xA13000 + reg))
+#include "mem.h"
+#define SSF_REG16(reg) (0xA13000 + reg)
 #define REG_USB 0xE2
 #define REG_STE 0xE4
 #define STE_USB_RD_RDY 4
@@ -30,27 +30,27 @@ bool comm_everdrive_is_present(void)
     0x3F00 with ME PRO
     */
 
-    u8 status = SSF_REG16(REG_STE) >> 8;
+    u8 status = mem_read_u16(SSF_REG16(REG_STE)) >> 8;
     return status == IO_STATUS_HI_SD || status == IO_STATUS_HI_SDHC;
 }
 
 u8 comm_everdrive_read_ready(void)
 {
-    return SSF_REG16(REG_STE) & STE_USB_RD_RDY;
+    return mem_read_u16(SSF_REG16(REG_STE)) & STE_USB_RD_RDY;
 }
 
 u8 comm_everdrive_read(void)
 {
     everdrive_led_blink();
-    return SSF_REG16(REG_USB);
+    return mem_read_u16(SSF_REG16(REG_USB));
 }
 
 u8 comm_everdrive_write_ready(void)
 {
-    return SSF_REG16(REG_STE) & STE_USB_WR_RDY;
+    return mem_read_u16(SSF_REG16(REG_STE)) & STE_USB_WR_RDY;
 }
 
 void comm_everdrive_write(u8 data)
 {
-    SSF_REG16(REG_USB) = data;
+    mem_write_u16(SSF_REG16(REG_USB), data);
 }
