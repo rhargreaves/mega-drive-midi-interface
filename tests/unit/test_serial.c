@@ -7,10 +7,24 @@
 #define VDP_IE2 0x08
 #define INT_MASK_LEVEL_ENABLE_ALL 1
 
-static void init_serial(const u8 flags)
+static void expect_serial_port_init(IoPort port, u8 flags)
 {
-    expect_mem_write_u8(PORT2_SCTRL, flags);
-    expect_mem_write_u8(PORT2_CTRL, CTRL_PCS_OUT);
+    switch (port) {
+    case IoPort_Ctrl2:
+        expect_mem_write_u8(PORT2_SCTRL, flags);
+        expect_mem_write_u8(PORT2_CTRL, CTRL_PCS_OUT);
+        break;
+    case IoPort_Ext:
+        expect_mem_write_u8(EXT_SCTRL, flags);
+        expect_mem_write_u8(EXT_CTRL, CTRL_PCS_OUT);
+        break;
+    }
+}
+
+static void init_serial(IoPort port)
+{
+    const u8 flags = SCTRL_4800_BPS | SCTRL_SIN | SCTRL_SOUT | SCTRL_RINT;
+    expect_serial_port_init(port, flags);
 
     expect_value(__wrap_SYS_setInterruptMaskLevel, value, INT_MASK_LEVEL_ENABLE_ALL);
     expect_value(__wrap_VDP_setReg, reg, VDP_MODE_REG_3);
@@ -20,12 +34,12 @@ static void init_serial(const u8 flags)
     will_return(__wrap_VDP_getReg, VDP_IE2);
 
     expect_any(__wrap_SYS_setExtIntCallback, CB);
-    serial_init(flags);
+    serial_init(port, flags);
 }
 
 int test_serial_setup(UNUSED void** state)
 {
-    init_serial(SCTRL_4800_BPS | SCTRL_SIN | SCTRL_SOUT | SCTRL_RINT);
+    init_serial(IoPort_Ctrl2);
     return 0;
 }
 
@@ -45,10 +59,25 @@ void test_serial_readyToReceive_when_ready(UNUSED void** state)
     assert_true(serial_readyToReceive());
 }
 
+void test_serial_readyToReceive_when_ready_on_ext_port(UNUSED void** state)
+{
+    init_serial(IoPort_Ext);
+    expect_mem_read_u8(EXT_SCTRL, SCTRL_RRDY);
+    assert_true(serial_readyToReceive());
+}
+
 void test_serial_receive(UNUSED void** state)
 {
     const u8 expected_data = 0x42;
     expect_mem_read_u8(PORT2_RX, expected_data);
+    assert_int_equal(serial_receive(), expected_data);
+}
+
+void test_serial_receive_on_ext_port(UNUSED void** state)
+{
+    init_serial(IoPort_Ext);
+    const u8 expected_data = 0x42;
+    expect_mem_read_u8(EXT_RX, expected_data);
     assert_int_equal(serial_receive(), expected_data);
 }
 
@@ -63,6 +92,14 @@ void test_serial_sends(UNUSED void** state)
 {
     const u8 data = 0x42;
     expect_mem_write_u8(PORT2_TX, data);
+    serial_send(data);
+}
+
+void test_serial_sends_on_ext_port(UNUSED void** state)
+{
+    init_serial(IoPort_Ext);
+    const u8 data = 0x42;
+    expect_mem_write_u8(EXT_TX, data);
     serial_send(data);
 }
 

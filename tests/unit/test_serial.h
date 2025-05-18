@@ -13,3 +13,6 @@ void test_serial_readyToSend_when_ready(void** state);
 void test_serial_sendWhenReady(void** state);
 void test_serial_sendWhenReady_waits_until_ready(void** state);
 void test_serial_setReadyToReceiveCallback(void** state);
+void test_serial_readyToReceive_when_ready_on_ext_port(void** state);
+void test_serial_receive_on_ext_port(void** state);
+void test_serial_sends_on_ext_port(void** state);

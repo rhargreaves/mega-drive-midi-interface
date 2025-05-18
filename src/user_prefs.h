@@ -23,3 +23,12 @@ examples :
 }
 */
 #define STARTUP_MIDI_SEQUENCE { }
+
+/*
+setting  : port to use for serial communication
+values   : IoPort_Ctrl2, IoPort_Ext
+default  : IoPort_Ctrl2
+*/
+#define COMM_SERIAL_PORT IoPort_Ctrl2
+
+// clang-format on

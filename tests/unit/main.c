@@ -439,6 +439,9 @@ int main(void)
         serial_test(test_serial_sendWhenReady),
         serial_test(test_serial_sendWhenReady_waits_until_ready),
         serial_test(test_serial_setReadyToReceiveCallback),
+        serial_test(test_serial_readyToReceive_when_ready_on_ext_port),
+        serial_test(test_serial_receive_on_ext_port),
+        serial_test(test_serial_sends_on_ext_port),
         // clang-format on
     };
 

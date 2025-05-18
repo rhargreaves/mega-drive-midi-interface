@@ -3,6 +3,7 @@
 #include "serial.h"
 #include "log.h"
 #include "settings.h"
+#include "user_prefs.h"
 
 static bool recvData = false;
 
@@ -48,7 +49,7 @@ static void flush_rrdy(void)
 void comm_serial_init(void)
 {
     ring_buf_init();
-    serial_init(SCTRL_4800_BPS | SCTRL_SIN | SCTRL_SOUT | SCTRL_RINT);
+    serial_init(COMM_SERIAL_PORT, SCTRL_4800_BPS | SCTRL_SIN | SCTRL_SOUT | SCTRL_RINT);
     serial_setReadyToReceiveCallback(&recv_ready_callback);
     flush_rrdy();
     if (settings_debug_serial()) {
