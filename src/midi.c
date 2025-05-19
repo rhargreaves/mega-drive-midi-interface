@@ -389,8 +389,8 @@ static DeviceChannel* findSuitableDeviceChannel(u8 midiChan)
 
 static PitchCents effectivePitchCents(DeviceChannel* devChan)
 {
-    PitchCents pc = pitchcents_bend(devChan->pitch, devChan->cents, devChan->pitchBend);
-    return pitchcents_shift(pc, midiChannels[devChan->midiChannel].fineTune);
+    PitchCents pc = pc_bend(devChan->pitch, devChan->cents, devChan->pitchBend);
+    return pc_shift(pc, midiChannels[devChan->midiChannel].fineTune);
 }
 
 static void set_downstream_pitch(DeviceChannel* devChan)
@@ -1001,7 +1001,7 @@ static void process_channel_glide(DeviceChannel* chan, u16 portamentoTime)
     }
 
     PitchCents pc = { .pitch = chan->pitch, .cents = chan->cents };
-    pc = pitchcents_shift(pc, effectiveIncrement);
+    pc = pc_shift(pc, effectiveIncrement);
 
     if ((effectiveIncrement > 0 && pc.pitch >= chan->glideTargetPitch)
         || (effectiveIncrement < 0 && pc.pitch <= chan->glideTargetPitch)) {
