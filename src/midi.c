@@ -31,6 +31,7 @@ typedef struct MidiChannel {
     u8 program;
     u8 pan;
     u16 pitchBend;
+    PitchCents pitchBendRange;
     u8 lastVelocity;
     NotePriorityStack notePriority;
     DeviceSelect deviceSelect;
@@ -138,6 +139,7 @@ static void init_midi_channel(u8 midiChan)
     chan->pan = DEFAULT_MIDI_PAN;
     chan->volume = MAX_MIDI_VOLUME;
     chan->pitchBend = DEFAULT_MIDI_PITCH_BEND;
+    chan->pitchBendRange = (PitchCents) { GENERAL_MIDI_PITCH_BEND_SEMITONE_RANGE, 0 };
     chan->lastVelocity = 0;
     note_priority_init(&chan->notePriority);
     chan->deviceSelect = Auto;
@@ -389,8 +391,10 @@ static DeviceChannel* findSuitableDeviceChannel(u8 midiChan)
 
 static PitchCents effectivePitchCents(DeviceChannel* devChan)
 {
-    PitchCents pc = pc_bend(devChan->pitch, devChan->cents, devChan->pitchBend);
-    return pc_shift(pc, midiChannels[devChan->midiChannel].fineTune);
+    MidiChannel* midiChannel = &midiChannels[devChan->midiChannel];
+    PitchCents pc
+        = pc_bend(devChan->pitch, devChan->cents, devChan->pitchBend, midiChannel->pitchBendRange);
+    return pc_shift(pc, midiChannel->fineTune);
 }
 
 static void set_downstream_pitch(DeviceChannel* devChan)
