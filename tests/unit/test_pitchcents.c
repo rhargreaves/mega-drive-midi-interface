@@ -89,3 +89,39 @@ void test_pitchcents_bend_high_cents_with_full_bend_up(UNUSED void** state)
     assert_int_equal(pc.pitch, 52);
     assert_int_equal(pc.cents, 80);
 }
+
+void test_pitchcents_bend_st_up_4(UNUSED void** state)
+{
+    PitchCents range = { .pitch = 4, .cents = 0 };
+    PitchCents pc = pc_bend_st(50, 0, 0x4000, range);
+
+    assert_int_equal(pc.pitch, 54);
+    assert_int_equal(pc.cents, 0);
+}
+
+void test_pitchcents_bend_st_down_4(UNUSED void** state)
+{
+    PitchCents range = { .pitch = 4, .cents = 0 };
+    PitchCents pc = pc_bend_st(50, 0, 0x0000, range);
+
+    assert_int_equal(pc.pitch, 46);
+    assert_int_equal(pc.cents, 0);
+}
+
+void test_pitchcents_bend_st_up_extreme(UNUSED void** state)
+{
+    PitchCents range = { .pitch = 48, .cents = 50 };
+    PitchCents pc = pc_bend_st(50, 0, 0x4000, range);
+
+    assert_int_equal(pc.pitch, 98);
+    assert_int_equal(pc.cents, 50);
+}
+
+void test_pitchcents_bend_st_down_extreme(UNUSED void** state)
+{
+    PitchCents range = { .pitch = 48, .cents = 50 };
+    PitchCents pc = pc_bend_st(50, 0, 0x0000, range);
+
+    assert_int_equal(pc.pitch, 1);
+    assert_int_equal(pc.cents, 50);
+}

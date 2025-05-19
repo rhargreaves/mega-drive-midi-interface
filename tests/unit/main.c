@@ -209,6 +209,10 @@ int main(void)
         pitchcents_test(test_pitchcents_bend_high_cents_with_partial_bend_down),
         pitchcents_test(test_pitchcents_bend_cents_with_full_bend_up),
         pitchcents_test(test_pitchcents_bend_high_cents_with_full_bend_up),
+        pitchcents_test(test_pitchcents_bend_st_up_4),
+        pitchcents_test(test_pitchcents_bend_st_down_4),
+        pitchcents_test(test_pitchcents_bend_st_up_extreme),
+        pitchcents_test(test_pitchcents_bend_st_down_extreme),
 
         midi_pcm_test(test_midi_enables_dac),
         midi_pcm_test(test_midi_disables_dac),

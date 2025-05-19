@@ -11,3 +11,7 @@ void test_pitchcents_bend_cents_with_partial_bend_down(UNUSED void** state);
 void test_pitchcents_bend_high_cents_with_partial_bend_down(UNUSED void** state);
 void test_pitchcents_bend_cents_with_full_bend_up(UNUSED void** state);
 void test_pitchcents_bend_high_cents_with_full_bend_up(UNUSED void** state);
+void test_pitchcents_bend_st_up_4(UNUSED void** state);
+void test_pitchcents_bend_st_down_4(UNUSED void** state);
+void test_pitchcents_bend_st_up_extreme(UNUSED void** state);
+void test_pitchcents_bend_st_down_extreme(UNUSED void** state);
