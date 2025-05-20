@@ -12,7 +12,7 @@
       "environment": [
         {
           "name": "LD_LIBRARY_PATH",
-          "value": "/workspaces/mega-drive-midi-interface/tests/cmocka/build/src/"
+          "value": "/workspaces/mega-drive-midi-interface/tests/build/deps/cmocka/build/src/"
         }
       ],
       "externalConsole": false,
@@ -41,7 +41,7 @@
       "environment": [
         {
           "name": "LD_LIBRARY_PATH",
-          "value": "/workspaces/mega-drive-midi-interface/tests/cmocka/build/src/"
+          "value": "/workspaces/mega-drive-midi-interface/tests/build/deps/cmocka/build/src/"
         }
       ],
       "externalConsole": false,
