@@ -80,9 +80,18 @@
 #define FM_CH5 4
 #define FM_CH6 5
 
-#define SYNTH_NTSC_C 0x284
-#define SYNTH_NTSC_AS 1146
-#define SYNTH_PAL_C 649
+#define SYNTH_NTSC_B 607 // 0x25F
+#define SYNTH_NTSC_C 644 // 0x284
+#define SYNTH_NTSC_CS 681 // 0x2A9
+#define SYNTH_NTSC_D 722 // 0x2D2
+#define SYNTH_NTSC_DS 765 // 0x2FD
+#define SYNTH_NTSC_E 810 // 0x32A
+#define SYNTH_NTSC_F 858 // 0x35A
+#define SYNTH_NTSC_FS 910 // 0x38A
+#define SYNTH_NTSC_G 964 // 0x3C4
+#define SYNTH_NTSC_GS 1021 // 0x3FD
+#define SYNTH_NTSC_A 1081 // 0x439
+#define SYNTH_NTSC_AS 1146 // 0x47A
 
 // --- PSG ---
 #define PSG_CH1 0

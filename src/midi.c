@@ -38,6 +38,7 @@ typedef struct MidiChannel {
     bool portamento;
     u16 portamentoInterval;
     s8 fineTune;
+    u16 rpn;
 } MidiChannel;
 
 typedef enum MappingMode { MappingMode_Static, MappingMode_Dynamic, MappingMode_Auto } MappingMode;
@@ -146,6 +147,7 @@ static void init_midi_channel(u8 midiChan)
     chan->portamento = false;
     chan->portamentoInterval = DEFAULT_PORTAMENTO_INTERVAL;
     chan->fineTune = 0;
+    chan->rpn = NULL_RPN;
 }
 
 static void init_all_device_channels(void)
@@ -889,15 +891,6 @@ static void set_fm_chan_parameter(DeviceChannel* devChan, u8 controller, u8 valu
             break;
         enable_dac(RANGE(value, 2));
         break;
-    case CC_EXPRESSION:
-    case CC_SUSTAIN_PEDAL:
-    case CC_DATA_ENTRY_LSB:
-    case CC_DATA_ENTRY_MSB:
-    case CC_NRPN_LSB:
-    case CC_NRPN_MSB:
-    case CC_RPN_LSB:
-    case CC_RPN_MSB:
-        break;
     default:
         log_warn("Ch %d: CC 0x%02X 0x%02X?", devChan->midiChannel, controller, value);
         break;
@@ -932,6 +925,17 @@ static void set_fine_tune(u8 chan, u8 value)
 {
     MidiChannel* midiChannel = &midiChannels[chan];
     midiChannel->fineTune = value - 64;
+}
+
+static void update_pb_sensitivity(u8 chan, u8 value)
+{
+    MidiChannel* midiChannel = &midiChannels[chan];
+    midiChannel->pitchBendRange = (PitchCents) { .pitch = value, .cents = 0 };
+    FOREACH_DEV_CHAN_WITH_MIDI(chan, devChan) {
+        if (devChan->noteOn) {
+            set_downstream_pitch(devChan);
+        }
+    }
 }
 
 void midi_cc(u8 chan, u8 controller, u8 value)
@@ -976,6 +980,30 @@ void midi_cc(u8 chan, u8 controller, u8 value)
         if (isIgnoringNonGeneralMidiCCs())
             break;
         set_fine_tune(chan, value);
+        break;
+    case CC_DATA_ENTRY_LSB:
+        break;
+    case CC_DATA_ENTRY_MSB: {
+        MidiChannel* midiChannel = &midiChannels[chan];
+        if (midiChannel->rpn == RPN_PITCH_BEND_SENSITIVITY) {
+            update_pb_sensitivity(chan, value);
+        }
+        break;
+    }
+    case CC_RPN_LSB: {
+        MidiChannel* midiChannel = &midiChannels[chan];
+        midiChannel->rpn = (midiChannel->rpn & 0xFF80) | (value & 0x7F);
+        break;
+    }
+    case CC_RPN_MSB: {
+        MidiChannel* midiChannel = &midiChannels[chan];
+        midiChannel->rpn = (value << 7) | (midiChannel->rpn & 0x7F);
+        break;
+    }
+    case CC_EXPRESSION:
+    case CC_SUSTAIN_PEDAL:
+    case CC_NRPN_LSB:
+    case CC_NRPN_MSB:
         break;
     default:
         fm_parameter_cc(chan, controller, value);

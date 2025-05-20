@@ -49,3 +49,4 @@ void test_midi_pitch_bends_special_mode_op_independent_of_other_ops(UNUSED void*
 void test_midi_persists_pitch_bends_for_special_mode_op_between_notes(UNUSED void** state);
 void test_midi_note_priority_respected_for_multiple_notes(UNUSED void** state);
 void test_midi_drops_note_when_note_priority_stack_full(UNUSED void** state);
+void test_midi_sets_pitch_bend_sensitivity(UNUSED void** state);

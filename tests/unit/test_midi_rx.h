@@ -20,4 +20,3 @@ void test_midi_rx_sends_sysex_to_midi_layer(UNUSED void** state);
 void test_midi_rx_handles_sysex_limits(UNUSED void** state);
 void test_midi_rx_runs_configured_startup_sequence(UNUSED void** state);
 void test_midi_rx_runs_startup_sequence_on_midi_reset(UNUSED void** state);
-void test_midi_rx_handles_pitch_bend_sensitivity(UNUSED void** state);

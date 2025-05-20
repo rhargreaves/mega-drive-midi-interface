@@ -662,3 +662,19 @@ void test_midi_drops_note_when_note_priority_stack_full(UNUSED void** state)
 
     __real_midi_note_on(0, 100, MAX_MIDI_VOLUME);
 }
+
+void test_midi_sets_pitch_bend_sensitivity(UNUSED void** state)
+{
+    __real_midi_cc(MIDI_CHANNEL_1, CC_RPN_MSB, RPN_PITCH_BEND_SENSITIVITY_MSB);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_RPN_LSB, RPN_PITCH_BEND_SENSITIVITY_LSB);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_DATA_ENTRY_MSB, 4);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_DATA_ENTRY_LSB, 0);
+
+    expect_synth_pitch(YM_CH1, 4, SYNTH_NTSC_C);
+    expect_synth_volume_any();
+    expect_synth_note_on(YM_CH1);
+    __real_midi_note_on(MIDI_CHANNEL_1, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
+
+    expect_synth_pitch(YM_CH1, 4, SYNTH_NTSC_E);
+    __real_midi_pitch_bend(MIDI_CHANNEL_1, MIDI_PITCH_BEND_MAX);
+}

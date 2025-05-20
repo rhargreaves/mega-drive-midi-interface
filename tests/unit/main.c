@@ -67,7 +67,6 @@ int main(void)
         midi_rx_test(test_midi_rx_handles_sysex_limits),
         midi_rx_test(test_midi_rx_sends_midi_reset),
         midi_rx_test(test_midi_rx_runs_startup_sequence_on_midi_reset),
-        // WIP: midi_rx_test(test_midi_rx_handles_pitch_bend_sensitivity),
 
         midi_test(test_midi_triggers_synth_note_on),
         midi_test(test_midi_triggers_synth_note_on_with_velocity),
@@ -194,6 +193,7 @@ int main(void)
         midi_test(test_midi_hides_fm_parameter_ui),
         midi_test(test_midi_resets_fm_values_to_defaults),
         midi_test(test_midi_resets_psg_values_to_defaults),
+        midi_test(test_midi_sets_pitch_bend_sensitivity),
 
         midi_dac_test(test_midi_dac_plays_note),
         midi_dac_test(test_midi_dac_stops_note),

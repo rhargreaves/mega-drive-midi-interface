@@ -118,12 +118,8 @@ void test_midi_ignores_sysex_nrpn_ccs(UNUSED void** state)
 {
     mock_log_enable_checks();
 
-    __real_midi_cc(MIDI_CHANNEL_1, CC_DATA_ENTRY_MSB, 1);
-    __real_midi_cc(MIDI_CHANNEL_1, CC_DATA_ENTRY_LSB, 1);
     __real_midi_cc(MIDI_CHANNEL_1, CC_NRPN_LSB, 1);
     __real_midi_cc(MIDI_CHANNEL_1, CC_NRPN_MSB, 1);
-    __real_midi_cc(MIDI_CHANNEL_1, CC_RPN_LSB, 1);
-    __real_midi_cc(MIDI_CHANNEL_1, CC_RPN_MSB, 1);
 }
 
 void test_midi_shows_fm_parameter_ui(UNUSED void** state)

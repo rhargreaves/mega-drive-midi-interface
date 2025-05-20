@@ -418,8 +418,8 @@ void test_midi_pitch_bend_range_configurable_per_channel(void** state)
 {
     stub_everdrive_as_present();
 
-    stub_usb_receive_cc(MIDI_CHANNEL_1, CC_RPN_MSB, CC_RPN_PITCH_BEND_SENSITIVITY_MSB);
-    stub_usb_receive_cc(MIDI_CHANNEL_1, CC_RPN_LSB, CC_RPN_PITCH_BEND_SENSITIVITY_LSB);
+    stub_usb_receive_cc(MIDI_CHANNEL_1, CC_RPN_MSB, RPN_PITCH_BEND_SENSITIVITY_MSB);
+    stub_usb_receive_cc(MIDI_CHANNEL_1, CC_RPN_LSB, RPN_PITCH_BEND_SENSITIVITY_LSB);
     midi_rx_read();
     midi_rx_read();
 
