@@ -410,7 +410,6 @@ void test_midi_sets_synth_pitch_bend_before_note_on(UNUSED void** state)
 
 void test_midi_pitch_bends_down_an_octave(UNUSED void** state)
 {
-    const u8 MIDI_PITCH_B3 = 59;
     const u16 SYNTH_FREQ_B3 = 0x25f;
     const u16 SYNTH_FREQ_A3 = 0x439;
 
@@ -427,7 +426,6 @@ void test_midi_pitch_bends_down_an_octave(UNUSED void** state)
 
 void test_midi_pitch_bends_up_an_octave(UNUSED void** state)
 {
-    const u8 MIDI_PITCH_B3 = 59;
     const u16 SYNTH_FREQ_B3 = 0x25f;
     const u16 SYNTH_FREQ_C3 = 681;
 
@@ -444,7 +442,6 @@ void test_midi_pitch_bends_up_an_octave(UNUSED void** state)
 
 void test_midi_pitch_bends_up_an_octave_upper_freq_limit(UNUSED void** state)
 {
-    const u8 MIDI_PITCH_AS4 = 70;
     const u16 SYNTH_FREQ_AS4 = 1146;
     const u16 SYNTH_FREQ_C3 = 644;
 
