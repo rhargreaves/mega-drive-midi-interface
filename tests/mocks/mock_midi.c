@@ -92,6 +92,18 @@ void __wrap_midi_psg_load_envelope(const u8* eef)
     check_expected_ptr(eef);
 }
 
+void __wrap_midi_rpn_msb(u16 rpn, u8 value)
+{
+    check_expected(rpn);
+    check_expected(value);
+}
+
+void __wrap_midi_rpn_lsb(u16 rpn, u8 value)
+{
+    check_expected(rpn);
+    check_expected(value);
+}
+
 void _expect_midi_emit(u8 value, const char* const file, const int line)
 {
     expect_value_with_pos(__wrap_comm_megawifi_midiEmitCallback, midiByte, value, file, line);
@@ -140,4 +152,16 @@ void _expect_midi_program(u8 chan, u8 program, const char* const file, const int
 {
     expect_value_with_pos(__wrap_midi_program, chan, chan, file, line);
     expect_value_with_pos(__wrap_midi_program, program, program, file, line);
+}
+
+void _expect_midi_rpn_msb(u16 rpn, u8 value, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_midi_rpn_msb, rpn, rpn, file, line);
+    expect_value_with_pos(__wrap_midi_rpn_msb, value, value, file, line);
+}
+
+void _expect_midi_rpn_lsb(u16 rpn, u8 value, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_midi_rpn_lsb, rpn, rpn, file, line);
+    expect_value_with_pos(__wrap_midi_rpn_lsb, value, value, file, line);
 }

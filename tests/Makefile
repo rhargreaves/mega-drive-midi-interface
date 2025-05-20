@@ -85,6 +85,8 @@ MOCKS=midi_process \
 	midi_pitch_bend \
 	midi_getPolyphonic \
 	midi_cc \
+	midi_rpn_msb \
+	midi_rpn_lsb \
 	midi_program \
 	midi_sysex \
 	midi_mappings \

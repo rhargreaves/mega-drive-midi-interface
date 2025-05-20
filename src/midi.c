@@ -1036,3 +1036,11 @@ void midi_tick(u16 delta)
 {
     process_portamento();
 }
+
+void midi_rpn_msb(u16 rpn, u8 value)
+{
+}
+
+void midi_rpn_lsb(u16 rpn, u8 value)
+{
+}

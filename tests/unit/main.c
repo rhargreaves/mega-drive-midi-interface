@@ -67,6 +67,7 @@ int main(void)
         midi_rx_test(test_midi_rx_handles_sysex_limits),
         midi_rx_test(test_midi_rx_sends_midi_reset),
         midi_rx_test(test_midi_rx_runs_startup_sequence_on_midi_reset),
+        // WIP: midi_rx_test(test_midi_rx_handles_pitch_bend_sensitivity),
 
         midi_test(test_midi_triggers_synth_note_on),
         midi_test(test_midi_triggers_synth_note_on_with_velocity),

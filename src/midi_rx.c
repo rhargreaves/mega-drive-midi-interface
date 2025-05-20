@@ -8,7 +8,7 @@
 #include "comm/applemidi.h"
 #include "log.h"
 #include "settings.h"
-
+#include "midi_cc.h"
 #define STATUS_LOWER(status) (status & 0x0F)
 #define STATUS_UPPER(status) (status >> 4)
 
@@ -127,7 +127,7 @@ static void read_control_change(u8 status, Reader reader)
     u8 controller = reader();
     u8 value = reader();
     debug_print_event(status, controller, value);
-    midi_cc(chan, controller, value);
+    midi_cc_raw(chan, controller, value);
 }
 
 static void read_note_on(u8 status, Reader reader)

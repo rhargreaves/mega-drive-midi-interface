@@ -28,6 +28,9 @@
 #define DEV_CHAN_MIN_SPECIAL_MODE 10
 #define DEV_CHAN_MAX_SPECIAL_MODE 12
 
+#define CC_RPN_PITCH_BEND_SENSITIVITY_MSB 0
+#define CC_RPN_PITCH_BEND_SENSITIVITY_LSB 0
+
 #define CC_PORTAMENTO_TIME_MSB 5
 #define CC_DATA_ENTRY_MSB 6
 #define CC_VOLUME 7
@@ -157,3 +160,5 @@ DeviceChannel* midi_channel_mappings(void);
 void midi_remap_channel(u8 midiChannel, u8 deviceChannel);
 void midi_reset(void);
 void midi_tick(u16 delta);
+void midi_rpn_msb(u16 rpn, u8 value);
+void midi_rpn_lsb(u16 rpn, u8 value);

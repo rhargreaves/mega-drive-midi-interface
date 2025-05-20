@@ -80,6 +80,8 @@ extern void __real_comm_reset_counts(void);
     _stub_usb_receive_pitch_bend(chan, bend, __FILE__, __LINE__)
 #define stub_comm_read_returns_midi_event(status, data, data2)                                     \
     _stub_comm_read_returns_midi_event(status, data, data2, __FILE__, __LINE__)
+#define stub_comm_read_returns_cc(chan, cc, value)                                                 \
+    _stub_comm_read_returns_cc(chan, cc, value, __FILE__, __LINE__)
 
 void _stub_megawifi_as_not_present(const char* file, const int line);
 void _stub_everdrive_as_present(const char* file, const int line);
@@ -93,3 +95,4 @@ void _stub_usb_receive_note_off(u8 chan, u8 key, const char* file, const int lin
 void _stub_usb_receive_pitch_bend(u8 chan, u16 bend, const char* file, const int line);
 void _stub_comm_read_returns_midi_event(
     u8 status, u8 data, u8 data2, const char* file, const int line);
+void _stub_comm_read_returns_cc(u8 chan, u8 cc, u8 value, const char* file, const int line);

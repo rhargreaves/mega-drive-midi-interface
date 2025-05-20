@@ -277,3 +277,10 @@ void _stub_comm_read_returns_midi_event(
     will_return_with_pos(__wrap_comm_read, data, file, line);
     will_return_with_pos(__wrap_comm_read, data2, file, line);
 }
+
+void _stub_comm_read_returns_cc(u8 chan, u8 cc, u8 value, const char* file, const int line)
+{
+    will_return_with_pos(__wrap_comm_read, 0xB0 + chan, file, line);
+    will_return_with_pos(__wrap_comm_read, cc, file, line);
+    will_return_with_pos(__wrap_comm_read, value, file, line);
+}

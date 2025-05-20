@@ -251,3 +251,13 @@ void test_midi_rx_runs_configured_startup_sequence(UNUSED void** state)
     expect_midi_note_on(MIDI_CHANNEL_1, MIDI_PITCH_C3, MIDI_VOLUME_MAX);
     midi_rx_run_startup_sequence();
 }
+
+void test_midi_rx_handles_pitch_bend_sensitivity(UNUSED void** state)
+{
+    stub_comm_read_returns_cc(MIDI_CHANNEL_1, CC_RPN_MSB, CC_RPN_PITCH_BEND_SENSITIVITY_MSB);
+    stub_comm_read_returns_cc(MIDI_CHANNEL_1, CC_RPN_LSB, CC_RPN_PITCH_BEND_SENSITIVITY_LSB);
+    stub_comm_read_returns_cc(MIDI_CHANNEL_1, CC_DATA_ENTRY_MSB, 4);
+    stub_comm_read_returns_cc(MIDI_CHANNEL_1, CC_DATA_ENTRY_LSB, 0);
+
+    midi_rx_read();
+}

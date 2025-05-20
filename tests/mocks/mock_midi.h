@@ -18,6 +18,9 @@ DeviceChannel* __wrap_midi_channel_mappings(void);
 void __wrap_midi_psg_tick(u16 delta);
 void __wrap_midi_psg_load_envelope(const u8* eef);
 void __wrap_midi_reset(void);
+void __wrap_midi_rpn_msb(u16 rpn, u8 value);
+void __wrap_midi_rpn_lsb(u16 rpn, u8 value);
+
 extern void __real_midi_note_on(u8 chan, u8 pitch, u8 velocity);
 extern void __real_midi_note_off(u8 chan, u8 pitch);
 extern void __real_midi_pitch_bend(u8 chan, u16 bend);
@@ -29,6 +32,8 @@ extern DeviceChannel* __real_midi_channel_mappings(void);
 extern void __real_midi_psg_tick(void);
 extern void __real_midi_psg_load_envelope(const u8* eef);
 extern void __real_midi_reset(void);
+extern void __real_midi_rpn_msb(u16 rpn, u8 value);
+extern void __real_midi_rpn_lsb(u16 rpn, u8 value);
 
 void _expect_midi_emit(u8 value, const char* const file, const int line);
 void _expect_midi_emit_duo(u8 value1, u8 value2, const char* const file, const int line);
@@ -39,6 +44,8 @@ void _expect_midi_note_off(u8 chan, u8 pitch, const char* const file, const int 
 void _expect_midi_cc(u8 chan, u8 controller, u8 value, const char* const file, const int line);
 void _expect_midi_pitch_bend(u8 chan, u16 bend, const char* const file, const int line);
 void _expect_midi_program(u8 chan, u8 program, const char* const file, const int line);
+void _expect_midi_rpn_msb(u16 rpn, u8 value, const char* const file, const int line);
+void _expect_midi_rpn_lsb(u16 rpn, u8 value, const char* const file, const int line);
 
 #define expect_midi_emit(value) _expect_midi_emit(value, __FILE__, __LINE__)
 #define expect_midi_emit_duo(value1, value2)                                                       \
@@ -52,3 +59,5 @@ void _expect_midi_program(u8 chan, u8 program, const char* const file, const int
     _expect_midi_cc(chan, controller, value, __FILE__, __LINE__)
 #define expect_midi_pitch_bend(chan, bend) _expect_midi_pitch_bend(chan, bend, __FILE__, __LINE__)
 #define expect_midi_program(chan, program) _expect_midi_program(chan, program, __FILE__, __LINE__)
+#define expect_midi_rpn_msb(rpn, value) _expect_midi_rpn_msb(rpn, value, __FILE__, __LINE__)
+#define expect_midi_rpn_lsb(rpn, value) _expect_midi_rpn_lsb(rpn, value, __FILE__, __LINE__)

@@ -30,6 +30,8 @@
 #define MIDI_PITCH_AS6 94
 #define MIDI_PITCH_B6 95
 
+#define FREQBLK_A2 0x1439
+#define FREQBLK_B2 0x1A5F
 #define FREQBLK_C3 0x1A84
 #define FREQBLK_CS3 0x1AA9
 #define FREQBLK_D3 0x1AD2

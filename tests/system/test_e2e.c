@@ -413,3 +413,27 @@ void test_midi_portamento_glides_note(void** state)
     scheduler_vsync();
     scheduler_tick();
 }
+
+void test_midi_pitch_bend_range_configurable_per_channel(void** state)
+{
+    stub_everdrive_as_present();
+
+    stub_usb_receive_cc(MIDI_CHANNEL_1, CC_RPN_MSB, CC_RPN_PITCH_BEND_SENSITIVITY_MSB);
+    stub_usb_receive_cc(MIDI_CHANNEL_1, CC_RPN_LSB, CC_RPN_PITCH_BEND_SENSITIVITY_LSB);
+    midi_rx_read();
+    midi_rx_read();
+
+    stub_usb_receive_cc(MIDI_CHANNEL_1, CC_DATA_ENTRY_MSB, 4);
+    stub_usb_receive_cc(MIDI_CHANNEL_1, CC_DATA_ENTRY_LSB, 0);
+    midi_rx_read();
+    midi_rx_read();
+
+    stub_usb_receive_note_on(MIDI_CHANNEL_1, MIDI_PITCH_A2, MIDI_VELOCITY_MAX);
+    expect_ym2612_write_frequency(YM_CH1, FREQBLK_A2);
+    expect_ym2612_note_on(YM_CH1);
+    midi_rx_read();
+
+    stub_usb_receive_pitch_bend(MIDI_CHANNEL_1, 0x4000);
+    expect_ym2612_write_frequency(YM_CH1, FREQBLK_CS3);
+    midi_rx_read();
+}
