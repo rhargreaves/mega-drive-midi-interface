@@ -206,73 +206,74 @@ bool __wrap_mw_uart_is_present(void)
     return mock_type(bool);
 }
 
-void stub_megawifi_as_not_present(void)
+void _stub_megawifi_as_not_present(const char* file, const int line)
 {
-    will_return(__wrap_mw_uart_is_present, false);
+    will_return_with_pos(__wrap_mw_uart_is_present, false, file, line);
 }
 
-void stub_everdrive_as_present(void)
+void _stub_everdrive_as_present(const char* file, const int line)
 {
-    will_return(__wrap_comm_everdrive_is_present, true);
+    will_return_with_pos(__wrap_comm_everdrive_is_present, true, file, line);
 }
 
-void stub_usb_receive_nothing(void)
+void _stub_usb_receive_nothing(const char* file, const int line)
 {
-    will_return(__wrap_comm_everdrive_read_ready, 0);
+    will_return_with_pos(__wrap_comm_everdrive_read_ready, 0, file, line);
 }
 
-void stub_usb_receive_byte(u8 value)
+void _stub_usb_receive_byte(u8 value, const char* file, const int line)
 {
-    will_return(__wrap_comm_everdrive_read_ready, 1);
-    will_return(__wrap_comm_everdrive_read, value);
+    will_return_with_pos(__wrap_comm_everdrive_read_ready, 1, file, line);
+    will_return_with_pos(__wrap_comm_everdrive_read, value, file, line);
 }
 
-void stub_usb_receive_program(u8 chan, u8 program)
+void _stub_usb_receive_program(u8 chan, u8 program, const char* file, const int line)
 {
-    stub_usb_receive_byte(0xC0 + chan);
-    stub_usb_receive_byte(program);
+    _stub_usb_receive_byte(0xC0 + chan, file, line);
+    _stub_usb_receive_byte(program, file, line);
 }
 
-void stub_usb_receive_cc(u8 chan, u8 cc, u8 value)
+void _stub_usb_receive_cc(u8 chan, u8 cc, u8 value, const char* file, const int line)
 {
-    stub_usb_receive_byte(0xB0 + chan);
-    stub_usb_receive_byte(cc);
-    stub_usb_receive_byte(value);
+    _stub_usb_receive_byte(0xB0 + chan, file, line);
+    _stub_usb_receive_byte(cc, file, line);
+    _stub_usb_receive_byte(value, file, line);
 }
 
-void stub_usb_receive_note_on(u8 chan, u8 key, u8 velocity)
+void _stub_usb_receive_note_on(u8 chan, u8 key, u8 velocity, const char* file, const int line)
 {
-    stub_usb_receive_byte(0x90 + chan);
-    stub_usb_receive_byte(key);
-    stub_usb_receive_byte(velocity);
+    _stub_usb_receive_byte(0x90 + chan, file, line);
+    _stub_usb_receive_byte(key, file, line);
+    _stub_usb_receive_byte(velocity, file, line);
 }
 
-void stub_usb_receive_note_off(u8 chan, u8 key)
+void _stub_usb_receive_note_off(u8 chan, u8 key, const char* file, const int line)
 {
-    stub_usb_receive_byte(0x80 + chan);
-    stub_usb_receive_byte(key);
-    stub_usb_receive_byte(0);
+    _stub_usb_receive_byte(0x80 + chan, file, line);
+    _stub_usb_receive_byte(key, file, line);
+    _stub_usb_receive_byte(0, file, line);
 }
 
-void stub_usb_receive_pitch_bend(u8 chan, u16 bend)
+void _stub_usb_receive_pitch_bend(u8 chan, u16 bend, const char* file, const int line)
 {
     u8 lower = bend & 0x007F;
     u8 upper = bend >> 7;
 
-    stub_usb_receive_byte(0xE0 + chan);
-    stub_usb_receive_byte(lower);
-    stub_usb_receive_byte(upper);
+    _stub_usb_receive_byte(0xE0 + chan, file, line);
+    _stub_usb_receive_byte(lower, file, line);
+    _stub_usb_receive_byte(upper, file, line);
 }
 
-void expect_usb_sent_byte(u8 value)
+void _expect_usb_sent_byte(u8 value, const char* file, const int line)
 {
-    will_return(__wrap_comm_everdrive_write_ready, 1);
-    expect_value(__wrap_comm_everdrive_write, data, value);
+    will_return_with_pos(__wrap_comm_everdrive_write_ready, 1, file, line);
+    expect_value_with_pos(__wrap_comm_everdrive_write, data, value, file, line);
 }
 
-void stub_comm_read_returns_midi_event(u8 status, u8 data, u8 data2)
+void _stub_comm_read_returns_midi_event(
+    u8 status, u8 data, u8 data2, const char* file, const int line)
 {
-    will_return(__wrap_comm_read, status);
-    will_return(__wrap_comm_read, data);
-    will_return(__wrap_comm_read, data2);
+    will_return_with_pos(__wrap_comm_read, status, file, line);
+    will_return_with_pos(__wrap_comm_read, data, file, line);
+    will_return_with_pos(__wrap_comm_read, data2, file, line);
 }

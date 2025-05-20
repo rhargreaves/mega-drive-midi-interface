@@ -122,8 +122,8 @@ void _expect_ym2612_write_reg(u8 part, u8 reg, u8 data, const char* const file, 
 #ifdef DEBUG
     print_message("expect: YM2612_writeReg(part=%d, reg=0x%X, data=0x%X)\n", part, reg, data);
 #endif
-    expect_value(__wrap_Z80_getAndRequestBus, wait, TRUE);
-    will_return(__wrap_Z80_getAndRequestBus, false);
+    expect_value_with_pos(__wrap_Z80_getAndRequestBus, wait, TRUE, file, line);
+    will_return_with_pos(__wrap_Z80_getAndRequestBus, false, file, line);
 
     expect_value_with_pos(__wrap_YM2612_writeReg, part, part, file, line);
     expect_value_with_pos(__wrap_YM2612_writeReg, reg, reg, file, line);

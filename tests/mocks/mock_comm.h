@@ -63,14 +63,33 @@ extern u16 __real_comm_idle_count(void);
 extern u16 __real_comm_busy_count(void);
 extern void __real_comm_reset_counts(void);
 
-void stub_megawifi_as_not_present(void);
-void stub_everdrive_as_present(void);
-void expect_usb_sent_byte(u8 value);
-void stub_usb_receive_nothing(void);
-void stub_usb_receive_byte(u8 value);
-void stub_usb_receive_program(u8 chan, u8 program);
-void stub_usb_receive_cc(u8 chan, u8 cc, u8 value);
-void stub_usb_receive_note_on(u8 chan, u8 key, u8 velocity);
-void stub_usb_receive_note_off(u8 chan, u8 key);
-void stub_usb_receive_pitch_bend(u8 chan, u16 bend);
-void stub_comm_read_returns_midi_event(u8 status, u8 data, u8 data2);
+#define stub_megawifi_as_not_present() _stub_megawifi_as_not_present(__FILE__, __LINE__)
+#define stub_everdrive_as_present() _stub_everdrive_as_present(__FILE__, __LINE__)
+#define expect_usb_sent_byte(value) _expect_usb_sent_byte(value, __FILE__, __LINE__)
+#define stub_usb_receive_nothing() _stub_usb_receive_nothing(__FILE__, __LINE__)
+#define stub_usb_receive_byte(value) _stub_usb_receive_byte(value, __FILE__, __LINE__)
+#define stub_usb_receive_program(chan, program)                                                    \
+    _stub_usb_receive_program(chan, program, __FILE__, __LINE__)
+#define stub_usb_receive_cc(chan, cc, value)                                                       \
+    _stub_usb_receive_cc(chan, cc, value, __FILE__, __LINE__)
+#define stub_usb_receive_note_on(chan, key, velocity)                                              \
+    _stub_usb_receive_note_on(chan, key, velocity, __FILE__, __LINE__)
+#define stub_usb_receive_note_off(chan, key)                                                       \
+    _stub_usb_receive_note_off(chan, key, __FILE__, __LINE__)
+#define stub_usb_receive_pitch_bend(chan, bend)                                                    \
+    _stub_usb_receive_pitch_bend(chan, bend, __FILE__, __LINE__)
+#define stub_comm_read_returns_midi_event(status, data, data2)                                     \
+    _stub_comm_read_returns_midi_event(status, data, data2, __FILE__, __LINE__)
+
+void _stub_megawifi_as_not_present(const char* file, const int line);
+void _stub_everdrive_as_present(const char* file, const int line);
+void _expect_usb_sent_byte(u8 value, const char* file, const int line);
+void _stub_usb_receive_nothing(const char* file, const int line);
+void _stub_usb_receive_byte(u8 value, const char* file, const int line);
+void _stub_usb_receive_program(u8 chan, u8 program, const char* file, const int line);
+void _stub_usb_receive_cc(u8 chan, u8 cc, u8 value, const char* file, const int line);
+void _stub_usb_receive_note_on(u8 chan, u8 key, u8 velocity, const char* file, const int line);
+void _stub_usb_receive_note_off(u8 chan, u8 key, const char* file, const int line);
+void _stub_usb_receive_pitch_bend(u8 chan, u16 bend, const char* file, const int line);
+void _stub_comm_read_returns_midi_event(
+    u8 status, u8 data, u8 data2, const char* file, const int line);
