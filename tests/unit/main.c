@@ -198,6 +198,7 @@ int main(void)
         midi_test(test_midi_ignores_unsupported_or_null_rpn),
         midi_test(test_midi_ignores_further_data_entry_messages_after_null_rpn),
         midi_test(test_midi_sets_pitch_bend_sensitivity_with_odd_ordering),
+        midi_test(test_midi_logs_invalid_rpn_upon_data_entry),
 
         midi_dac_test(test_midi_dac_plays_note),
         midi_dac_test(test_midi_dac_stops_note),

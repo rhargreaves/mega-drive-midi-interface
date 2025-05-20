@@ -951,6 +951,37 @@ static void update_pb_sensitivity_msb(u8 chan, u8 value)
     }
 }
 
+static void update_rpn(u8 chan, u8 value, bool is_msb)
+{
+    MidiChannel* midiChannel = &midiChannels[chan];
+    if (is_msb) {
+        midiChannel->rpn = (value << 7) | (midiChannel->rpn & 0x7F);
+    } else {
+        midiChannel->rpn = (midiChannel->rpn & 0xFF80) | (value & 0x7F);
+    }
+}
+
+static void rpn_data_entry(u8 chan, u8 value, bool is_msb)
+{
+    MidiChannel* midiChannel = &midiChannels[chan];
+    switch (midiChannel->rpn) {
+    case RPN_PITCH_BEND_SENSITIVITY:
+        if (is_msb) {
+            update_pb_sensitivity_msb(chan, value);
+        } else {
+            update_pb_sensitivity_lsb(chan, value);
+        }
+        break;
+    default:
+        if (is_msb) {
+            log_warn("Ch %d: RPN? 0x%04X MSB=0x%02X", chan, midiChannel->rpn, value);
+        } else {
+            log_warn("Ch %d: RPN? 0x%04X LSB=0x%02X", chan, midiChannel->rpn, value);
+        }
+        break;
+    }
+}
+
 void midi_cc(u8 chan, u8 controller, u8 value)
 {
     switch (controller) {
@@ -994,30 +1025,18 @@ void midi_cc(u8 chan, u8 controller, u8 value)
             break;
         set_fine_tune(chan, value);
         break;
-    case CC_DATA_ENTRY_LSB: {
-        MidiChannel* midiChannel = &midiChannels[chan];
-        if (midiChannel->rpn == RPN_PITCH_BEND_SENSITIVITY) {
-            update_pb_sensitivity_lsb(chan, value);
-        }
+    case CC_DATA_ENTRY_MSB:
+        rpn_data_entry(chan, value, true);
         break;
-    }
-    case CC_DATA_ENTRY_MSB: {
-        MidiChannel* midiChannel = &midiChannels[chan];
-        if (midiChannel->rpn == RPN_PITCH_BEND_SENSITIVITY) {
-            update_pb_sensitivity_msb(chan, value);
-        }
+    case CC_DATA_ENTRY_LSB:
+        rpn_data_entry(chan, value, false);
         break;
-    }
-    case CC_RPN_LSB: {
-        MidiChannel* midiChannel = &midiChannels[chan];
-        midiChannel->rpn = (midiChannel->rpn & 0xFF80) | (value & 0x7F);
+    case CC_RPN_MSB:
+        update_rpn(chan, value, true);
         break;
-    }
-    case CC_RPN_MSB: {
-        MidiChannel* midiChannel = &midiChannels[chan];
-        midiChannel->rpn = (value << 7) | (midiChannel->rpn & 0x7F);
+    case CC_RPN_LSB:
+        update_rpn(chan, value, false);
         break;
-    }
     case CC_EXPRESSION:
     case CC_SUSTAIN_PEDAL:
     case CC_NRPN_LSB:

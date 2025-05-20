@@ -203,3 +203,17 @@ void test_midi_ignores_unsupported_or_null_rpn(UNUSED void** state)
     __real_midi_cc(MIDI_CHANNEL_1, CC_RPN_LSB, NULL_RPN_LSB);
     __real_midi_cc(MIDI_CHANNEL_1, CC_DATA_ENTRY_MSB, 23);
 }
+
+void test_midi_logs_invalid_rpn_upon_data_entry(UNUSED void** state)
+{
+    mock_log_enable_checks();
+
+    __real_midi_cc(MIDI_CHANNEL_1, CC_RPN_MSB, 55);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_RPN_LSB, 44);
+
+    expect_log_warn("Ch %d: RPN? 0x%04X MSB=0x%02X");
+    __real_midi_cc(MIDI_CHANNEL_1, CC_DATA_ENTRY_MSB, 24);
+
+    expect_log_warn("Ch %d: RPN? 0x%04X LSB=0x%02X");
+    __real_midi_cc(MIDI_CHANNEL_1, CC_DATA_ENTRY_LSB, 25);
+}
