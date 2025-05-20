@@ -927,10 +927,23 @@ static void set_fine_tune(u8 chan, u8 value)
     midiChannel->fineTune = value - 64;
 }
 
-static void update_pb_sensitivity(u8 chan, u8 value)
+static void update_pb_sensitivity_lsb(u8 chan, u8 value)
 {
     MidiChannel* midiChannel = &midiChannels[chan];
-    midiChannel->pitchBendRange = (PitchCents) { .pitch = value, .cents = 0 };
+    midiChannel->pitchBendRange
+        = (PitchCents) { .pitch = midiChannel->pitchBendRange.pitch, .cents = value };
+    FOREACH_DEV_CHAN_WITH_MIDI(chan, devChan) {
+        if (devChan->noteOn) {
+            set_downstream_pitch(devChan);
+        }
+    }
+}
+
+static void update_pb_sensitivity_msb(u8 chan, u8 value)
+{
+    MidiChannel* midiChannel = &midiChannels[chan];
+    midiChannel->pitchBendRange
+        = (PitchCents) { .pitch = value, .cents = midiChannel->pitchBendRange.cents };
     FOREACH_DEV_CHAN_WITH_MIDI(chan, devChan) {
         if (devChan->noteOn) {
             set_downstream_pitch(devChan);
@@ -981,12 +994,17 @@ void midi_cc(u8 chan, u8 controller, u8 value)
             break;
         set_fine_tune(chan, value);
         break;
-    case CC_DATA_ENTRY_LSB:
+    case CC_DATA_ENTRY_LSB: {
+        MidiChannel* midiChannel = &midiChannels[chan];
+        if (midiChannel->rpn == RPN_PITCH_BEND_SENSITIVITY) {
+            update_pb_sensitivity_lsb(chan, value);
+        }
         break;
+    }
     case CC_DATA_ENTRY_MSB: {
         MidiChannel* midiChannel = &midiChannels[chan];
         if (midiChannel->rpn == RPN_PITCH_BEND_SENSITIVITY) {
-            update_pb_sensitivity(chan, value);
+            update_pb_sensitivity_msb(chan, value);
         }
         break;
     }

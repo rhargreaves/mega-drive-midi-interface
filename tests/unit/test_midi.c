@@ -189,3 +189,17 @@ void test_midi_resets_psg_values_to_defaults(UNUSED void** state)
         assert_int_equal(chans[ch].volume, 127);
     }
 }
+
+void test_midi_ignores_unsupported_or_null_rpn(UNUSED void** state)
+{
+    // invalid RPN
+    __real_midi_cc(MIDI_CHANNEL_1, CC_RPN_MSB, 55);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_RPN_LSB, 44);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_DATA_ENTRY_MSB, 24);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_DATA_ENTRY_LSB, 25);
+
+    // null RPN
+    __real_midi_cc(MIDI_CHANNEL_1, CC_RPN_MSB, NULL_RPN_MSB);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_RPN_LSB, NULL_RPN_LSB);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_DATA_ENTRY_MSB, 23);
+}

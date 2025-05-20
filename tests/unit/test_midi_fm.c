@@ -663,12 +663,64 @@ void test_midi_drops_note_when_note_priority_stack_full(UNUSED void** state)
     __real_midi_note_on(0, 100, MAX_MIDI_VOLUME);
 }
 
-void test_midi_sets_pitch_bend_sensitivity(UNUSED void** state)
+void test_midi_sets_pitch_bend_sensitivity_coarse(UNUSED void** state)
 {
     __real_midi_cc(MIDI_CHANNEL_1, CC_RPN_MSB, RPN_PITCH_BEND_SENSITIVITY_MSB);
     __real_midi_cc(MIDI_CHANNEL_1, CC_RPN_LSB, RPN_PITCH_BEND_SENSITIVITY_LSB);
     __real_midi_cc(MIDI_CHANNEL_1, CC_DATA_ENTRY_MSB, 4);
+
+    expect_synth_pitch(YM_CH1, 4, SYNTH_NTSC_C);
+    expect_synth_volume_any();
+    expect_synth_note_on(YM_CH1);
+    __real_midi_note_on(MIDI_CHANNEL_1, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
+
+    expect_synth_pitch(YM_CH1, 4, SYNTH_NTSC_E);
+    __real_midi_pitch_bend(MIDI_CHANNEL_1, MIDI_PITCH_BEND_MAX);
+}
+
+void test_midi_sets_pitch_bend_sensitivity_fine(UNUSED void** state)
+{
+    __real_midi_cc(MIDI_CHANNEL_1, CC_RPN_MSB, RPN_PITCH_BEND_SENSITIVITY_MSB);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_RPN_LSB, RPN_PITCH_BEND_SENSITIVITY_LSB);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_DATA_ENTRY_MSB, 4);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_DATA_ENTRY_LSB, 25);
+
+    expect_synth_pitch(YM_CH1, 4, SYNTH_NTSC_C);
+    expect_synth_volume_any();
+    expect_synth_note_on(YM_CH1);
+    __real_midi_note_on(MIDI_CHANNEL_1, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
+
+    expect_synth_pitch(YM_CH1, 4, 822);
+    __real_midi_pitch_bend(MIDI_CHANNEL_1, MIDI_PITCH_BEND_MAX);
+}
+
+void test_midi_ignores_further_data_entry_messages_after_null_rpn(UNUSED void** state)
+{
+    __real_midi_cc(MIDI_CHANNEL_1, CC_RPN_MSB, RPN_PITCH_BEND_SENSITIVITY_MSB);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_RPN_LSB, RPN_PITCH_BEND_SENSITIVITY_LSB);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_DATA_ENTRY_MSB, 2);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_RPN_MSB, NULL_RPN_MSB);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_RPN_LSB, NULL_RPN_LSB);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_DATA_ENTRY_MSB, 4);
+
+    expect_synth_pitch(YM_CH1, 4, SYNTH_NTSC_C);
+    expect_synth_volume_any();
+    expect_synth_note_on(YM_CH1);
+    __real_midi_note_on(MIDI_CHANNEL_1, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
+
+    expect_synth_pitch(YM_CH1, 4, SYNTH_NTSC_D);
+    __real_midi_pitch_bend(MIDI_CHANNEL_1, MIDI_PITCH_BEND_MAX);
+}
+
+void test_midi_sets_pitch_bend_sensitivity_with_odd_ordering(UNUSED void** state)
+{
+    __real_midi_cc(MIDI_CHANNEL_1, CC_RPN_LSB, 0x44);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_RPN_LSB, RPN_PITCH_BEND_SENSITIVITY_LSB);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_RPN_MSB, 0x55);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_RPN_MSB, RPN_PITCH_BEND_SENSITIVITY_MSB);
     __real_midi_cc(MIDI_CHANNEL_1, CC_DATA_ENTRY_LSB, 0);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_DATA_ENTRY_MSB, 2);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_DATA_ENTRY_MSB, 4);
 
     expect_synth_pitch(YM_CH1, 4, SYNTH_NTSC_C);
     expect_synth_volume_any();

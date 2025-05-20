@@ -43,6 +43,8 @@
 #define SYSEX_NON_GENERAL_MIDI_CCS_DISABLED 0x00
 
 #define UNASSIGNED_MIDI_CHANNEL 0x7F
+#define NULL_RPN_MSB 0x7F
+#define NULL_RPN_LSB 0x7F
 
 // --- YM2612 ---
 #define YM_OP_REG_INDEX(op) ((op) == 1 ? 2 : ((op) == 2 ? 1 : (op)))

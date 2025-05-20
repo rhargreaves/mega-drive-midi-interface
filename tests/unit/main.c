@@ -193,7 +193,11 @@ int main(void)
         midi_test(test_midi_hides_fm_parameter_ui),
         midi_test(test_midi_resets_fm_values_to_defaults),
         midi_test(test_midi_resets_psg_values_to_defaults),
-        midi_test(test_midi_sets_pitch_bend_sensitivity),
+        midi_test(test_midi_sets_pitch_bend_sensitivity_coarse),
+        midi_test(test_midi_sets_pitch_bend_sensitivity_fine),
+        midi_test(test_midi_ignores_unsupported_or_null_rpn),
+        midi_test(test_midi_ignores_further_data_entry_messages_after_null_rpn),
+        midi_test(test_midi_sets_pitch_bend_sensitivity_with_odd_ordering),
 
         midi_dac_test(test_midi_dac_plays_note),
         midi_dac_test(test_midi_dac_stops_note),
