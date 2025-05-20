@@ -891,7 +891,7 @@ static void set_fm_chan_parameter(DeviceChannel* devChan, u8 controller, u8 valu
         enable_dac(RANGE(value, 2));
         break;
     default:
-        log_warn("Ch %d: CC 0x%02X 0x%02X?", devChan->midiChannel, controller, value);
+        log_warn("Ch %d: CC 0x%02X 0x%02X?", devChan->midiChannel + 1, controller, value);
         break;
     }
 }
@@ -954,9 +954,9 @@ static void rpn_data_entry(MidiChannel* chan, u8 value, bool is_msb)
         break;
     default:
         if (is_msb) {
-            log_warn("Ch %d: RPN? 0x%04X MSB=0x%02X", chan->num, chan->rpn, value);
+            log_warn("Ch %d: RPN? 0x%04X MSB=0x%02X", chan->num + 1, chan->rpn, value);
         } else {
-            log_warn("Ch %d: RPN? 0x%04X LSB=0x%02X", chan->num, chan->rpn, value);
+            log_warn("Ch %d: RPN? 0x%04X LSB=0x%02X", chan->num + 1, chan->rpn, value);
         }
         break;
     }

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+. $(dirname $0)/set-var
+
+sendmidi dev "$MDMI_MIDI_PORT" cc 101 127
+sendmidi dev "$MDMI_MIDI_PORT" cc 100 127
+sendmidi dev "$MDMI_MIDI_PORT" cc 6 48
+sendmidi dev "$MDMI_MIDI_PORT" cc 38 1
