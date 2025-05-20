@@ -165,7 +165,7 @@ void test_midi_sets_psg_pitch_bend_down(UNUSED void** state)
         expect_psg_attenuation(expectedPsgChan, PSG_ATTENUATION_LOUDEST);
         __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
 
-        expect_psg_tone(expectedPsgChan, TONE_NTSC_AS4);
+        expect_psg_tone(expectedPsgChan, TONE_NTSC_AS3);
         __real_midi_pitch_bend(chan, 0);
     }
 }
@@ -427,4 +427,22 @@ void test_midi_psg_sets_busy_indicators(UNUSED void** state)
 
     u8 busy = midi_psg_busy();
     assert_int_equal(busy, 0b1010);
+}
+
+void test_midi_psg_supports_extreme_pitch_bend_sensitivity(UNUSED void** state)
+{
+    expect_psg_tone(PSG_CH1, TONE_NTSC_C4);
+    expect_psg_attenuation(PSG_CH1, PSG_ATTENUATION_LOUDEST);
+    __real_midi_note_on(MIDI_CHANNEL_7, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
+
+    __real_midi_cc(MIDI_CHANNEL_7, CC_RPN_MSB, RPN_PITCH_BEND_SENSITIVITY_MSB);
+    __real_midi_cc(MIDI_CHANNEL_7, CC_RPN_LSB, RPN_PITCH_BEND_SENSITIVITY_LSB);
+    __real_midi_cc(MIDI_CHANNEL_7, CC_DATA_ENTRY_MSB, 48);
+    __real_midi_cc(MIDI_CHANNEL_7, CC_DATA_ENTRY_LSB, 0);
+
+    expect_psg_tone(PSG_CH1, 0x1a);
+    __real_midi_pitch_bend(MIDI_CHANNEL_7, MIDI_PITCH_BEND_MAX);
+
+    expect_psg_tone(PSG_CH1, TONE_NTSC_A2);
+    __real_midi_pitch_bend(MIDI_CHANNEL_7, MIDI_PITCH_BEND_MIN);
 }

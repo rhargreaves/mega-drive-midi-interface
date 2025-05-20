@@ -27,3 +27,4 @@ void test_midi_pitch_shift_handles_upper_limit_psg_envelope(UNUSED void** state)
 void test_midi_pitch_shift_handles_lower_limit_psg_envelope(UNUSED void** state);
 void test_midi_loads_psg_envelope(UNUSED void** state);
 void test_midi_psg_sets_busy_indicators(UNUSED void** state);
+void test_midi_psg_supports_extreme_pitch_bend_sensitivity(UNUSED void** state);

@@ -9,6 +9,7 @@
 #define MIDI_CHANNEL_1 0
 #define MIDI_CHANNEL_3 2
 #define MIDI_CHANNEL_6 5
+#define MIDI_CHANNEL_7 6
 #define MIDI_CHANNEL_11 10
 
 #define MIDI_VOLUME_MAX 127
@@ -101,7 +102,7 @@
 #define PSG_CH3 2
 #define PSG_NOISE_CH4 3
 
-#define TONE_NTSC_AS4 479
+#define TONE_NTSC_AS3 479
 #define TONE_NTSC_C4 427
 #define TONE_NTSC_CS4 403
 #define TONE_NTSC_DS4 380
