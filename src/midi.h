@@ -136,7 +136,7 @@ typedef struct VTable {
 } VTable;
 
 typedef struct DeviceChannel {
-    u8 number;
+    u8 num;
     const VTable* ops;
     bool noteOn;
     u8 midiChannel;

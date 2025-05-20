@@ -146,7 +146,7 @@ void test_midi_exposes_dynamic_mode_mappings(UNUSED void** state)
         DeviceChannel* mapping = &mappings[i];
 
         assert_false(mapping->noteOn);
-        assert_int_equal(mapping->number, i);
+        assert_int_equal(mapping->num, i);
     }
 }
 

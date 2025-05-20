@@ -116,7 +116,7 @@ static u8 get_fm_chan_for_midi_chan(u8 midiChan)
     for (u8 i = 0; i <= DEV_CHAN_MAX_FM; i++) {
         DeviceChannel* devChan = &devChans[i];
         if (devChan->midiChannel == midiChan) {
-            return devChan->number;
+            return devChan->num;
         }
     }
     return UNKNOWN_FM_CHANNEL;
