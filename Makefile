@@ -158,7 +158,8 @@ out/symbol.txt: out/rom.out
 	$(NM) $(LTO_PLUGIN) -n out/rom.out > out/symbol.txt
 
 out/rom.out: out/sega.o $(OBJS) $(LIBMD) $(CHECK_FLAGS)
-	$(CC) -m68000 -B$(BIN) -n -T $(GDK)/md.ld -nostdlib out/sega.o $(OBJS) $(LIBMD) $(LIBGCC) -o out/rom.out -Wl,--gc-sections -flto
+	$(CC) -m68000 -B$(BIN) -n -T $(GDK)/md.ld -nostdlib out/sega.o $(OBJS) $(LIBMD) $(LIBGCC) \
+		-o out/rom.out -Wl,--gc-sections -flto -Wl,-Map,out/rom.map
 
 out/sega.o: $(SRC)/boot/sega.s out/rom_head.bin $(CHECK_FLAGS)
 	$(CC) -x assembler-with-cpp -Wa,--register-prefix-optional,--bitwise-or $(AFLAGS) -c $(SRC)/boot/sega.s -o $@
