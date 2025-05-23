@@ -80,8 +80,8 @@ static bool invertTotalLevel;
 static void all_notes_off(u8 ch);
 static void general_midi_reset(void);
 static void apply_dynamic_mode(void);
-static void send_pong(void);
-static void set_invert_total_level(bool enabled);
+static void send_pong(const u8* data, u16 length);
+static void set_invert_total_level(const u8* data, u16 length);
 static void set_dynamic_mode(MappingMode mode);
 static void set_operator_total_level(u8 chan, u8 op, u8 value);
 static void update_device_channel_from_associated_midi_channel(DeviceChannel* devChan);
@@ -580,14 +580,14 @@ static void all_notes_off(u8 ch)
     }
 }
 
-static void set_non_general_midi_ccs(bool enable)
+static void set_non_general_midi_ccs(const u8* data, u16 length)
 {
-    disableNonGeneralMidiCCs = !enable;
+    disableNonGeneralMidiCCs = !data[0];
 }
 
-static void set_stick_to_device_type(bool enable)
+static void set_stick_to_device_type(const u8* data, u16 length)
 {
-    stickToDeviceType = enable;
+    stickToDeviceType = data[0];
 }
 
 static void load_psg_envelope(const u8* data, u16 length)
@@ -679,57 +679,69 @@ static void clear_program(const u8* data, u16 length)
     }
 }
 
+static void direct_write_ym2612_part_0(const u8* data, u16 length)
+{
+    direct_write_ym2612(0, data, length);
+}
+
+static void direct_write_ym2612_part_1(const u8* data, u16 length)
+{
+    direct_write_ym2612(1, data, length);
+}
+
+static void set_dynamic_mode_sysex(const u8* data, u16 length)
+{
+    set_dynamic_mode((bool)data[0]);
+}
+
+static void midi_remap_channel_sysex(const u8* data, u16 length)
+{
+    midi_remap_channel(data[0], data[1]);
+}
+
+typedef struct SysexCommand {
+    u8 command;
+    void (*handler)(const u8* data, u16 length);
+    u16 length;
+    bool validateLength;
+} SysexCommand;
+
+static const SysexCommand SYSEX_COMMANDS[] = {
+    { SYSEX_COMMAND_REMAP, midi_remap_channel_sysex, 2, true },
+    { SYSEX_COMMAND_PING, send_pong, 0, true },
+    { SYSEX_COMMAND_PONG, NULL, 0, true },
+    { SYSEX_COMMAND_DYNAMIC, set_dynamic_mode_sysex, 1, true },
+    { SYSEX_COMMAND_NON_GENERAL_MIDI_CCS, set_non_general_midi_ccs, 1, true },
+    { SYSEX_COMMAND_STICK_TO_DEVICE_TYPE, set_stick_to_device_type, 1, true },
+    { SYSEX_COMMAND_LOAD_PSG_ENVELOPE, load_psg_envelope, 0, false },
+    { SYSEX_COMMAND_INVERT_TOTAL_LEVEL, set_invert_total_level, 1, true },
+    { SYSEX_COMMAND_WRITE_YM2612_REG_PART_0, direct_write_ym2612_part_0, 4, true },
+    { SYSEX_COMMAND_WRITE_YM2612_REG_PART_1, direct_write_ym2612_part_1, 4, true },
+    { SYSEX_COMMAND_STORE_PROGRAM, store_program, 0, false },
+    { SYSEX_COMMAND_CLEAR_PROGRAM, clear_program, 0, false },
+};
+
 static void handle_custom_sysex(const u8* data, u16 length)
 {
-    u8 command = *data;
-    increment_sysex_cursor(&data, &length, 1);
-    switch (command) {
-    case SYSEX_COMMAND_REMAP:
-        if (length == 2) {
-            midi_remap_channel(data[0], data[1]);
-        }
-        break;
-    case SYSEX_COMMAND_PING:
-        if (length == 0) {
-            send_pong();
-        }
-        break;
-    case SYSEX_COMMAND_DYNAMIC:
-        if (length == 1) {
-            set_dynamic_mode((bool)data[0]);
-        }
-        break;
-    case SYSEX_COMMAND_NON_GENERAL_MIDI_CCS:
-        if (length == 1) {
-            set_non_general_midi_ccs((bool)data[0]);
-        }
-        break;
-    case SYSEX_COMMAND_STICK_TO_DEVICE_TYPE:
-        if (length == 1) {
-            set_stick_to_device_type((bool)data[0]);
-        }
-        break;
-    case SYSEX_COMMAND_INVERT_TOTAL_LEVEL:
-        if (length == 1) {
-            set_invert_total_level((bool)data[0]);
-        }
-        break;
-    case SYSEX_COMMAND_LOAD_PSG_ENVELOPE:
-        load_psg_envelope(data, length);
-        break;
-    case SYSEX_COMMAND_WRITE_YM2612_REG_PART_0:
-        direct_write_ym2612(0, data, length);
-        break;
-    case SYSEX_COMMAND_WRITE_YM2612_REG_PART_1:
-        direct_write_ym2612(1, data, length);
-        break;
-    case SYSEX_COMMAND_STORE_PROGRAM:
-        store_program(data, length);
-        break;
-    case SYSEX_COMMAND_CLEAR_PROGRAM:
-        clear_program(data, length);
-        break;
+    const u8 command = data[0];
+    if (command >= LENGTH_OF(SYSEX_COMMANDS)) {
+        log_warn("Invalid sysex command: %d", command);
+        return;
     }
+
+    const SysexCommand* cmd = &SYSEX_COMMANDS[command];
+    if (cmd->handler == NULL) {
+        log_warn("Invalid sysex command: %d", command);
+        return;
+    }
+
+    increment_sysex_cursor(&data, &length, 1);
+    if (cmd->validateLength && length != cmd->length) {
+        log_warn("Invalid sysex data length: %d", length);
+        return;
+    }
+
+    cmd->handler(data, length);
 }
 
 void midi_sysex(const u8* data, u16 length)
@@ -750,7 +762,7 @@ void midi_sysex(const u8* data, u16 length)
     }
 }
 
-static void send_pong(void)
+static void send_pong(const u8* data, u16 length)
 {
     const u8 pongSequence[]
         = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID, SYSEX_COMMAND_PONG };
@@ -965,9 +977,9 @@ static void set_fm_chan_parameter(DeviceChannel* devChan, u8 controller, u8 valu
     }
 }
 
-static void set_invert_total_level(bool invert)
+static void set_invert_total_level(const u8* data, u16 length)
 {
-    invertTotalLevel = invert;
+    invertTotalLevel = data[0];
 }
 
 static void fm_parameter_cc(u8 chan, u8 controller, u8 value)
