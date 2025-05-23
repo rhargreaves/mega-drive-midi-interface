@@ -448,5 +448,6 @@ void _expect_synth_preset(
     u8 channel, const FmChannel* preset, const char* const file, const int line)
 {
     expect_value_with_pos(__wrap_synth_preset, channel, channel, file, line);
-    expect_value_with_pos(__wrap_synth_preset, preset, preset, file, line);
+    expect_check_with_pos(
+        __wrap_synth_preset, preset, fmchannel_equality_check, preset, file, line);
 }

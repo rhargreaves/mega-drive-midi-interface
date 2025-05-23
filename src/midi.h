@@ -124,6 +124,10 @@
 #define SYSEX_COMMAND_INVERT_TOTAL_LEVEL 0x07
 #define SYSEX_COMMAND_WRITE_YM2612_REG_PART_0 0x08
 #define SYSEX_COMMAND_WRITE_YM2612_REG_PART_1 0x09
+#define SYSEX_COMMAND_STORE_PROGRAM 0x0A
+
+#define STORE_PROGRAM_TYPE_FM 0x00
+#define STORE_PROGRAM_TYPE_PSG 0x01
 
 typedef struct VTable {
     void (*noteOn)(u8 chan, u8 pitch, s8 cents, u8 velocity);

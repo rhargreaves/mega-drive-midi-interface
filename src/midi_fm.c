@@ -26,19 +26,24 @@ static void update_pan(u8 chan);
 static u16 lookup_freq_num(u8 pitch, u8 offset);
 void midi_fm_reset(void);
 
-static const FmChannel** presets;
+static const FmChannel** defaultPresets;
 static const PercussionPreset** percussionPresets;
 
-void midi_fm_init(
-    const FmChannel** defaultPresets, const PercussionPreset** defaultPercussionPresets)
+static FmChannel userPresets[MIDI_PROGRAMS];
+static FmChannel* activeUserPresets[MIDI_PROGRAMS];
+
+void midi_fm_init(const FmChannel** defPresets, const PercussionPreset** defaultPercussionPresets)
 {
-    presets = defaultPresets;
+    defaultPresets = defPresets;
     percussionPresets = defaultPercussionPresets;
     midi_fm_reset();
 }
 
 void midi_fm_reset(void)
 {
+    memset(userPresets, 0, sizeof(userPresets));
+    memset(activeUserPresets, 0, sizeof(activeUserPresets));
+
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         MidiFmChannel* fmChan = &fmChannels[chan];
         fmChan->volume = MAX_MIDI_VOLUME;
@@ -47,7 +52,7 @@ void midi_fm_reset(void)
         fmChan->percussive = false;
         fmChan->cents = 0;
     }
-    synth_init(presets[0]);
+    synth_init(defaultPresets[0]);
 }
 
 u16 midi_fm_pitch_cents_to_freq_num(u8 pitch, s8 cents)
@@ -99,7 +104,8 @@ void midi_fm_channel_volume(u8 chan, u8 volume)
 
 void midi_fm_program(u8 chan, u8 program)
 {
-    const FmChannel* data = presets[program];
+    const FmChannel* data
+        = activeUserPresets[program] ? activeUserPresets[program] : defaultPresets[program];
     synth_preset(chan, data);
 }
 
@@ -159,4 +165,10 @@ void midi_fm_pitch(u8 chan, u8 pitch, s8 cents)
     fmChan->pitch = pitch;
     fmChan->cents = cents;
     set_synth_pitch(chan);
+}
+
+void midi_fm_store_preset(u8 program, const FmChannel* preset)
+{
+    memcpy(&userPresets[program], preset, sizeof(FmChannel));
+    activeUserPresets[program] = &userPresets[program];
 }

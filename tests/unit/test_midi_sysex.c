@@ -264,3 +264,98 @@ void test_midi_sysex_ignores_incorrect_length_ym2612_direct_writes(UNUSED void**
         SYSEX_COMMAND_WRITE_YM2612_REG_PART_0 };
     __real_midi_sysex(badSeq3, sizeof(badSeq3));
 }
+
+void test_midi_sysex_stores_program(UNUSED void** state)
+{
+    /*
+typedef struct Operator {
+    u8 multiple : 4;
+    u8 detune : 3;
+    u8 attackRate : 5;
+    u8 rateScaling : 2;
+    u8 decayRate : 5;
+    u8 amplitudeModulation : 1;
+    u8 sustainLevel : 4;
+    u8 sustainRate : 5;
+    u8 releaseRate : 4;
+    u8 totalLevel : 7;
+    u8 ssgEg : 4;
+} Operator;
+
+typedef struct FmChannel {
+    u8 algorithm : 3;
+    u8 feedback : 3;
+    u8 stereo : 2;
+    u8 ams : 2;
+    u8 fms : 3;
+    u8 octave : 3;
+    u16 freqNumber : 11;
+    Operator operators[MAX_FM_OPERATORS];
+} FmChannel;
+*/
+
+    /*
+    const u8 payload[] = {
+        0x00, // algorithm
+        0x00, // feedback
+        0x00, // stereo
+        0x00, // ams
+        0x00, // fms
+    }; // 5 bytes
+
+    const u8 op1[] = {
+        0x00, // op1 multiple
+        0x00, // op1 detune
+        0x00, // op1 attack rate
+        0x00, // op1 rate scaling
+        0x00, // op1 decay rate
+        0x00, // op1 amplitude modulation
+        0x00, // op1 sustain level
+        0x00, // op1 sustain rate
+        0x00, // op1 release rate
+        0x00, // op1 total level
+        0x00, // op1 ssg eg
+        // ...
+    }; // 11 bytes
+
+    Total bytes in FM definition: 49 bytes
+ */
+
+    mock_log_enable_checks();
+
+    const u8 type = 0x00; // 0x00 = FM, 0x01 = PSG
+    const u8 program = 0x05; // MIDI program 6
+
+    FmChannel fmChannel = { 0 };
+    memcpy(&fmChannel, &TEST_M_BANK_0_INST_0_GRANDPIANO, sizeof(FmChannel));
+    fmChannel.algorithm = 0x07;
+
+    u8 msg[10 + (MAX_FM_OPERATORS * 11)];
+    msg[0] = SYSEX_MANU_EXTENDED;
+    msg[1] = SYSEX_MANU_REGION;
+    msg[2] = SYSEX_MANU_ID;
+    msg[3] = SYSEX_COMMAND_STORE_PROGRAM;
+    msg[4] = type;
+    msg[5] = program;
+    msg[6] = fmChannel.algorithm;
+    msg[7] = fmChannel.feedback;
+    msg[8] = fmChannel.ams;
+    msg[9] = fmChannel.fms;
+    for (u16 i = 0; i < MAX_FM_OPERATORS; i++) {
+        msg[10 + i * 11] = fmChannel.operators[i].multiple;
+        msg[11 + i * 11] = fmChannel.operators[i].detune;
+        msg[12 + i * 11] = fmChannel.operators[i].attackRate;
+        msg[13 + i * 11] = fmChannel.operators[i].rateScaling;
+        msg[14 + i * 11] = fmChannel.operators[i].decayRate;
+        msg[15 + i * 11] = fmChannel.operators[i].amplitudeModulation;
+        msg[16 + i * 11] = fmChannel.operators[i].sustainLevel;
+        msg[17 + i * 11] = fmChannel.operators[i].sustainRate;
+        msg[18 + i * 11] = fmChannel.operators[i].releaseRate;
+        msg[19 + i * 11] = fmChannel.operators[i].totalLevel;
+        msg[20 + i * 11] = fmChannel.operators[i].ssgEg;
+    }
+    __real_midi_sysex(&msg[0], sizeof(msg));
+
+    expect_synth_preset(FM_CH1, &fmChannel);
+    __real_midi_program(MIDI_CHANNEL_1, program);
+}

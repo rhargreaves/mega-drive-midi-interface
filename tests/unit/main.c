@@ -163,6 +163,8 @@ int main(void)
         midi_test(test_midi_sysex_unassigns_midi_channel),
         midi_test(test_midi_sysex_does_nothing_for_empty_payload),
         midi_test(test_midi_sysex_handles_incomplete_channel_mapping_command),
+        midi_test(test_midi_sysex_stores_program),
+
         midi_test(
             test_midi_fm_note_on_percussion_channel_sets_percussion_preset),
         midi_test(test_midi_switching_program_retains_pan_setting),

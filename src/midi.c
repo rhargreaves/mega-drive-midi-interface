@@ -616,6 +616,51 @@ static void direct_write_ym2612(u8 part, const u8* data, u16 length)
     synth_direct_write_ym2612(part, data[0] << 4 | data[1], data[2] << 4 | data[3]);
 }
 
+static void store_program(const u8* data, u16 length)
+{
+    const u8 EXPECTED_LENGTH = 6 + (MAX_FM_OPERATORS * 11);
+    if (length != EXPECTED_LENGTH) {
+        log_warn("Invalid program storage length: %d", length);
+        return;
+    }
+    u8 type = data[0];
+    u8 program = data[1];
+
+    switch (type) {
+    case STORE_PROGRAM_TYPE_FM: {
+        FmChannel fmChannel;
+        fmChannel.algorithm = data[2];
+        fmChannel.feedback = data[3];
+        fmChannel.stereo = STEREO_MODE_CENTRE;
+        fmChannel.ams = data[4];
+        fmChannel.fms = data[5];
+        fmChannel.freqNumber = 0;
+        fmChannel.octave = 0;
+        for (u8 i = 0; i < MAX_FM_OPERATORS; i++) {
+            fmChannel.operators[i].multiple = data[6 + i * 11];
+            fmChannel.operators[i].detune = data[7 + i * 11];
+            fmChannel.operators[i].attackRate = data[8 + i * 11];
+            fmChannel.operators[i].rateScaling = data[9 + i * 11];
+            fmChannel.operators[i].decayRate = data[10 + i * 11];
+            fmChannel.operators[i].amplitudeModulation = data[11 + i * 11];
+            fmChannel.operators[i].sustainLevel = data[12 + i * 11];
+            fmChannel.operators[i].sustainRate = data[13 + i * 11];
+            fmChannel.operators[i].releaseRate = data[14 + i * 11];
+            fmChannel.operators[i].totalLevel = data[15 + i * 11];
+            fmChannel.operators[i].ssgEg = data[16 + i * 11];
+        }
+        midi_fm_store_preset(program, &fmChannel);
+        break;
+    }
+    case STORE_PROGRAM_TYPE_PSG:
+        log_warn("PSG program storage not supported");
+        break;
+    default:
+        log_warn("Invalid program storage type: %d", type);
+        break;
+    }
+}
+
 static void handle_custom_sysex(const u8* data, u16 length)
 {
     u8 command = *data;
@@ -659,6 +704,9 @@ static void handle_custom_sysex(const u8* data, u16 length)
         break;
     case SYSEX_COMMAND_WRITE_YM2612_REG_PART_1:
         direct_write_ym2612(1, data, length);
+        break;
+    case SYSEX_COMMAND_STORE_PROGRAM:
+        store_program(data, length);
         break;
     }
 }
