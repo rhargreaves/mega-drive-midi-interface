@@ -620,7 +620,7 @@ static void store_program(const u8* data, u16 length)
 {
     const u8 EXPECTED_LENGTH = 6 + (MAX_FM_OPERATORS * 11);
     if (length != EXPECTED_LENGTH) {
-        log_warn("Invalid program storage length: %d", length);
+        log_warn("Invalid store program data length: %d", length);
         return;
     }
     u8 type = data[0];
@@ -652,11 +652,8 @@ static void store_program(const u8* data, u16 length)
         midi_fm_store_preset(program, &fmChannel);
         break;
     }
-    case STORE_PROGRAM_TYPE_PSG:
-        log_warn("PSG program storage not supported");
-        break;
     default:
-        log_warn("Invalid program storage type: %d", type);
+        log_warn("Invalid store program type: %d", type);
         break;
     }
 }

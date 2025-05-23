@@ -18,3 +18,5 @@ void test_midi_sysex_writes_directly_to_ym2612_regs_part_0(UNUSED void** state);
 void test_midi_sysex_writes_directly_to_ym2612_regs_part_1(UNUSED void** state);
 void test_midi_sysex_ignores_incorrect_length_ym2612_direct_writes(UNUSED void** state);
 void test_midi_sysex_stores_program(UNUSED void** state);
+void test_midi_sysex_logs_warning_if_program_store_length_is_incorrect(UNUSED void** state);
+void test_midi_sysex_logs_warning_if_program_store_type_is_incorrect(UNUSED void** state);

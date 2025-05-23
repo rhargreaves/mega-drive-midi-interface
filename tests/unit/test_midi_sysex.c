@@ -359,3 +359,25 @@ typedef struct FmChannel {
     expect_synth_preset(FM_CH1, &fmChannel);
     __real_midi_program(MIDI_CHANNEL_1, program);
 }
+
+void test_midi_sysex_logs_warning_if_program_store_length_is_incorrect(UNUSED void** state)
+{
+    mock_log_enable_checks();
+
+    const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_STORE_PROGRAM, 0x00, 0x05 };
+
+    expect_log_warn("Invalid store program data length: %d");
+    __real_midi_sysex(sequence, sizeof(sequence));
+}
+
+void test_midi_sysex_logs_warning_if_program_store_type_is_incorrect(UNUSED void** state)
+{
+    mock_log_enable_checks();
+
+    const u8 sequence[10 + (MAX_FM_OPERATORS * 11)] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
+        SYSEX_MANU_ID, SYSEX_COMMAND_STORE_PROGRAM, 0x01, 0x05 };
+
+    expect_log_warn("Invalid store program type: %d");
+    __real_midi_sysex(sequence, sizeof(sequence));
+}

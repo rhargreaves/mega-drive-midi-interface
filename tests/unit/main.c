@@ -164,6 +164,8 @@ int main(void)
         midi_test(test_midi_sysex_does_nothing_for_empty_payload),
         midi_test(test_midi_sysex_handles_incomplete_channel_mapping_command),
         midi_test(test_midi_sysex_stores_program),
+        midi_test(test_midi_sysex_logs_warning_if_program_store_length_is_incorrect),
+        midi_test(test_midi_sysex_logs_warning_if_program_store_type_is_incorrect),
 
         midi_test(
             test_midi_fm_note_on_percussion_channel_sets_percussion_preset),
