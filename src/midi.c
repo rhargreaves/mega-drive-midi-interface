@@ -658,6 +658,27 @@ static void store_program(const u8* data, u16 length)
     }
 }
 
+static void clear_program(const u8* data, u16 length)
+{
+    u8 type = data[0];
+    u8 program = data[1];
+
+    const u8 EXPECTED_LENGTH = 2;
+    if (length != EXPECTED_LENGTH) {
+        log_warn("Invalid clear program data length: %d", length);
+        return;
+    }
+
+    switch (type) {
+    case STORE_PROGRAM_TYPE_FM:
+        midi_fm_clear_preset(program);
+        break;
+    default:
+        log_warn("Invalid clear program type: %d", type);
+        break;
+    }
+}
+
 static void handle_custom_sysex(const u8* data, u16 length)
 {
     u8 command = *data;
@@ -704,6 +725,9 @@ static void handle_custom_sysex(const u8* data, u16 length)
         break;
     case SYSEX_COMMAND_STORE_PROGRAM:
         store_program(data, length);
+        break;
+    case SYSEX_COMMAND_CLEAR_PROGRAM:
+        clear_program(data, length);
         break;
     }
 }

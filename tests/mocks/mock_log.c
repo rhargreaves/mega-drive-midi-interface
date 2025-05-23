@@ -31,10 +31,12 @@ void __wrap_log_warn(const char* fmt, ...)
         return;
     }
 
+#if defined DEBUG
     va_list args;
     va_start(args, fmt);
     print_message(fmt, args);
     va_end(args);
+#endif
 
     check_expected(fmt);
 }

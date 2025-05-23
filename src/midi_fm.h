@@ -24,3 +24,4 @@ u8 midi_fm_pitch_to_octave(u8 pitch);
 void midi_fm_pitch(u8 chan, u8 pitch, s8 cents);
 u16 midi_fm_pitch_cents_to_freq_num(u8 pitch, s8 cents);
 void midi_fm_store_preset(u8 program, const FmChannel* preset);
+void midi_fm_clear_preset(u8 program);

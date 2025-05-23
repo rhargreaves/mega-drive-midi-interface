@@ -172,3 +172,9 @@ void midi_fm_store_preset(u8 program, const FmChannel* preset)
     memcpy(&userPresets[program], preset, sizeof(FmChannel));
     activeUserPresets[program] = &userPresets[program];
 }
+
+void midi_fm_clear_preset(u8 program)
+{
+    memset(&userPresets[program], 0, sizeof(FmChannel));
+    activeUserPresets[program] = NULL;
+}
