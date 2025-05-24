@@ -710,8 +710,23 @@ static const SysexCommand SYSEX_COMMANDS[] = {
     { SYSEX_COMMAND_CLEAR_PROGRAM, clear_program, 2, true },
 };
 
-static void handle_custom_sysex(const u8* data, u16 length)
+void midi_sysex(const u8* data, u16 length)
 {
+    const u8 GENERAL_MIDI_RESET_SEQ[] = { 0x7E, 0x7F, 0x09, 0x01 };
+    if (length < LENGTH_OF(GENERAL_MIDI_RESET_SEQ)) {
+        return;
+    }
+    if (memcmp(data, GENERAL_MIDI_RESET_SEQ, LENGTH_OF(GENERAL_MIDI_RESET_SEQ)) == 0) {
+        general_midi_reset();
+        return;
+    }
+
+    const u8 SYSEX_COMMAND_HEAD[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID };
+    if (memcmp(data, SYSEX_COMMAND_HEAD, LENGTH_OF(SYSEX_COMMAND_HEAD)) != 0) {
+        return;
+    }
+    increment_sysex_cursor(&data, &length, LENGTH_OF(SYSEX_COMMAND_HEAD));
+
     const u8 command = data[0];
     if (command >= LENGTH_OF(SYSEX_COMMANDS)) {
         log_warn("Sysex %X: Invalid command", command);
@@ -731,24 +746,6 @@ static void handle_custom_sysex(const u8* data, u16 length)
     }
 
     cmd->handler(data, length);
-}
-
-void midi_sysex(const u8* data, u16 length)
-{
-    const u8 GENERAL_MIDI_RESET_SEQ[] = { 0x7E, 0x7F, 0x09, 0x01 };
-    if (length < LENGTH_OF(GENERAL_MIDI_RESET_SEQ)) {
-        return;
-    }
-    if (memcmp(data, GENERAL_MIDI_RESET_SEQ, LENGTH_OF(GENERAL_MIDI_RESET_SEQ)) == 0) {
-        general_midi_reset();
-        return;
-    }
-
-    const u8 CUSTOM_SYSEX_SEQ[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID };
-    if (memcmp(data, CUSTOM_SYSEX_SEQ, LENGTH_OF(CUSTOM_SYSEX_SEQ)) == 0) {
-        increment_sysex_cursor(&data, &length, LENGTH_OF(CUSTOM_SYSEX_SEQ));
-        handle_custom_sysex(data, length);
-    }
 }
 
 static void send_pong(const u8* data, u16 length)
