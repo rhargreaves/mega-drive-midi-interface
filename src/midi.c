@@ -731,19 +731,19 @@ void midi_sysex(const u8* data, u16 length)
 
     const u8 command = data[0];
     if (command >= LENGTH_OF(SYSEX_COMMANDS)) {
-        log_warn("Sysex %X: Invalid command", command);
+        log_warn("Sysex %02X: Invalid command", command);
         return;
     }
 
     const SysexCommand* cmd = &SYSEX_COMMANDS[command];
     if (cmd->handler == NULL) {
-        log_warn("Sysex %X: Invalid command", command);
+        log_warn("Sysex %02X: Invalid command", command);
         return;
     }
 
     increment_sysex_cursor(&data, &length, 1);
     if (cmd->validateLength && length != cmd->length) {
-        log_warn("Sysex %X: Invalid length: %d (!= %d)", command, length, cmd->length);
+        log_warn("Sysex %02X: Invalid length: %d (!= %d)", command, length, cmd->length);
         return;
     }
 
