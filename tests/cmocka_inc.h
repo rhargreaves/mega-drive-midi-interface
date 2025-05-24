@@ -16,3 +16,5 @@
 #define expect_check_with_pos(function, parameter, check_function, check_data, file, line)         \
     _expect_check(#function, #parameter, file, line, check_function,                               \
         cast_to_largest_integral_type(check_data), NULL, 1)
+#define expect_function_call_with_pos(function, file, line)                                        \
+    _expect_function_call(#function, file, line, 1)

@@ -1,6 +1,8 @@
 #include "midi_fm.h"
 #include "midi.h"
 #include "synth.h"
+#include "crc.h"
+#include "log.h"
 
 static const u8 SEMITONES = 12;
 static const u16 FREQS[] = { 607, // B
@@ -168,10 +170,60 @@ void midi_fm_pitch(u8 chan, u8 pitch, s8 cents)
     set_synth_pitch(chan);
 }
 
+static void sram_preset_slot(SramFmPresetSlot* slot, const FmPreset* preset)
+{
+    const u16 FM_PRESET_MAGIC_NUMBER = 0x9E1D;
+    const u8 FM_PRESET_VERSION = 1;
+
+    slot->magic_number = FM_PRESET_MAGIC_NUMBER;
+    slot->version = FM_PRESET_VERSION;
+    slot->preset.algorithm = preset->algorithm;
+    slot->preset.feedback = preset->feedback;
+    slot->preset.ams = preset->ams;
+    slot->preset.fms = preset->fms;
+    for (u8 i = 0; i < sizeof(slot->reserved); i++) {
+        slot->reserved[i] = 0;
+    }
+    slot->checksum = 0;
+    for (u8 i = 0; i < MAX_FM_OPERATORS; i++) {
+        slot->preset.operators[i].multiple = preset->operators[i].multiple;
+        slot->preset.operators[i].detune = preset->operators[i].detune;
+        slot->preset.operators[i].attackRate = preset->operators[i].attackRate;
+        slot->preset.operators[i].rateScaling = preset->operators[i].rateScaling;
+        slot->preset.operators[i].decayRate = preset->operators[i].decayRate;
+        slot->preset.operators[i].amplitudeModulation = preset->operators[i].amplitudeModulation;
+        slot->preset.operators[i].sustainLevel = preset->operators[i].sustainLevel;
+        slot->preset.operators[i].sustainRate = preset->operators[i].sustainRate;
+        slot->preset.operators[i].releaseRate = preset->operators[i].releaseRate;
+        slot->preset.operators[i].totalLevel = preset->operators[i].totalLevel;
+        slot->preset.operators[i].ssgEg = preset->operators[i].ssgEg;
+    }
+}
+
 void midi_fm_store_preset(u8 program, const FmPreset* preset)
 {
     memcpy(&userPresets[program], preset, sizeof(FmPreset));
     activeUserPresets[program] = &userPresets[program];
+
+    const u8 EXPECTED_SRAM_PRESET_SLOT_SIZE = 36;
+
+    SramFmPresetSlot slot = { 0 };
+    sram_preset_slot(&slot, preset);
+    u16 crc = crc_calc_crc16((u8*)&slot, sizeof(SramFmPresetSlot) - sizeof(slot.checksum));
+    slot.checksum = crc;
+
+    if (sizeof(SramFmPresetSlot) != EXPECTED_SRAM_PRESET_SLOT_SIZE) {
+        log_warn("FM preset slot size is %d", (u8)sizeof(SramFmPresetSlot));
+        return;
+    }
+
+    const size_t SRAM_PRESET_BASE_OFFSET = 32;
+    size_t offset = SRAM_PRESET_BASE_OFFSET + EXPECTED_SRAM_PRESET_SLOT_SIZE * program;
+    SRAM_enable();
+    for (u8 i = 0; i < sizeof(SramFmPresetSlot); i++) {
+        SRAM_writeByte(offset++, ((u8*)&slot)[i]);
+    }
+    SRAM_disable();
 }
 
 void midi_fm_clear_preset(u8 program)

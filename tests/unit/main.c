@@ -20,6 +20,7 @@
 #include "test_pitchcents.h"
 #include "test_ring_buf.h"
 #include "test_serial.h"
+#include "test_crc.h"
 
 #define midi_test(test) cmocka_unit_test_setup(test, test_midi_setup)
 #define midi_pcm_test(test) cmocka_unit_test_setup(test, test_midi_setup)
@@ -41,6 +42,7 @@
 #define note_priority_test(test) cmocka_unit_test_setup(test, test_note_priority_setup)
 #define pitchcents_test(test) cmocka_unit_test(test)
 #define serial_test(test) cmocka_unit_test_setup(test, test_serial_setup)
+#define crc_test(test) cmocka_unit_test(test)
 
 int main(void)
 {
@@ -464,6 +466,9 @@ int main(void)
         serial_test(test_serial_readyToReceive_when_ready_on_ext_port),
         serial_test(test_serial_receive_on_ext_port),
         serial_test(test_serial_sends_on_ext_port),
+
+        crc_test(test_crc_calculate_crc16),
+        crc_test(test_crc_calculate_another_crc16),
         // clang-format on
     };
 

@@ -1,6 +1,7 @@
 #include "test_midi_sysex.h"
 #include "test_midi.h"
 #include "mocks/mock_synth.h"
+#include "mocks/mock_sram.h"
 
 static void remapChannel(u8 midiChannel, u8 deviceChannel)
 {
@@ -306,11 +307,26 @@ void test_midi_sysex_stores_program(UNUSED void** state)
 
     u8 msg[STORE_PROGRAM_MESSAGE_LENGTH];
     create_store_program_message(msg, STORE_PROGRAM_TYPE_FM, program, &fmPreset);
+
+    expect_sram_enable();
+    expect_sram_disable();
     expect_log_info("Stored FM preset %d");
     __real_midi_sysex(msg, sizeof(msg));
 
     expect_synth_preset(FM_CH1, &fmPreset);
     __real_midi_program(MIDI_CHANNEL_1, program);
+
+    const u8 EXPECTED_SRAM_DATA[] = { /* magic number */ 0x9E, 0x1D, /* version */ 0x01,
+        /* preset */ 0xE0, 0x00, 0x11, 0xA4, 0xE7, 0x20, 0xA7, 0x00, 0x4D, 0x85, 0x26, 0x4B, 0xA4,
+        0x00, 0x2F, 0xFE, 0xE9, 0x78, 0x84, 0x00, 0x17, 0xB8, 0x8A, 0x23, 0x02, 0x00,
+        /* reserved */ 0x00, 0x00, 0x00, 0x00, 0x00, /* checksum */ 0x40, 0x47 };
+
+    const u16 SRAM_PRESETS_START = 32;
+    const u16 SRAM_DATA_LENGTH = sizeof(EXPECTED_SRAM_DATA);
+    assert_int_equal(mock_sram_write_count(), SRAM_DATA_LENGTH);
+
+    u16 offset = SRAM_PRESETS_START + (program * SRAM_DATA_LENGTH);
+    assert_memory_equal(mock_sram_data(offset), EXPECTED_SRAM_DATA, SRAM_DATA_LENGTH);
 }
 
 void test_midi_sysex_logs_warning_if_program_store_length_is_incorrect(UNUSED void** state)
@@ -347,6 +363,8 @@ void test_midi_sysex_clears_program(UNUSED void** state)
 
     u8 msg[STORE_PROGRAM_MESSAGE_LENGTH];
     create_store_program_message(msg, STORE_PROGRAM_TYPE_FM, program, &fmPreset);
+    expect_sram_enable();
+    expect_sram_disable();
     expect_log_info("Stored FM preset %d");
     __real_midi_sysex(msg, sizeof(msg));
 
@@ -383,7 +401,6 @@ void test_midi_sysex_logs_warning_if_program_clear_type_is_incorrect(UNUSED void
 
 void test_midi_sysex_clears_all_programs(UNUSED void** state)
 {
-
     const u8 program1 = 0x00;
     const u8 program2 = 0x01;
 
@@ -393,11 +410,15 @@ void test_midi_sysex_clears_all_programs(UNUSED void** state)
     memcpy(&fmPreset, &TEST_M_BANK_0_INST_0_GRANDPIANO, sizeof(FmPreset));
     fmPreset.algorithm = 0x07;
     create_store_program_message(msg, STORE_PROGRAM_TYPE_FM, program1, &fmPreset);
+    expect_sram_enable();
+    expect_sram_disable();
     __real_midi_sysex(msg, sizeof(msg));
 
     memcpy(&fmPreset, &TEST_M_BANK_0_INST_1_BRIGHTPIANO, sizeof(FmPreset));
     fmPreset.algorithm = 0x04;
     create_store_program_message(msg, STORE_PROGRAM_TYPE_FM, program2, &fmPreset);
+    expect_sram_enable();
+    expect_sram_disable();
     __real_midi_sysex(msg, sizeof(msg));
 
     mock_log_enable_checks();
