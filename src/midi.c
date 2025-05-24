@@ -69,13 +69,18 @@ static const u16 portaTimeToInterval[128]
           24, 23, 22, 21, 20, 19, 18, 17, 16, 16, 15, 14, 13, 13, 12, 12, 11, 10, 10, 9, 9, 9, 8, 8,
           7, 7, 7, 6, 6, 6, 5, 5, 5, 5, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 1 };
 
-static MappingMode mappingModePref;
 static DeviceChannel deviceChannels[DEV_CHANS];
 static MidiChannel midiChannels[MIDI_CHANNELS];
 static bool dynamicMode;
-static bool disableNonGeneralMidiCCs;
-static bool stickToDeviceType;
-static bool invertTotalLevel;
+
+typedef struct MidiConfig {
+    MappingMode mappingModePref;
+    bool disableNonGeneralMidiCCs;
+    bool stickToDeviceType;
+    bool invertTotalLevel;
+} MidiConfig;
+
+static MidiConfig config;
 
 static void all_notes_off(u8 ch);
 static void general_midi_reset(void);
@@ -111,10 +116,13 @@ static void reset(void)
     midi_psg_reset();
     midi_fm_reset();
     midi_fm_sm_reset();
-    mappingModePref = DEFAULT_MAPPING_MODE;
-    dynamicMode = mappingModePref == MappingMode_Dynamic;
-    disableNonGeneralMidiCCs = false;
-    stickToDeviceType = false;
+    config = (MidiConfig) {
+        .mappingModePref = DEFAULT_MAPPING_MODE,
+        .disableNonGeneralMidiCCs = false,
+        .stickToDeviceType = false,
+        .invertTotalLevel = false,
+    };
+    dynamicMode = config.mappingModePref == MappingMode_Dynamic;
     reset_channels();
 }
 
@@ -232,7 +240,7 @@ static DeviceChannel* findDeviceSpecificChannel(u8 incomingMidiChan, u8 minDevCh
 {
     u8 minChan = minDevChan;
     u8 maxChan = maxDevChan;
-    if (stickToDeviceType) {
+    if (config.stickToDeviceType) {
         DeviceChannel* assignedChan = deviceChannelByMidiChannel(incomingMidiChan);
         if (assignedChan == NULL) {
             return NULL;
@@ -516,7 +524,7 @@ void resetAllControllers(u8 ch)
 
 static bool isIgnoringNonGeneralMidiCCs(void)
 {
-    return disableNonGeneralMidiCCs;
+    return config.disableNonGeneralMidiCCs;
 }
 
 static void set_polyphonic_mode(bool enable)
@@ -570,12 +578,12 @@ static void all_notes_off(u8 ch)
 
 static void set_non_general_midi_ccs(const u8* data, u16 length)
 {
-    disableNonGeneralMidiCCs = !data[0];
+    config.disableNonGeneralMidiCCs = !data[0];
 }
 
 static void set_stick_to_device_type(const u8* data, u16 length)
 {
-    stickToDeviceType = data[0];
+    config.stickToDeviceType = data[0];
 }
 
 static void load_psg_envelope(const u8* data, u16 length)
@@ -782,7 +790,7 @@ static void general_midi_reset(void)
     for (u8 chan = 0; chan < MIDI_CHANNELS; chan++) {
         all_notes_off(chan);
     }
-    if (mappingModePref == MappingMode_Auto) {
+    if (config.mappingModePref == MappingMode_Auto) {
         dynamicMode = true;
     }
     reset_channels();
@@ -798,7 +806,7 @@ static void apply_dynamic_mode(void)
 
 static void set_dynamic_mode(MappingMode mode)
 {
-    mappingModePref = mode;
+    config.mappingModePref = mode;
     if (mode == MappingMode_Dynamic) {
         dynamicMode = true;
         apply_dynamic_mode();
@@ -812,7 +820,7 @@ static void set_operator_total_level(u8 chan, u8 op, u8 value)
 {
     const u8 MAX_TOTAL_LEVEL = 127;
 
-    if (invertTotalLevel) {
+    if (config.invertTotalLevel) {
         value = MAX_TOTAL_LEVEL - value;
     }
     synth_operator_total_level(chan, op, value);
@@ -971,7 +979,7 @@ static void set_fm_chan_parameter(DeviceChannel* devChan, u8 controller, u8 valu
 
 static void set_invert_total_level(const u8* data, u16 length)
 {
-    invertTotalLevel = data[0];
+    config.invertTotalLevel = data[0];
 }
 
 static void fm_parameter_cc(u8 chan, u8 controller, u8 value)
