@@ -36,6 +36,14 @@ typedef struct FmChannel {
     Operator operators[MAX_FM_OPERATORS];
 } FmChannel;
 
+typedef struct FmPreset {
+    u8 algorithm : 3;
+    u8 feedback : 3;
+    u8 ams : 2;
+    u8 fms : 3;
+    Operator operators[MAX_FM_OPERATORS];
+} FmPreset;
+
 typedef struct Global {
     u8 lfoEnable : 1;
     u8 lfoFrequency : 3;
@@ -47,7 +55,7 @@ typedef enum ParameterUpdated { Channel, Lfo, SpecialMode } ParameterUpdated;
 
 typedef void ParameterUpdatedCallback(u8 fmChan, ParameterUpdated parameterUpdated);
 
-void synth_init(const FmChannel* initialPreset);
+void synth_init(const FmPreset* initialPreset);
 void synth_note_on(u8 channel);
 void synth_note_off(u8 channel);
 void synth_pitch(u8 channel, u8 octave, u16 freqNumber);
@@ -71,7 +79,7 @@ void synth_global_lfo_frequency(u8 freq);
 void synth_ams(u8 channel, u8 ams);
 void synth_fms(u8 channel, u8 fms);
 u8 synth_busy(void);
-void synth_preset(u8 channel, const FmChannel* preset);
+void synth_preset(u8 channel, const FmPreset* preset);
 const FmChannel* synth_channel_parameters(u8 channel);
 const Global* synth_global_parameters();
 void synth_set_parameter_update_callback(ParameterUpdatedCallback* cb);

@@ -58,7 +58,7 @@ static const VTable DAC_VTable = { midi_dac_note_on, midi_dac_note_off, midi_dac
     midi_dac_program, midi_dac_all_notes_off, midi_dac_pan, midi_dac_pitch };
 
 static const u8** defaultEnvelopes;
-static const FmChannel** defaultPresets;
+static const FmPreset** defaultPresets;
 static const PercussionPreset** defaultPercussionPresets;
 
 static const u16 portaTimeToInterval[128]
@@ -95,7 +95,7 @@ static void dev_chan_note_off(DeviceChannel* devChan, u8 pitch);
 static void set_downstream_pitch(DeviceChannel* devChan);
 
 void midi_init(
-    const FmChannel** presets, const PercussionPreset** percussionPresets, const u8** envelopes)
+    const FmPreset** presets, const PercussionPreset** percussionPresets, const u8** envelopes)
 {
     defaultEnvelopes = envelopes;
     defaultPresets = presets;
@@ -611,28 +611,25 @@ static void store_program(const u8* data, u16 length)
 
     switch (type) {
     case STORE_PROGRAM_TYPE_FM: {
-        FmChannel fmChannel;
-        fmChannel.algorithm = data[2];
-        fmChannel.feedback = data[3];
-        fmChannel.stereo = STEREO_MODE_CENTRE;
-        fmChannel.ams = data[4];
-        fmChannel.fms = data[5];
-        fmChannel.freqNumber = 0;
-        fmChannel.octave = 0;
+        FmPreset fmPreset;
+        fmPreset.algorithm = data[2];
+        fmPreset.feedback = data[3];
+        fmPreset.ams = data[4];
+        fmPreset.fms = data[5];
         for (u8 i = 0; i < MAX_FM_OPERATORS; i++) {
-            fmChannel.operators[i].multiple = data[6 + i * 11];
-            fmChannel.operators[i].detune = data[7 + i * 11];
-            fmChannel.operators[i].attackRate = data[8 + i * 11];
-            fmChannel.operators[i].rateScaling = data[9 + i * 11];
-            fmChannel.operators[i].decayRate = data[10 + i * 11];
-            fmChannel.operators[i].amplitudeModulation = data[11 + i * 11];
-            fmChannel.operators[i].sustainLevel = data[12 + i * 11];
-            fmChannel.operators[i].sustainRate = data[13 + i * 11];
-            fmChannel.operators[i].releaseRate = data[14 + i * 11];
-            fmChannel.operators[i].totalLevel = data[15 + i * 11];
-            fmChannel.operators[i].ssgEg = data[16 + i * 11];
+            fmPreset.operators[i].multiple = data[6 + i * 11];
+            fmPreset.operators[i].detune = data[7 + i * 11];
+            fmPreset.operators[i].attackRate = data[8 + i * 11];
+            fmPreset.operators[i].rateScaling = data[9 + i * 11];
+            fmPreset.operators[i].decayRate = data[10 + i * 11];
+            fmPreset.operators[i].amplitudeModulation = data[11 + i * 11];
+            fmPreset.operators[i].sustainLevel = data[12 + i * 11];
+            fmPreset.operators[i].sustainRate = data[13 + i * 11];
+            fmPreset.operators[i].releaseRate = data[14 + i * 11];
+            fmPreset.operators[i].totalLevel = data[15 + i * 11];
+            fmPreset.operators[i].ssgEg = data[16 + i * 11];
         }
-        midi_fm_store_preset(program, &fmChannel);
+        midi_fm_store_preset(program, &fmPreset);
         log_info("Stored FM preset %d", program + 1);
         break;
     }

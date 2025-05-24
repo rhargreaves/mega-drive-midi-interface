@@ -155,14 +155,14 @@ void test_midi_dynamic_enables_percussive_mode_if_needed(UNUSED void** state)
     const u8 MIDI_KEY = 30;
 
     // Playing first drum
-    expect_synth_preset(0, &TEST_P_BANK_0_INST_30_CASTANETS.channel);
+    expect_synth_preset(0, &TEST_P_BANK_0_INST_30_CASTANETS.preset);
     expect_synth_pitch_any();
     expect_synth_volume_any();
     expect_synth_note_on(0);
     __real_midi_note_on(GENERAL_MIDI_PERCUSSION_CHANNEL, MIDI_KEY, MAX_MIDI_VOLUME);
 
     // Playing second drum
-    expect_synth_preset(1, &TEST_P_BANK_0_INST_30_CASTANETS.channel);
+    expect_synth_preset(1, &TEST_P_BANK_0_INST_30_CASTANETS.preset);
     expect_synth_pitch_any();
     expect_synth_volume_any();
     expect_synth_note_on(1);
@@ -174,7 +174,7 @@ void test_midi_dynamic_reapplies_program_on_non_percussion_channel(UNUSED void**
     const u8 MIDI_KEY = 30;
 
     // Play and stop drum
-    expect_synth_preset(0, &TEST_P_BANK_0_INST_30_CASTANETS.channel);
+    expect_synth_preset(0, &TEST_P_BANK_0_INST_30_CASTANETS.preset);
     expect_synth_pitch_any();
     expect_synth_volume_any();
     expect_synth_note_on(0);

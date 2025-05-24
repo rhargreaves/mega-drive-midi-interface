@@ -29,7 +29,7 @@ void __wrap_synth_operator_sustain_level(u8 channel, u8 op, u8 sustainLevel);
 void __wrap_synth_operator_amplitude_modulation(u8 channel, u8 op, u8 amplitudeModulation);
 void __wrap_synth_operator_release_rate(u8 channel, u8 op, u8 releaseRate);
 void __wrap_synth_operator_ssg_eg(u8 channel, u8 op, u8 ssgEg);
-void __wrap_synth_preset(u8 channel, const FmChannel* preset);
+void __wrap_synth_preset(u8 channel, const FmPreset* preset);
 void __wrap_synth_volume(u8 channel, u8 volume);
 const FmChannel* __wrap_synth_channel_parameters(u8 channel);
 const Global* __wrap_synth_global_parameters();
@@ -38,7 +38,7 @@ void __wrap_synth_special_mode_pitch(u8 op, u8 octave, u16 freqNumber);
 void __wrap_synth_special_mode_volume(u8 op, u8 volume);
 void __wrap_synth_direct_write_ym2612(u8 part, u8 reg, u8 data);
 void __wrap_synth_enable_dac(bool enable);
-extern void __real_synth_init(const FmChannel* defaultPreset);
+extern void __real_synth_init(const FmPreset* defaultPreset);
 extern void __real_synth_note_on(u8 channel);
 extern void __real_synth_note_off(u8 channel);
 extern void __real_synth_enable_lfo(u8 enable);
@@ -61,7 +61,7 @@ extern void __real_synth_operator_amplitude_modulation(u8 channel, u8 op, u8 amp
 extern void __real_synth_operator_release_rate(u8 channel, u8 op, u8 releaseRate);
 extern void __real_synth_operator_ssg_eg(u8 channel, u8 op, u8 ssgEg);
 extern void __real_synth_pitch_bend(u8 channel, u16 bend);
-extern void __real_synth_preset(u8 channel, const FmChannel* preset);
+extern void __real_synth_preset(u8 channel, const FmPreset* preset);
 extern void __real_synth_volume(u8 channel, u8 volume);
 extern const FmChannel* __real_synth_channel_parameters(u8 channel);
 extern const Global* __real_synth_global_parameters();
@@ -71,7 +71,7 @@ extern void __real_synth_special_mode_volume(u8 op, u8 volume);
 extern void __real_synth_enable_dac(bool enable);
 extern void __real_synth_direct_write_ym2612(u8 part, u8 reg, u8 data);
 
-int fmchannel_equality_check(
+int fmpreset_equality_check(
     const LargestIntegralType value, const LargestIntegralType check_value_data);
 void _expect_synth_algorithm(u8 channel, u8 algorithm, const char* const file, const int line);
 void _expect_synth_pitch(
@@ -114,7 +114,7 @@ void _expect_synth_set_special_mode(bool enable, const char* const file, const i
 void _expect_synth_direct_write_ym2612(
     u8 part, u8 reg, u8 data, const char* const file, const int line);
 void _expect_synth_preset(
-    u8 channel, const FmChannel* preset, const char* const file, const int line);
+    u8 channel, const FmPreset* preset, const char* const file, const int line);
 
 #define expect_synth_preset(channel, preset)                                                       \
     _expect_synth_preset(channel, preset, __FILE__, __LINE__)

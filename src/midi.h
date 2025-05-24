@@ -155,7 +155,7 @@ typedef struct DeviceChannel {
     u16 glideTargetPitch;
 } DeviceChannel;
 
-void midi_init(const FmChannel** defaultPresets, const PercussionPreset** defaultPercussionPresets,
+void midi_init(const FmPreset** defaultPresets, const PercussionPreset** defaultPercussionPresets,
     const u8** defaultEnvelopes);
 void midi_note_on(u8 chan, u8 pitch, u8 velocity);
 void midi_note_off(u8 chan, u8 pitch);

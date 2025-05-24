@@ -26,13 +26,13 @@ static void update_pan(u8 chan);
 static u16 lookup_freq_num(u8 pitch, u8 offset);
 void midi_fm_reset(void);
 
-static const FmChannel** defaultPresets;
+static const FmPreset** defaultPresets;
 static const PercussionPreset** percussionPresets;
 
-static FmChannel userPresets[MIDI_PROGRAMS];
-static FmChannel* activeUserPresets[MIDI_PROGRAMS];
+static FmPreset userPresets[MIDI_PROGRAMS];
+static FmPreset* activeUserPresets[MIDI_PROGRAMS];
 
-void midi_fm_init(const FmChannel** defPresets, const PercussionPreset** defaultPercussionPresets)
+void midi_fm_init(const FmPreset** defPresets, const PercussionPreset** defaultPercussionPresets)
 {
     defaultPresets = defPresets;
     percussionPresets = defaultPercussionPresets;
@@ -52,6 +52,7 @@ void midi_fm_reset(void)
         fmChan->percussive = false;
         fmChan->cents = 0;
     }
+
     synth_init(defaultPresets[0]);
 }
 
@@ -77,7 +78,7 @@ void midi_fm_note_on(u8 chan, u8 pitch, s8 cents, u8 velocity)
     MidiFmChannel* fmChan = &fmChannels[chan];
     if (fmChan->percussive) {
         const PercussionPreset* percussionPreset = percussionPresets[pitch];
-        synth_preset(chan, &percussionPreset->channel);
+        synth_preset(chan, &percussionPreset->preset);
         pitch = percussionPreset->key;
     }
     fmChan->velocity = velocity;
@@ -104,7 +105,7 @@ void midi_fm_channel_volume(u8 chan, u8 volume)
 
 void midi_fm_program(u8 chan, u8 program)
 {
-    const FmChannel* data
+    const FmPreset* data
         = activeUserPresets[program] ? activeUserPresets[program] : defaultPresets[program];
     synth_preset(chan, data);
 }
@@ -167,14 +168,14 @@ void midi_fm_pitch(u8 chan, u8 pitch, s8 cents)
     set_synth_pitch(chan);
 }
 
-void midi_fm_store_preset(u8 program, const FmChannel* preset)
+void midi_fm_store_preset(u8 program, const FmPreset* preset)
 {
-    memcpy(&userPresets[program], preset, sizeof(FmChannel));
+    memcpy(&userPresets[program], preset, sizeof(FmPreset));
     activeUserPresets[program] = &userPresets[program];
 }
 
 void midi_fm_clear_preset(u8 program)
 {
-    memset(&userPresets[program], 0, sizeof(FmChannel));
+    memset(&userPresets[program], 0, sizeof(FmPreset));
     activeUserPresets[program] = NULL;
 }

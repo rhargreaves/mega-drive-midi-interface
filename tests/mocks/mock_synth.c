@@ -13,7 +13,7 @@ void mock_synth_enable_checks(void)
     disableChecks = false;
 }
 
-void __wrap_synth_init(const FmChannel* defaultPreset)
+void __wrap_synth_init(const FmPreset* defaultPreset)
 {
     if (disableChecks)
         return;
@@ -171,7 +171,7 @@ void __wrap_synth_operator_ssg_eg(u8 channel, u8 op, u8 ssgEg)
     check_expected(ssgEg);
 }
 
-void __wrap_synth_preset(u8 channel, const FmChannel* preset)
+void __wrap_synth_preset(u8 channel, const FmPreset* preset)
 {
     debug_message("call: synth_preset(%d, %p)\n", channel, preset);
     if (disableChecks)
@@ -268,16 +268,14 @@ void _expect_synth_note_off(u8 channel, const char* const file, const int line)
     expect_value_with_pos(__wrap_synth_note_off, channel, channel, file, line);
 }
 
-int fmchannel_equality_check(
+int fmpreset_equality_check(
     const LargestIntegralType value, const LargestIntegralType check_value_data)
 {
-    FmChannel* expected = (FmChannel*)value;
-    FmChannel* actual = (FmChannel*)check_value_data;
+    FmPreset* expected = (FmPreset*)value;
+    FmPreset* actual = (FmPreset*)check_value_data;
 
     if ((actual->algorithm == expected->algorithm) && (actual->ams == expected->ams)
         && (actual->feedback == expected->feedback) && (actual->fms == expected->fms)
-        && (actual->freqNumber == expected->freqNumber) && (actual->octave == expected->octave)
-        && (actual->stereo == expected->stereo)
         && operator_equality_check(&actual->operators[0], &expected->operators[0])
         && operator_equality_check(&actual->operators[1], &expected->operators[1])
         && operator_equality_check(&actual->operators[2], &expected->operators[2])
@@ -445,9 +443,8 @@ void _expect_synth_direct_write_ym2612(
 }
 
 void _expect_synth_preset(
-    u8 channel, const FmChannel* preset, const char* const file, const int line)
+    u8 channel, const FmPreset* preset, const char* const file, const int line)
 {
     expect_value_with_pos(__wrap_synth_preset, channel, channel, file, line);
-    expect_check_with_pos(
-        __wrap_synth_preset, preset, fmchannel_equality_check, preset, file, line);
+    expect_check_with_pos(__wrap_synth_preset, preset, fmpreset_equality_check, preset, file, line);
 }

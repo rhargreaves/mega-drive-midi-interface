@@ -46,7 +46,21 @@ static void other_parameter_updated(u8 channel, ParameterUpdated parameterUpdate
 static void write_reg_safe(u8 part, u8 reg, u8 data);
 static void release_z80_bus(void);
 
-void synth_init(const FmChannel* initialPreset)
+static void preset_to_channel(FmChannel* channel, const FmPreset* preset)
+{
+    channel->algorithm = preset->algorithm;
+    channel->feedback = preset->feedback;
+    channel->ams = preset->ams;
+    channel->fms = preset->fms;
+    channel->stereo = STEREO_MODE_CENTRE;
+    channel->octave = 0;
+    channel->freqNumber = 0;
+    for (u8 i = 0; i < MAX_FM_OPERATORS; i++) {
+        channel->operators[i] = preset->operators[i];
+    }
+}
+
+void synth_init(const FmPreset* initialPreset)
 {
     init_global();
     Z80_loadDriver(Z80_DRIVER_PCM, true);
@@ -56,7 +70,10 @@ void synth_init(const FmChannel* initialPreset)
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         volumes[chan] = MAX_VOLUME;
         synth_note_off(chan);
-        memcpy(&fmChannels[chan], initialPreset, sizeof(FmChannel));
+
+        FmChannel channel;
+        preset_to_channel(&channel, initialPreset);
+        memcpy(&fmChannels[chan], &channel, sizeof(FmChannel));
         update_channel(chan);
     }
     write_global_lfo();
@@ -252,11 +269,11 @@ u8 synth_busy(void)
     return noteOn;
 }
 
-void synth_preset(u8 channel, const FmChannel* preset)
+void synth_preset(u8 channel, const FmPreset* preset)
 {
     FmChannel* chan = &fmChannels[channel];
     u8 currentStereo = chan->stereo;
-    memcpy(chan, preset, sizeof(FmChannel));
+    preset_to_channel(chan, preset);
     chan->stereo = currentStereo;
     update_channel(channel);
     channel_parameter_updated(channel);

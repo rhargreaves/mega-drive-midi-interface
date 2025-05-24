@@ -267,7 +267,7 @@ void test_midi_sysex_ignores_incorrect_length_ym2612_direct_writes(UNUSED void**
 
 #define STORE_PROGRAM_MESSAGE_LENGTH (10 + (MAX_FM_OPERATORS * 11))
 
-static void create_store_program_message(u8* msg, u8 type, u8 program, FmChannel* fmChannel)
+static void create_store_program_message(u8* msg, u8 type, u8 program, FmPreset* fmPreset)
 {
     msg[0] = SYSEX_MANU_EXTENDED;
     msg[1] = SYSEX_MANU_REGION;
@@ -275,22 +275,22 @@ static void create_store_program_message(u8* msg, u8 type, u8 program, FmChannel
     msg[3] = SYSEX_COMMAND_STORE_PROGRAM;
     msg[4] = type;
     msg[5] = program;
-    msg[6] = fmChannel->algorithm;
-    msg[7] = fmChannel->feedback;
-    msg[8] = fmChannel->ams;
-    msg[9] = fmChannel->fms;
+    msg[6] = fmPreset->algorithm;
+    msg[7] = fmPreset->feedback;
+    msg[8] = fmPreset->ams;
+    msg[9] = fmPreset->fms;
     for (u16 i = 0; i < MAX_FM_OPERATORS; i++) {
-        msg[10 + i * 11] = fmChannel->operators[i].multiple;
-        msg[11 + i * 11] = fmChannel->operators[i].detune;
-        msg[12 + i * 11] = fmChannel->operators[i].attackRate;
-        msg[13 + i * 11] = fmChannel->operators[i].rateScaling;
-        msg[14 + i * 11] = fmChannel->operators[i].decayRate;
-        msg[15 + i * 11] = fmChannel->operators[i].amplitudeModulation;
-        msg[16 + i * 11] = fmChannel->operators[i].sustainLevel;
-        msg[17 + i * 11] = fmChannel->operators[i].sustainRate;
-        msg[18 + i * 11] = fmChannel->operators[i].releaseRate;
-        msg[19 + i * 11] = fmChannel->operators[i].totalLevel;
-        msg[20 + i * 11] = fmChannel->operators[i].ssgEg;
+        msg[10 + i * 11] = fmPreset->operators[i].multiple;
+        msg[11 + i * 11] = fmPreset->operators[i].detune;
+        msg[12 + i * 11] = fmPreset->operators[i].attackRate;
+        msg[13 + i * 11] = fmPreset->operators[i].rateScaling;
+        msg[14 + i * 11] = fmPreset->operators[i].decayRate;
+        msg[15 + i * 11] = fmPreset->operators[i].amplitudeModulation;
+        msg[16 + i * 11] = fmPreset->operators[i].sustainLevel;
+        msg[17 + i * 11] = fmPreset->operators[i].sustainRate;
+        msg[18 + i * 11] = fmPreset->operators[i].releaseRate;
+        msg[19 + i * 11] = fmPreset->operators[i].totalLevel;
+        msg[20 + i * 11] = fmPreset->operators[i].ssgEg;
     }
 }
 
@@ -300,16 +300,16 @@ void test_midi_sysex_stores_program(UNUSED void** state)
 
     const u8 program = 0x05;
 
-    FmChannel fmChannel = { 0 };
-    memcpy(&fmChannel, &TEST_M_BANK_0_INST_0_GRANDPIANO, sizeof(FmChannel));
-    fmChannel.algorithm = 0x07;
+    FmPreset fmPreset = { 0 };
+    memcpy(&fmPreset, &TEST_M_BANK_0_INST_0_GRANDPIANO, sizeof(FmChannel));
+    fmPreset.algorithm = 0x07;
 
     u8 msg[STORE_PROGRAM_MESSAGE_LENGTH];
-    create_store_program_message(msg, STORE_PROGRAM_TYPE_FM, program, &fmChannel);
+    create_store_program_message(msg, STORE_PROGRAM_TYPE_FM, program, &fmPreset);
     expect_log_info("Stored FM preset %d");
     __real_midi_sysex(msg, sizeof(msg));
 
-    expect_synth_preset(FM_CH1, &fmChannel);
+    expect_synth_preset(FM_CH1, &fmPreset);
     __real_midi_program(MIDI_CHANNEL_1, program);
 }
 
@@ -341,12 +341,12 @@ void test_midi_sysex_clears_program(UNUSED void** state)
 
     const u8 program = 0x01;
 
-    FmChannel fmChannel = { 0 };
-    memcpy(&fmChannel, &TEST_M_BANK_0_INST_0_GRANDPIANO, sizeof(FmChannel));
-    fmChannel.algorithm = 0x07;
+    FmPreset fmPreset = { 0 };
+    memcpy(&fmPreset, &TEST_M_BANK_0_INST_0_GRANDPIANO, sizeof(FmPreset));
+    fmPreset.algorithm = 0x07;
 
     u8 msg[STORE_PROGRAM_MESSAGE_LENGTH];
-    create_store_program_message(msg, STORE_PROGRAM_TYPE_FM, program, &fmChannel);
+    create_store_program_message(msg, STORE_PROGRAM_TYPE_FM, program, &fmPreset);
     expect_log_info("Stored FM preset %d");
     __real_midi_sysex(msg, sizeof(msg));
 
@@ -387,17 +387,17 @@ void test_midi_sysex_clears_all_programs(UNUSED void** state)
     const u8 program1 = 0x00;
     const u8 program2 = 0x01;
 
-    FmChannel fmChannel = { 0 };
+    FmPreset fmPreset = { 0 };
     u8 msg[STORE_PROGRAM_MESSAGE_LENGTH];
 
-    memcpy(&fmChannel, &TEST_M_BANK_0_INST_0_GRANDPIANO, sizeof(FmChannel));
-    fmChannel.algorithm = 0x07;
-    create_store_program_message(msg, STORE_PROGRAM_TYPE_FM, program1, &fmChannel);
+    memcpy(&fmPreset, &TEST_M_BANK_0_INST_0_GRANDPIANO, sizeof(FmPreset));
+    fmPreset.algorithm = 0x07;
+    create_store_program_message(msg, STORE_PROGRAM_TYPE_FM, program1, &fmPreset);
     __real_midi_sysex(msg, sizeof(msg));
 
-    memcpy(&fmChannel, &TEST_M_BANK_0_INST_1_BRIGHTPIANO, sizeof(FmChannel));
-    fmChannel.algorithm = 0x04;
-    create_store_program_message(msg, STORE_PROGRAM_TYPE_FM, program2, &fmChannel);
+    memcpy(&fmPreset, &TEST_M_BANK_0_INST_1_BRIGHTPIANO, sizeof(FmPreset));
+    fmPreset.algorithm = 0x04;
+    create_store_program_message(msg, STORE_PROGRAM_TYPE_FM, program2, &fmPreset);
     __real_midi_sysex(msg, sizeof(msg));
 
     mock_log_enable_checks();

@@ -13,8 +13,8 @@
 #include "mocks/mock_psg.h"
 #include "test_helpers.h"
 
-extern const FmChannel TEST_M_BANK_0_INST_0_GRANDPIANO;
-extern const FmChannel TEST_M_BANK_0_INST_1_BRIGHTPIANO;
+extern const FmPreset TEST_M_BANK_0_INST_0_GRANDPIANO;
+extern const FmPreset TEST_M_BANK_0_INST_1_BRIGHTPIANO;
 extern const PercussionPreset TEST_P_BANK_0_INST_30_CASTANETS;
 
 int test_midi_setup(UNUSED void** state);

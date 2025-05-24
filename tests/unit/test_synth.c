@@ -271,7 +271,7 @@ static void set_initial_registers(void)
     expect_value(__wrap_YM2612_write, data, YM_DAC_DATA);
     expect_function_call(__wrap_Z80_releaseBus);
 
-    const FmChannel M_BANK_0_INST_0_GRANDPIANO = { 0, 0, 3, 0, 0, 0, 0,
+    const FmPreset M_BANK_0_INST_0_GRANDPIANO = { 0, 0, 0, 0,
         { { 1, 0, 26, 1, 7, 0, 7, 4, 1, 35, 0 }, { 4, 6, 24, 1, 9, 0, 6, 9, 7, 35, 0 },
             { 2, 7, 31, 3, 23, 0, 9, 15, 1, 35, 0 }, { 1, 3, 27, 2, 4, 0, 10, 4, 6, 35, 0 } } };
     __real_synth_init(&M_BANK_0_INST_0_GRANDPIANO);
@@ -523,7 +523,7 @@ void test_synth_sets_preset(UNUSED void** state)
 {
     const u8 chan = 0;
 
-    const FmChannel M_BANK_0_INST_7_CLAVINET = { 1, 7, 3, 0, 0, 0, 0,
+    const FmPreset M_BANK_0_INST_7_CLAVINET = { 1, 7, 0, 0,
         { { 1, 1, 31, 2, 0, 1, 0, 1, 6, 28, 0 }, { 1, 3, 31, 2, 0, 0, 0, 1, 7, 33, 0 },
             { 1, 5, 31, 3, 0, 1, 0, 0, 2, 30, 0 }, { 1, 7, 31, 0, 6, 0, 4, 6, 7, 6, 0 } } };
 
@@ -550,7 +550,7 @@ void test_synth_sets_preset_retaining_pan(UNUSED void** state)
     expect_ym2612_write_channel(chan, YM_BASE_STEREO_AMS_PMS, 0x80);
     __real_synth_stereo(chan, STEREO_MODE_LEFT);
 
-    const FmChannel M_BANK_0_INST_7_CLAVINET = { 1, 7, 3, 0, 0, 0, 0,
+    const FmPreset M_BANK_0_INST_7_CLAVINET = { 1, 7, 0, 0,
         { { 1, 1, 31, 2, 0, 1, 0, 1, 6, 28, 0 }, { 1, 3, 31, 2, 0, 0, 0, 1, 7, 33, 0 },
             { 1, 5, 31, 3, 0, 1, 0, 0, 2, 30, 0 }, { 1, 7, 31, 0, 6, 0, 4, 6, 7, 6, 0 } } };
 
