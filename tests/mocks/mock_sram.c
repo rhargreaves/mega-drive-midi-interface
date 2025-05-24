@@ -3,9 +3,15 @@
 #include <string.h>
 
 static u8 sram_data[0x4000];
+static bool enabled;
 
 void __wrap_SRAM_writeByte(u32 offset, u8 data)
 {
+    if (!enabled) {
+        print_error("SRAM write attempted when disabled");
+        return;
+    }
+
     if (offset >= sizeof(sram_data)) {
         print_error("SRAM write out of bounds: %ld", offset);
         return;
@@ -15,6 +21,11 @@ void __wrap_SRAM_writeByte(u32 offset, u8 data)
 
 u8* __wrap_SRAM_readByte(u32 offset)
 {
+    if (!enabled) {
+        print_error("SRAM read attempted when disabled");
+        return NULL;
+    }
+
     if (offset >= sizeof(sram_data)) {
         print_error("SRAM read out of bounds: %ld", offset);
         return NULL;
@@ -33,25 +44,16 @@ u8* mock_sram_data(u32 offset)
 
 void __wrap_SRAM_enable(void)
 {
-    function_called();
+    enabled = true;
 }
 
 void __wrap_SRAM_disable(void)
 {
-    function_called();
+    enabled = false;
 }
 
 void mock_sram_init(void)
 {
+    enabled = false;
     memset(sram_data, 0, sizeof(sram_data));
-}
-
-void _expect_sram_enable(const char* file, int line)
-{
-    expect_function_call_with_pos(__wrap_SRAM_enable, file, line);
-}
-
-void _expect_sram_disable(const char* file, int line)
-{
-    expect_function_call_with_pos(__wrap_SRAM_disable, file, line);
 }

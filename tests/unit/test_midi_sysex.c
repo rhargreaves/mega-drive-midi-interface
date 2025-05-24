@@ -308,8 +308,6 @@ void test_midi_sysex_stores_program(UNUSED void** state)
     u8 msg[STORE_PROGRAM_MESSAGE_LENGTH];
     create_store_program_message(msg, STORE_PROGRAM_TYPE_FM, program, &fmPreset);
 
-    expect_sram_enable();
-    expect_sram_disable();
     expect_log_info("Stored FM preset %d");
     __real_midi_sysex(msg, sizeof(msg));
 
@@ -362,8 +360,6 @@ void test_midi_sysex_clears_program(UNUSED void** state)
 
     u8 msg[STORE_PROGRAM_MESSAGE_LENGTH];
     create_store_program_message(msg, STORE_PROGRAM_TYPE_FM, program, &fmPreset);
-    expect_sram_enable();
-    expect_sram_disable();
     expect_log_info("Stored FM preset %d");
     __real_midi_sysex(msg, sizeof(msg));
 
@@ -409,15 +405,11 @@ void test_midi_sysex_clears_all_programs(UNUSED void** state)
     memcpy(&fmPreset, &TEST_M_BANK_0_INST_0_GRANDPIANO, sizeof(FmPreset));
     fmPreset.algorithm = 0x07;
     create_store_program_message(msg, STORE_PROGRAM_TYPE_FM, program1, &fmPreset);
-    expect_sram_enable();
-    expect_sram_disable();
     __real_midi_sysex(msg, sizeof(msg));
 
     memcpy(&fmPreset, &TEST_M_BANK_0_INST_1_BRIGHTPIANO, sizeof(FmPreset));
     fmPreset.algorithm = 0x04;
     create_store_program_message(msg, STORE_PROGRAM_TYPE_FM, program2, &fmPreset);
-    expect_sram_enable();
-    expect_sram_disable();
     __real_midi_sysex(msg, sizeof(msg));
 
     mock_log_enable_checks();
