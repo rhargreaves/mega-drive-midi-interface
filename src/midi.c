@@ -645,6 +645,7 @@ static void store_program(const u8* data, u16 length)
             fmChannel.operators[i].ssgEg = data[16 + i * 11];
         }
         midi_fm_store_preset(program, &fmChannel);
+        log_info("Stored FM preset %d", program + 1);
         break;
     }
     default:
@@ -661,6 +662,7 @@ static void clear_program(const u8* data, u16 length)
     switch (type) {
     case STORE_PROGRAM_TYPE_FM:
         midi_fm_clear_preset(program);
+        log_info("Cleared FM preset %d", program + 1);
         break;
     default:
         log_warn("Invalid clear program type: %d", type);

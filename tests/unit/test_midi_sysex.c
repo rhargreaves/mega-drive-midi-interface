@@ -306,6 +306,7 @@ void test_midi_sysex_stores_program(UNUSED void** state)
 
     u8 msg[STORE_PROGRAM_MESSAGE_LENGTH];
     create_store_program_message(msg, STORE_PROGRAM_TYPE_FM, program, &fmChannel);
+    expect_log_info("Stored FM preset %d");
     __real_midi_sysex(msg, sizeof(msg));
 
     expect_synth_preset(FM_CH1, &fmChannel);
@@ -346,10 +347,12 @@ void test_midi_sysex_clears_program(UNUSED void** state)
 
     u8 msg[STORE_PROGRAM_MESSAGE_LENGTH];
     create_store_program_message(msg, STORE_PROGRAM_TYPE_FM, program, &fmChannel);
+    expect_log_info("Stored FM preset %d");
     __real_midi_sysex(msg, sizeof(msg));
 
     const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
         SYSEX_COMMAND_CLEAR_PROGRAM, STORE_PROGRAM_TYPE_FM, program };
+    expect_log_info("Cleared FM preset %d");
     __real_midi_sysex(sequence, sizeof(sequence));
 
     expect_synth_preset(FM_CH1, &TEST_M_BANK_0_INST_1_BRIGHTPIANO);
