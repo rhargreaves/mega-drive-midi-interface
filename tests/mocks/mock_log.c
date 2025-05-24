@@ -33,7 +33,7 @@ void __wrap_log_warn(const char* fmt, ...)
 
     va_list args;
     va_start(args, fmt);
-    print_message(fmt, args);
+    vprint_message(fmt, args);
     va_end(args);
 
     check_expected(fmt);
