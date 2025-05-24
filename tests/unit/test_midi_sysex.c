@@ -380,3 +380,48 @@ void test_midi_sysex_logs_warning_if_program_clear_type_is_incorrect(UNUSED void
     expect_log_warn("Invalid clear program type: %d");
     __real_midi_sysex(sequence, sizeof(sequence));
 }
+
+void test_midi_sysex_clears_all_programs(UNUSED void** state)
+{
+
+    const u8 program1 = 0x00;
+    const u8 program2 = 0x01;
+
+    FmChannel fmChannel = { 0 };
+    u8 msg[STORE_PROGRAM_MESSAGE_LENGTH];
+
+    memcpy(&fmChannel, &TEST_M_BANK_0_INST_0_GRANDPIANO, sizeof(FmChannel));
+    fmChannel.algorithm = 0x07;
+    create_store_program_message(msg, STORE_PROGRAM_TYPE_FM, program1, &fmChannel);
+    __real_midi_sysex(msg, sizeof(msg));
+
+    memcpy(&fmChannel, &TEST_M_BANK_0_INST_1_BRIGHTPIANO, sizeof(FmChannel));
+    fmChannel.algorithm = 0x04;
+    create_store_program_message(msg, STORE_PROGRAM_TYPE_FM, program2, &fmChannel);
+    __real_midi_sysex(msg, sizeof(msg));
+
+    mock_log_enable_checks();
+
+    const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_CLEAR_ALL_PROGRAMS, STORE_PROGRAM_TYPE_FM };
+
+    expect_log_info("Cleared all FM presets");
+    __real_midi_sysex(sequence, sizeof(sequence));
+
+    expect_synth_preset(FM_CH1, &TEST_M_BANK_0_INST_1_BRIGHTPIANO);
+    __real_midi_program(MIDI_CHANNEL_1, program2);
+
+    expect_synth_preset(FM_CH1, &TEST_M_BANK_0_INST_0_GRANDPIANO);
+    __real_midi_program(MIDI_CHANNEL_1, program1);
+}
+
+void test_midi_sysex_logs_warning_if_clear_all_programs_type_is_incorrect(UNUSED void** state)
+{
+    mock_log_enable_checks();
+
+    const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_CLEAR_ALL_PROGRAMS, 0x01 };
+
+    expect_log_warn("Invalid clear all programs type: %d");
+    __real_midi_sysex(sequence, sizeof(sequence));
+}

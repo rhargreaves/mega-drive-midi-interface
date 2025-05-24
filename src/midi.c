@@ -670,6 +670,24 @@ static void clear_program(const u8* data, u16 length)
     }
 }
 
+static void clear_all_programs(const u8* data, u16 length)
+{
+    u8 type = data[0];
+
+    switch (type) {
+    case STORE_PROGRAM_TYPE_FM: {
+        for (u8 i = 0; i < MIDI_PROGRAMS; i++) {
+            midi_fm_clear_preset(i);
+        }
+        log_info("Cleared all FM presets");
+        break;
+    }
+    default:
+        log_warn("Invalid clear all programs type: %d", type);
+        break;
+    }
+}
+
 static void direct_write_ym2612_part_0(const u8* data, u16 length)
 {
     direct_write_ym2612(0, data, length);
@@ -710,6 +728,7 @@ static const SysexCommand SYSEX_COMMANDS[] = {
     { SYSEX_COMMAND_WRITE_YM2612_REG_PART_1, direct_write_ym2612_part_1, 4, true },
     { SYSEX_COMMAND_STORE_PROGRAM, store_program, 6 + (MAX_FM_OPERATORS * 11), true },
     { SYSEX_COMMAND_CLEAR_PROGRAM, clear_program, 2, true },
+    { SYSEX_COMMAND_CLEAR_ALL_PROGRAMS, clear_all_programs, 1, true },
 };
 
 void midi_sysex(const u8* data, u16 length)

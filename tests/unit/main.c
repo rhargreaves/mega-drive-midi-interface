@@ -155,6 +155,8 @@ int main(void)
         midi_test(test_midi_polyphonic_mode_sends_CCs_to_all_FM_channels),
         midi_test(test_midi_set_overflow_flag_on_polyphony_breach),
         midi_test(test_midi_sets_fm_preset),
+
+        // sysex
         midi_test(test_midi_sysex_general_midi_reset_resets_synth_volume),
         midi_test(test_midi_sysex_sends_all_notes_off),
         midi_test(test_midi_sysex_ignores_unknown_sysex),
@@ -169,6 +171,8 @@ int main(void)
         midi_test(test_midi_sysex_clears_program),
         midi_test(test_midi_sysex_logs_warning_if_program_clear_length_is_incorrect),
         midi_test(test_midi_sysex_logs_warning_if_program_clear_type_is_incorrect),
+        midi_test(test_midi_sysex_clears_all_programs),
+        midi_test(test_midi_sysex_logs_warning_if_clear_all_programs_type_is_incorrect),
 
         midi_test(
             test_midi_fm_note_on_percussion_channel_sets_percussion_preset),
