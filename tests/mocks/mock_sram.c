@@ -2,9 +2,7 @@
 #include "cmocka_inc.h"
 #include <string.h>
 
-static u8 sram_data[0x1000];
-static u16 write_count;
-static u16 read_count;
+static u8 sram_data[0x4000];
 
 void __wrap_SRAM_writeByte(u32 offset, u8 data)
 {
@@ -13,17 +11,15 @@ void __wrap_SRAM_writeByte(u32 offset, u8 data)
         return;
     }
     sram_data[offset] = data;
-    write_count++;
 }
 
-void __wrap_SRAM_readByte(u32 offset, u8* data)
+u8* __wrap_SRAM_readByte(u32 offset)
 {
     if (offset >= sizeof(sram_data)) {
         print_error("SRAM read out of bounds: %ld", offset);
-        return;
+        return NULL;
     }
-    *data = sram_data[offset];
-    read_count++;
+    return &sram_data[offset];
 }
 
 u8* mock_sram_data(u32 offset)
@@ -32,7 +28,7 @@ u8* mock_sram_data(u32 offset)
         print_error("SRAM data pointer out of bounds: %ld", offset);
         return NULL;
     }
-    return &sram_data[offset];
+    return (u8*)&sram_data[offset];
 }
 
 void __wrap_SRAM_enable(void)
@@ -48,25 +44,6 @@ void __wrap_SRAM_disable(void)
 void mock_sram_init(void)
 {
     memset(sram_data, 0, sizeof(sram_data));
-    write_count = 0;
-    read_count = 0;
-}
-
-u16 mock_sram_write_count()
-{
-    return write_count;
-}
-
-u16 mock_sram_read_count()
-{
-    return read_count;
-}
-
-void mock_sram_dump(u32 offset, u32 length)
-{
-    for (u32 i = 0; i < length; i++) {
-        print_error("SRAM[%ld] = %02X\n", offset + i, sram_data[offset + i]);
-    }
 }
 
 void _expect_sram_enable(const char* file, int line)

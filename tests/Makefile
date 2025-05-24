@@ -37,6 +37,7 @@ CFLAGS=$(INCLUDE_DIRS) \
 	-Wno-unused-parameter \
 	-Wno-builtin-declaration-mismatch \
 	-Wno-unused-function \
+	-Wno-packed-bitfield-compat \
 	-fsigned-char
 
 

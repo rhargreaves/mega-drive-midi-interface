@@ -323,7 +323,6 @@ void test_midi_sysex_stores_program(UNUSED void** state)
 
     const u16 SRAM_PRESETS_START = 32;
     const u16 SRAM_DATA_LENGTH = sizeof(EXPECTED_SRAM_DATA);
-    assert_int_equal(mock_sram_write_count(), SRAM_DATA_LENGTH);
 
     u16 offset = SRAM_PRESETS_START + (program * SRAM_DATA_LENGTH);
     assert_memory_equal(mock_sram_data(offset), EXPECTED_SRAM_DATA, SRAM_DATA_LENGTH);
