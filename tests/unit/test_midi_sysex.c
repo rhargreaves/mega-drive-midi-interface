@@ -319,7 +319,7 @@ void test_midi_sysex_logs_warning_if_program_store_length_is_incorrect(UNUSED vo
     const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
         SYSEX_COMMAND_STORE_PROGRAM, 0x00, 0x05 };
 
-    expect_log_warn("Invalid store program data length: %d");
+    expect_log_warn("Sysex %X: Invalid length: %d (!= %d)");
     __real_midi_sysex(sequence, sizeof(sequence));
 }
 
@@ -363,7 +363,7 @@ void test_midi_sysex_logs_warning_if_program_clear_length_is_incorrect(UNUSED vo
     const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
         SYSEX_COMMAND_CLEAR_PROGRAM, STORE_PROGRAM_TYPE_FM };
 
-    expect_log_warn("Invalid clear program data length: %d");
+    expect_log_warn("Sysex %X: Invalid length: %d (!= %d)");
     __real_midi_sysex(sequence, sizeof(sequence));
 }
 

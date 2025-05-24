@@ -618,11 +618,6 @@ static void direct_write_ym2612(u8 part, const u8* data, u16 length)
 
 static void store_program(const u8* data, u16 length)
 {
-    const u8 EXPECTED_LENGTH = 6 + (MAX_FM_OPERATORS * 11);
-    if (length != EXPECTED_LENGTH) {
-        log_warn("Invalid store program data length: %d", length);
-        return;
-    }
     u8 type = data[0];
     u8 program = data[1];
 
@@ -662,12 +657,6 @@ static void clear_program(const u8* data, u16 length)
 {
     u8 type = data[0];
     u8 program = data[1];
-
-    const u8 EXPECTED_LENGTH = 2;
-    if (length != EXPECTED_LENGTH) {
-        log_warn("Invalid clear program data length: %d", length);
-        return;
-    }
 
     switch (type) {
     case STORE_PROGRAM_TYPE_FM:
@@ -717,27 +706,27 @@ static const SysexCommand SYSEX_COMMANDS[] = {
     { SYSEX_COMMAND_INVERT_TOTAL_LEVEL, set_invert_total_level, 1, true },
     { SYSEX_COMMAND_WRITE_YM2612_REG_PART_0, direct_write_ym2612_part_0, 4, true },
     { SYSEX_COMMAND_WRITE_YM2612_REG_PART_1, direct_write_ym2612_part_1, 4, true },
-    { SYSEX_COMMAND_STORE_PROGRAM, store_program, 0, false },
-    { SYSEX_COMMAND_CLEAR_PROGRAM, clear_program, 0, false },
+    { SYSEX_COMMAND_STORE_PROGRAM, store_program, 6 + (MAX_FM_OPERATORS * 11), true },
+    { SYSEX_COMMAND_CLEAR_PROGRAM, clear_program, 2, true },
 };
 
 static void handle_custom_sysex(const u8* data, u16 length)
 {
     const u8 command = data[0];
     if (command >= LENGTH_OF(SYSEX_COMMANDS)) {
-        log_warn("Invalid sysex command: %d", command);
+        log_warn("Sysex %X: Invalid command", command);
         return;
     }
 
     const SysexCommand* cmd = &SYSEX_COMMANDS[command];
     if (cmd->handler == NULL) {
-        log_warn("Invalid sysex command: %d", command);
+        log_warn("Sysex %X: Invalid command", command);
         return;
     }
 
     increment_sysex_cursor(&data, &length, 1);
     if (cmd->validateLength && length != cmd->length) {
-        log_warn("Invalid sysex data length: %d", length);
+        log_warn("Sysex %X: Invalid length: %d (!= %d)", command, length, cmd->length);
         return;
     }
 
