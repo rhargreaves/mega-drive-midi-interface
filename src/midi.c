@@ -86,12 +86,10 @@ static void set_dynamic_mode(MappingMode mode);
 static void set_operator_total_level(u8 chan, u8 op, u8 value);
 static void update_device_channel_from_associated_midi_channel(DeviceChannel* devChan);
 static DeviceChannel* deviceChannelByMidiChannel(u8 midiChannel);
-static void init_all_device_channels(void);
-static void reset_all_state(void);
+static void reset_channels(void);
 static void init_midi_channel(u8 midiChan);
 static void init_device_channel(u8 devChan);
 static void reset(void);
-static void init(void);
 static void dev_chan_note_on(DeviceChannel* devChan, u8 pitch, u8 velocity);
 static void dev_chan_note_off(DeviceChannel* devChan, u8 pitch);
 static void set_downstream_pitch(DeviceChannel* devChan);
@@ -102,11 +100,6 @@ void midi_init(
     defaultEnvelopes = envelopes;
     defaultPresets = presets;
     defaultPercussionPresets = percussionPresets;
-    init();
-}
-
-static void init(void)
-{
     midi_psg_init(defaultEnvelopes);
     midi_fm_init(defaultPresets, defaultPercussionPresets);
     scheduler_addFrameHandler(midi_tick);
@@ -122,15 +115,17 @@ static void reset(void)
     dynamicMode = mappingModePref == MappingMode_Dynamic;
     disableNonGeneralMidiCCs = false;
     stickToDeviceType = false;
-    reset_all_state();
+    reset_channels();
 }
 
-static void reset_all_state(void)
+static void reset_channels(void)
 {
     for (u8 i = 0; i < MIDI_CHANNELS; i++) {
         init_midi_channel(i);
     }
-    init_all_device_channels();
+    for (u16 i = 0; i < DEV_CHANS; i++) {
+        init_device_channel(i);
+    }
     apply_dynamic_mode();
 }
 
@@ -150,13 +145,6 @@ static void init_midi_channel(u8 midiChan)
     chan->portamentoInterval = DEFAULT_PORTAMENTO_INTERVAL;
     chan->fineTune = 0;
     chan->rpn = NULL_RPN;
-}
-
-static void init_all_device_channels(void)
-{
-    for (u16 i = 0; i < DEV_CHANS; i++) {
-        init_device_channel(i);
-    }
 }
 
 static void init_device_channel(u8 devChan)
@@ -800,7 +788,7 @@ static void general_midi_reset(void)
     if (mappingModePref == MappingMode_Auto) {
         dynamicMode = true;
     }
-    reset_all_state();
+    reset_channels();
 }
 
 static void apply_dynamic_mode(void)
