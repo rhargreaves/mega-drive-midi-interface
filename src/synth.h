@@ -81,6 +81,7 @@ void synth_fms(u8 channel, u8 fms);
 u8 synth_busy(void);
 void synth_preset(u8 channel, const FmPreset* preset);
 const FmChannel* synth_channel_parameters(u8 channel);
+void synth_extract_preset(u8 channel, FmPreset* preset);
 const Global* synth_global_parameters();
 void synth_set_parameter_update_callback(ParameterUpdatedCallback* cb);
 void synth_set_special_mode(bool enable);

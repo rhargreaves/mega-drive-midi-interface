@@ -38,6 +38,8 @@ void __wrap_synth_special_mode_pitch(u8 op, u8 octave, u16 freqNumber);
 void __wrap_synth_special_mode_volume(u8 op, u8 volume);
 void __wrap_synth_direct_write_ym2612(u8 part, u8 reg, u8 data);
 void __wrap_synth_enable_dac(bool enable);
+void __wrap_synth_extract_preset(u8 channel, FmPreset* preset);
+
 extern void __real_synth_init(const FmPreset* defaultPreset);
 extern void __real_synth_note_on(u8 channel);
 extern void __real_synth_note_off(u8 channel);
@@ -70,7 +72,7 @@ extern void __real_synth_special_mode_pitch(u8 op, u8 octave, u16 freqNumber);
 extern void __real_synth_special_mode_volume(u8 op, u8 volume);
 extern void __real_synth_enable_dac(bool enable);
 extern void __real_synth_direct_write_ym2612(u8 part, u8 reg, u8 data);
-
+extern void __real_synth_extract_preset(u8 channel, FmPreset* preset);
 int fmpreset_equality_check(
     const LargestIntegralType value, const LargestIntegralType check_value_data);
 void _expect_synth_algorithm(u8 channel, u8 algorithm, const char* const file, const int line);
@@ -115,6 +117,8 @@ void _expect_synth_direct_write_ym2612(
     u8 part, u8 reg, u8 data, const char* const file, const int line);
 void _expect_synth_preset(
     u8 channel, const FmPreset* preset, const char* const file, const int line);
+void _expect_synth_extract_preset(
+    u8 channel, FmPreset* preset, const char* const file, const int line);
 
 #define expect_synth_preset(channel, preset)                                                       \
     _expect_synth_preset(channel, preset, __FILE__, __LINE__)
@@ -168,3 +172,5 @@ void _expect_synth_preset(
     _expect_synth_set_special_mode(enable, __FILE__, __LINE__)
 #define expect_synth_direct_write_ym2612(part, reg, data)                                          \
     _expect_synth_direct_write_ym2612(part, reg, data, __FILE__, __LINE__)
+#define expect_synth_extract_preset(channel, preset)                                               \
+    _expect_synth_extract_preset(channel, preset, __FILE__, __LINE__)

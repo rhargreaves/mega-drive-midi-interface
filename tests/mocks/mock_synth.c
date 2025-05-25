@@ -188,6 +188,14 @@ void __wrap_synth_volume(u8 channel, u8 volume)
     check_expected(volume);
 }
 
+void __wrap_synth_extract_preset(u8 channel, FmPreset* preset)
+{
+    if (disableChecks)
+        return;
+    check_expected(channel);
+    memcpy(preset, mock_type(FmPreset*), sizeof(FmPreset));
+}
+
 const FmChannel* __wrap_synth_channel_parameters(u8 channel)
 {
     return NULL;
@@ -273,17 +281,54 @@ int fmpreset_equality_check(
 {
     FmPreset* expected = (FmPreset*)value;
     FmPreset* actual = (FmPreset*)check_value_data;
+    bool mismatch = false;
 
-    if ((actual->algorithm == expected->algorithm) && (actual->ams == expected->ams)
-        && (actual->feedback == expected->feedback) && (actual->fms == expected->fms)
-        && operator_equality_check(&actual->operators[0], &expected->operators[0])
-        && operator_equality_check(&actual->operators[1], &expected->operators[1])
-        && operator_equality_check(&actual->operators[2], &expected->operators[2])
-        && operator_equality_check(&actual->operators[3], &expected->operators[3])) {
-        return 1;
+    if (actual->algorithm != expected->algorithm) {
+        print_error("algorithm mismatch: %d != %d\n", actual->algorithm, expected->algorithm);
+        mismatch = true;
     }
 
-    return 0;
+    if (actual->ams != expected->ams) {
+        print_error("ams mismatch: %d != %d\n", actual->ams, expected->ams);
+        mismatch = true;
+    }
+
+    if (actual->fms != expected->fms) {
+        print_error("fms mismatch: %d != %d\n", actual->fms, expected->fms);
+        mismatch = true;
+    }
+
+    if (actual->feedback != expected->feedback) {
+        print_error("feedback mismatch: %d != %d\n", actual->feedback, expected->feedback);
+        mismatch = true;
+    }
+
+    if (actual->fms != expected->fms) {
+        print_error("fms mismatch: %d != %d\n", actual->fms, expected->fms);
+        mismatch = true;
+    }
+
+    if (!operator_equality_check(&actual->operators[0], &expected->operators[0])) {
+        print_error("operator 0 mismatch\n");
+        mismatch = true;
+    }
+
+    if (!operator_equality_check(&actual->operators[1], &expected->operators[1])) {
+        print_error("operator 1 mismatch\n");
+        mismatch = true;
+    }
+
+    if (!operator_equality_check(&actual->operators[2], &expected->operators[2])) {
+        print_error("operator 2 mismatch\n");
+        mismatch = true;
+    }
+
+    if (!operator_equality_check(&actual->operators[3], &expected->operators[3])) {
+        print_error("operator 3 mismatch\n");
+        mismatch = true;
+    }
+
+    return mismatch ? 0 : 1;
 }
 
 void _expect_synth_algorithm(u8 channel, u8 algorithm, const char* const file, const int line)
@@ -447,4 +492,11 @@ void _expect_synth_preset(
 {
     expect_value_with_pos(__wrap_synth_preset, channel, channel, file, line);
     expect_check_with_pos(__wrap_synth_preset, preset, fmpreset_equality_check, preset, file, line);
+}
+
+void _expect_synth_extract_preset(
+    u8 channel, FmPreset* preset, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_synth_extract_preset, channel, channel, file, line);
+    will_return(__wrap_synth_extract_preset, preset);
 }

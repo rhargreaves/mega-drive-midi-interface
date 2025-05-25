@@ -501,3 +501,15 @@ static void release_z80_bus(void)
     YM2612_write(0, YM_DAC_DATA); // Latch reg address for PCM driver
     Z80_releaseBus();
 }
+
+void synth_extract_preset(u8 ch, FmPreset* preset)
+{
+    const FmChannel* chan = synth_channel_parameters(ch);
+    preset->algorithm = chan->algorithm;
+    preset->feedback = chan->feedback;
+    preset->ams = chan->ams;
+    preset->fms = chan->fms;
+    for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
+        preset->operators[op] = chan->operators[op];
+    }
+}

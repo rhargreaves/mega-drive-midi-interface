@@ -1043,6 +1043,17 @@ static void rpn_data_entry(MidiChannel* chan, u8 value, bool is_msb)
     }
 }
 
+static void store_program_from_channel(u8 ch, u8 program)
+{
+    FOREACH_DEV_CHAN_WITH_MIDI(ch, devChan) {
+        if (devChan->ops == &FM_VTable) {
+            midi_fm_store_preset_from_channel(devChan->num, program);
+            log_info("Prg %d: FM preset stored", program + 1);
+            break; // first chan we find only
+        }
+    }
+}
+
 void midi_cc(u8 ch, u8 controller, u8 value)
 {
     MidiChannel* chan = &midiChannels[ch];
@@ -1103,6 +1114,9 @@ void midi_cc(u8 ch, u8 controller, u8 value)
     case CC_SUSTAIN_PEDAL:
     case CC_NRPN_LSB:
     case CC_NRPN_MSB:
+        break;
+    case CC_STORE_PROGRAM:
+        store_program_from_channel(ch, value);
         break;
     default:
         fm_parameter_cc(ch, controller, value);

@@ -82,6 +82,7 @@ MOCKS=midi_process \
 	synth_special_mode_volume \
 	synth_direct_write_ym2612 \
 	synth_enable_dac \
+	synth_extract_preset \
 	midi_note_off \
 	midi_note_on \
 	midi_pitch_bend \

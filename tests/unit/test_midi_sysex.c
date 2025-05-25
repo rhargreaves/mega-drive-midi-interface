@@ -472,3 +472,36 @@ void test_midi_sysex_does_not_display_loaded_msg_if_no_presets_are_loaded(UNUSED
     mock_synth_disable_checks();
     __real_midi_reset();
 }
+
+void test_midi_cc_stores_program(UNUSED void** state)
+{
+    const u8 program = 0x01;
+
+    expect_synth_algorithm(FM_CH1, 0x06);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_GENMDM_FM_ALGORITHM, 111);
+
+    FmPreset fmPreset;
+    memcpy(&fmPreset, &TEST_M_BANK_0_INST_0_GRANDPIANO, sizeof(FmPreset));
+    fmPreset.algorithm = 0x06;
+
+    mock_log_enable_checks();
+    expect_synth_extract_preset(FM_CH1, &fmPreset);
+    expect_log_info("Prg %d: FM preset stored");
+    __real_midi_cc(MIDI_CHANNEL_1, CC_STORE_PROGRAM, program);
+
+    expect_synth_algorithm(FM_CH1, 0x00);
+    __real_midi_cc(MIDI_CHANNEL_1, CC_GENMDM_FM_ALGORITHM, 0);
+
+    expect_synth_preset(FM_CH1, &fmPreset);
+    __real_midi_program(MIDI_CHANNEL_1, program);
+
+    // check that the preset was stored to SRAM
+    const u8 EXPECTED_SRAM_DATA[SRAM_PRESET_LENGTH]
+        = { /* magic number */ 0x9E, 0x1D, /* version */ 0x01,
+              /* preset */ 0xC0, 0x00, 0x11, 0xA4, 0xE7, 0x20, 0xA7, 0x00, 0x4D, 0x85, 0x26, 0x4B,
+              0xA4, 0x00, 0x2F, 0xFE, 0xE9, 0x78, 0x84, 0x00, 0x17, 0xB8, 0x8A, 0x23, 0x02, 0x00,
+              /* reserved */ 0x00, 0x00, 0x00, 0x00, 0x00, /* checksum */ 0x87, 0x77 };
+
+    u16 offset = SRAM_PRESET_START + (program * SRAM_PRESET_LENGTH);
+    assert_memory_equal(mock_sram_data(offset), EXPECTED_SRAM_DATA, SRAM_PRESET_LENGTH);
+}

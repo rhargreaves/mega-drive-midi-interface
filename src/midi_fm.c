@@ -186,7 +186,6 @@ void midi_fm_store_preset(u8 program, const FmPreset* preset)
 {
     memcpy(&userPresets[program], preset, sizeof(FmPreset));
     activeUserPresets[program] = &userPresets[program];
-
     midi_fm_sram_save_preset(program, preset);
 }
 
@@ -194,6 +193,12 @@ void midi_fm_clear_preset(u8 program)
 {
     memset(&userPresets[program], 0, sizeof(FmPreset));
     activeUserPresets[program] = NULL;
-
     midi_fm_sram_clear_preset(program);
+}
+
+void midi_fm_store_preset_from_channel(u8 chan, u8 program)
+{
+    FmPreset fmPreset;
+    synth_extract_preset(chan, &fmPreset);
+    midi_fm_store_preset(program, &fmPreset);
 }

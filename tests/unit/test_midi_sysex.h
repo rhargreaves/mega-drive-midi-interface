@@ -27,3 +27,4 @@ void test_midi_sysex_clears_all_programs(UNUSED void** state);
 void test_midi_sysex_logs_warning_if_clear_all_programs_type_is_incorrect(UNUSED void** state);
 void test_midi_loads_presets_from_sram(UNUSED void** state);
 void test_midi_sysex_does_not_display_loaded_msg_if_no_presets_are_loaded(UNUSED void** state);
+void test_midi_cc_stores_program(UNUSED void** state);
