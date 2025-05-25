@@ -308,7 +308,7 @@ void test_midi_sysex_stores_program(UNUSED void** state)
     u8 msg[STORE_PROGRAM_MESSAGE_LENGTH];
     create_store_program_message(msg, STORE_PROGRAM_TYPE_FM, program, &fmPreset);
 
-    expect_log_info("Stored FM preset %d");
+    expect_log_info("Prg %d: FM preset stored");
     __real_midi_sysex(msg, sizeof(msg));
 
     expect_synth_preset(FM_CH1, &fmPreset);
@@ -350,8 +350,6 @@ void test_midi_sysex_logs_warning_if_program_store_type_is_incorrect(UNUSED void
 
 void test_midi_sysex_clears_program(UNUSED void** state)
 {
-    mock_log_enable_checks();
-
     const u8 program = 0x01;
 
     FmPreset fmPreset = { 0 };
@@ -360,12 +358,12 @@ void test_midi_sysex_clears_program(UNUSED void** state)
 
     u8 msg[STORE_PROGRAM_MESSAGE_LENGTH];
     create_store_program_message(msg, STORE_PROGRAM_TYPE_FM, program, &fmPreset);
-    expect_log_info("Stored FM preset %d");
     __real_midi_sysex(msg, sizeof(msg));
 
     const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
         SYSEX_COMMAND_CLEAR_PROGRAM, STORE_PROGRAM_TYPE_FM, program };
-    expect_log_info("Cleared FM preset %d");
+    mock_log_enable_checks();
+    expect_log_info("Prg %d: FM preset cleared");
     __real_midi_sysex(sequence, sizeof(sequence));
 
     expect_synth_preset(FM_CH1, &TEST_M_BANK_0_INST_1_BRIGHTPIANO);
@@ -417,7 +415,7 @@ void test_midi_sysex_clears_all_programs(UNUSED void** state)
     const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
         SYSEX_COMMAND_CLEAR_ALL_PROGRAMS, STORE_PROGRAM_TYPE_FM };
 
-    expect_log_info("Cleared all FM presets");
+    expect_log_info("All FM presets cleared");
     __real_midi_sysex(sequence, sizeof(sequence));
 
     expect_synth_preset(FM_CH1, &TEST_M_BANK_0_INST_1_BRIGHTPIANO);
@@ -436,4 +434,29 @@ void test_midi_sysex_logs_warning_if_clear_all_programs_type_is_incorrect(UNUSED
 
     expect_log_warn("Invalid clear all programs type: %d");
     __real_midi_sysex(sequence, sizeof(sequence));
+}
+
+void test_midi_loads_presets_from_sram(UNUSED void** state)
+{
+    // store a preset to SRAM
+    const u8 program = 0x01;
+
+    FmPreset fmPreset;
+    memcpy(&fmPreset, &TEST_M_BANK_0_INST_0_GRANDPIANO, sizeof(FmPreset));
+    fmPreset.algorithm = 0x07;
+
+    u8 msg[STORE_PROGRAM_MESSAGE_LENGTH];
+    create_store_program_message(msg, STORE_PROGRAM_TYPE_FM, program, &fmPreset);
+    __real_midi_sysex(msg, sizeof(msg));
+
+    // reset (wipes all presets from RAM)
+    mock_log_enable_checks();
+    mock_synth_disable_checks();
+    expect_log_info("Loaded %d FM presets");
+    __real_midi_reset();
+    mock_synth_enable_checks();
+
+    // check that the preset was loaded
+    expect_synth_preset(FM_CH1, &fmPreset);
+    __real_midi_program(MIDI_CHANNEL_1, program);
 }

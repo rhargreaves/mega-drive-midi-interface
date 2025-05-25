@@ -638,7 +638,7 @@ static void store_program(const u8* data, u16 length)
             fmPreset.operators[i].ssgEg = data[16 + i * 11];
         }
         midi_fm_store_preset(program, &fmPreset);
-        log_info("Stored FM preset %d", program + 1);
+        log_info("Prg %d: FM preset stored", program + 1);
         break;
     }
     default:
@@ -655,7 +655,7 @@ static void clear_program(const u8* data, u16 length)
     switch (type) {
     case STORE_PROGRAM_TYPE_FM:
         midi_fm_clear_preset(program);
-        log_info("Cleared FM preset %d", program + 1);
+        log_info("Prg %d: FM preset cleared", program + 1);
         break;
     default:
         log_warn("Invalid clear program type: %d", type);
@@ -672,7 +672,7 @@ static void clear_all_programs(const u8* data, u16 length)
         for (u8 i = 0; i < MIDI_PROGRAMS; i++) {
             midi_fm_clear_preset(i);
         }
-        log_info("Cleared all FM presets");
+        log_info("All FM presets cleared");
         break;
     }
     default:

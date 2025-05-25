@@ -44,3 +44,13 @@ Log* __wrap_log_dequeue(void)
 {
     return mock_type(Log*);
 }
+
+void _expect_log_info(const char* fmt, const char* const file, const int line)
+{
+    expect_string_with_pos(__wrap_log_info, fmt, fmt, file, line);
+}
+
+void _expect_log_warn(const char* fmt, const char* const file, const int line)
+{
+    expect_string_with_pos(__wrap_log_warn, fmt, fmt, file, line);
+}

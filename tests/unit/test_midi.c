@@ -61,7 +61,6 @@ int test_midi_setup(UNUSED void** state)
     P_BANK_0[30] = &TEST_P_BANK_0_INST_30_CASTANETS;
     mock_log_disable_checks();
     mock_synth_disable_checks();
-    mock_sram_init();
     midi_init(M_BANK_0, P_BANK_0, TEST_ENVELOPES);
     mock_synth_enable_checks();
     mock_sgdk_set_SYS_isPAL(false);

@@ -18,3 +18,5 @@
         cast_to_largest_integral_type(check_data), NULL, 1)
 #define expect_function_call_with_pos(function, file, line)                                        \
     _expect_function_call(#function, file, line, 1)
+#define expect_string_with_pos(function, parameter, string, file, line)                            \
+    _expect_string(#function, #parameter, file, line, string, 1)

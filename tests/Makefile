@@ -208,10 +208,12 @@ MD_MOCKS=SYS_setVIntCallback \
 	mem_write_u8 \
 	mem_read_u16 \
 	mem_write_u16 \
-	SRAM_writeByte \
-	SRAM_readByte \
-	SRAM_enable \
-	SRAM_disable
+	sram_init \
+	sram_is_present \
+	sram_enable \
+	sram_disable \
+	sram_write \
+	sram_read
 
 LDFLAGS=-ggdb -ffreestanding -lcmocka \
 	-L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src \
