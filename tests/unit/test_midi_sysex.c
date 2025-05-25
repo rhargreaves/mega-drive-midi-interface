@@ -3,6 +3,9 @@
 #include "mocks/mock_synth.h"
 #include "mocks/mock_sram.h"
 
+#define SRAM_PRESET_LENGTH 36
+#define SRAM_PRESET_START 32
+
 static void remapChannel(u8 midiChannel, u8 deviceChannel)
 {
     const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
@@ -314,16 +317,14 @@ void test_midi_sysex_stores_program(UNUSED void** state)
     expect_synth_preset(FM_CH1, &fmPreset);
     __real_midi_program(MIDI_CHANNEL_1, program);
 
-    const u8 EXPECTED_SRAM_DATA[] = { /* magic number */ 0x9E, 0x1D, /* version */ 0x01,
-        /* preset */ 0xE0, 0x00, 0x11, 0xA4, 0xE7, 0x20, 0xA7, 0x00, 0x4D, 0x85, 0x26, 0x4B, 0xA4,
-        0x00, 0x2F, 0xFE, 0xE9, 0x78, 0x84, 0x00, 0x17, 0xB8, 0x8A, 0x23, 0x02, 0x00,
-        /* reserved */ 0x00, 0x00, 0x00, 0x00, 0x00, /* checksum */ 0x40, 0x47 };
+    const u8 EXPECTED_SRAM_DATA[SRAM_PRESET_LENGTH]
+        = { /* magic number */ 0x9E, 0x1D, /* version */ 0x01,
+              /* preset */ 0xE0, 0x00, 0x11, 0xA4, 0xE7, 0x20, 0xA7, 0x00, 0x4D, 0x85, 0x26, 0x4B,
+              0xA4, 0x00, 0x2F, 0xFE, 0xE9, 0x78, 0x84, 0x00, 0x17, 0xB8, 0x8A, 0x23, 0x02, 0x00,
+              /* reserved */ 0x00, 0x00, 0x00, 0x00, 0x00, /* checksum */ 0x40, 0x47 };
 
-    const u16 SRAM_PRESETS_START = 32;
-    const u16 SRAM_DATA_LENGTH = sizeof(EXPECTED_SRAM_DATA);
-
-    u16 offset = SRAM_PRESETS_START + (program * SRAM_DATA_LENGTH);
-    assert_memory_equal(mock_sram_data(offset), EXPECTED_SRAM_DATA, SRAM_DATA_LENGTH);
+    u16 offset = SRAM_PRESET_START + (program * SRAM_PRESET_LENGTH);
+    assert_memory_equal(mock_sram_data(offset), EXPECTED_SRAM_DATA, SRAM_PRESET_LENGTH);
 }
 
 void test_midi_sysex_logs_warning_if_program_store_length_is_incorrect(UNUSED void** state)
@@ -368,6 +369,10 @@ void test_midi_sysex_clears_program(UNUSED void** state)
 
     expect_synth_preset(FM_CH1, &TEST_M_BANK_0_INST_1_BRIGHTPIANO);
     __real_midi_program(MIDI_CHANNEL_1, program);
+
+    u16 offset = SRAM_PRESET_START + SRAM_PRESET_LENGTH * program;
+    const u8 CLEARED_MAGIC_NUMBER[2] = { 0, 0 };
+    assert_memory_equal(mock_sram_data(offset), CLEARED_MAGIC_NUMBER, 2);
 }
 
 void test_midi_sysex_logs_warning_if_program_clear_length_is_incorrect(UNUSED void** state)

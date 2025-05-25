@@ -216,11 +216,8 @@ static void sram_preset_slot(SramFmPresetSlot* slot, const FmPreset* preset)
     }
 }
 
-void midi_fm_store_preset(u8 program, const FmPreset* preset)
+static void save_preset_to_sram(u8 program, const FmPreset* preset)
 {
-    memcpy(&userPresets[program], preset, sizeof(FmPreset));
-    activeUserPresets[program] = &userPresets[program];
-
     if (!sram_is_present()) {
         log_warn("No SRAM");
         return;
@@ -251,10 +248,34 @@ void midi_fm_store_preset(u8 program, const FmPreset* preset)
     sram_disable();
 }
 
+static void clear_preset_from_sram(u8 program)
+{
+    if (!sram_is_present()) {
+        log_warn("No SRAM");
+        return;
+    }
+
+    u16 offset = SRAM_PRESET_BASE_OFFSET + SRAM_PRESET_LENGTH * program;
+    sram_enable(true);
+    sram_write(offset, 0); // wipe magic number
+    sram_write(offset + 1, 0);
+    sram_disable();
+}
+
+void midi_fm_store_preset(u8 program, const FmPreset* preset)
+{
+    memcpy(&userPresets[program], preset, sizeof(FmPreset));
+    activeUserPresets[program] = &userPresets[program];
+
+    save_preset_to_sram(program, preset);
+}
+
 void midi_fm_clear_preset(u8 program)
 {
     memset(&userPresets[program], 0, sizeof(FmPreset));
     activeUserPresets[program] = NULL;
+
+    clear_preset_from_sram(program);
 }
 
 static void preset_from_sram_preset_slot(FmPreset* preset, const SramFmPresetSlot* slot)
