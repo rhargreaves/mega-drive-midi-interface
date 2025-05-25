@@ -460,3 +460,10 @@ void test_midi_loads_presets_from_sram(UNUSED void** state)
     expect_synth_preset(FM_CH1, &fmPreset);
     __real_midi_program(MIDI_CHANNEL_1, program);
 }
+
+void test_midi_sysex_does_not_display_loaded_msg_if_no_presets_are_loaded(UNUSED void** state)
+{
+    mock_log_enable_checks();
+    mock_synth_disable_checks();
+    __real_midi_reset();
+}

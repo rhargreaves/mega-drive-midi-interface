@@ -176,6 +176,7 @@ int main(void)
         midi_test(test_midi_sysex_clears_all_programs),
         midi_test(test_midi_sysex_logs_warning_if_clear_all_programs_type_is_incorrect),
         midi_test(test_midi_loads_presets_from_sram),
+        midi_test(test_midi_sysex_does_not_display_loaded_msg_if_no_presets_are_loaded),
 
         midi_test(
             test_midi_fm_note_on_percussion_channel_sets_percussion_preset),

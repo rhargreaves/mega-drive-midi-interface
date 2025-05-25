@@ -307,6 +307,8 @@ void midi_fm_load_presets_from_sram(void)
         activeUserPresets[program] = &userPresets[program];
         count++;
     }
-    log_info("Loaded %d FM presets", count);
+    if (count != 0) {
+        log_info("Loaded %d FM presets", count);
+    }
     sram_disable();
 }
