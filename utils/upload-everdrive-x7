@@ -1,3 +1,12 @@
 #!/bin/bash
+set -eu
+
 SERIAL_PORT=/dev/cu.usbserial-A105J2JO
-megaedx7-run -runMode ssf -serialPort $SERIAL_PORT "$@"
+RUN_MODE=md
+
+if strings "$@" | head -n 1 | grep "SEGA SSF " &>/dev/null; then
+    echo "SSF detected"
+    RUN_MODE=ssf
+fi
+
+megaedx7-run -runMode $RUN_MODE -serialPort $SERIAL_PORT "$@"
