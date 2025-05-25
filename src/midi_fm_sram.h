@@ -2,6 +2,7 @@
 #include "genesis.h"
 #include "midi_fm.h"
 
+#define SRAM_FM_PRESET_LENGTH 36
 #define PACK_BIG_ENDIAN __attribute__((packed, scalar_storage_order("big-endian")))
 
 typedef struct PACK_BIG_ENDIAN SramOperator {
@@ -33,6 +34,9 @@ typedef struct PACK_BIG_ENDIAN SramFmPresetSlot {
     u8 reserved[5];
     u16 checksum;
 } SramFmPresetSlot;
+
+_Static_assert(
+    sizeof(SramFmPresetSlot) == SRAM_FM_PRESET_LENGTH, "Unexpected SramFmPresetSlot size");
 
 void midi_fm_sram_init(void);
 void midi_fm_sram_save_preset(u8 program, const FmPreset* preset);
