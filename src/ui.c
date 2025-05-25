@@ -5,7 +5,7 @@
 #include "comm/comm_serial.h"
 #include "comm/comm_megawifi.h"
 #include "log.h"
-#include "memcmp.h"
+#include "utils.h"
 #include "midi.h"
 #include "midi_rx.h"
 #include "comm/serial.h"

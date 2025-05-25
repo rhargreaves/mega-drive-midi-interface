@@ -1,6 +1,5 @@
 #include "synth.h"
-#include "bits.h"
-#include "debug.h"
+#include "utils.h"
 #include "ym2612_regs.h"
 
 static Global global;

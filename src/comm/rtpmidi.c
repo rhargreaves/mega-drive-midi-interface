@@ -1,7 +1,7 @@
 #include "rtpmidi.h"
 #include "applemidi.h"
 #include "comm_megawifi.h"
-#include "bits.h"
+#include "utils.h"
 
 #define MIDI_SYSEX_START 0xF0
 #define MIDI_SYSEX_END 0xF7

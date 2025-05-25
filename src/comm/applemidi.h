@@ -1,5 +1,6 @@
 #pragma once
 #include "genesis.h"
+#include "utils.h"
 
 #define ERR_BASE 100
 #define ERR_INVALID_APPLE_MIDI_SIGNATURE ERR_BASE;
@@ -22,8 +23,6 @@
 #define TIMESYNC_PKT_LEN (9 * 4)
 
 #define APPLE_MIDI_SIGNATURE 0xFFFF
-
-#define PACK_BIG_ENDIAN __attribute__((packed, scalar_storage_order("big-endian")))
 
 union PACK_BIG_ENDIAN AppleMidiTimeSyncPacket {
     u8 byte[TIMESYNC_PKT_LEN];

@@ -1,6 +1,6 @@
 #pragma once
 #include "genesis.h"
-#include "debug.h"
+#include "utils.h"
 #include "cmocka.h"
 
 void __wrap_PSG_setEnvelope(u8 channel, u8 value);

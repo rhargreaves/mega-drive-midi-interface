@@ -1,9 +1,9 @@
 #pragma once
 #include "genesis.h"
 #include "midi_fm.h"
+#include "utils.h"
 
 #define SRAM_FM_PRESET_LENGTH 36
-#define PACK_BIG_ENDIAN __attribute__((packed, scalar_storage_order("big-endian")))
 
 typedef struct PACK_BIG_ENDIAN SramOperator {
     u8 multiple : 4;

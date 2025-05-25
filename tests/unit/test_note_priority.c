@@ -1,6 +1,6 @@
 #include "test_note_priority.h"
 #include "note_priority.h"
-#include "debug.h"
+#include "utils.h"
 
 static NotePriorityStack testStack;
 

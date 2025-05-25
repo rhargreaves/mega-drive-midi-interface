@@ -1,5 +1,5 @@
 #include "midi_psg.h"
-#include "bits.h"
+#include "utils.h"
 #include "envelopes.h"
 #include "midi.h"
 #include "psg.h"

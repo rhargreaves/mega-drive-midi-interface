@@ -1,6 +1,6 @@
 #pragma once
 #include "cmocka_inc.h"
-#include "debug.h"
+#include "utils.h"
 #include "midi.h"
 #include "midi_fm.h"
 #include "midi_psg.h"

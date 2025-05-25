@@ -1,6 +1,6 @@
 #pragma once
 #include "genesis.h"
-#include "debug.h"
+#include "utils.h"
 #include "cmocka.h"
 
 void mock_ym2612_disable_checks(void);
