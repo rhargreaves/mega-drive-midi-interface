@@ -3,7 +3,7 @@
 #include "synth.h"
 #include "log.h"
 #include "scheduler.h"
-#include "midi_fm_sram.h"
+#include "sram/midi_fm_sram.h"
 
 static const u8 SEMITONES = 12;
 static const u16 FREQS[] = { 607, // B

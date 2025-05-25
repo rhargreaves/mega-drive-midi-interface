@@ -20,6 +20,7 @@ INCLUDE_DIRS+=-I.
 INCLUDE_DIRS+=-I../res
 INCLUDE_DIRS+=-I../src
 INCLUDE_DIRS+=-I../src/comm
+INCLUDE_DIRS+=-I../src/sram
 INCLUDE_DIRS+=-Imocks
 INCLUDE_DIRS+=-I$(CMOCKA_DIR)/include
 

@@ -6,7 +6,6 @@
 
 const u16 FM_PRESET_MAGIC_NUMBER = 0x9E1D;
 const u16 SRAM_PRESET_BASE_OFFSET = 32;
-const u8 SRAM_PRESET_LENGTH = 36;
 const u8 FM_PRESET_VERSION = 1;
 
 static void sram_preset_slot(SramFmPresetSlot* slot, const FmPreset* preset);
@@ -29,13 +28,13 @@ void midi_fm_sram_save_preset(u8 program, const FmPreset* preset)
     u16 crc = crc_calc_crc16((u8*)&slot, sizeof(SramFmPresetSlot) - sizeof(slot.checksum));
     slot.checksum = crc;
 
-    if (sizeof(SramFmPresetSlot) != SRAM_PRESET_LENGTH) {
+    if (sizeof(SramFmPresetSlot) != SRAM_FM_PRESET_LENGTH) {
         log_warn(
-            "Bad slot struct size (%d != %d)", (u8)sizeof(SramFmPresetSlot), SRAM_PRESET_LENGTH);
+            "Bad slot struct size (%d != %d)", (u8)sizeof(SramFmPresetSlot), SRAM_FM_PRESET_LENGTH);
         return;
     }
 
-    u16 offset = SRAM_PRESET_BASE_OFFSET + SRAM_PRESET_LENGTH * program;
+    u16 offset = SRAM_PRESET_BASE_OFFSET + SRAM_FM_PRESET_LENGTH * program;
     sram_enable(true);
     for (u8 i = 0; i < sizeof(SramFmPresetSlot); i++) {
         u8 val = ((u8*)&slot)[i];
@@ -56,7 +55,7 @@ void midi_fm_sram_clear_preset(u8 program)
         return;
     }
 
-    u16 offset = SRAM_PRESET_BASE_OFFSET + SRAM_PRESET_LENGTH * program;
+    u16 offset = SRAM_PRESET_BASE_OFFSET + SRAM_FM_PRESET_LENGTH * program;
     sram_enable(true);
     sram_write(offset, 0); // wipe magic number
     sram_write(offset + 1, 0);
@@ -71,7 +70,7 @@ void midi_fm_sram_load_presets(FmPreset* const userPresets, FmPreset** const act
     sram_enable(false);
     u8 count = 0;
     for (u8 program = 0; program < MIDI_PROGRAMS; program++) {
-        u16 offset = SRAM_PRESET_BASE_OFFSET + SRAM_PRESET_LENGTH * program;
+        u16 offset = SRAM_PRESET_BASE_OFFSET + SRAM_FM_PRESET_LENGTH * program;
         u16 magic = (sram_read(offset) << 8) | sram_read(offset + 1);
         if (magic != FM_PRESET_MAGIC_NUMBER) {
             continue;
