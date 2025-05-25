@@ -3,29 +3,29 @@
 // clang-format off
 __attribute__((externally_visible)) const ROMHeader rom_header = {
 #if MEGAWIFI
-    "SEGA MEGAWIFI   ",
+    .console        = "SEGA MEGAWIFI   ",
 #else
-    "SEGA SSF        ",
+    .console        = "SEGA SSF        ",
 #endif
-    "(C)ROB H. GPLv3 ",
-    "MEGA DRIVE MIDI INTERFACE                       ",
-    "MEGA DRIVE MIDI INTERFACE                       ",
-    "GM 00000000-00",
-    0x000,
-    "JD              ",
-    0x00000000,
+    .copyright      = "(C)ROB H. GPLv3 ",
+    .title_local    = "MEGA DRIVE MIDI INTERFACE                       ",
+    .title_int      = "MEGA DRIVE MIDI INTERFACE                       ",
+    .serial         = "GM 00000000-00",
+    .checksum       = 0x000,
+    .IOSupport      = "JD              ",
+    .rom_start      = 0x00000000,
 #if (ENABLE_BANK_SWITCH != 0)
-    0x003FFFFF,
+    .rom_end        = 0x003FFFFF,
 #else
-    0x000FFFFF,
+    .rom_end        = 0x000FFFFF,
 #endif
-    0xE0FF0000,
-    0xE0FFFFFF,
-    "RA",
-    0xF820,
-    0x00200000,
-    0x0020FFFF,
-    "            ",
-    "                                        ",
-    "JUE             "
+    .ram_start      = 0xE0FF0000,
+    .ram_end        = 0xE0FFFFFF,
+    .sram_sig       = "RA",
+    .sram_type      = 0xF820,
+    .sram_start     = 0x00200000,
+    .sram_end       = 0x0020FFFF,
+    .modem_support  = "            ",
+    .notes          = "                                        ",
+    .region         = "JUE             "
 };
