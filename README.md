@@ -13,6 +13,9 @@ Control the Yamaha YM2612 and PSG of the Sega Mega Drive via MIDI.
 - Built-in FM presets for General MIDI compatibility
 - Built-in PSG envelopes based on the [EEF](https://github.com/rhargreaves/mega-drive-midi-interface/wiki/PSG-Envelopes) format
 - Supports MIDI 1.0 CCs & events (e.g. panning, volume, pitch bending)
+- Loading of user-defined presets via SysEx
+- Memoisation of a MIDI channel's current FM parameters as a user-defined preset
+- Auto-saving & loading of user-defined presets in SRAM (EverDrive X7 & PRO only)
 - Polyphony via dynamic FM channel mapping
 - Portamento (glide)
 - Experimental DAC support
