@@ -701,7 +701,7 @@ static void midi_remap_channel_sysex(const u8* data, u16 length)
     midi_remap_channel(data[0], data[1]);
 }
 
-static void send_preset_data(u8 type, u8 program, const FmPreset* preset)
+static void send_preset_dump(u8 context, u8 command, const FmPreset* preset)
 {
     u8 sysexData[4 + 2 + 4 + (MAX_FM_OPERATORS * 11)];
     u16 index = 0;
@@ -709,45 +709,10 @@ static void send_preset_data(u8 type, u8 program, const FmPreset* preset)
     sysexData[index++] = SYSEX_MANU_EXTENDED;
     sysexData[index++] = SYSEX_MANU_REGION;
     sysexData[index++] = SYSEX_MANU_ID;
-    sysexData[index++] = SYSEX_COMMAND_PRESET_DATA;
+    sysexData[index++] = command;
 
-    sysexData[index++] = type;
-    sysexData[index++] = program;
-
-    sysexData[index++] = preset->algorithm;
-    sysexData[index++] = preset->feedback;
-    sysexData[index++] = preset->ams;
-    sysexData[index++] = preset->fms;
-
-    for (u8 i = 0; i < MAX_FM_OPERATORS; i++) {
-        sysexData[index++] = preset->operators[i].multiple;
-        sysexData[index++] = preset->operators[i].detune;
-        sysexData[index++] = preset->operators[i].attackRate;
-        sysexData[index++] = preset->operators[i].rateScaling;
-        sysexData[index++] = preset->operators[i].decayRate;
-        sysexData[index++] = preset->operators[i].amplitudeModulation;
-        sysexData[index++] = preset->operators[i].sustainLevel;
-        sysexData[index++] = preset->operators[i].sustainRate;
-        sysexData[index++] = preset->operators[i].releaseRate;
-        sysexData[index++] = preset->operators[i].totalLevel;
-        sysexData[index++] = preset->operators[i].ssgEg;
-    }
-
-    midi_tx_send_sysex(sysexData, index);
-}
-
-static void send_channel_data(u8 type, u8 midiChannel, const FmPreset* preset)
-{
-    u8 sysexData[4 + 2 + 4 + (MAX_FM_OPERATORS * 11)];
-    u16 index = 0;
-
-    sysexData[index++] = SYSEX_MANU_EXTENDED;
-    sysexData[index++] = SYSEX_MANU_REGION;
-    sysexData[index++] = SYSEX_MANU_ID;
-    sysexData[index++] = SYSEX_COMMAND_CHANNEL_DATA;
-
-    sysexData[index++] = type;
-    sysexData[index++] = midiChannel;
+    sysexData[index++] = STORE_PROGRAM_TYPE_FM;
+    sysexData[index++] = context;
 
     sysexData[index++] = preset->algorithm;
     sysexData[index++] = preset->feedback;
@@ -783,9 +748,9 @@ static void dump_channel_request(const u8* data, u16 length)
             log_warn("Ch %d: No FM channel assigned", midiChannel + 1);
             return;
         }
-        FmPreset currentPreset;
-        synth_extract_preset(devChan->num, &currentPreset);
-        send_channel_data(type, midiChannel, &currentPreset);
+        FmPreset preset;
+        synth_extract_preset(devChan->num, &preset);
+        send_preset_dump(midiChannel, SYSEX_COMMAND_CHANNEL_DATA, &preset);
         log_info("Ch %d: FM %d dumped", midiChannel + 1, devChan->num);
         break;
     }
@@ -804,7 +769,7 @@ static void dump_preset_request(const u8* data, u16 length)
     case STORE_PROGRAM_TYPE_FM: {
         const FmPreset* preset = midi_fm_get_stored_preset(program);
         if (preset != NULL) {
-            send_preset_data(type, program, preset);
+            send_preset_dump(program, SYSEX_COMMAND_PRESET_DATA, preset);
             log_info("Prg %d: FM preset dumped", program);
         } else {
             log_warn("Prg %d: No FM preset to dump", program);
