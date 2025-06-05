@@ -638,7 +638,7 @@ static void store_program(const u8* data, u16 length)
             fmPreset.operators[i].ssgEg = data[16 + i * 11];
         }
         midi_fm_store_preset(program, &fmPreset);
-        log_info("Prg %d: FM preset stored", program + 1);
+        log_info("Prg %d: FM preset stored", program);
         break;
     }
     default:
@@ -655,7 +655,7 @@ static void clear_program(const u8* data, u16 length)
     switch (type) {
     case STORE_PROGRAM_TYPE_FM:
         midi_fm_clear_preset(program);
-        log_info("Prg %d: FM preset cleared", program + 1);
+        log_info("Prg %d: FM preset cleared", program);
         break;
     default:
         log_warn("Invalid clear program type: %d", type);
@@ -746,9 +746,9 @@ static void dump_preset_request(const u8* data, u16 length)
         const FmPreset* preset = midi_fm_get_stored_preset(program);
         if (preset != NULL) {
             send_preset_data(type, program, preset);
-            log_info("Prg %d: FM preset dumped", program + 1);
+            log_info("Prg %d: FM preset dumped", program);
         } else {
-            log_warn("Prg %d: No FM preset to dump", program + 1);
+            log_warn("Prg %d: No FM preset to dump", program);
         }
         break;
     }
@@ -1107,7 +1107,7 @@ static void store_program_from_channel(u8 ch, u8 program)
     FOREACH_DEV_CHAN_WITH_MIDI(ch, devChan) {
         if (devChan->ops == &FM_VTable) {
             midi_fm_store_preset_from_channel(devChan->num, program);
-            log_info("Prg %d: FM preset stored", program + 1);
+            log_info("Prg %d: FM preset stored", program);
             break; // first chan we find only
         }
     }
