@@ -701,28 +701,6 @@ static void midi_remap_channel_sysex(const u8* data, u16 length)
     midi_remap_channel(data[0], data[1]);
 }
 
-static void save_preset_request(const u8* data, u16 length)
-{
-    u8 type = data[0];
-    u8 program = data[1];
-
-    switch (type) {
-    case STORE_PROGRAM_TYPE_FM: {
-        const FmPreset* preset = midi_fm_get_stored_preset(program);
-        if (preset != NULL) {
-            send_preset_data(type, program, preset);
-            log_info("Prg %d: FM preset sent", program + 1);
-        } else {
-            log_warn("Prg %d: No FM preset stored", program + 1);
-        }
-        break;
-    }
-    default:
-        log_warn("Invalid save preset request type: %d", type);
-        break;
-    }
-}
-
 static void send_preset_data(u8 type, u8 program, const FmPreset* preset)
 {
     u8 sysexData[4 + 2 + 4 + (MAX_FM_OPERATORS * 11)];
@@ -731,7 +709,7 @@ static void send_preset_data(u8 type, u8 program, const FmPreset* preset)
     sysexData[index++] = SYSEX_MANU_EXTENDED;
     sysexData[index++] = SYSEX_MANU_REGION;
     sysexData[index++] = SYSEX_MANU_ID;
-    sysexData[index++] = SYSEX_COMMAND_SEND_PRESET_DATA;
+    sysexData[index++] = SYSEX_COMMAND_PRESET_DATA;
 
     sysexData[index++] = type;
     sysexData[index++] = program;
@@ -758,6 +736,28 @@ static void send_preset_data(u8 type, u8 program, const FmPreset* preset)
     midi_tx_send_sysex(sysexData, index);
 }
 
+static void dump_preset_request(const u8* data, u16 length)
+{
+    u8 type = data[0];
+    u8 program = data[1];
+
+    switch (type) {
+    case STORE_PROGRAM_TYPE_FM: {
+        const FmPreset* preset = midi_fm_get_stored_preset(program);
+        if (preset != NULL) {
+            send_preset_data(type, program, preset);
+            log_info("Prg %d: FM preset dumped", program + 1);
+        } else {
+            log_warn("Prg %d: No FM preset to dump", program + 1);
+        }
+        break;
+    }
+    default:
+        log_warn("Invalid dump preset request type: %d", type);
+        break;
+    }
+}
+
 typedef struct SysexCommand {
     u8 command;
     void (*handler)(const u8* data, u16 length);
@@ -779,8 +779,8 @@ static const SysexCommand SYSEX_COMMANDS[] = {
     { SYSEX_COMMAND_STORE_PROGRAM, store_program, 6 + (MAX_FM_OPERATORS * 11), true },
     { SYSEX_COMMAND_CLEAR_PROGRAM, clear_program, 2, true },
     { SYSEX_COMMAND_CLEAR_ALL_PROGRAMS, clear_all_programs, 1, true },
-    { SYSEX_COMMAND_SAVE_PRESET_REQUEST, save_preset_request, 2, true },
-    { SYSEX_COMMAND_SEND_PRESET_DATA, NULL, 0, false },
+    { SYSEX_COMMAND_DUMP_PRESET, dump_preset_request, 2, true },
+    { SYSEX_COMMAND_PRESET_DATA, NULL, 0, false },
 };
 
 void midi_sysex(const u8* data, u16 length)

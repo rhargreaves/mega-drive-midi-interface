@@ -22,4 +22,4 @@ void test_midi_changing_program_retains_volume(void** state);
 void test_midi_portamento_glides_note(void** state);
 void test_pitch_bends_ch3_special_mode_operators(void** state);
 void test_midi_pitch_bend_range_configurable_per_channel(void** state);
-void test_save_preset_to_callee(void** state);
+void test_dump_preset_to_callee(void** state);
