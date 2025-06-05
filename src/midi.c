@@ -855,15 +855,41 @@ static void send_pong(const u8* data, u16 length)
     midi_tx_send_sysex(pongSequence, sizeof(pongSequence));
 }
 
+static bool is_valid_midi_channel(u8 midiChan)
+{
+    if (midiChan >= MIDI_CHANNELS && midiChan != UNASSIGNED_MIDI_CHANNEL) {
+        log_warn("Invalid MIDI channel: %d", midiChan);
+        return false;
+    }
+    return true;
+}
+
+static bool is_valid_device_channel(u8 devChan)
+{
+    if (devChan >= DEV_CHANS) {
+        log_warn("Invalid device channel: %d", devChan);
+        return false;
+    }
+    return true;
+}
+
 void midi_remap_channel(u8 midiChan, u8 devChan)
 {
     const u8 SYSEX_UNASSIGNED_DEVICE_CHANNEL = 0x7F;
+
+    if (!is_valid_midi_channel(midiChan)) {
+        return;
+    }
 
     if (devChan == SYSEX_UNASSIGNED_DEVICE_CHANNEL) {
         DeviceChannel* assignedChan = deviceChannelByMidiChannel(midiChan);
         if (assignedChan != NULL) {
             assignedChan->midiChannel = UNASSIGNED_MIDI_CHANNEL;
         }
+        return;
+    }
+
+    if (!is_valid_device_channel(devChan)) {
         return;
     }
     DeviceChannel* chan = &deviceChannels[devChan];

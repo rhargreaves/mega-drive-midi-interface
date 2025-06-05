@@ -219,7 +219,7 @@ MD_MOCKS=SYS_setVIntCallback \
 
 LDFLAGS=-ggdb -ffreestanding -lcmocka \
 	-L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src \
-	-fsanitize=address -fsanitize=undefined -fsanitize=leak
+	-fsanitize=address -fsanitize=undefined -fsanitize=leak -fsanitize=bounds-strict
 LDFLAGS+=$(foreach MOCK,$(MD_MOCKS),-Wl,--wrap=$(MOCK))
 SYSTEM_TEST_LDFLAGS=$(LDFLAGS)
 UNIT_TEST_LDFLAGS=$(LDFLAGS) $(foreach MOCK,$(MOCKS),-Wl,--wrap=$(MOCK))

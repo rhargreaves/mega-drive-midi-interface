@@ -505,3 +505,36 @@ void test_midi_cc_stores_program(UNUSED void** state)
     u16 offset = SRAM_PRESET_START + (program * SRAM_PRESET_LENGTH);
     assert_memory_equal(mock_sram_data(offset), EXPECTED_SRAM_DATA, SRAM_PRESET_LENGTH);
 }
+
+void test_midi_sysex_validates_remap_channel_bounds(UNUSED void** state)
+{
+    mock_log_enable_checks();
+
+    // Test 1: Invalid device channel (>= DEV_CHANS)
+    const u8 invalid_dev_chan_seq[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_REMAP, 0x00, 0xFF };
+
+    expect_log_warn("Invalid device channel: %d");
+    __real_midi_sysex(invalid_dev_chan_seq, sizeof(invalid_dev_chan_seq));
+
+    // Test 2: Another invalid device channel (just over the limit)
+    const u8 boundary_dev_chan_seq[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_REMAP, 0x00, 0x0D };
+
+    expect_log_warn("Invalid device channel: %d");
+    __real_midi_sysex(boundary_dev_chan_seq, sizeof(boundary_dev_chan_seq));
+
+    // Test 3: Invalid MIDI channel (>= MIDI_CHANNELS)
+    const u8 invalid_midi_chan_seq[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_REMAP, 0x10, 0x00 };
+
+    expect_log_warn("Invalid MIDI channel: %d");
+    __real_midi_sysex(invalid_midi_chan_seq, sizeof(invalid_midi_chan_seq));
+
+    // Test 4: Another invalid MIDI channel
+    const u8 extreme_midi_chan_seq[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_REMAP, 0xFF, 0x00 };
+
+    expect_log_warn("Invalid MIDI channel: %d");
+    __real_midi_sysex(extreme_midi_chan_seq, sizeof(extreme_midi_chan_seq));
+}
