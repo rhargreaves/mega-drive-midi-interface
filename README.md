@@ -25,7 +25,7 @@ Control the Yamaha YM2612 and PSG of the Sega Mega Drive via MIDI.
   - [Controller or ext/modem port via custom USB serial cable](https://github.com/rhargreaves/mega-drive-serial-port#hardware).
   - [MegaWiFi cartridge / BlastEm emulator](https://github.com/rhargreaves/mega-drive-midi-interface/wiki/BlastEm-&-MegaWiFi-Guide) (experimental)
   - Control of YM2612 registers via [GenMDM-style CCs](https://catskullelectronics.com/pages/genmdm-manual)
-- [Suplementary CLI](https://github.com/rhargreaves/mdmi-cli) for helping load/dump presets from/to TFI/DMP/WOPN files
+- [Supplementary CLI](https://github.com/rhargreaves/mdmi-cli) for helping load/dump presets from/to TFI/DMP/WOPN files
 
 ## Getting Started
 
