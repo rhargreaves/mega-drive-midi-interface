@@ -736,6 +736,65 @@ static void send_preset_data(u8 type, u8 program, const FmPreset* preset)
     midi_tx_send_sysex(sysexData, index);
 }
 
+static void send_channel_data(u8 type, u8 midiChannel, const FmPreset* preset)
+{
+    u8 sysexData[4 + 2 + 4 + (MAX_FM_OPERATORS * 11)];
+    u16 index = 0;
+
+    sysexData[index++] = SYSEX_MANU_EXTENDED;
+    sysexData[index++] = SYSEX_MANU_REGION;
+    sysexData[index++] = SYSEX_MANU_ID;
+    sysexData[index++] = SYSEX_COMMAND_CHANNEL_DATA;
+
+    sysexData[index++] = type;
+    sysexData[index++] = midiChannel;
+
+    sysexData[index++] = preset->algorithm;
+    sysexData[index++] = preset->feedback;
+    sysexData[index++] = preset->ams;
+    sysexData[index++] = preset->fms;
+
+    for (u8 i = 0; i < MAX_FM_OPERATORS; i++) {
+        sysexData[index++] = preset->operators[i].multiple;
+        sysexData[index++] = preset->operators[i].detune;
+        sysexData[index++] = preset->operators[i].attackRate;
+        sysexData[index++] = preset->operators[i].rateScaling;
+        sysexData[index++] = preset->operators[i].decayRate;
+        sysexData[index++] = preset->operators[i].amplitudeModulation;
+        sysexData[index++] = preset->operators[i].sustainLevel;
+        sysexData[index++] = preset->operators[i].sustainRate;
+        sysexData[index++] = preset->operators[i].releaseRate;
+        sysexData[index++] = preset->operators[i].totalLevel;
+        sysexData[index++] = preset->operators[i].ssgEg;
+    }
+
+    midi_tx_send_sysex(sysexData, index);
+}
+
+static void dump_channel_request(const u8* data, u16 length)
+{
+    u8 type = data[0];
+    u8 midiChannel = data[1];
+
+    switch (type) {
+    case STORE_PROGRAM_TYPE_FM: {
+        DeviceChannel* devChan = deviceChannelByMidiChannel(midiChannel);
+        if (devChan == NULL || devChan->ops != &FM_VTable) {
+            log_warn("Ch %d: No FM channel assigned", midiChannel + 1);
+            return;
+        }
+        FmPreset currentPreset;
+        synth_extract_preset(devChan->num, &currentPreset);
+        send_channel_data(type, midiChannel, &currentPreset);
+        log_info("Ch %d: FM %d dumped", midiChannel + 1, devChan->num);
+        break;
+    }
+    default:
+        log_warn("Invalid dump channel request type: %d", type);
+        break;
+    }
+}
+
 static void dump_preset_request(const u8* data, u16 length)
 {
     u8 type = data[0];
@@ -781,6 +840,8 @@ static const SysexCommand SYSEX_COMMANDS[] = {
     { SYSEX_COMMAND_CLEAR_ALL_PROGRAMS, clear_all_programs, 1, true },
     { SYSEX_COMMAND_DUMP_PRESET, dump_preset_request, 2, true },
     { SYSEX_COMMAND_PRESET_DATA, NULL, 0, false },
+    { SYSEX_COMMAND_DUMP_CHANNEL, dump_channel_request, 2, true },
+    { SYSEX_COMMAND_CHANNEL_DATA, NULL, 0, false },
 };
 
 void midi_sysex(const u8* data, u16 length)

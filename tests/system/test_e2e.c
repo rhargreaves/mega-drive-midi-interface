@@ -10,6 +10,7 @@
 #include "mocks/mock_comm.h"
 #include "mocks/mock_sgdk.h"
 #include "mocks/mock_psg.h"
+#include "mocks/mock_log.h"
 #include "ym2612_regs.h"
 #include "test_helpers.h"
 
@@ -472,6 +473,43 @@ void test_dump_preset_to_callee(void** state)
 
     for (u16 i = 0; i < sizeof(dumpResponseSeq); i++) {
         expect_usb_sent_byte(dumpResponseSeq[i]);
+    }
+
+    midi_rx_read();
+}
+
+void test_dump_channel_parameters_to_callee(void** state)
+{
+    stub_everdrive_as_present();
+
+    const u8 midiChannel = 0;
+
+    // Change the algorithm via CC
+    expect_ym2612_write_reg(YM_CH1, YM_REG(YM_BASE_ALGORITHM_FEEDBACK, YM_CH1), 7);
+    stub_usb_receive_cc(MIDI_CHANNEL_1, CC_GENMDM_FM_ALGORITHM, 127);
+    midi_rx_read();
+
+    // Change the feedback via CC
+    expect_ym2612_write_reg(YM_CH1, YM_REG(YM_BASE_ALGORITHM_FEEDBACK, YM_CH1), 0x3F);
+    stub_usb_receive_cc(MIDI_CHANNEL_1, CC_GENMDM_FM_FEEDBACK, 127);
+    midi_rx_read();
+
+    const u8 dumpChannelRequestSeq[] = { SYSEX_START, SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
+        SYSEX_MANU_ID, 0x0F, STORE_PROGRAM_TYPE_FM, midiChannel, SYSEX_END };
+
+    for (u16 i = 0; i < sizeof(dumpChannelRequestSeq); i++) {
+        stub_usb_receive_byte(dumpChannelRequestSeq[i]);
+    }
+
+    // Expect MDMI to send back the channel data with command 0x10
+    const u8 dumpChannelResponseSeq[] = { SYSEX_START, SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
+        SYSEX_MANU_ID, 0x10, STORE_PROGRAM_TYPE_FM, midiChannel, 0x07, 0x07, 0x00, 0x00, 0x01, 0x00,
+        0x1A, 0x01, 0x07, 0x00, 0x07, 0x04, 0x01, 0x27, 0x00, 0x02, 0x07, 0x1F, 0x03, 0x17, 0x00,
+        0x09, 0x0F, 0x01, 0x04, 0x00, 0x04, 0x06, 0x18, 0x01, 0x09, 0x00, 0x06, 0x09, 0x07, 0x24,
+        0x00, 0x01, 0x03, 0x1B, 0x02, 0x04, 0x00, 0x0A, 0x04, 0x06, 0x02, 0x00, SYSEX_END };
+
+    for (u16 i = 0; i < sizeof(dumpChannelResponseSeq); i++) {
+        expect_usb_sent_byte(dumpChannelResponseSeq[i]);
     }
 
     midi_rx_read();

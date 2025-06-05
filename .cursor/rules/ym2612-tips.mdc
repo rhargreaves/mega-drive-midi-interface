@@ -1,0 +1,6 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+- When the YM2612 regs are being changed the Z80 bus is requested. Failing tests which report "No entries for symbol __wrap_Z80_getAndRequestBus" are probably doing so as the YM2612 is being written to. For example, note on, FM parameter change.

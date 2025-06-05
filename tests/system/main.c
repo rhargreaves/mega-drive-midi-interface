@@ -28,6 +28,7 @@ int main(void)
         e2e_test(test_midi_changing_program_retains_pan),
         e2e_test(test_midi_portamento_glides_note),
         e2e_test(test_dump_preset_to_callee),
+        e2e_test(test_dump_channel_parameters_to_callee),
         // WIP: e2e_test(test_midi_pitch_bend_range_configurable_per_channel),
         // clang-format on
     };
