@@ -202,3 +202,12 @@ void midi_fm_store_preset_from_channel(u8 chan, u8 program)
     synth_extract_preset(chan, &fmPreset);
     midi_fm_store_preset(program, &fmPreset);
 }
+
+const FmPreset* midi_fm_get_stored_preset(u8 program)
+{
+    if (program >= MIDI_PROGRAMS) {
+        return NULL;
+    }
+
+    return activeUserPresets[program] ? activeUserPresets[program] : defaultPresets[program];
+}

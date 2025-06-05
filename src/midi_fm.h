@@ -26,3 +26,4 @@ u16 midi_fm_pitch_cents_to_freq_num(u8 pitch, s8 cents);
 void midi_fm_store_preset(u8 program, const FmPreset* preset);
 void midi_fm_clear_preset(u8 program);
 void midi_fm_store_preset_from_channel(u8 chan, u8 program);
+const FmPreset* midi_fm_get_stored_preset(u8 program);
