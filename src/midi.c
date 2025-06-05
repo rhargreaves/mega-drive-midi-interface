@@ -98,6 +98,8 @@ static void reset(void);
 static void dev_chan_note_on(DeviceChannel* devChan, u8 pitch, u8 velocity);
 static void dev_chan_note_off(DeviceChannel* devChan, u8 pitch);
 static void set_downstream_pitch(DeviceChannel* devChan);
+static bool valid_midi_channel(u8 midiChan);
+static bool valid_device_channel(u8 devChan);
 
 void midi_init(
     const FmPreset** presets, const PercussionPreset** percussionPresets, const u8** envelopes)
@@ -741,6 +743,10 @@ static void dump_channel_request(const u8* data, u16 length)
     u8 type = data[0];
     u8 midiChannel = data[1];
 
+    if (!valid_midi_channel(midiChannel)) {
+        return;
+    }
+
     switch (type) {
     case STORE_PROGRAM_TYPE_FM: {
         DeviceChannel* devChan = deviceChannelByMidiChannel(midiChannel);
@@ -855,16 +861,16 @@ static void send_pong(const u8* data, u16 length)
     midi_tx_send_sysex(pongSequence, sizeof(pongSequence));
 }
 
-static bool is_valid_midi_channel(u8 midiChan)
+static bool valid_midi_channel(u8 midiChan)
 {
-    if (midiChan >= MIDI_CHANNELS && midiChan != UNASSIGNED_MIDI_CHANNEL) {
+    if (midiChan >= MIDI_CHANNELS) {
         log_warn("Invalid MIDI channel: %d", midiChan);
         return false;
     }
     return true;
 }
 
-static bool is_valid_device_channel(u8 devChan)
+static bool valid_device_channel(u8 devChan)
 {
     if (devChan >= DEV_CHANS) {
         log_warn("Invalid device channel: %d", devChan);
@@ -877,7 +883,7 @@ void midi_remap_channel(u8 midiChan, u8 devChan)
 {
     const u8 SYSEX_UNASSIGNED_DEVICE_CHANNEL = 0x7F;
 
-    if (!is_valid_midi_channel(midiChan)) {
+    if (midiChan != UNASSIGNED_MIDI_CHANNEL && !valid_midi_channel(midiChan)) {
         return;
     }
 
@@ -889,7 +895,7 @@ void midi_remap_channel(u8 midiChan, u8 devChan)
         return;
     }
 
-    if (!is_valid_device_channel(devChan)) {
+    if (!valid_device_channel(devChan)) {
         return;
     }
     DeviceChannel* chan = &deviceChannels[devChan];

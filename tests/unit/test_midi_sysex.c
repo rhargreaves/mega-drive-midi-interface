@@ -538,3 +538,30 @@ void test_midi_sysex_validates_remap_channel_bounds(UNUSED void** state)
     expect_log_warn("Invalid MIDI channel: %d");
     __real_midi_sysex(extreme_midi_chan_seq, sizeof(extreme_midi_chan_seq));
 }
+
+void test_midi_sysex_validates_dump_channel_bounds(UNUSED void** state)
+{
+    mock_log_enable_checks();
+
+    // Test 1: Invalid MIDI channel (== MIDI_CHANNELS boundary)
+    const u8 boundary_midi_chan_seq[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_DUMP_CHANNEL, STORE_PROGRAM_TYPE_FM, 0x10 };
+
+    expect_log_warn("Invalid MIDI channel: %d");
+    __real_midi_sysex(boundary_midi_chan_seq, sizeof(boundary_midi_chan_seq));
+
+    // Test 2: Invalid MIDI channel (way beyond limit)
+    const u8 extreme_midi_chan_seq[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_DUMP_CHANNEL, STORE_PROGRAM_TYPE_FM, 0xFF };
+
+    expect_log_warn("Invalid MIDI channel: %d");
+    __real_midi_sysex(extreme_midi_chan_seq, sizeof(extreme_midi_chan_seq));
+
+    // Test 3: Invalid MIDI channel (== UNASSIGNED_MIDI_CHANNEL, 0x7F)
+    // This should be invalid for dump channel since allowUnassigned=false
+    const u8 unassigned_midi_chan_seq[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_DUMP_CHANNEL, STORE_PROGRAM_TYPE_FM, 0x7F };
+
+    expect_log_warn("Invalid MIDI channel: %d");
+    __real_midi_sysex(unassigned_midi_chan_seq, sizeof(unassigned_midi_chan_seq));
+}

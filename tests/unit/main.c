@@ -179,6 +179,7 @@ int main(void)
         midi_test(test_midi_sysex_does_not_display_loaded_msg_if_no_presets_are_loaded),
         midi_test(test_midi_cc_stores_program),
         midi_test(test_midi_sysex_validates_remap_channel_bounds),
+        midi_test(test_midi_sysex_validates_dump_channel_bounds),
         midi_test(
             test_midi_fm_note_on_percussion_channel_sets_percussion_preset),
         midi_test(test_midi_switching_program_retains_pan_setting),
