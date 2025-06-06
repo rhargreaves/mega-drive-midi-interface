@@ -25,7 +25,9 @@
 #define CHAN_X_GAP 3
 #define ACTIVITY_FM_X 1
 
-#define DEVICE_Y 3
+#define DEVICE_X 1
+#define FM_DEVICE_Y 3
+#define PSG_DEVICE_Y 14
 #define CHAN_Y 2
 #define MIDI_Y (CHAN_Y)
 #define ACTIVITY_Y (MIDI_Y)
@@ -33,6 +35,9 @@
 #define LOG_Y (MAX_EFFECTIVE_Y - MAX_LOG_LINES)
 #define COMM_EXTRA_X 17
 #define PITCH_X 6
+
+#define ROUTING_X 1
+#define ROUTING_Y (MAX_EFFECTIVE_Y - 2)
 
 #define PALETTE_INDEX(pal, index) ((pal * 16) + index)
 #define FONT_COLOUR_INDEX 15
@@ -54,16 +59,19 @@
 #define TILE_WAITING_ED_INDEX (TILE_MEGAWIFI_STATUS_INDEX + 5)
 
 #define TILE_BORDERS_LEFT_CORNER_INDEX (TILE_BORDERS_INDEX)
-#define TILE_BORDERS_H_LINE_INDEX (TILE_BORDERS_INDEX + 1)
-#define TILE_BORDERS_H_LINE_END_INDEX (TILE_BORDERS_INDEX + 3)
-#define TILE_BORDERS_H_LINE_START_INDEX (TILE_BORDERS_INDEX + 4)
 #define TILE_BORDERS_RIGHT_CORNER_INDEX (TILE_BORDERS_INDEX + 2)
+#define TILE_BORDERS_LINE_START_INDEX (TILE_BORDERS_INDEX + 4)
+#define TILE_BORDERS_LINE_INDEX (TILE_BORDERS_INDEX + 5)
+#define TILE_BORDERS_TOP_CORNER_INDEX (TILE_BORDERS_INDEX + 6)
+
+#define LED_TILE_COUNT 4
+#define LED_TILE_OFF_OFFSET (LED_TILE_COUNT)
+#define LOAD_TILE_Y (MAX_EFFECTIVE_Y + 1)
 
 static const char HEADER[] = "Mega Drive MIDI Interface";
 static const char MIDI_CH_TEXT[16][3] = { " 1", " 2", " 3", " 4", " 5", " 6", " 7", " 8", " 9",
     "10", "11", "12", "13", "14", "15", "16" };
-static const char DEV_CH_TEXT[10][3]
-    = { " 1", " 2", " 3", " 4", " 5", " 6", " 1", " 2", " 3", " 4" };
+static const char DEV_CH_TEXT[10][2] = { "1", "2", "3", "4", "5", "6", "1", "2", "3", "4" };
 static const char MIDI_CH_UNASSIGNED_TEXT[] = " -";
 
 #define MIN_UI_MIDI_PITCH 21 // A0
@@ -257,6 +265,24 @@ static void print_header(void)
 {
     draw_text(HEADER, 5, 0);
     draw_text(BUILD, RIGHTED_TEXT_X(BUILD), 0);
+
+    VDP_loadTileSet(&ts_borders, TILE_BORDERS_INDEX, DMA);
+
+    set_tile(TILE_BORDERS_LINE_START_INDEX, DEVICE_X, FM_DEVICE_Y);
+    set_tile(TILE_BORDERS_LINE_INDEX, DEVICE_X, FM_DEVICE_Y + 1);
+    VDP_drawImageEx(BG_A, &img_device_fm,
+        TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_DEVICE_FM_INDEX), DEVICE_X, FM_DEVICE_Y + 2,
+        FALSE, FALSE);
+    set_tile(TILE_BORDERS_LINE_INDEX, DEVICE_X, FM_DEVICE_Y + 8);
+    set_tile(TILE_BORDERS_LINE_INDEX, DEVICE_X, FM_DEVICE_Y + 9);
+    set_tile(TILE_BORDERS_TOP_CORNER_INDEX, DEVICE_X, FM_DEVICE_Y + 10);
+
+    set_tile(TILE_BORDERS_LINE_START_INDEX, DEVICE_X, PSG_DEVICE_Y + 1);
+    VDP_drawImageEx(BG_A, &img_device_psg,
+        TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_DEVICE_PSG_INDEX), DEVICE_X, PSG_DEVICE_Y + 2,
+        FALSE, FALSE);
+    set_tile(TILE_BORDERS_LINE_INDEX, DEVICE_X, PSG_DEVICE_Y + 6);
+    set_tile(TILE_BORDERS_TOP_CORNER_INDEX, DEVICE_X, PSG_DEVICE_Y + 7);
 }
 
 static void print_channels(void)
@@ -303,24 +329,22 @@ static void print_mappings_if_dirty(u8* midiChans)
 
 static void print_chan_activity(u8* pitches)
 {
-
     bool setPalette = false;
-
     for (u8 i = 0; i < DEV_PHYSICAL_CHANS; i++) {
         u8 pitch = pitches[i];
-
         if (pitch == lastPitches[i]) {
             continue;
         }
-
-        if (pitch < MIN_UI_MIDI_PITCH) {
+        if (pitch == 0) {
             VDP_clearTextArea(PITCH_X + MARGIN_X, MIDI_Y + (i * 2) + MARGIN_Y, 3, 1);
         } else {
             if (!setPalette) {
                 VDP_setTextPalette(PAL2);
                 setPalette = true;
             }
-            draw_text(MIDI_PITCH_NAMES[pitch - MIN_UI_MIDI_PITCH], PITCH_X, MIDI_Y + (i * 2));
+            draw_text(
+                pitch > MIN_UI_MIDI_PITCH ? MIDI_PITCH_NAMES[pitch - MIN_UI_MIDI_PITCH] : "???",
+                PITCH_X, MIDI_Y + (i * 2));
         }
         lastPitches[i] = pitch;
     }
@@ -425,10 +449,6 @@ static void print_load_text(u16 percent)
     draw_text(text_buffer, 5, MAX_EFFECTIVE_Y);
 }
 
-#define LED_TILE_COUNT 4
-#define LED_TILE_OFF_OFFSET (LED_TILE_COUNT)
-#define LOAD_TILE_Y (MAX_EFFECTIVE_Y + 1)
-
 static void update_load(void)
 {
     u16 percent = loadPercentSum / (FRAMES_BEFORE_UPDATE_LOAD / FRAMES_BEFORE_UPDATE_LOAD_PERCENT);
@@ -450,10 +470,10 @@ static void update_load(void)
 
 static void init_routing_mode_tiles(void)
 {
-    set_tile(TILE_ROUTING_INDEX, 2, 1);
-    set_tile(TILE_ROUTING_INDEX + 1, 3, 1);
-    set_tile(TILE_ROUTING_INDEX + 2, 2, 2);
-    set_tile(TILE_ROUTING_INDEX + 3, 3, 2);
+    set_tile(TILE_ROUTING_INDEX, ROUTING_X, ROUTING_Y);
+    set_tile(TILE_ROUTING_INDEX + 1, ROUTING_X + 1, ROUTING_Y);
+    set_tile(TILE_ROUTING_INDEX + 2, ROUTING_X, ROUTING_Y + 1);
+    set_tile(TILE_ROUTING_INDEX + 3, ROUTING_X + 1, ROUTING_Y + 1);
 }
 
 static void print_routing_mode(bool enabled)
