@@ -30,8 +30,9 @@
 #define MIDI_Y (CHAN_Y)
 #define ACTIVITY_Y (MIDI_Y)
 #define MAX_LOG_LINES 3
-#define LOG_Y (MAX_EFFECTIVE_Y - MAX_LOG_LINES - 1)
+#define LOG_Y (MAX_EFFECTIVE_Y - MAX_LOG_LINES)
 #define COMM_EXTRA_X 17
+#define PITCH_X 6
 
 #define PALETTE_INDEX(pal, index) ((pal * 16) + index)
 #define FONT_COLOUR_INDEX 15
@@ -64,6 +65,18 @@ static const char MIDI_CH_TEXT[16][3] = { " 1", " 2", " 3", " 4", " 5", " 6", " 
 static const char DEV_CH_TEXT[10][3]
     = { " 1", " 2", " 3", " 4", " 5", " 6", " 1", " 2", " 3", " 4" };
 static const char MIDI_CH_UNASSIGNED_TEXT[] = " -";
+
+#define MIN_UI_MIDI_PITCH 21 // A0
+
+static const char MIDI_PITCH_NAMES[128 - MIN_UI_MIDI_PITCH][4] = { "A-0", "A#0", "B-0", "C-1",
+    "C#1", "D-1", "D#1", "E-1", "F-1", "F#1", "G-1", "G#1", "A-1", "A#1", "B-1", "C-2", "C#2",
+    "D-2", "D#2", "E-2", "F-2", "F#2", "G-2", "G#2", "A-2", "A#2", "B-2", "C-3", "C#3", "D-3",
+    "D#3", "E-3", "F-3", "F#3", "G-3", "G#3", "A-3", "A#3", "B-3", "C-4", "C#4", "D-4", "D#4",
+    "E-4", "F-4", "F#4", "G-4", "G#4", "A-4", "A#4", "B-4", "C-5", "C#5", "D-5", "D#5", "E-5",
+    "F-5", "F#5", "G-5", "G#5", "A-5", "A#5", "B-5", "C-6", "C#6", "D-6", "D#6", "E-6", "F-6",
+    "F#6", "G-6", "G#6", "A-6", "A#6", "B-6", "C-7", "C#7", "D-7", "D#7", "E-7", "F-7", "F#7",
+    "G-7", "G#7", "A-7", "A#7", "B-7", "C-8", "C#8", "D-8", "D#8", "E-8", "F-8", "F#8", "G-8",
+    "G#8", "A-8", "A#8", "B-8", "C-9", "C#9", "D-9", "D#9", "E-9", "F-9", "F#9", "G-9" };
 
 static void init_load(void);
 static void print_channels(void);
@@ -266,10 +279,7 @@ static void update_key_on_off(void)
             pitches[chan] = 0;
         }
     }
-    if (memcmp(lastPitches, pitches, sizeof(u8) * DEV_PHYSICAL_CHANS) != 0) {
-        print_chan_activity(pitches);
-        memcpy(lastPitches, pitches, sizeof(u8) * DEV_PHYSICAL_CHANS);
-    }
+    print_chan_activity(pitches);
 }
 
 static void print_mappings_if_dirty(u8* midiChans)
@@ -291,31 +301,32 @@ static void print_mappings_if_dirty(u8* midiChans)
     }
 }
 
-// A0 starts at 21
-static const char MIDI_PITCH_NAMES[128 - 21][4] = { "A-0", "A#0", "B-0", "C-1", "C#1", "D-1", "D#1",
-    "E-1", "F-1", "F#1", "G-1", "G#1", "A-1", "A#1", "B-1", "C-2", "C#2", "D-2", "D#2", "E-2",
-    "F-2", "F#2", "G-2", "G#2", "A-2", "A#2", "B-2", "C-3", "C#3", "D-3", "D#3", "E-3", "F-3",
-    "F#3", "G-3", "G#3", "A-3", "A#3", "B-3", "C-4", "C#4", "D-4", "D#4", "E-4", "F-4", "F#4",
-    "G-4", "G#4", "A-4", "A#4", "B-4", "C-5", "C#5", "D-5", "D#5", "E-5", "F-5", "F#5", "G-5",
-    "G#5", "A-5", "A#5", "B-5", "C-6", "C#6", "D-6", "D#6", "E-6", "F-6", "F#6", "G-6", "G#6",
-    "A-6", "A#6", "B-6", "C-7", "C#7", "D-7", "D#7", "E-7", "F-7", "F#7", "G-7", "G#7", "A-7",
-    "A#7", "B-7", "C-8", "C#8", "D-8", "D#8", "E-8", "F-8", "F#8", "G-8", "G#8", "A-8", "A#8",
-    "B-8", "C-9", "C#9", "D-9", "D#9", "E-9", "F-9", "F#9", "G-9" };
-
 static void print_chan_activity(u8* pitches)
 {
-    const u8 PITCH_X = 8;
 
-    VDP_setTextPalette(PAL2);
+    bool setPalette = false;
+
     for (u8 i = 0; i < DEV_PHYSICAL_CHANS; i++) {
         u8 pitch = pitches[i];
-        if (pitch == 0) {
-            draw_text("    ", PITCH_X, MIDI_Y + (i * 2));
-        } else {
-            draw_text(MIDI_PITCH_NAMES[pitch - 21], PITCH_X, MIDI_Y + (i * 2));
+
+        if (pitch == lastPitches[i]) {
+            continue;
         }
+
+        if (pitch < MIN_UI_MIDI_PITCH) {
+            VDP_clearTextArea(PITCH_X + MARGIN_X, MIDI_Y + (i * 2) + MARGIN_Y, 3, 1);
+        } else {
+            if (!setPalette) {
+                VDP_setTextPalette(PAL2);
+                setPalette = true;
+            }
+            draw_text(MIDI_PITCH_NAMES[pitch - MIN_UI_MIDI_PITCH], PITCH_X, MIDI_Y + (i * 2));
+        }
+        lastPitches[i] = pitch;
     }
-    VDP_setTextPalette(PAL0);
+    if (setPalette) {
+        VDP_setTextPalette(PAL0);
+    }
 }
 
 static void print_megawifi_info(void)

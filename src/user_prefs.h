@@ -22,7 +22,7 @@ examples :
     0xF0, 0x00, 0x22, 0x77, 0x00, 0x7F, 0x09, 0xF7  \
 }
 */
-#define STARTUP_MIDI_SEQUENCE { 0xB0, 83, 0x7F }
+#define STARTUP_MIDI_SEQUENCE {}
 
 /*
 setting  : port to use for serial communication
