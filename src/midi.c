@@ -16,7 +16,7 @@
 
 #define MIN_MIDI_VELOCITY 0
 #define RANGE(value, range) (value / (128 / range))
-#define LENGTH_OF(x) (sizeof(x) / sizeof(x[0]))
+
 #define FOREACH_DEV_CHAN(ch)                                                                       \
     for (DeviceChannel* ch = &deviceChannels[0]; ch < &deviceChannels[DEV_CHANS]; ch++)
 #define FOREACH_DEV_CHAN_WITH_MIDI(midiCh, ch)                                                     \

@@ -215,7 +215,8 @@ MD_MOCKS=SYS_setVIntCallback \
 	sram_enable \
 	sram_disable \
 	sram_write \
-	sram_read
+	sram_read \
+	VDP_loadFont
 
 LDFLAGS=-ggdb -ffreestanding -lcmocka \
 	-L$(CMOCKA_DIR)/build/src -Wl,-rpath=$(CMOCKA_DIR)/build/src \
