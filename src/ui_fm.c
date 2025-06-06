@@ -77,12 +77,12 @@ typedef struct UIField {
     u8 lastValue;
 } UIField;
 
-typedef struct OpField {
+typedef struct UIOpField {
     u8 line;
     const char* name;
     u8 (*getValue)(const FmChannel* channel, u8 op);
     u8 lastValues[MAX_FM_OPERATORS];
-} OpField;
+} UIOpField;
 
 static UIField fmFields[] = {
     { 0, 0, 3, "Ch", chan_number, get_midi_channel, 0 },
@@ -96,7 +96,7 @@ static UIField fmFields[] = {
     { 9, 23, 4, "Ch3", ch3_special_mode_text, get_special_mode, 0 },
 };
 
-static OpField opFields[] = {
+static UIOpField opFields[] = {
     { 0, " TL", get_op_total_level, { 0, 0, 0, 0 } },
     { 1, " AR", get_op_attack_rate, { 0, 0, 0, 0 } },
     { 2, "MUL", get_op_multiple, { 0, 0, 0, 0 } },
@@ -190,7 +190,6 @@ static u8 get_lfo_frequency(const FmDisplayData* data)
     return data->global->lfoFrequency + 1;
 }
 
-// Operator getter functions
 static u8 get_op_total_level(const FmChannel* channel, u8 op)
 {
     return channel->operators[op].totalLevel;
@@ -345,7 +344,7 @@ static const char* format_num(u8 value)
 }
 
 static bool update_op_field_if_changed(
-    OpField* field, const FmChannel* channel, u8 op, bool forceRefresh)
+    UIOpField* field, const FmChannel* channel, u8 op, bool forceRefresh)
 {
     const u8 OP_VALUE_X = OP_HEADING_X + 4;
     const u8 OP_VALUE_GAP = 4;
