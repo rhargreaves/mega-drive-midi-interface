@@ -5,6 +5,8 @@
 #define MAX_X 39
 #define MARGIN_X 1
 #define MARGIN_Y 1
+#define MAX_EFFECTIVE_X (MAX_X - MARGIN_X - MARGIN_X)
+#define MAX_EFFECTIVE_Y (MAX_Y - MARGIN_Y - MARGIN_Y)
 
 void ui_init(void);
 void ui_update(u16 delta);
