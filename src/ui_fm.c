@@ -30,7 +30,7 @@ static u8 chanParasMidiChan = 0;
 static u8 chanParasFmChan = 0;
 static Sprite* algorSprites[FM_ALGORITHMS];
 
-static FmChannel lastChannel = {};
+static u8 lastAlgorithm = 0xFF;
 static bool forceRefresh = false;
 
 static void update_fm_values(void);
@@ -39,7 +39,6 @@ static void update_fm_values_if_chan_selected(void);
 static void synth_parameter_updated(u8 fmChan, ParameterUpdated parameterUpdated);
 
 static const char* stereo_text(u8 stereo);
-static const char* lfo_enable_text(u8 lfoEnable);
 static const char* ch3_special_mode_text(u8 enabled);
 static const char* ams_text(u8 ams);
 static const char* fms_text(u8 fms);
@@ -53,10 +52,20 @@ static u8 get_algorithm(const FmDisplayData* data);
 static u8 get_feedback(const FmDisplayData* data);
 static u8 get_fms(const FmDisplayData* data);
 static u8 get_ams(const FmDisplayData* data);
-static u8 get_lfo_enable(const FmDisplayData* data);
 static u8 get_special_mode(const FmDisplayData* data);
 static u8 get_stereo(const FmDisplayData* data);
 static u8 get_lfo_frequency(const FmDisplayData* data);
+static u8 get_op_total_level(const FmChannel* channel, u8 op);
+static u8 get_op_attack_rate(const FmChannel* channel, u8 op);
+static u8 get_op_multiple(const FmChannel* channel, u8 op);
+static u8 get_op_detune(const FmChannel* channel, u8 op);
+static u8 get_op_rate_scaling(const FmChannel* channel, u8 op);
+static u8 get_op_amplitude_modulation(const FmChannel* channel, u8 op);
+static u8 get_op_decay_rate(const FmChannel* channel, u8 op);
+static u8 get_op_sustain_rate(const FmChannel* channel, u8 op);
+static u8 get_op_sustain_level(const FmChannel* channel, u8 op);
+static u8 get_op_release_rate(const FmChannel* channel, u8 op);
+static u8 get_op_ssg_eg(const FmChannel* channel, u8 op);
 
 typedef struct UIField {
     u8 headerX;
@@ -68,22 +77,37 @@ typedef struct UIField {
     u8 lastValue;
 } UIField;
 
+typedef struct OpField {
+    u8 line;
+    const char* name;
+    u8 (*getValue)(const FmChannel* channel, u8 op);
+    u8 lastValues[MAX_FM_OPERATORS];
+} OpField;
+
 static UIField fmFields[] = {
     { 0, 0, 3, "Ch", chan_number, get_midi_channel, 0 },
     { 7, 0, 3, "FM", chan_number, get_fm_channel, 0 },
-
     { 0, 2, 4, "Alg", format_num, get_algorithm, 0 },
     { 7, 2, 3, "Fb", format_num, get_feedback, 0 },
-
     { 0, 3, 4, "Pan", stereo_text, get_stereo, 0 },
-
-    { 0, 4, 4, "FMS", fms_text, get_fms, 0 },
-    { 8, 4, 4, "AMS", ams_text, get_ams, 0 },
-
-    { 0, 5, 4, "LFO", lfo_enable_text, get_lfo_enable, 0 },
-    { 8, 5, 0, "", lfo_freq_text, get_lfo_frequency, 0 },
-
+    { 0, 4, 4, "LFO", lfo_freq_text, get_lfo_frequency, 0 },
+    { 0, 5, 4, "FMS", fms_text, get_fms, 0 },
+    { 8, 5, 4, "AMS", ams_text, get_ams, 0 },
     { 9, 23, 4, "Ch3", ch3_special_mode_text, get_special_mode, 0 },
+};
+
+static OpField opFields[] = {
+    { 0, " TL", get_op_total_level, { 0, 0, 0, 0 } },
+    { 1, " AR", get_op_attack_rate, { 0, 0, 0, 0 } },
+    { 2, "MUL", get_op_multiple, { 0, 0, 0, 0 } },
+    { 3, " DT", get_op_detune, { 0, 0, 0, 0 } },
+    { 4, " RS", get_op_rate_scaling, { 0, 0, 0, 0 } },
+    { 5, " AM", get_op_amplitude_modulation, { 0, 0, 0, 0 } },
+    { 6, " DR", get_op_decay_rate, { 0, 0, 0, 0 } },
+    { 7, " SR", get_op_sustain_rate, { 0, 0, 0, 0 } },
+    { 8, " SL", get_op_sustain_level, { 0, 0, 0, 0 } },
+    { 9, " RR", get_op_release_rate, { 0, 0, 0, 0 } },
+    { 10, "SSG", get_op_ssg_eg, { 0, 0, 0, 0 } },
 };
 
 void ui_fm_init(void)
@@ -118,7 +142,6 @@ static void synth_parameter_updated(u8 fmChan, ParameterUpdated parameterUpdated
     }
 }
 
-// Value getter functions
 static u8 get_midi_channel(const FmDisplayData* data)
 {
     return data->midiChan;
@@ -149,11 +172,6 @@ static u8 get_ams(const FmDisplayData* data)
     return data->channel->ams;
 }
 
-static u8 get_lfo_enable(const FmDisplayData* data)
-{
-    return data->global->lfoEnable;
-}
-
 static u8 get_special_mode(const FmDisplayData* data)
 {
     return data->global->specialMode;
@@ -166,26 +184,75 @@ static u8 get_stereo(const FmDisplayData* data)
 
 static u8 get_lfo_frequency(const FmDisplayData* data)
 {
-    return data->global->lfoFrequency;
+    if (!data->global->lfoEnable) {
+        return 0;
+    }
+    return data->global->lfoFrequency + 1;
+}
+
+// Operator getter functions
+static u8 get_op_total_level(const FmChannel* channel, u8 op)
+{
+    return channel->operators[op].totalLevel;
+}
+
+static u8 get_op_attack_rate(const FmChannel* channel, u8 op)
+{
+    return channel->operators[op].attackRate;
+}
+
+static u8 get_op_multiple(const FmChannel* channel, u8 op)
+{
+    return channel->operators[op].multiple;
+}
+
+static u8 get_op_detune(const FmChannel* channel, u8 op)
+{
+    return channel->operators[op].detune;
+}
+
+static u8 get_op_rate_scaling(const FmChannel* channel, u8 op)
+{
+    return channel->operators[op].rateScaling;
+}
+
+static u8 get_op_amplitude_modulation(const FmChannel* channel, u8 op)
+{
+    return channel->operators[op].amplitudeModulation;
+}
+
+static u8 get_op_decay_rate(const FmChannel* channel, u8 op)
+{
+    return channel->operators[op].decayRate;
+}
+
+static u8 get_op_sustain_rate(const FmChannel* channel, u8 op)
+{
+    return channel->operators[op].sustainRate;
+}
+
+static u8 get_op_sustain_level(const FmChannel* channel, u8 op)
+{
+    return channel->operators[op].sustainLevel;
+}
+
+static u8 get_op_release_rate(const FmChannel* channel, u8 op)
+{
+    return channel->operators[op].releaseRate;
+}
+
+static u8 get_op_ssg_eg(const FmChannel* channel, u8 op)
+{
+    return channel->operators[op].ssgEg;
 }
 
 static void print_channel_parameter_headings(void)
 {
     VDP_setTextPalette(PAL3);
     ui_draw_text("    Op1   2   3   4", OP_HEADING_X, OP_BASE_Y);
-    ui_draw_text(" TL", OP_HEADING_X, OP_BASE_Y + 1);
-    ui_draw_text(" AR", OP_HEADING_X, OP_BASE_Y + 2);
-    ui_draw_text("MUL", OP_HEADING_X, OP_BASE_Y + 3);
-    ui_draw_text(" DT", OP_HEADING_X, OP_BASE_Y + 4);
-    ui_draw_text(" RS", OP_HEADING_X, OP_BASE_Y + 5);
-    ui_draw_text(" AM", OP_HEADING_X, OP_BASE_Y + 6);
-    ui_draw_text(" DR", OP_HEADING_X, OP_BASE_Y + 7);
-    ui_draw_text(" SR", OP_HEADING_X, OP_BASE_Y + 8);
-    ui_draw_text(" SL", OP_HEADING_X, OP_BASE_Y + 9);
-    ui_draw_text(" RR", OP_HEADING_X, OP_BASE_Y + 10);
-    ui_draw_text("SSG", OP_HEADING_X, OP_BASE_Y + 11);
-
-    // Print all FM field headers using the loop
+    for (u8 i = 0; i < LENGTH_OF(opFields); i++) {
+        ui_draw_text(opFields[i].name, OP_HEADING_X, OP_BASE_Y + opFields[i].line + 1);
+    }
     for (u8 i = 0; i < LENGTH_OF(fmFields); i++) {
         ui_draw_text(
             fmFields[i].name, FM_HEADING_X + fmFields[i].headerX, BASE_Y + fmFields[i].headerY);
@@ -233,16 +300,6 @@ static const char* stereo_text(u8 stereo)
     }
 }
 
-static const char* lfo_enable_text(u8 lfoEnable)
-{
-    switch (lfoEnable) {
-    case 0:
-        return "Off";
-    default:
-        return "On ";
-    }
-}
-
 static const char* ch3_special_mode_text(u8 enabled)
 {
     switch (enabled) {
@@ -256,7 +313,7 @@ static const char* ch3_special_mode_text(u8 enabled)
 static const char* lfo_freq_text(u8 lfoFreq)
 {
     static const char TEXT[][8]
-        = { "4Hz  ", "5.5Hz", "6Hz  ", "6.5Hz", "7Hz  ", "10Hz ", "48Hz ", "72Hz " };
+        = { "Off  ", "4Hz  ", "5.5Hz", "6Hz  ", "6.5Hz", "7Hz  ", "10Hz ", "48Hz ", "72Hz " };
     return TEXT[lfoFreq];
 }
 
@@ -269,7 +326,7 @@ static const char* ams_text(u8 ams)
 static const char* fms_text(u8 fms)
 {
     static const char TEXT[][5]
-        = { "0%  ", "~3% ", "~6% ", "10% ", "14% ", "20% ", "40% ", "80% " };
+        = { "0%  ", "3%  ", "6%  ", "10% ", "14% ", "20% ", "40% ", "80% " };
     return TEXT[fms];
 }
 
@@ -287,15 +344,18 @@ static const char* format_num(u8 value)
     return buffer;
 }
 
-static bool update_op_value(u8 last, u8 current, bool forceRefresh, u8 op, u8 line)
+static bool update_op_field_if_changed(
+    OpField* field, const FmChannel* channel, u8 op, bool forceRefresh)
 {
     const u8 OP_VALUE_X = OP_HEADING_X + 4;
     const u8 OP_VALUE_GAP = 4;
 
-    if (last != current || forceRefresh) {
+    u8 currentValue = field->getValue(channel, op);
+    if (field->lastValues[op] != currentValue || forceRefresh) {
         char buffer[4];
-        sprintf(buffer, "%3d", current);
-        ui_draw_text(buffer, OP_VALUE_X + (op * OP_VALUE_GAP), OP_BASE_Y + line + 1);
+        sprintf(buffer, "%3d", currentValue);
+        ui_draw_text(buffer, OP_VALUE_X + (op * OP_VALUE_GAP), OP_BASE_Y + field->line + 1);
+        field->lastValues[op] = currentValue;
         return true;
     }
     return false;
@@ -303,36 +363,13 @@ static bool update_op_value(u8 last, u8 current, bool forceRefresh, u8 op, u8 li
 
 static void update_op_values(const FmChannel* channel, bool forceRefresh)
 {
-    for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
-        const Operator* oper = &channel->operators[op];
-        Operator* lastOper = &lastChannel.operators[op];
-        if (update_op_value(lastOper->totalLevel, oper->totalLevel, forceRefresh, op, 0))
-            lastOper->totalLevel = oper->totalLevel;
-        if (update_op_value(lastOper->attackRate, oper->attackRate, forceRefresh, op, 1))
-            lastOper->attackRate = oper->attackRate;
-        if (update_op_value(lastOper->multiple, oper->multiple, forceRefresh, op, 2))
-            lastOper->multiple = oper->multiple;
-        if (update_op_value(lastOper->detune, oper->detune, forceRefresh, op, 3))
-            lastOper->detune = oper->detune;
-        if (update_op_value(lastOper->rateScaling, oper->rateScaling, forceRefresh, op, 4))
-            lastOper->rateScaling = oper->rateScaling;
-        if (update_op_value(
-                lastOper->amplitudeModulation, oper->amplitudeModulation, forceRefresh, op, 5))
-            lastOper->amplitudeModulation = oper->amplitudeModulation;
-        if (update_op_value(lastOper->decayRate, oper->decayRate, forceRefresh, op, 6))
-            lastOper->decayRate = oper->decayRate;
-        if (update_op_value(lastOper->sustainRate, oper->sustainRate, forceRefresh, op, 7))
-            lastOper->sustainRate = oper->sustainRate;
-        if (update_op_value(lastOper->sustainLevel, oper->sustainLevel, forceRefresh, op, 8))
-            lastOper->sustainLevel = oper->sustainLevel;
-        if (update_op_value(lastOper->releaseRate, oper->releaseRate, forceRefresh, op, 9))
-            lastOper->releaseRate = oper->releaseRate;
-        if (update_op_value(lastOper->ssgEg, oper->ssgEg, forceRefresh, op, 10))
-            lastOper->ssgEg = oper->ssgEg;
+    for (u8 i = 0; i < LENGTH_OF(opFields); i++) {
+        for (u8 op = 0; op < MAX_FM_OPERATORS; op++) {
+            update_op_field_if_changed(&opFields[i], channel, op, forceRefresh);
+        }
     }
 }
 
-// Generic function to update a field if its value has changed
 static bool update_field_if_changed(UIField* field, const FmDisplayData* data, bool forceRefresh)
 {
     u8 currentValue = field->getValue(data);
@@ -359,9 +396,9 @@ static void update_fm_values(void)
     }
 
     u8 currentAlgorithm = channel->algorithm;
-    if (lastChannel.algorithm != currentAlgorithm || forceRefresh) {
+    if (lastAlgorithm != currentAlgorithm || forceRefresh) {
         update_algorithm_diagram(currentAlgorithm);
-        lastChannel.algorithm = currentAlgorithm;
+        lastAlgorithm = currentAlgorithm;
     }
 
     update_op_values(channel, forceRefresh);
@@ -398,7 +435,7 @@ void ui_fm_set_parameters_visibility(u8 chan, bool show)
         forceRefresh = true;
         print_channel_parameter_headings();
     } else {
-        VDP_clearTextArea(0, MARGIN_Y + BASE_Y + 3, MAX_X, 12);
+        VDP_clearTextArea(FM_HEADING_X, MARGIN_Y + BASE_Y, MAX_X, 20);
         hide_all_algorithms();
         SPR_update();
         ui_show_logs();
