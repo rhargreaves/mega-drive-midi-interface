@@ -12,6 +12,7 @@ out/
 .vscode/*.log
 *.swp
 res/*.s
+res/*.rs
 src/boot/sega.s
 res/samples/*
 res/*.h
