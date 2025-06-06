@@ -65,7 +65,6 @@ static const char DEV_CH_TEXT[10][3]
     = { " 1", " 2", " 3", " 4", " 5", " 6", " 1", " 2", " 3", " 4" };
 static const char MIDI_CH_UNASSIGNED_TEXT[] = " -";
 
-static void init_activity_leds(void);
 static void init_load(void);
 static void print_channels(void);
 static void print_header(void);
@@ -73,7 +72,7 @@ static void update_load(void);
 static u16 load_percent(void);
 static void update_key_on_off(void);
 static void draw_text(const char* text, u16 x, u16 y);
-static void print_chan_activity(u16 busy);
+static void print_chan_activity(u8* pitches);
 static void print_comm_mode(void);
 static void init_routing_mode_tiles(void);
 static void print_routing_mode_if_needed(void);
@@ -81,10 +80,10 @@ static void print_routing_mode(bool enabled);
 static void print_mappings_if_dirty(u8* midiChans);
 static void print_mappings(void);
 
+static u8 lastPitches[DEV_PHYSICAL_CHANS] = { 0 };
+
 static u16 loadPercentSum = 0;
 static bool commInited = false;
-
-static Sprite* activitySprites[DEV_PHYSICAL_CHANS];
 
 void ui_init(void)
 {
@@ -114,22 +113,7 @@ void ui_init(void)
     print_mappings();
     init_routing_mode_tiles();
     print_routing_mode(midi_dynamic_mode());
-    init_activity_leds();
     ui_fm_init();
-}
-
-static void init_activity_leds(void)
-{
-    SYS_disableInts();
-    for (int i = 0; i < DEV_PHYSICAL_CHANS; i++) {
-        Sprite* sprite = SPR_addSprite(&activity, fix32ToInt(FIX32(ACTIVITY_FM_X + 1) * 8),
-            fix32ToInt(FIX32((ACTIVITY_Y + 1 + (i * 2)) * 8)), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
-        SPR_setVisibility(sprite, VISIBLE);
-        activitySprites[i] = sprite;
-    }
-    SPR_update();
-    SYS_enableInts();
-    SYS_doVBlankProcess();
 }
 
 static void print_mappings(void)
@@ -273,11 +257,18 @@ static void print_channels(void)
 
 static void update_key_on_off(void)
 {
-    static u16 lastBusy = 0;
-    u16 busy = synth_busy() | (midi_psg_busy() << 6);
-    if (busy != lastBusy) {
-        print_chan_activity(busy);
-        lastBusy = busy;
+    u8 pitches[DEV_PHYSICAL_CHANS];
+    for (u8 chan = 0; chan < MAX_FM_CHANS + MAX_PSG_CHANS; chan++) {
+        DeviceChannel* devChan = &midi_channel_mappings()[chan];
+        if (devChan->noteOn) {
+            pitches[chan] = devChan->pitch;
+        } else {
+            pitches[chan] = 0;
+        }
+    }
+    if (memcmp(lastPitches, pitches, sizeof(u8) * DEV_PHYSICAL_CHANS) != 0) {
+        print_chan_activity(pitches);
+        memcpy(lastPitches, pitches, sizeof(u8) * DEV_PHYSICAL_CHANS);
     }
 }
 
@@ -300,12 +291,31 @@ static void print_mappings_if_dirty(u8* midiChans)
     }
 }
 
-static void print_chan_activity(u16 busy)
+// A0 starts at 21
+static const char MIDI_PITCH_NAMES[128 - 21][4] = { "A-0", "A#0", "B-0", "C-1", "C#1", "D-1", "D#1",
+    "E-1", "F-1", "F#1", "G-1", "G#1", "A-1", "A#1", "B-1", "C-2", "C#2", "D-2", "D#2", "E-2",
+    "F-2", "F#2", "G-2", "G#2", "A-2", "A#2", "B-2", "C-3", "C#3", "D-3", "D#3", "E-3", "F-3",
+    "F#3", "G-3", "G#3", "A-3", "A#3", "B-3", "C-4", "C#4", "D-4", "D#4", "E-4", "F-4", "F#4",
+    "G-4", "G#4", "A-4", "A#4", "B-4", "C-5", "C#5", "D-5", "D#5", "E-5", "F-5", "F#5", "G-5",
+    "G#5", "A-5", "A#5", "B-5", "C-6", "C#6", "D-6", "D#6", "E-6", "F-6", "F#6", "G-6", "G#6",
+    "A-6", "A#6", "B-6", "C-7", "C#7", "D-7", "D#7", "E-7", "F-7", "F#7", "G-7", "G#7", "A-7",
+    "A#7", "B-7", "C-8", "C#8", "D-8", "D#8", "E-8", "F-8", "F#8", "G-8", "G#8", "A-8", "A#8",
+    "B-8", "C-9", "C#9", "D-9", "D#9", "E-9", "F-9", "F#9", "G-9" };
+
+static void print_chan_activity(u8* pitches)
 {
-    for (u8 chan = 0; chan < MAX_FM_CHANS + MAX_PSG_CHANS; chan++) {
-        SPR_setFrame(activitySprites[chan], ((busy >> chan) & 1) ? 1 : 0);
+    const u8 PITCH_X = 8;
+
+    VDP_setTextPalette(PAL2);
+    for (u8 i = 0; i < DEV_PHYSICAL_CHANS; i++) {
+        u8 pitch = pitches[i];
+        if (pitch == 0) {
+            draw_text("    ", PITCH_X, MIDI_Y + (i * 2));
+        } else {
+            draw_text(MIDI_PITCH_NAMES[pitch - 21], PITCH_X, MIDI_Y + (i * 2));
+        }
     }
-    SPR_update();
+    VDP_setTextPalette(PAL0);
 }
 
 static void print_megawifi_info(void)
@@ -390,6 +400,7 @@ static void init_load(void)
 {
     draw_text("%", 0, MAX_EFFECTIVE_Y);
     PAL_setColors((PAL2 * 16), pal_load.data, pal_load.length, CPU);
+    PAL_setColor(PALETTE_INDEX(PAL2, 1), RGB24_TO_VDPCOLOR(0x00FF00));
     VDP_loadTileSet(&ts_load, TILE_LED_INDEX, CPU);
 }
 
