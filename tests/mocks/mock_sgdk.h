@@ -9,6 +9,7 @@ void __wrap_VDP_drawText(const char* str, u16 x, u16 y);
 void __wrap_SYS_setVIntCallback(VoidCallback* CB);
 void __wrap_VDP_setTextPalette(u16 palette);
 void __wrap_VDP_clearText(u16 x, u16 y, u16 w);
+void __wrap_VDP_loadFont(const TileSet* tileset, TransferMethod tm);
 
 Sprite* __wrap_SPR_addSprite(const SpriteDefinition* spriteDef, s16 x, s16 y, u16 attribut);
 void __wrap_SPR_update();

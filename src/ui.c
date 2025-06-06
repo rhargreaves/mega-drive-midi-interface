@@ -15,8 +15,6 @@
 #include "scheduler.h"
 #include "settings.h"
 
-#define LENGTH_OF(x) (sizeof(x) / sizeof(x[0]))
-
 #define MAX_EFFECTIVE_X (MAX_X - MARGIN_X - MARGIN_X)
 #define MAX_EFFECTIVE_Y (MAX_Y - MARGIN_Y - MARGIN_Y)
 #define MAX_ERROR_X 30
@@ -25,14 +23,14 @@
 #define RIGHTED_TEXT_X(text) (MAX_EFFECTIVE_X - (sizeof(text) - 1) + 1)
 #define CENTRED_TEXT_X(text) ((MAX_EFFECTIVE_X - (sizeof(text) - 1)) / 2)
 #define CHAN_X_GAP 3
-#define ACTIVITY_FM_X 6
+#define ACTIVITY_FM_X 1
 
 #define DEVICE_Y 3
-#define CHAN_Y 3
-#define MIDI_Y (CHAN_Y + 2)
-#define ACTIVITY_Y (MIDI_Y + 2)
-#define LOG_Y (ACTIVITY_Y + 3)
-#define MAX_LOG_LINES 14
+#define CHAN_Y 2
+#define MIDI_Y (CHAN_Y)
+#define ACTIVITY_Y (MIDI_Y)
+#define MAX_LOG_LINES 3
+#define LOG_Y (MAX_EFFECTIVE_Y - MAX_LOG_LINES - 1)
 #define COMM_EXTRA_X 17
 
 #define PALETTE_INDEX(pal, index) ((pal * 16) + index)
@@ -61,10 +59,10 @@
 #define TILE_BORDERS_RIGHT_CORNER_INDEX (TILE_BORDERS_INDEX + 2)
 
 static const char HEADER[] = "Mega Drive MIDI Interface";
-static const char CHAN_HEADER[] = "Ch.   1  2  3  4  5  6  1  2  3  4";
-static const char MIDI_HEADER[] = "MIDI";
 static const char MIDI_CH_TEXT[16][3] = { " 1", " 2", " 3", " 4", " 5", " 6", " 7", " 8", " 9",
     "10", "11", "12", "13", "14", "15", "16" };
+static const char DEV_CH_TEXT[10][3]
+    = { " 1", " 2", " 3", " 4", " 5", " 6", " 1", " 2", " 3", " 4" };
 static const char MIDI_CH_UNASSIGNED_TEXT[] = " -";
 
 static void init_activity_leds(void);
@@ -77,7 +75,6 @@ static void update_key_on_off(void);
 static void draw_text(const char* text, u16 x, u16 y);
 static void print_chan_activity(u16 busy);
 static void print_comm_mode(void);
-static void populate_mappings(u8* midiChans);
 static void init_routing_mode_tiles(void);
 static void print_routing_mode_if_needed(void);
 static void print_routing_mode(bool enabled);
@@ -93,10 +90,22 @@ void ui_init(void)
 {
     scheduler_addFrameHandler(ui_update);
     SPR_init();
+
+    // 0x0000A0 = blue
+    // 0xe0ffff = light blue / white
+    // 0x3b2dee = purple blue
+
+    VDP_loadFont(custom_font.tileset, DMA);
     VDP_setBackgroundColor(BG_COLOUR_INDEX);
-    PAL_setColor(BG_COLOUR_INDEX, RGB24_TO_VDPCOLOR(0x202020));
-    PAL_setColor(PALETTE_INDEX(PAL1, FONT_COLOUR_INDEX), RGB24_TO_VDPCOLOR(0xFFFF00));
-    PAL_setColor(PALETTE_INDEX(PAL3, FONT_COLOUR_INDEX), RGB24_TO_VDPCOLOR(0x808080));
+    PAL_setColor(PALETTE_INDEX(PAL0, BG_COLOUR_INDEX), RGB24_TO_VDPCOLOR(0x000000));
+    PAL_setColor(PALETTE_INDEX(PAL0, 1), RGB24_TO_VDPCOLOR(0xe0ffff));
+    PAL_setColor(PALETTE_INDEX(PAL0, 2), RGB24_TO_VDPCOLOR(0x3b2dee));
+
+    PAL_setColor(PALETTE_INDEX(PAL3, 1), RGB24_TO_VDPCOLOR(0x808080));
+    PAL_setColor(PALETTE_INDEX(PAL3, 2), RGB24_TO_VDPCOLOR(0x3b2dee));
+
+    // PAL_setColor(PALETTE_INDEX(PAL1, FONT_COLOUR_INDEX), RGB24_TO_VDPCOLOR(0xFFFF00));
+    // PAL_setColor(PALETTE_INDEX(PAL3, FONT_COLOUR_INDEX), RGB24_TO_VDPCOLOR(0x808080));
     print_header();
     print_channels();
     update_load();
@@ -113,8 +122,8 @@ static void init_activity_leds(void)
 {
     SYS_disableInts();
     for (int i = 0; i < DEV_PHYSICAL_CHANS; i++) {
-        Sprite* sprite = SPR_addSprite(&activity, fix32ToInt(FIX32(((i * CHAN_X_GAP) + 7) * 8)),
-            fix32ToInt(FIX32((ACTIVITY_Y + 1) * 8)), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+        Sprite* sprite = SPR_addSprite(&activity, fix32ToInt(FIX32(ACTIVITY_FM_X + 1) * 8),
+            fix32ToInt(FIX32((ACTIVITY_Y + 1 + (i * 2)) * 8)), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
         SPR_setVisibility(sprite, VISIBLE);
         activitySprites[i] = sprite;
     }
@@ -126,7 +135,10 @@ static void init_activity_leds(void)
 static void print_mappings(void)
 {
     u8 midiChans[DEV_PHYSICAL_CHANS] = { 0 };
-    populate_mappings(midiChans);
+    DeviceChannel* chans = midi_channel_mappings();
+    for (u8 i = 0; i < DEV_PHYSICAL_CHANS; i++) {
+        midiChans[i] = chans[i].midiChannel;
+    }
     print_mappings_if_dirty(midiChans);
 }
 
@@ -248,41 +260,14 @@ static void print_header(void)
 {
     draw_text(HEADER, 5, 0);
     draw_text(BUILD, RIGHTED_TEXT_X(BUILD), 0);
-
-    VDP_loadTileSet(&ts_borders, TILE_BORDERS_INDEX, DMA);
-    set_tile(TILE_BORDERS_LEFT_CORNER_INDEX, 7, DEVICE_Y);
-    set_tile(TILE_BORDERS_H_LINE_INDEX, 8, DEVICE_Y);
-    set_tile(TILE_BORDERS_H_LINE_INDEX, 9, DEVICE_Y);
-    set_tile(TILE_BORDERS_H_LINE_INDEX, 10, DEVICE_Y);
-    set_tile(TILE_BORDERS_H_LINE_INDEX, 11, DEVICE_Y);
-
-    VDP_drawImageEx(BG_A, &img_device_fm,
-        TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_DEVICE_FM_INDEX), 12, DEVICE_Y, FALSE, FALSE);
-
-    set_tile(TILE_BORDERS_H_LINE_INDEX, 18, DEVICE_Y);
-    set_tile(TILE_BORDERS_H_LINE_INDEX, 19, DEVICE_Y);
-    set_tile(TILE_BORDERS_H_LINE_INDEX, 20, DEVICE_Y);
-    set_tile(TILE_BORDERS_H_LINE_INDEX, 21, DEVICE_Y);
-    set_tile(TILE_BORDERS_RIGHT_CORNER_INDEX, 22, DEVICE_Y);
-
-    set_tile(TILE_BORDERS_LEFT_CORNER_INDEX, 25, DEVICE_Y);
-    set_tile(TILE_BORDERS_H_LINE_INDEX, 26, DEVICE_Y);
-    set_tile(TILE_BORDERS_H_LINE_INDEX, 27, DEVICE_Y);
-
-    VDP_drawImageEx(BG_A, &img_device_psg,
-        TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_DEVICE_PSG_INDEX), 28, DEVICE_Y, FALSE, FALSE);
-
-    set_tile(TILE_BORDERS_H_LINE_INDEX, 32, DEVICE_Y);
-    set_tile(TILE_BORDERS_H_LINE_INDEX, 33, DEVICE_Y);
-    set_tile(TILE_BORDERS_RIGHT_CORNER_INDEX, 34, DEVICE_Y);
 }
 
 static void print_channels(void)
 {
     VDP_setTextPalette(PAL3);
-    draw_text(CHAN_HEADER, 0, CHAN_Y);
-    draw_text(MIDI_HEADER, 0, MIDI_Y);
-    draw_text("Act.", 0, ACTIVITY_Y);
+    for (u8 i = 0; i < 10; i++) {
+        draw_text(DEV_CH_TEXT[i], 1, MIDI_Y + (i * 2));
+    }
     VDP_setTextPalette(PAL0);
 }
 
@@ -311,15 +296,7 @@ static void print_mappings_if_dirty(u8* midiChans)
         } else {
             text = MIDI_CH_TEXT[midiChans[devChan]];
         }
-        draw_text(text, 5 + (devChan * 3), MIDI_Y);
-    }
-}
-
-static void populate_mappings(u8* midiChans)
-{
-    DeviceChannel* chans = midi_channel_mappings();
-    for (u8 i = 0; i < DEV_PHYSICAL_CHANS; i++) {
-        midiChans[i] = chans[i].midiChannel;
+        draw_text(text, 3, MIDI_Y + (devChan * 2));
     }
 }
 
@@ -451,10 +428,10 @@ static void update_load(void)
 
 static void init_routing_mode_tiles(void)
 {
-    set_tile(TILE_ROUTING_INDEX, MAX_EFFECTIVE_X, MIDI_Y + 1);
-    set_tile(TILE_ROUTING_INDEX + 1, MAX_EFFECTIVE_X + 1, MIDI_Y + 1);
-    set_tile(TILE_ROUTING_INDEX + 2, MAX_EFFECTIVE_X, MIDI_Y + 2);
-    set_tile(TILE_ROUTING_INDEX + 3, MAX_EFFECTIVE_X + 1, MIDI_Y + 2);
+    set_tile(TILE_ROUTING_INDEX, 2, 1);
+    set_tile(TILE_ROUTING_INDEX + 1, 3, 1);
+    set_tile(TILE_ROUTING_INDEX + 2, 2, 2);
+    set_tile(TILE_ROUTING_INDEX + 3, 3, 2);
 }
 
 static void print_routing_mode(bool enabled)

@@ -2,8 +2,6 @@
 #include "test_midi.h"
 #include "mocks/mock_psg.h"
 
-#define LENGTH_OF(x) (sizeof(x) / sizeof((x)[0]))
-
 static void setStickToDeviceType(bool enable)
 {
     const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,

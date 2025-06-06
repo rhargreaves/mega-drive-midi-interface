@@ -111,6 +111,10 @@ void mock_sgdk_set_SYS_isPAL(bool isPal)
     testIsPal = isPal;
 }
 
+void __wrap_VDP_loadFont(const TileSet* tileset, TransferMethod tm)
+{
+}
+
 mw_err __wrap_mediator_recv_event(void)
 {
     function_called();
