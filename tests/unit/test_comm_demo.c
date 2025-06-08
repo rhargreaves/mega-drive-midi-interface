@@ -2,8 +2,15 @@
 #include "comm/comm_demo.h"
 #include "joy.h"
 #include "mocks/mock_comm.h"
+#include "midi.h"
 
 #define DEFAULT_PITCH 69
+
+static void assert_read(u8 data);
+static void assert_note_on(u8 pitch, u8 velocity);
+static void assert_note_off(u8 pitch);
+static void assert_cc(u8 cc, u8 value);
+static void assert_program_change(u8 program);
 
 int test_comm_demo_setup(UNUSED void** state)
 {
@@ -39,34 +46,16 @@ static void vsync_call(u16 buttonPressed)
 
 static void assert_note_played_and_stopped(u8 pitch, u8 program)
 {
-    assert_int_equal(__real_comm_demo_read_ready(), true);
-    assert_int_equal(__real_comm_demo_read(), 0xC0);
-
-    assert_int_equal(__real_comm_demo_read_ready(), true);
-    assert_int_equal(__real_comm_demo_read(), program);
-
-    assert_int_equal(__real_comm_demo_read_ready(), true);
-    assert_int_equal(__real_comm_demo_read(), 0x90);
-
-    assert_int_equal(__real_comm_demo_read_ready(), true);
-    assert_int_equal(__real_comm_demo_read(), pitch);
-
-    assert_int_equal(__real_comm_demo_read_ready(), true);
-    assert_int_equal(__real_comm_demo_read(), 127);
+    assert_cc(CC_SHOW_PARAMETERS_ON_UI, 0x7F);
+    assert_program_change(program);
+    assert_note_on(pitch, 127);
 
     for (int i = 0; i < 50; i++) {
         assert_int_equal(__real_comm_demo_read_ready(), false);
         vsync_call(0);
     }
 
-    assert_int_equal(__real_comm_demo_read_ready(), true);
-    assert_int_equal(__real_comm_demo_read(), 0x80);
-
-    assert_int_equal(__real_comm_demo_read_ready(), true);
-    assert_int_equal(__real_comm_demo_read(), pitch);
-
-    assert_int_equal(__real_comm_demo_read_ready(), true);
-    assert_int_equal(__real_comm_demo_read(), 127);
+    assert_note_off(pitch);
 
     for (int i = 0; i < 2; i++) {
         assert_int_equal(__real_comm_demo_read_ready(), false);
@@ -123,4 +112,37 @@ void test_comm_demo_decreases_program(UNUSED void** state)
 
     vsync_call(BUTTON_LEFT);
     assert_note_played_and_stopped(DEFAULT_PITCH, 1);
+}
+
+static void assert_read(u8 data)
+{
+    assert_int_equal(__real_comm_demo_read_ready(), true);
+    assert_int_equal(__real_comm_demo_read(), data);
+}
+
+static void assert_note_on(u8 pitch, u8 velocity)
+{
+    assert_read(0x90);
+    assert_read(pitch);
+    assert_read(velocity);
+}
+
+static void assert_note_off(u8 pitch)
+{
+    assert_read(0x80);
+    assert_read(pitch);
+    assert_read(127);
+}
+
+static void assert_cc(u8 cc, u8 value)
+{
+    assert_read(0xB0);
+    assert_read(cc);
+    assert_read(value);
+}
+
+static void assert_program_change(u8 program)
+{
+    assert_read(0xC0);
+    assert_read(program);
 }
