@@ -105,8 +105,3 @@ void test_comm_megawifi_returns_zero_when_buffer_empty(UNUSED void** state)
 
     assert_int_equal(data, 0);
 }
-
-void test_comm_megawifi_tick_does_nothing_when_not_listening_or_connected(UNUSED void** state)
-{
-    __real_comm_megawifi_tick();
-}

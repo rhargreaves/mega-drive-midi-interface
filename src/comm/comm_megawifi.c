@@ -14,6 +14,7 @@
 #define MAX_UDP_DATA_LENGTH MW_BUFLEN
 static u16 cmd_buf[MW_BUFLEN];
 static bool recvData = false;
+static bool listening = false;
 static bool connected = false;
 
 #define REUSE_PAYLOAD_HEADER_LEN 6
@@ -124,6 +125,7 @@ static void init_mega_wifi(void)
     if (err != MW_ERR_NONE) {
         return;
     }
+    listening = true;
 
     char ip_str[16];
     uint32_to_ip_str(ip, ip_str);
@@ -133,6 +135,7 @@ static void init_mega_wifi(void)
 
 void comm_megawifi_init(void)
 {
+    listening = false;
     connected = false;
     scheduler_addTickHandler(comm_megawifi_tick);
     scheduler_addFrameHandler(comm_megawifi_vsync);
@@ -263,7 +266,7 @@ static void send_receiver_feedback(void)
 
 void comm_megawifi_tick(void)
 {
-    if (!connected) {
+    if (!listening) {
         return;
     }
     mw_process();
@@ -306,7 +309,10 @@ void comm_megawifi_send(u8 ch, char* data, u16 len)
     restore_remote_endpoint(ch, &udp->remote_ip, &udp->remote_port);
     memcpy(udp->payload, data, len);
 
-    connected = true;
+    if (!connected) {
+        log_info("MW: Session connected");
+        connected = true;
+    }
 
 #if DEBUG_MEGAWIFI_SEND == 1
     char ip_buf[16];
