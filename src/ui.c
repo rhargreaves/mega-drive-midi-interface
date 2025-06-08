@@ -456,10 +456,10 @@ static void update_load(void)
 
 static void init_routing_mode_tiles(void)
 {
-    set_tile(TILE_ROUTING_INDEX, PAL3, ROUTING_X, ROUTING_Y);
-    set_tile(TILE_ROUTING_INDEX + 1, PAL3, ROUTING_X + 1, ROUTING_Y);
-    set_tile(TILE_ROUTING_INDEX + 2, PAL3, ROUTING_X, ROUTING_Y + 1);
-    set_tile(TILE_ROUTING_INDEX + 3, PAL3, ROUTING_X + 1, ROUTING_Y + 1);
+    set_tile(TILE_ROUTING_INDEX, PAL0, ROUTING_X, ROUTING_Y);
+    set_tile(TILE_ROUTING_INDEX + 1, PAL0, ROUTING_X + 1, ROUTING_Y);
+    set_tile(TILE_ROUTING_INDEX + 2, PAL0, ROUTING_X, ROUTING_Y + 1);
+    set_tile(TILE_ROUTING_INDEX + 3, PAL0, ROUTING_X + 1, ROUTING_Y + 1);
 }
 
 static void print_routing_mode(bool enabled)
