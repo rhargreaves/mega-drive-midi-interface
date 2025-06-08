@@ -9,7 +9,4 @@
 #define MAX_EFFECTIVE_Y (MAX_Y - MARGIN_Y - MARGIN_Y)
 
 void ui_init(void);
-void ui_update(u16 delta);
 void ui_draw_text(const char* text, u16 x, u16 y);
-void ui_show_logs(void);
-void ui_hide_logs(void);

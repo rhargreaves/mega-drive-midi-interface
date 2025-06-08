@@ -90,6 +90,7 @@ static void print_routing_mode_if_needed(void);
 static void print_routing_mode(bool enabled);
 static void print_mappings_if_dirty(u8* midiChans);
 static void print_mappings(void);
+static void update(u16 delta);
 
 static u8 lastPitches[DEV_PHYSICAL_CHANS] = { 0 };
 
@@ -98,7 +99,7 @@ static bool commInited = false;
 
 void ui_init(void)
 {
-    scheduler_addFrameHandler(ui_update);
+    scheduler_addFrameHandler(update);
     SPR_init();
 
     // 0x0000A0 = blue
@@ -201,7 +202,7 @@ static void print_ticks(void)
 
 static bool lastCh3SpecialMode = false;
 
-void ui_update(u16 delta)
+static void update(u16 delta)
 {
     update_key_on_off();
 
