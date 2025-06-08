@@ -45,20 +45,15 @@ static enum mw_err associate_ap(void)
     return MW_ERR_NONE;
 }
 
-static enum mw_err display_local_ip(void)
+static enum mw_err get_local_ip(u32* ip)
 {
     struct mw_ip_cfg* ip_cfg;
     enum mw_err err = mw_ip_current(&ip_cfg);
     if (err != MW_ERR_NONE) {
         return err;
     }
-    char ip_str[16] = {};
-    uint32_to_ip_str(ip_cfg->addr.addr, ip_str);
-#if DEBUG_MEGAWIFI_INIT
-    log_info("MW: IP: %s", ip_str);
-    scheduler_yield();
-#endif
-    return err;
+    *ip = ip_cfg->addr.addr;
+    return MW_ERR_NONE;
 }
 
 static bool detect_mw(void)
@@ -113,10 +108,14 @@ static void init_mega_wifi(void)
         return;
     }
     scheduler_yield();
-
     associate_ap();
-    display_local_ip();
 
+    u32 ip;
+    err = get_local_ip(&ip);
+    if (err != MW_ERR_NONE) {
+        log_warn("MW: Cannot get IP");
+        return;
+    }
     err = listen_on_udp_port(CH_CONTROL_PORT, UDP_CONTROL_PORT);
     if (err != MW_ERR_NONE) {
         return;
@@ -125,7 +124,10 @@ static void init_mega_wifi(void)
     if (err != MW_ERR_NONE) {
         return;
     }
-    log_info("MW: Ctrl UDP %u", UDP_CONTROL_PORT);
+
+    char ip_str[16];
+    uint32_to_ip_str(ip, ip_str);
+    log_info("MW: Ctrl UDP %s:%u", ip_str, UDP_CONTROL_PORT);
     scheduler_yield();
 }
 
