@@ -23,8 +23,8 @@
 #define PSG_DEVICE_Y 14
 #define CHAN_Y 2
 #define MIDI_Y (CHAN_Y)
-#define MAX_LOG_LINES 3
-#define LOG_Y (MAX_EFFECTIVE_Y - MAX_LOG_LINES - 1)
+#define MAX_LOG_LINES 2
+#define LOG_Y (MAX_EFFECTIVE_Y - MAX_LOG_LINES - 2)
 #define LOG_X 2
 #define COMM_EXTRA_X 17
 #define PITCH_X 6
