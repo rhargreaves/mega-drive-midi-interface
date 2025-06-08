@@ -323,6 +323,7 @@ int main(void)
         comm_demo_test(test_comm_demo_decreases_pitch),
         comm_demo_test(test_comm_demo_increases_program),
         comm_demo_test(test_comm_demo_decreases_program),
+        comm_demo_test(test_comm_demo_button_repeat_with_initial_delay),
 
         comm_megawifi_test(test_comm_megawifi_reads_midi_message),
         comm_megawifi_test(test_comm_megawifi_logs_if_buffer_full),

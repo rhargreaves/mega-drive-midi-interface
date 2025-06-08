@@ -3,6 +3,7 @@
 #include "log.h"
 #include "scheduler.h"
 #include "midi.h"
+#include "ring_buf.h"
 
 #define programChange 0xC0
 #define noteOnStatus 0x90
@@ -10,48 +11,35 @@
 #define noteKey 69
 #define noteVelocity 127
 
-#define PROGRAM_INDEX 4
-#define NOTE_KEY_1_INDEX 6
-#define NOTE_ON_END_INDEX 7
-#define NOTE_KEY_2_INDEX 9
-#define NOTE_OFF_END_INDEX 10
-
-#define NOTE_ON_WAIT 50
-#define NOTE_OFF_WAIT 2
-
-static u8 cursor;
-static u16 wait;
 static bool enabled;
 static u8 pitch;
 static u8 program;
+static u16 prev_joy_state;
+static u16 repeat_timer;
+static u16 repeat_button;
 
-u8 track[] = {
-    // CC: show parameters on UI
-    0xB0,
-    CC_SHOW_PARAMETERS_ON_UI,
-    0x7F,
-    // Change program
-    programChange,
-    0,
-    // Note on
-    noteOnStatus,
-    noteKey,
-    noteVelocity,
-    // Note off
-    noteOffStatus,
-    noteKey,
-    noteVelocity,
-};
+#define REPEAT_DELAY 10
+#define INITIAL_DELAY 30
 
 void comm_demo_init(void)
 {
     scheduler_addFrameHandler(comm_demo_vsync);
     JOY_init();
-    cursor = 0;
-    wait = 0;
     enabled = false;
     pitch = noteKey;
     program = 0;
+    prev_joy_state = 0;
+    repeat_timer = 0;
+    repeat_button = 0;
+    ring_buf_init();
+
+    ring_buf_write(0xB0);
+    ring_buf_write(CC_SHOW_PARAMETERS_ON_UI);
+    ring_buf_write(0x7F);
+
+    ring_buf_write(noteOnStatus);
+    ring_buf_write(pitch);
+    ring_buf_write(0x7F);
 }
 
 bool comm_demo_is_present(void)
@@ -64,71 +52,113 @@ u8 comm_demo_read_ready(void)
     if (!enabled) {
         if (JOY_readJoypad(JOY_1) & BUTTON_A) {
             enabled = true;
+        } else {
+            return false;
         }
     }
-    if (!enabled) {
-        return false;
-    }
-    return wait == 0;
+    return ring_buf_can_read();
 }
 
 u8 comm_demo_read(void)
 {
-    if (cursor == 0) {
-        track[PROGRAM_INDEX] = program;
-        track[NOTE_KEY_1_INDEX] = pitch;
-        track[NOTE_KEY_2_INDEX] = pitch;
-        log_info("Demo: Pitch=%d Prg=%d", pitch, program);
-    }
-    u8 data = track[cursor];
-    cursor++;
-    if (cursor == NOTE_ON_END_INDEX + 1) {
-        wait = NOTE_ON_WAIT;
-    }
-    if (cursor == NOTE_OFF_END_INDEX + 1) {
-        wait = NOTE_OFF_WAIT;
-        cursor = 0;
-    }
-    return data;
-}
-
-static void decrement_wait(void)
-{
-    if (wait != 0) {
-        wait--;
+    u8 data;
+    if (ring_buf_read(&data) == RING_BUF_OK) {
+        return data;
+    } else {
+        return 0;
     }
 }
 
-void comm_demo_vsync(u16 wait)
+static void send_note_off(u8 pitch)
 {
-    decrement_wait();
+    ring_buf_write(noteOffStatus);
+    ring_buf_write(pitch);
+    ring_buf_write(0);
+}
 
+static void send_note_on(u8 pitch)
+{
+    ring_buf_write(noteOnStatus);
+    ring_buf_write(pitch);
+    ring_buf_write(noteVelocity);
+}
+
+static void send_program_change(u8 program)
+{
+    ring_buf_write(programChange);
+    ring_buf_write(program);
+}
+
+static bool should_repeat_button(u16 joy_state, u16 button_mask)
+{
+    if (joy_state & button_mask) {
+        if (repeat_button != button_mask) {
+            repeat_button = button_mask;
+            repeat_timer = 1;
+            return true;
+        } else {
+            repeat_timer++;
+            if (repeat_timer > INITIAL_DELAY
+                && (repeat_timer - INITIAL_DELAY) % REPEAT_DELAY == 0) {
+                return true;
+            }
+        }
+    } else if (repeat_button == button_mask) {
+        repeat_button = 0;
+        repeat_timer = 0;
+    }
+    return false;
+}
+
+void comm_demo_vsync(u16 delta)
+{
     JOY_update();
-    u16 curState = JOY_readJoypad(JOY_1);
-    if (curState & BUTTON_UP) {
+
+    u16 joy_state = JOY_readJoypad(JOY_1);
+
+    if (should_repeat_button(joy_state, BUTTON_UP)) {
+        send_note_off(pitch);
         pitch++;
         if (pitch > MAX_MIDI_PITCH) {
             pitch = MAX_MIDI_PITCH;
         }
+        send_note_on(pitch);
     }
-    if (curState & BUTTON_DOWN) {
+    if (should_repeat_button(joy_state, BUTTON_DOWN)) {
+        send_note_off(pitch);
         pitch--;
         if (pitch < MIN_MIDI_PITCH) {
             pitch = MIN_MIDI_PITCH;
         }
+        send_note_on(pitch);
     }
-    if (curState & BUTTON_RIGHT) {
+    if (should_repeat_button(joy_state, BUTTON_RIGHT)) {
+        send_note_off(pitch);
         program++;
         if (program > 0x7F) {
             program = 0x7F;
         }
+        send_program_change(program);
+        send_note_on(pitch);
     }
-    if (curState & BUTTON_LEFT) {
+    if (should_repeat_button(joy_state, BUTTON_LEFT)) {
+        send_note_off(pitch);
         program--;
         if (program == 0xFF) {
             program = 0;
         }
+        send_program_change(program);
+        send_note_on(pitch);
     }
+    if (should_repeat_button(joy_state, BUTTON_A)) {
+        send_note_off(pitch);
+        send_note_on(pitch);
+    }
+    if (should_repeat_button(joy_state, BUTTON_B)) {
+        send_note_off(pitch);
+    }
+
+    prev_joy_state = joy_state;
 }
 
 u8 comm_demo_write_ready(void)

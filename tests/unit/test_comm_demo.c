@@ -44,6 +44,15 @@ static void vsync_call(u16 buttonPressed)
     __real_comm_demo_vsync();
 }
 
+static void vsync_call_multiple(u16 buttonPressed, int times)
+{
+    for (int i = 0; i < times; i++) {
+        expect_function_call(__wrap_JOY_update);
+        will_return(__wrap_JOY_readJoypad, buttonPressed);
+        __real_comm_demo_vsync();
+    }
+}
+
 static void assert_note_played_and_stopped(u8 pitch, u8 program)
 {
     assert_cc(CC_SHOW_PARAMETERS_ON_UI, 0x7F);
@@ -66,52 +75,106 @@ static void assert_note_played_and_stopped(u8 pitch, u8 program)
 void test_comm_demo_plays_note(UNUSED void** state)
 {
     will_return(__wrap_JOY_readJoypad, BUTTON_A);
+    __real_comm_demo_read_ready();
 
-    for (int rep = 0; rep < 10; rep++) {
-        assert_note_played_and_stopped(DEFAULT_PITCH, 0);
+    while (__real_comm_demo_read_ready()) {
+        __real_comm_demo_read();
     }
+
+    vsync_call(BUTTON_A);
+    assert_note_off(DEFAULT_PITCH);
+    assert_note_on(DEFAULT_PITCH, 127);
 }
 
 void test_comm_demo_increases_pitch(UNUSED void** state)
 {
     will_return(__wrap_JOY_readJoypad, BUTTON_A);
-    assert_note_played_and_stopped(DEFAULT_PITCH, 0);
+    __real_comm_demo_read_ready();
+
+    while (__real_comm_demo_read_ready()) {
+        __real_comm_demo_read();
+    }
 
     vsync_call(BUTTON_UP);
-    assert_note_played_and_stopped(DEFAULT_PITCH + 1, 0);
+    assert_note_off(DEFAULT_PITCH);
+    assert_note_on(DEFAULT_PITCH + 1, 127);
 }
 
 void test_comm_demo_decreases_pitch(UNUSED void** state)
 {
     will_return(__wrap_JOY_readJoypad, BUTTON_A);
-    assert_note_played_and_stopped(DEFAULT_PITCH, 0);
+    __real_comm_demo_read_ready();
+
+    while (__real_comm_demo_read_ready()) {
+        __real_comm_demo_read();
+    }
 
     vsync_call(BUTTON_DOWN);
-    assert_note_played_and_stopped(DEFAULT_PITCH - 1, 0);
+    assert_note_off(DEFAULT_PITCH);
+    assert_note_on(DEFAULT_PITCH - 1, 127);
 }
 
 void test_comm_demo_increases_program(UNUSED void** state)
 {
     will_return(__wrap_JOY_readJoypad, BUTTON_A);
-    assert_note_played_and_stopped(DEFAULT_PITCH, 0);
+    __real_comm_demo_read_ready();
+
+    while (__real_comm_demo_read_ready()) {
+        __real_comm_demo_read();
+    }
 
     vsync_call(BUTTON_RIGHT);
-    assert_note_played_and_stopped(DEFAULT_PITCH, 1);
+    assert_note_off(DEFAULT_PITCH);
+    assert_program_change(1);
+    assert_note_on(DEFAULT_PITCH, 127);
 }
 
 void test_comm_demo_decreases_program(UNUSED void** state)
 {
     will_return(__wrap_JOY_readJoypad, BUTTON_A);
-    assert_note_played_and_stopped(DEFAULT_PITCH, 0);
+    __real_comm_demo_read_ready();
+
+    while (__real_comm_demo_read_ready()) {
+        __real_comm_demo_read();
+    }
 
     vsync_call(BUTTON_RIGHT);
-    assert_note_played_and_stopped(DEFAULT_PITCH, 1);
-
-    vsync_call(BUTTON_RIGHT);
-    assert_note_played_and_stopped(DEFAULT_PITCH, 2);
+    assert_note_off(DEFAULT_PITCH);
+    assert_program_change(1);
+    assert_note_on(DEFAULT_PITCH, 127);
 
     vsync_call(BUTTON_LEFT);
-    assert_note_played_and_stopped(DEFAULT_PITCH, 1);
+    assert_note_off(DEFAULT_PITCH);
+    assert_program_change(0);
+    assert_note_on(DEFAULT_PITCH, 127);
+}
+
+void test_comm_demo_button_repeat_with_initial_delay(UNUSED void** state)
+{
+    will_return(__wrap_JOY_readJoypad, BUTTON_A);
+    __real_comm_demo_read_ready();
+
+    while (__real_comm_demo_read_ready()) {
+        __real_comm_demo_read();
+    }
+
+    vsync_call(BUTTON_UP);
+    assert_note_off(DEFAULT_PITCH);
+    assert_note_on(DEFAULT_PITCH + 1, 127);
+
+    vsync_call_multiple(BUTTON_UP, 38);
+    assert_int_equal(__real_comm_demo_read_ready(), false);
+
+    vsync_call(BUTTON_UP);
+    assert_note_off(DEFAULT_PITCH + 1);
+    assert_note_on(DEFAULT_PITCH + 2, 127);
+
+    vsync_call_multiple(BUTTON_UP, 9);
+    assert_int_equal(__real_comm_demo_read_ready(), false);
+
+    vsync_call(BUTTON_UP);
+    assert_note_off(DEFAULT_PITCH + 2);
+    assert_note_on(DEFAULT_PITCH + 3, 127);
 }
 
 static void assert_read(u8 data)
@@ -131,7 +194,7 @@ static void assert_note_off(u8 pitch)
 {
     assert_read(0x80);
     assert_read(pitch);
-    assert_read(127);
+    assert_read(0);
 }
 
 static void assert_cc(u8 cc, u8 value)
