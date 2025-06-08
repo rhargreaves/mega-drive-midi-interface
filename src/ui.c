@@ -376,7 +376,7 @@ static void print_megawifi_info(void)
 
     VDP_clearTextArea(17, MAX_EFFECTIVE_Y + 1, 15, 1);
     VDP_drawImageEx(BG_A, MW_IMAGES[index],
-        TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_MEGAWIFI_STATUS_INDEX), 17, MAX_EFFECTIVE_Y + 1,
+        TILE_ATTR_FULL(PAL0, 0, FALSE, FALSE, TILE_MEGAWIFI_STATUS_INDEX), 17, MAX_EFFECTIVE_Y + 1,
         FALSE, FALSE);
 }
 
@@ -428,8 +428,9 @@ static void print_comm_mode(void)
         break;
     }
 
+    VDP_clearTextArea(9, MAX_EFFECTIVE_Y + 1, 7, 1);
     VDP_drawImageEx(BG_A, MODES_IMAGES[index],
-        TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_IMAGES_INDEX), 9, MAX_EFFECTIVE_Y + 1, FALSE,
+        TILE_ATTR_FULL(PAL0, 0, FALSE, FALSE, TILE_IMAGES_INDEX), 9, MAX_EFFECTIVE_Y + 1, FALSE,
         FALSE);
 
     if (commInited) {
