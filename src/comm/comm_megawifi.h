@@ -11,9 +11,3 @@ void comm_megawifi_tick(void);
 void comm_megawifi_midiEmitCallback(u8 data);
 void comm_megawifi_send(u8 ch, char* data, u16 len);
 void comm_megawifi_vsync(u16 delta);
-
-typedef enum MegaWifiStatus MegaWifiStatus;
-
-enum MegaWifiStatus { Detecting, NotDetected, Initialising, Listening, Connected };
-
-MegaWifiStatus comm_megawifi_status(void);
