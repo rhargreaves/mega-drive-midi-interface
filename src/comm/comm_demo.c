@@ -2,6 +2,7 @@
 #include "midi_fm.h"
 #include "log.h"
 #include "scheduler.h"
+#include "midi.h"
 
 #define programChange 0xC0
 #define noteOnStatus 0x90
@@ -9,11 +10,11 @@
 #define noteKey 69
 #define noteVelocity 127
 
-#define PROGRAM_INDEX 1
-#define NOTE_KEY_1_INDEX 3
-#define NOTE_ON_END_INDEX 4
-#define NOTE_KEY_2_INDEX 6
-#define NOTE_OFF_END_INDEX 7
+#define PROGRAM_INDEX 4
+#define NOTE_KEY_1_INDEX 6
+#define NOTE_ON_END_INDEX 7
+#define NOTE_KEY_2_INDEX 9
+#define NOTE_OFF_END_INDEX 10
 
 #define NOTE_ON_WAIT 50
 #define NOTE_OFF_WAIT 2
@@ -25,11 +26,18 @@ static u8 pitch;
 static u8 program;
 
 u8 track[] = {
+    // CC: show parameters on UI
+    0xB0,
+    CC_SHOW_PARAMETERS_ON_UI,
+    0x7F,
+    // Change program
     programChange,
     0,
+    // Note on
     noteOnStatus,
     noteKey,
     noteVelocity,
+    // Note off
     noteOffStatus,
     noteKey,
     noteVelocity,
