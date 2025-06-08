@@ -33,6 +33,7 @@ const Image img_megawifi_detecting = {};
 const Image img_wait_edpro = {};
 const Image img_wait_edx7 = {};
 const Image custom_font = {};
+const Image img_sp = {};
 const u8 pcm_BellRide[0] = {};
 const u8 pcm_BellTree[0] = {};
 const u8 pcm_BongoRim[0] = {};

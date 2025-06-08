@@ -54,7 +54,6 @@ static void update_fm_values_if_chan_selected(void);
 static void synth_parameter_updated(u8 fmChan, ParameterUpdated parameterUpdated);
 
 static const char* stereo_text(u8 stereo);
-static const char* ch3_special_mode_text(u8 enabled);
 static const char* ams_text(u8 ams);
 static const char* fms_text(u8 fms);
 static const char* chan_number(u8 chan);
@@ -67,7 +66,6 @@ static u8 get_algorithm(const FmDisplayData* data);
 static u8 get_feedback(const FmDisplayData* data);
 static u8 get_fms(const FmDisplayData* data);
 static u8 get_ams(const FmDisplayData* data);
-static u8 get_special_mode(const FmDisplayData* data);
 static u8 get_stereo(const FmDisplayData* data);
 static u8 get_lfo_frequency(const FmDisplayData* data);
 static u8 get_op_total_level(const FmChannel* channel, u8 op);
@@ -91,7 +89,6 @@ static const UIField fmFields[] = {
     { 0, 4, 4, "LFO", lfo_freq_text, get_lfo_frequency },
     { 0, 5, 4, "FMS", fms_text, get_fms },
     { 8, 5, 4, "AMS", ams_text, get_ams },
-    { 9, 23, 4, "Ch3", ch3_special_mode_text, get_special_mode },
 };
 
 static const UIOpField opFields[] = {
@@ -138,7 +135,7 @@ static void init_algorithm_sprites(void)
 
 static void synth_parameter_updated(u8 fmChan, ParameterUpdated parameterUpdated)
 {
-    if (fmChan == chanParasFmChan || parameterUpdated == Lfo || parameterUpdated == SpecialMode) {
+    if (fmChan == chanParasFmChan || parameterUpdated == Lfo) {
         synthParameterValuesDirty = true;
     }
 }
@@ -171,11 +168,6 @@ static u8 get_fms(const FmDisplayData* data)
 static u8 get_ams(const FmDisplayData* data)
 {
     return data->channel->ams;
-}
-
-static u8 get_special_mode(const FmDisplayData* data)
-{
-    return data->global->specialMode;
 }
 
 static u8 get_stereo(const FmDisplayData* data)
@@ -297,16 +289,6 @@ static const char* stereo_text(u8 stereo)
         return "L   ";
     default:
         return "LR  ";
-    }
-}
-
-static const char* ch3_special_mode_text(u8 enabled)
-{
-    switch (enabled) {
-    case true:
-        return "Special";
-    default:
-        return "Normal ";
     }
 }
 

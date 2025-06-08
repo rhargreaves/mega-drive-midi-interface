@@ -24,7 +24,8 @@
 #define CHAN_Y 2
 #define MIDI_Y (CHAN_Y)
 #define MAX_LOG_LINES 3
-#define LOG_Y (MAX_EFFECTIVE_Y - MAX_LOG_LINES)
+#define LOG_Y (MAX_EFFECTIVE_Y - MAX_LOG_LINES - 1)
+#define LOG_X 2
 #define COMM_EXTRA_X 17
 #define PITCH_X 6
 
@@ -49,6 +50,7 @@
 
 #define TILE_MEGAWIFI_STATUS_INDEX (TILE_DEVICE_PSG_INDEX + 4)
 #define TILE_WAITING_ED_INDEX (TILE_MEGAWIFI_STATUS_INDEX + 5)
+#define TILE_SP_INDEX (TILE_WAITING_ED_INDEX + 8)
 
 #define TILE_BORDERS_LINE_START_INDEX (TILE_BORDERS_INDEX)
 #define TILE_BORDERS_LINE_INDEX (TILE_BORDERS_INDEX + 1)
@@ -114,6 +116,7 @@ void ui_init(void)
     PAL_setColor(PALETTE_INDEX(PAL3, 2), RGB24_TO_VDPCOLOR(0x3b2dee));
     print_header();
     print_channels();
+
     update_load();
     init_load();
     print_comm_mode();
@@ -121,6 +124,16 @@ void ui_init(void)
     init_routing_mode_tiles();
     print_routing_mode(midi_dynamic_mode());
     ui_fm_init();
+}
+
+static void update_ch3sp(bool enabled)
+{
+    if (enabled) {
+        VDP_drawImageEx(BG_A, &img_sp, TILE_ATTR_FULL(PAL3, 0, FALSE, FALSE, TILE_SP_INDEX),
+            DEVICE_X + 2, FM_DEVICE_Y + (2 * 2), FALSE, FALSE);
+    } else {
+        VDP_clearTextArea(DEVICE_X + 2, FM_DEVICE_Y + (2 * 2), 1, 1);
+    }
 }
 
 static void print_mappings(void)
@@ -138,7 +151,8 @@ static u8 logCurrentY = 0;
 
 static void clear_log_area(void)
 {
-    VDP_clearTextArea(MARGIN_X, LOG_Y + MARGIN_Y, MAX_EFFECTIVE_X, MAX_LOG_LINES);
+    VDP_clearTextArea(
+        MARGIN_X + LOG_X, LOG_Y + MARGIN_Y, MAX_EFFECTIVE_X - LOG_X, MAX_LOG_LINES + 1);
     logCurrentY = 0;
 }
 
@@ -164,7 +178,7 @@ static void print_log(void)
         VDP_setTextPalette(PAL2);
         break;
     }
-    draw_text(log->msg, 0, LOG_Y + logCurrentY);
+    draw_text(log->msg, MARGIN_X + LOG_X, LOG_Y + MARGIN_Y + logCurrentY);
     VDP_setTextPalette(PAL0);
     logCurrentY++;
 }
@@ -187,6 +201,8 @@ static void print_ticks(void)
     draw_text(t, 0, 1);
 }
 
+static bool lastCh3SpecialMode = false;
+
 void ui_update(u16 delta)
 {
     update_key_on_off();
@@ -201,6 +217,12 @@ void ui_update(u16 delta)
         print_routing_mode_if_needed();
         if (settings_debug_ticks()) {
             print_ticks();
+        }
+
+        bool ch3SpecialMode = synth_global_parameters()->specialMode;
+        if (ch3SpecialMode != lastCh3SpecialMode) {
+            update_ch3sp(ch3SpecialMode);
+            lastCh3SpecialMode = ch3SpecialMode;
         }
     }
 
