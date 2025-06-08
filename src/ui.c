@@ -107,15 +107,11 @@ void ui_init(void)
 
     VDP_loadFont(custom_font.tileset, DMA);
     VDP_setBackgroundColor(BG_COLOUR_INDEX);
-    PAL_setColor(PALETTE_INDEX(PAL0, BG_COLOUR_INDEX), RGB24_TO_VDPCOLOR(0x000000));
-    PAL_setColor(PALETTE_INDEX(PAL0, 1), RGB24_TO_VDPCOLOR(0xe0ffff));
-    PAL_setColor(PALETTE_INDEX(PAL0, 2), RGB24_TO_VDPCOLOR(0x3b2dee));
+    PAL_setColors((PAL0 * 16), pal_0.data, pal_0.length, CPU);
+    PAL_setColors((PAL2 * 16), pal_2.data, pal_2.length, CPU);
 
     PAL_setColor(PALETTE_INDEX(PAL3, 1), RGB24_TO_VDPCOLOR(0x808080));
     PAL_setColor(PALETTE_INDEX(PAL3, 2), RGB24_TO_VDPCOLOR(0x3b2dee));
-
-    // PAL_setColor(PALETTE_INDEX(PAL1, FONT_COLOUR_INDEX), RGB24_TO_VDPCOLOR(0xFFFF00));
-    // PAL_setColor(PALETTE_INDEX(PAL3, FONT_COLOUR_INDEX), RGB24_TO_VDPCOLOR(0x808080));
     print_header();
     print_channels();
     update_load();
@@ -426,8 +422,6 @@ static void print_comm_mode(void)
 static void init_load(void)
 {
     draw_text("%", 0, MAX_EFFECTIVE_Y);
-    PAL_setColors((PAL2 * 16), pal_2.data, pal_2.length, CPU);
-    //  PAL_setColor(PALETTE_INDEX(PAL2, 1), RGB24_TO_VDPCOLOR(0x00FF00));
     VDP_loadTileSet(&ts_load, TILE_LED_INDEX, CPU);
 }
 
