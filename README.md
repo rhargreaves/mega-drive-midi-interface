@@ -65,6 +65,11 @@ make
 > [!WARNING]
 > Building this project requires certain modifications to be applied to the SGDK. If you are not building using Docker you will need to manually apply patches from the [docker-sgdk](https://github.com/rhargreaves/docker-sgdk) repo (*.patch files in the root) otherwise the build or tests may fail.
 
+## Acknowledgments
+
+* This project uses a pixel font and colour scheme from [MDPlayer by kuma4649](https://github.com/kuma4649/MDPlayer) licensed under the GNU General Public License v3.0.
+* The built-in FM presets are based on [Wohlstand's XG bank from libOPNMIDI](https://github.com/Wohlstand/libOPNMIDI/blob/master/fm_banks/xg.wopn)
+
 ## Contributions
 
 Pull requests are welcome, as are donations!

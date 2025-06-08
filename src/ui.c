@@ -246,9 +246,9 @@ static void draw_text(const char* text, u16 x, u16 y)
     VDP_drawText(text, MARGIN_X + x, MARGIN_Y + y);
 }
 
-static void set_tile(u16 tileIndex, u16 x, u16 y)
+static void set_tile(u16 tileIndex, u8 pal, u16 x, u16 y)
 {
-    VDP_setTileMapXY(BG_A, TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, tileIndex), x, y);
+    VDP_setTileMapXY(BG_A, TILE_ATTR_FULL(pal, 0, FALSE, FALSE, tileIndex), x, y);
 }
 
 static void print_header(void)
@@ -258,23 +258,23 @@ static void print_header(void)
 
     VDP_loadTileSet(&ts_borders, TILE_BORDERS_INDEX, DMA);
 
-    set_tile(TILE_BORDERS_LINE_START_INDEX, DEVICE_X, FM_DEVICE_Y);
-    set_tile(TILE_BORDERS_LINE_INDEX, DEVICE_X, FM_DEVICE_Y + 1);
-    set_tile(TILE_BORDERS_LINE_INDEX, DEVICE_X, FM_DEVICE_Y + 2);
+    set_tile(TILE_BORDERS_LINE_START_INDEX, PAL3, DEVICE_X, FM_DEVICE_Y);
+    set_tile(TILE_BORDERS_LINE_INDEX, PAL3, DEVICE_X, FM_DEVICE_Y + 1);
+    set_tile(TILE_BORDERS_LINE_INDEX, PAL3, DEVICE_X, FM_DEVICE_Y + 2);
     VDP_drawImageEx(BG_A, &img_device_fm,
-        TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_DEVICE_FM_INDEX), DEVICE_X, FM_DEVICE_Y + 3,
+        TILE_ATTR_FULL(PAL3, 0, FALSE, FALSE, TILE_DEVICE_FM_INDEX), DEVICE_X, FM_DEVICE_Y + 3,
         FALSE, FALSE);
-    set_tile(TILE_BORDERS_LINE_INDEX, DEVICE_X, FM_DEVICE_Y + 8);
-    set_tile(TILE_BORDERS_LINE_INDEX, DEVICE_X, FM_DEVICE_Y + 9);
-    set_tile(TILE_BORDERS_LINE_END_INDEX, DEVICE_X, FM_DEVICE_Y + 10);
+    set_tile(TILE_BORDERS_LINE_INDEX, PAL3, DEVICE_X, FM_DEVICE_Y + 8);
+    set_tile(TILE_BORDERS_LINE_INDEX, PAL3, DEVICE_X, FM_DEVICE_Y + 9);
+    set_tile(TILE_BORDERS_LINE_END_INDEX, PAL3, DEVICE_X, FM_DEVICE_Y + 10);
 
-    set_tile(TILE_BORDERS_LINE_START_INDEX, DEVICE_X, PSG_DEVICE_Y + 1);
-    set_tile(TILE_BORDERS_LINE_INDEX, DEVICE_X, PSG_DEVICE_Y + 2);
+    set_tile(TILE_BORDERS_LINE_START_INDEX, PAL3, DEVICE_X, PSG_DEVICE_Y + 1);
+    set_tile(TILE_BORDERS_LINE_INDEX, PAL3, DEVICE_X, PSG_DEVICE_Y + 2);
     VDP_drawImageEx(BG_A, &img_device_psg,
-        TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_DEVICE_PSG_INDEX), DEVICE_X, PSG_DEVICE_Y + 3,
+        TILE_ATTR_FULL(PAL3, 0, FALSE, FALSE, TILE_DEVICE_PSG_INDEX), DEVICE_X, PSG_DEVICE_Y + 3,
         FALSE, FALSE);
-    set_tile(TILE_BORDERS_LINE_INDEX, DEVICE_X, PSG_DEVICE_Y + 6);
-    set_tile(TILE_BORDERS_LINE_END_INDEX, DEVICE_X, PSG_DEVICE_Y + 7);
+    set_tile(TILE_BORDERS_LINE_INDEX, PAL3, DEVICE_X, PSG_DEVICE_Y + 6);
+    set_tile(TILE_BORDERS_LINE_END_INDEX, PAL3, DEVICE_X, PSG_DEVICE_Y + 7);
 }
 
 static void print_channels(void)
@@ -426,8 +426,8 @@ static void print_comm_mode(void)
 static void init_load(void)
 {
     draw_text("%", 0, MAX_EFFECTIVE_Y);
-    PAL_setColors((PAL2 * 16), pal_load.data, pal_load.length, CPU);
-    PAL_setColor(PALETTE_INDEX(PAL2, 1), RGB24_TO_VDPCOLOR(0x00FF00));
+    PAL_setColors((PAL2 * 16), pal_2.data, pal_2.length, CPU);
+    //  PAL_setColor(PALETTE_INDEX(PAL2, 1), RGB24_TO_VDPCOLOR(0x00FF00));
     VDP_loadTileSet(&ts_load, TILE_LED_INDEX, CPU);
 }
 
@@ -452,7 +452,7 @@ static void update_load(void)
         if (i < led_level) {
             tile_index -= LED_TILE_OFF_OFFSET;
         }
-        set_tile(tile_index, 2 + i, LOAD_TILE_Y);
+        set_tile(tile_index, PAL2, 2 + i, LOAD_TILE_Y);
     }
     if (settings_debug_load()) {
         print_load_text(percent);
@@ -462,10 +462,10 @@ static void update_load(void)
 
 static void init_routing_mode_tiles(void)
 {
-    set_tile(TILE_ROUTING_INDEX, ROUTING_X, ROUTING_Y);
-    set_tile(TILE_ROUTING_INDEX + 1, ROUTING_X + 1, ROUTING_Y);
-    set_tile(TILE_ROUTING_INDEX + 2, ROUTING_X, ROUTING_Y + 1);
-    set_tile(TILE_ROUTING_INDEX + 3, ROUTING_X + 1, ROUTING_Y + 1);
+    set_tile(TILE_ROUTING_INDEX, PAL3, ROUTING_X, ROUTING_Y);
+    set_tile(TILE_ROUTING_INDEX + 1, PAL3, ROUTING_X + 1, ROUTING_Y);
+    set_tile(TILE_ROUTING_INDEX + 2, PAL3, ROUTING_X, ROUTING_Y + 1);
+    set_tile(TILE_ROUTING_INDEX + 3, PAL3, ROUTING_X + 1, ROUTING_Y + 1);
 }
 
 static void print_routing_mode(bool enabled)
