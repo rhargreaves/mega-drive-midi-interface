@@ -324,12 +324,9 @@ int main(void)
         comm_demo_test(test_comm_demo_increases_program),
         comm_demo_test(test_comm_demo_decreases_program),
 
-        comm_megawifi_test(test_comm_megawifi_returns_detecting_status_by_default),
-        comm_megawifi_test(test_comm_megawifi_inits_and_sets_status_to_listening),
         comm_megawifi_test(test_comm_megawifi_reads_midi_message),
         comm_megawifi_test(test_comm_megawifi_logs_if_buffer_full),
         comm_megawifi_test(test_comm_megawifi_returns_zero_when_buffer_empty),
-        comm_megawifi_test(test_comm_megawifi_sets_status_to_not_detected_when_not_present),
         comm_megawifi_test(test_comm_megawifi_tick_does_nothing_when_not_listening_or_connected),
 
         dynamic_midi_test(test_midi_dynamic_uses_all_channels),

@@ -47,9 +47,7 @@
 #define TILE_IMAGES_INDEX (TILE_BORDERS_INDEX + 8)
 #define TILE_DEVICE_FM_INDEX (TILE_IMAGES_INDEX + 7)
 #define TILE_DEVICE_PSG_INDEX (TILE_DEVICE_FM_INDEX + 6)
-
-#define TILE_MEGAWIFI_STATUS_INDEX (TILE_DEVICE_PSG_INDEX + 4)
-#define TILE_WAITING_ED_INDEX (TILE_MEGAWIFI_STATUS_INDEX + 5)
+#define TILE_WAITING_ED_INDEX (TILE_DEVICE_PSG_INDEX + 4)
 #define TILE_SP_INDEX (TILE_WAITING_ED_INDEX + 8)
 
 #define TILE_BORDERS_LINE_START_INDEX (TILE_BORDERS_INDEX)
@@ -363,23 +361,6 @@ static void print_chan_activity(u8* pitches)
     }
 }
 
-static void print_megawifi_info(void)
-{
-    const Image* MW_IMAGES[] = { &img_megawifi_detecting, &img_megawifi_not_detected,
-        &img_megawifi_initialising, &img_megawifi_listening, &img_megawifi_connected };
-
-    u16 index = comm_megawifi_status();
-    if (index >= LENGTH_OF(MW_IMAGES)) {
-        log_warn("Invalid MegaWiFi status: %d", index);
-        return;
-    }
-
-    VDP_clearTextArea(17, MAX_EFFECTIVE_Y + 1, 15, 1);
-    VDP_drawImageEx(BG_A, MW_IMAGES[index],
-        TILE_ATTR_FULL(PAL0, 0, FALSE, FALSE, TILE_MEGAWIFI_STATUS_INDEX), 17, MAX_EFFECTIVE_Y + 1,
-        FALSE, FALSE);
-}
-
 static void print_comm_mode(void)
 {
     if (commInited) {
@@ -435,10 +416,6 @@ static void print_comm_mode(void)
 
     if (commInited) {
         VDP_clearTextArea(COMM_EXTRA_X, MAX_EFFECTIVE_Y + 1, 5, 1);
-    }
-
-    if (settings_is_megawifi_rom()) {
-        print_megawifi_info();
     }
 }
 

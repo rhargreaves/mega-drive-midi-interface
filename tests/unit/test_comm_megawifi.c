@@ -83,18 +83,6 @@ static void megawifi_init(void)
     __real_comm_megawifi_init();
 }
 
-void test_comm_megawifi_returns_detecting_status_by_default(UNUSED void** state)
-{
-    assert_int_equal(comm_megawifi_status(), Detecting);
-}
-
-void test_comm_megawifi_inits_and_sets_status_to_listening(UNUSED void** state)
-{
-    megawifi_init();
-
-    assert_int_equal(comm_megawifi_status(), Listening);
-}
-
 void test_comm_megawifi_reads_midi_message(UNUSED void** state)
 {
     megawifi_init();
@@ -117,18 +105,6 @@ void test_comm_megawifi_returns_zero_when_buffer_empty(UNUSED void** state)
     u8 data = __real_comm_megawifi_read();
 
     assert_int_equal(data, 0);
-}
-
-void test_comm_megawifi_sets_status_to_not_detected_when_not_present(UNUSED void** state)
-{
-    expect_any(__wrap_scheduler_addTickHandler, onTick);
-    expect_any(__wrap_scheduler_addFrameHandler, onFrame);
-    will_return(__wrap_mw_uart_is_present, false);
-    expect_scheduler_yield();
-
-    __real_comm_megawifi_init();
-
-    assert_int_equal(comm_megawifi_status(), NotDetected);
 }
 
 void test_comm_megawifi_tick_does_nothing_when_not_listening_or_connected(UNUSED void** state)

@@ -14,6 +14,7 @@
 #define MAX_UDP_DATA_LENGTH MW_BUFLEN
 static u16 cmd_buf[MW_BUFLEN];
 static bool recvData = false;
+static bool connected = false;
 
 #define REUSE_PAYLOAD_HEADER_LEN 6
 #define RECEIVER_FEEDBACK_FRAME_FREQUENCY 10
@@ -25,8 +26,6 @@ static bool awaitingSend = false;
 
 #define FPS 60
 #define MS_TO_FRAMES(ms) (((ms) * FPS / 500 + 1) / 2)
-
-static MegaWifiStatus status = Detecting;
 
 static void recv_complete_cb(enum lsd_status stat, uint8_t ch, char* data, uint16_t len, void* ctx);
 
@@ -67,17 +66,14 @@ static bool detect_mw(void)
     u8 ver_major = 0, ver_minor = 0;
     char* variant = NULL;
 
+    log_info("MW: Detecting...");
     enum mw_err err = mw_detect(&ver_major, &ver_minor, &variant);
     if (MW_ERR_NONE != err) {
-        if (settings_debug_megawifi_init()) {
-            log_warn("MW: Not found");
-        }
+        log_warn("MW: Not found");
         return false;
     }
-    if (settings_debug_megawifi_init()) {
-        log_info("MW: Detected v%d.%d", ver_major, ver_minor);
-        scheduler_yield();
-    }
+    log_info("MW: Found v%d.%d", ver_major, ver_minor);
+    scheduler_yield();
     return true;
 }
 
@@ -108,16 +104,14 @@ static void init_mega_wifi(void)
 {
     enum mw_err err = mw_init(cmd_buf, MW_BUFLEN);
     if (err != MW_ERR_NONE) {
-        status = NotDetected;
+        log_warn("MW: Init Error %d", err);
         return;
     }
     tasking_init();
 
     if (!detect_mw()) {
-        status = NotDetected;
         return;
     }
-    status = Initialising;
     scheduler_yield();
 
     associate_ap();
@@ -127,33 +121,24 @@ static void init_mega_wifi(void)
     if (err != MW_ERR_NONE) {
         return;
     }
-#if DEBUG_MEGAWIFI_INIT
-    log_info("MW: Control UDP port %u open", UDP_CONTROL_PORT);
-    scheduler_yield();
-#endif
-
     err = listen_on_udp_port(CH_MIDI_PORT, UDP_MIDI_PORT);
     if (err != MW_ERR_NONE) {
         return;
     }
-    status = Listening;
-#if DEBUG_MEGAWIFI_INIT
-    log_info("MW: MIDI UDP port %u open", UDP_MIDI_PORT);
+    log_info("MW: Ctrl UDP %u", UDP_CONTROL_PORT);
     scheduler_yield();
-#endif
 }
 
 void comm_megawifi_init(void)
 {
+    connected = false;
     scheduler_addTickHandler(comm_megawifi_tick);
     scheduler_addFrameHandler(comm_megawifi_vsync);
 
     if (comm_megawifi_is_present()) {
-        status = Detecting;
         scheduler_yield();
         init_mega_wifi();
     } else {
-        status = NotDetected;
         scheduler_yield();
     }
 }
@@ -238,7 +223,7 @@ static void recv_complete_cb(enum lsd_status stat, uint8_t ch, char* data, uint1
 
     if (LSD_STAT_COMPLETE == stat) {
         struct mw_reuse_payload* udp = (struct mw_reuse_payload*)data;
-#if DEBUG_MEGAWIFI_INIT
+#if DEBUG_MEGAWIFI_SEND
         char remote_ip_str[16] = {};
         uint32_to_ip_str(udp->remote_ip, remote_ip_str);
         log_info("MW: Remote=%s:%u", remote_ip_str, udp->remote_port);
@@ -276,10 +261,9 @@ static void send_receiver_feedback(void)
 
 void comm_megawifi_tick(void)
 {
-    if (status != Connected && status != Listening) {
+    if (!connected) {
         return;
     }
-
     mw_process();
     if (awaitingRecv || awaitingSend) {
         return;
@@ -320,7 +304,7 @@ void comm_megawifi_send(u8 ch, char* data, u16 len)
     restore_remote_endpoint(ch, &udp->remote_ip, &udp->remote_port);
     memcpy(udp->payload, data, len);
 
-    status = Connected;
+    connected = true;
 
 #if DEBUG_MEGAWIFI_SEND == 1
     char ip_buf[16];
@@ -336,9 +320,4 @@ void comm_megawifi_send(u8 ch, char* data, u16 len)
         awaitingSend = false;
         return;
     }
-}
-
-MegaWifiStatus comm_megawifi_status(void)
-{
-    return status;
 }
