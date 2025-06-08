@@ -415,14 +415,12 @@ void ui_fm_set_parameters_visibility(u8 chan, bool show)
     showChanParameters = show;
     chanParasMidiChan = chan;
     if (show) {
-        ui_hide_logs();
         forceRefresh = true;
         print_channel_parameter_headings();
     } else {
         VDP_clearTextArea(FM_HEADING_X, MARGIN_Y + BASE_Y, MAX_X, 20);
         hide_all_algorithms();
         SPR_update();
-        ui_show_logs();
     }
     synthParameterValuesDirty = true;
 }
