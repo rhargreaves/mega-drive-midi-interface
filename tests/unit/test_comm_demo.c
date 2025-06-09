@@ -177,6 +177,13 @@ void test_comm_demo_button_repeat_with_initial_delay(UNUSED void** state)
     assert_note_on(DEFAULT_PITCH + 3, 127);
 }
 
+void test_comm_demo_disabled_ignores_button_presses(UNUSED void** state)
+{
+    will_return(__wrap_JOY_readJoypad, 0);
+    __real_comm_demo_vsync();
+    assert_int_equal(__real_comm_demo_read_ready(), false);
+}
+
 static void assert_read(u8 data)
 {
     assert_int_equal(__real_comm_demo_read_ready(), true);
