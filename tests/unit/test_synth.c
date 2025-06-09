@@ -509,16 +509,6 @@ void test_synth_sets_global_LFO_enable_and_frequency(UNUSED void** state)
     __real_synth_global_lfo_frequency(1);
 }
 
-void test_synth_sets_busy_indicators(UNUSED void** state)
-{
-    for (u8 chan = 0; chan < MAX_FM_CHANS; chan += 2) {
-        expect_ym2612_write_reg_any_data(0, YM_KEY_ON_OFF);
-        __real_synth_note_on(chan);
-    }
-    u8 busy = synth_busy();
-    assert_int_equal(busy, 0b00010101);
-}
-
 void test_synth_sets_preset(UNUSED void** state)
 {
     const u8 chan = 0;

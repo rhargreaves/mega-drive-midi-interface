@@ -412,23 +412,6 @@ void test_midi_loads_psg_envelope(UNUSED void** state)
     __real_midi_psg_tick();
 }
 
-void test_midi_psg_sets_busy_indicators(UNUSED void** state)
-{
-    for (u8 chan = 0; chan < MAX_PSG_CHANS; chan++) {
-        expect_psg_tone(chan, TONE_NTSC_C4);
-        expect_psg_attenuation(chan, PSG_ATTENUATION_LOUDEST);
-        __real_midi_note_on(chan + MIN_PSG_CHAN, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
-    }
-
-    for (u8 chan = 0; chan < MAX_PSG_CHANS; chan += 2) {
-        expect_psg_attenuation(chan, PSG_ATTENUATION_SILENCE);
-        __real_midi_note_off(chan + MIN_PSG_CHAN, MIDI_PITCH_C4);
-    }
-
-    u8 busy = midi_psg_busy();
-    assert_int_equal(busy, 0b1010);
-}
-
 void test_midi_psg_supports_extreme_pitch_bend_sensitivity(UNUSED void** state)
 {
     expect_psg_tone(PSG_CH1, TONE_NTSC_C4);

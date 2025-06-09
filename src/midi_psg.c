@@ -48,7 +48,6 @@ typedef struct MidiPsgChannel {
 static u8 userDefinedEnvelope[256];
 static u8* userDefinedEnvelopePtr;
 static const u8** envelopes;
-static u8 audible;
 static MidiPsgChannel psgChannels[MAX_PSG_CHANS];
 
 static u16 tone_for_midi_key(u8 midiKey);
@@ -182,11 +181,6 @@ static void apply_attenuation(MidiPsgChannel* psgChan, u8 newAtt)
 {
     if (newAtt != psgChan->attenuation) {
         PSG_setEnvelope(psgChan->chanNum, newAtt);
-        if (newAtt == PSG_ATTENUATION_SILENCE) {
-            CLEAR_BIT(audible, psgChan->chanNum);
-        } else {
-            SET_BIT(audible, psgChan->chanNum);
-        }
         psgChan->attenuation = newAtt;
     }
 }
@@ -314,11 +308,6 @@ static u16 tone_for_midi_key(u8 midiKey)
 static MidiPsgChannel* psg_channel(u8 chan)
 {
     return &psgChannels[chan];
-}
-
-u8 midi_psg_busy(void)
-{
-    return audible;
 }
 
 void midi_psg_pitch(u8 chan, u8 pitch, s8 cents)
