@@ -31,3 +31,4 @@ void test_midi_ignores_sysex_nrpn_ccs(UNUSED void** state);
 void test_midi_ignores_expression_cc(UNUSED void** state);
 void test_midi_ignores_unsupported_or_null_rpn(UNUSED void** state);
 void test_midi_logs_invalid_rpn_upon_data_entry(UNUSED void** state);
+void test_midi_calls_change_callback_on_program_change(UNUSED void** state);

@@ -218,3 +218,33 @@ void test_midi_logs_invalid_rpn_upon_data_entry(UNUSED void** state)
     expect_log_warn("Ch %d: RPN? 0x%04X LSB=0x%02X");
     __real_midi_cc(MIDI_CHANNEL_1, CC_DATA_ENTRY_LSB, 25);
 }
+
+static bool callback_was_called = false;
+static u8 callback_channel = 0;
+static u8 callback_program = 0;
+
+static void test_change_callback(MidiChangeEvent event)
+{
+    callback_was_called = true;
+    callback_channel = event.chan;
+    callback_program = event.value;
+}
+
+void test_midi_calls_change_callback_on_program_change(UNUSED void** state)
+{
+    callback_was_called = false;
+    callback_channel = 0;
+    callback_program = 0;
+
+    midi_register_change_callback(test_change_callback);
+
+    u8 expected_channel = MIDI_CHANNEL_1;
+    u8 expected_program = 1;
+
+    expect_synth_preset(expected_channel, &TEST_M_BANK_0_INST_1_BRIGHTPIANO);
+    __real_midi_program(expected_channel, expected_program);
+
+    assert_true(callback_was_called);
+    assert_int_equal(callback_channel, expected_channel);
+    assert_int_equal(callback_program, expected_program);
+}
