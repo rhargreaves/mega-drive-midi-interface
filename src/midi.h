@@ -160,7 +160,7 @@ typedef struct DeviceChannel {
     u16 glideTargetPitch;
 } DeviceChannel;
 
-typedef enum MidiChangeType { MidiChangeType_Program } MidiChangeType;
+typedef enum MidiChangeType { MidiChangeType_None, MidiChangeType_Program } MidiChangeType;
 
 typedef struct MidiChangeEvent {
     MidiChangeType type;

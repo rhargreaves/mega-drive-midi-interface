@@ -28,6 +28,7 @@
 #define LOG_X 2
 #define COMM_EXTRA_X 17
 #define PITCH_X 6
+#define CHANGE_X (PITCH_X + 4)
 
 #define ROUTING_X 1
 #define ROUTING_Y (MAX_EFFECTIVE_Y - 2)
@@ -57,6 +58,8 @@
 #define LED_TILE_COUNT 4
 #define LED_TILE_OFF_OFFSET (LED_TILE_COUNT)
 #define LOAD_TILE_Y (MAX_EFFECTIVE_Y + 1)
+
+#define UI_CHANGE_TTL (50 * 3)
 
 static const char HEADER[] = "Mega Drive MIDI Interface";
 static const char MIDI_CH_TEXT[16][3] = { " 1", " 2", " 3", " 4", " 5", " 6", " 7", " 8", " 9",
@@ -91,8 +94,17 @@ static void print_routing_mode(bool enabled);
 static void print_mappings_if_dirty(u8* midiChans);
 static void print_mappings(void);
 static void update(u16 delta);
+static void midi_change_callback(MidiChangeEvent event);
 
 static u8 lastPitches[DEV_PHYSICAL_CHANS] = { 0 };
+
+typedef struct MidiUiChange {
+    MidiChangeType type;
+    u8 value;
+    u16 ttl;
+} MidiUiChange;
+
+static MidiUiChange lastMidiChangeEvent[DEV_PHYSICAL_CHANS] = { 0 };
 
 static u16 loadPercentSum = 0;
 static bool commInited = false;
@@ -100,6 +112,7 @@ static bool commInited = false;
 void ui_init(void)
 {
     scheduler_addFrameHandler(update);
+    midi_register_change_callback(midi_change_callback);
     SPR_init();
 
     // 0x0000A0 = blue
@@ -123,6 +136,21 @@ void ui_init(void)
     init_routing_mode_tiles();
     print_routing_mode(midi_dynamic_mode());
     ui_fm_init();
+}
+
+static void midi_change_callback(MidiChangeEvent event)
+{
+    u8 midiChannel = event.chan;
+    DeviceChannel* devChans = midi_channel_mappings();
+    for (u8 i = 0; i < DEV_PHYSICAL_CHANS; i++) {
+        if (devChans[i].midiChannel == midiChannel) {
+            lastMidiChangeEvent[i] = (MidiUiChange) {
+                .type = event.type,
+                .value = event.value,
+                .ttl = UI_CHANGE_TTL,
+            };
+        }
+    }
 }
 
 static void update_ch3sp(bool enabled)
@@ -202,9 +230,40 @@ static void print_ticks(void)
 
 static bool lastCh3SpecialMode = false;
 
+static void print_midi_changes(void)
+{
+    for (u8 chan = 0; chan < DEV_PHYSICAL_CHANS; chan++) {
+        MidiUiChange* change = &lastMidiChangeEvent[chan];
+        if (change->type == MidiChangeType_None) {
+            continue;
+        }
+        if (change->ttl == 0) {
+            change->type = MidiChangeType_None;
+            VDP_clearTextArea(CHANGE_X + MARGIN_X, MARGIN_Y + MIDI_Y + (chan * 2), 6, 1);
+            continue;
+        }
+        if (change->ttl == UI_CHANGE_TTL) {
+            VDP_setTextPalette(PAL2);
+            switch (change->type) {
+            case MidiChangeType_Program: {
+                char text[7];
+                sprintf(text, "Pr=%-3d", change->value);
+                draw_text(text, CHANGE_X, MIDI_Y + (chan * 2));
+                break;
+            }
+            default:
+                break;
+            }
+            VDP_setTextPalette(PAL0);
+        }
+        change->ttl--;
+    }
+}
+
 static void update(u16 delta)
 {
     update_key_on_off();
+    print_midi_changes();
 
     static u16 activityFrame = 0;
     activityFrame += delta;

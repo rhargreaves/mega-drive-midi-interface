@@ -9,8 +9,9 @@
 
 #define BASE_Y 2
 #define OP_BASE_Y (BASE_Y + 7)
-#define OP_HEADING_X 15
-#define FM_HEADING_X 15
+
+#define FM_HEADING_X 18
+#define OP_HEADING_X FM_HEADING_X
 
 #define ALGORITHM_X (FM_HEADING_X + 14)
 #define ALGORITHM_Y (BASE_Y + 1)
