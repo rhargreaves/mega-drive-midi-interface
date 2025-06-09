@@ -9,3 +9,4 @@ void test_comm_demo_decreases_pitch(UNUSED void** state);
 void test_comm_demo_increases_program(UNUSED void** state);
 void test_comm_demo_decreases_program(UNUSED void** state);
 void test_comm_demo_button_repeat_with_initial_delay(UNUSED void** state);
+void test_comm_demo_disabled_ignores_button_presses(UNUSED void** state);

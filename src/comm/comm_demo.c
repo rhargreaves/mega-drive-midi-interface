@@ -112,6 +112,10 @@ static bool should_repeat_button(u16 joy_state, u16 button_mask)
 
 void comm_demo_vsync(u16 delta)
 {
+    if (!enabled) {
+        return;
+    }
+
     JOY_update();
 
     u16 joy_state = JOY_readJoypad(JOY_1);
