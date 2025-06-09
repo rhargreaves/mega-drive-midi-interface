@@ -1,0 +1,7 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+- Make any changes using TDD
+- Run the tests after every code change by running `make test`

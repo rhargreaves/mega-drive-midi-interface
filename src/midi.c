@@ -72,6 +72,7 @@ static const u16 portaTimeToInterval[128]
 static DeviceChannel deviceChannels[DEV_CHANS];
 static MidiChannel midiChannels[MIDI_CHANNELS];
 static bool dynamicMode;
+static void (*changeCallback)(MidiChangeEvent);
 
 typedef struct MidiConfig {
     MappingMode mappingModePref;
@@ -107,6 +108,7 @@ void midi_init(
     defaultEnvelopes = envelopes;
     defaultPresets = presets;
     defaultPercussionPresets = percussionPresets;
+    changeCallback = NULL;
     midi_psg_init(defaultEnvelopes);
     midi_fm_init(defaultPresets, defaultPercussionPresets);
     scheduler_addFrameHandler(midi_tick);
@@ -359,6 +361,15 @@ static void update_program(MidiChannel* midiChannel, DeviceChannel* devChan)
     if (devChan->program != midiChannel->program) {
         devChan->ops->program(devChan->num, midiChannel->program);
         devChan->program = midiChannel->program;
+
+        if (changeCallback != NULL) {
+            MidiChangeEvent event = {
+                .type = MidiChangeType_Program,
+                .chan = devChan->midiChannel,
+                .value = midiChannel->program,
+            };
+            changeCallback(event);
+        }
     }
 }
 
@@ -1293,4 +1304,9 @@ static void process_portamento(void)
 void midi_tick(u16 delta)
 {
     process_portamento();
+}
+
+void midi_register_change_callback(void (*callback)(MidiChangeEvent))
+{
+    changeCallback = callback;
 }

@@ -156,6 +156,7 @@ int main(void)
         midi_test(test_midi_polyphonic_mode_sends_CCs_to_all_FM_channels),
         midi_test(test_midi_set_overflow_flag_on_polyphony_breach),
         midi_test(test_midi_sets_fm_preset),
+        midi_test(test_midi_calls_change_callback_on_program_change),
 
         // sysex
         midi_test(test_midi_sysex_general_midi_reset_resets_synth_volume),

@@ -160,6 +160,14 @@ typedef struct DeviceChannel {
     u16 glideTargetPitch;
 } DeviceChannel;
 
+typedef enum MidiChangeType { MidiChangeType_Program } MidiChangeType;
+
+typedef struct MidiChangeEvent {
+    MidiChangeType type;
+    u8 chan;
+    u8 value;
+} MidiChangeEvent;
+
 void midi_init(const FmPreset** defaultPresets, const PercussionPreset** defaultPercussionPresets,
     const u8** defaultEnvelopes);
 void midi_note_on(u8 chan, u8 pitch, u8 velocity);
@@ -173,3 +181,4 @@ DeviceChannel* midi_channel_mappings(void);
 void midi_remap_channel(u8 midiChannel, u8 deviceChannel);
 void midi_reset(void);
 void midi_tick(u16 delta);
+void midi_register_change_callback(void (*callback)(MidiChangeEvent));
