@@ -78,7 +78,6 @@ void synth_enable_lfo(u8 enable);
 void synth_global_lfo_frequency(u8 freq);
 void synth_ams(u8 channel, u8 ams);
 void synth_fms(u8 channel, u8 fms);
-u8 synth_busy(void);
 void synth_preset(u8 channel, const FmPreset* preset);
 const FmChannel* synth_channel_parameters(u8 channel);
 void synth_extract_preset(u8 channel, FmPreset* preset);

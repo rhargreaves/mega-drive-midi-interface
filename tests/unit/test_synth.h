@@ -22,7 +22,6 @@ void test_synth_sets_operator_release_rate_and_sustain_level(UNUSED void** state
 void test_synth_sets_operator_amplitude_modulation_and_decay_rate(UNUSED void** state);
 void test_synth_sets_operator_ssg_eg(UNUSED void** state);
 void test_synth_sets_global_LFO_enable_and_frequency(UNUSED void** state);
-void test_synth_sets_busy_indicators(UNUSED void** state);
 void test_synth_sets_preset(UNUSED void** state);
 void test_synth_sets_preset_retaining_pan(UNUSED void** state);
 void test_synth_applies_volume_modifier_to_output_operators_algorithm_7(UNUSED void** state);

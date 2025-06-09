@@ -104,7 +104,6 @@ int main(void)
         midi_test(test_midi_shifts_semitone_in_psg_envelope),
         midi_test(test_midi_pitch_shift_handles_upper_limit_psg_envelope),
         midi_test(test_midi_pitch_shift_handles_lower_limit_psg_envelope),
-        midi_test(test_midi_psg_sets_busy_indicators),
         midi_test(test_midi_channel_volume_sets_volume),
         midi_test(test_midi_pan_sets_synth_stereo_mode_right),
         midi_test(test_midi_pan_sets_synth_stereo_mode_left),
@@ -262,7 +261,6 @@ int main(void)
             test_synth_sets_operator_amplitude_modulation_and_decay_rate),
         synth_test(test_synth_sets_operator_ssg_eg),
         synth_test(test_synth_sets_global_LFO_enable_and_frequency),
-        synth_test(test_synth_sets_busy_indicators),
         synth_test(test_synth_sets_preset),
         synth_test(test_synth_sets_preset_retaining_pan),
         synth_test(

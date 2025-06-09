@@ -4,7 +4,6 @@
 
 static Global global;
 static FmChannel fmChannels[MAX_FM_CHANS];
-static u8 noteOn;
 static u8 volumes[MAX_FM_CHANS];
 
 static ParameterUpdatedCallback* parameterUpdatedCallback = NULL;
@@ -105,13 +104,11 @@ static void init_global(void)
 void synth_note_on(u8 channel)
 {
     write_reg_safe(0, YM_KEY_ON_OFF, 0xF0 + key_on_off_reg_offset(channel));
-    SET_BIT(noteOn, channel);
 }
 
 void synth_note_off(u8 channel)
 {
     write_reg_safe(0, YM_KEY_ON_OFF, key_on_off_reg_offset(channel));
-    CLEAR_BIT(noteOn, channel);
 }
 
 void synth_pitch(u8 channel, u8 octave, u16 freqNumber)
@@ -261,11 +258,6 @@ void synth_fms(u8 channel, u8 fms)
     fmChannels[channel].fms = fms;
     write_stereo_ams_fms(channel);
     channel_parameter_updated(channel);
-}
-
-u8 synth_busy(void)
-{
-    return noteOn;
 }
 
 void synth_preset(u8 channel, const FmPreset* preset)
