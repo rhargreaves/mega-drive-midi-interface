@@ -361,15 +361,6 @@ static void update_program(MidiChannel* midiChannel, DeviceChannel* devChan)
     if (devChan->program != midiChannel->program) {
         devChan->ops->program(devChan->num, midiChannel->program);
         devChan->program = midiChannel->program;
-
-        if (changeCallback != NULL) {
-            MidiChangeEvent event = {
-                .type = MidiChangeType_Program,
-                .chan = devChan->midiChannel,
-                .value = midiChannel->program,
-            };
-            changeCallback(event);
-        }
     }
 }
 
@@ -567,6 +558,15 @@ void midi_program(u8 chan, u8 program)
     midiChannel->program = program;
     FOREACH_DEV_CHAN_WITH_MIDI(chan, state) {
         update_program(midiChannel, state);
+    }
+
+    if (changeCallback != NULL) {
+        MidiChangeEvent event = {
+            .type = MidiChangeType_Program,
+            .chan = chan,
+            .value = midiChannel->program,
+        };
+        changeCallback(event);
     }
 }
 
