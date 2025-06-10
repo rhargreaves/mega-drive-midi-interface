@@ -248,3 +248,60 @@ void test_midi_calls_change_callback_on_program_change(UNUSED void** state)
     assert_int_equal(callback_channel, expected_channel);
     assert_int_equal(callback_program, expected_program);
 }
+
+static bool cc_callback_was_called = false;
+static u8 cc_callback_channel = 0;
+static u8 cc_callback_controller = 0;
+static u8 cc_callback_value = 0;
+
+static void test_cc_change_callback(MidiChangeEvent event)
+{
+    cc_callback_was_called = true;
+    cc_callback_channel = event.chan;
+    cc_callback_controller = event.key;
+    cc_callback_value = event.value;
+}
+
+void test_midi_calls_change_callback_on_cc_change(UNUSED void** state)
+{
+    cc_callback_was_called = false;
+    cc_callback_channel = 0;
+    cc_callback_controller = 0;
+    cc_callback_value = 0;
+
+    midi_register_change_callback(test_cc_change_callback);
+
+    u8 expected_channel = MIDI_CHANNEL_1;
+    u8 expected_controller = CC_VOLUME;
+    u8 expected_value = 100;
+
+    expect_synth_volume(expected_channel, expected_value);
+    __real_midi_cc(expected_channel, expected_controller, expected_value);
+
+    assert_true(cc_callback_was_called);
+    assert_int_equal(cc_callback_channel, expected_channel);
+    assert_int_equal(cc_callback_controller, expected_controller);
+    assert_int_equal(cc_callback_value, expected_value);
+}
+
+void test_midi_calls_change_callback_on_fm_algorithm_cc(UNUSED void** state)
+{
+    cc_callback_was_called = false;
+    cc_callback_channel = 0;
+    cc_callback_controller = 0;
+    cc_callback_value = 0;
+
+    midi_register_change_callback(test_cc_change_callback);
+
+    u8 expected_channel = MIDI_CHANNEL_1;
+    u8 expected_controller = CC_GENMDM_FM_ALGORITHM;
+    u8 expected_value = 64;
+
+    expect_synth_algorithm(expected_channel, 4);
+    __real_midi_cc(expected_channel, expected_controller, expected_value);
+
+    assert_true(cc_callback_was_called);
+    assert_int_equal(cc_callback_channel, expected_channel);
+    assert_int_equal(cc_callback_controller, expected_controller);
+    assert_int_equal(cc_callback_value, expected_value);
+}
