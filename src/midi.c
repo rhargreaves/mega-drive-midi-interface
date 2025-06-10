@@ -1250,6 +1250,16 @@ void midi_cc(u8 ch, u8 controller, u8 value)
         fm_parameter_cc(ch, controller, value);
         break;
     }
+
+    if (changeCallback != NULL) {
+        MidiChangeEvent event = {
+            .type = MidiChangeType_CC,
+            .chan = ch,
+            .key = controller,
+            .value = value,
+        };
+        changeCallback(event);
+    }
 }
 
 void midi_reset(void)

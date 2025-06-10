@@ -157,6 +157,8 @@ int main(void)
         midi_test(test_midi_set_overflow_flag_on_polyphony_breach),
         midi_test(test_midi_sets_fm_preset),
         midi_test(test_midi_calls_change_callback_on_program_change),
+        midi_test(test_midi_calls_change_callback_on_cc_change),
+        midi_test(test_midi_calls_change_callback_on_fm_algorithm_cc),
 
         // sysex
         midi_test(test_midi_sysex_general_midi_reset_resets_synth_volume),

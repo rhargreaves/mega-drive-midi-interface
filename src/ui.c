@@ -100,6 +100,7 @@ static u8 lastPitches[DEV_PHYSICAL_CHANS] = { 0 };
 
 typedef struct MidiUiChange {
     MidiChangeType type;
+    u8 key;
     u8 value;
     u16 ttl;
 } MidiUiChange;
@@ -146,6 +147,7 @@ static void midi_change_callback(MidiChangeEvent event)
         if (devChans[i].midiChannel == midiChannel) {
             lastMidiChangeEvent[i] = (MidiUiChange) {
                 .type = event.type,
+                .key = event.key,
                 .value = event.value,
                 .ttl = UI_CHANGE_TTL,
             };
@@ -239,15 +241,20 @@ static void print_midi_changes(void)
         }
         if (change->ttl == 0) {
             change->type = MidiChangeType_None;
-            VDP_clearTextArea(CHANGE_X + MARGIN_X, MARGIN_Y + MIDI_Y + (chan * 2), 6, 1);
+            VDP_clearTextArea(CHANGE_X + MARGIN_X, MARGIN_Y + MIDI_Y + (chan * 2), 7, 1);
             continue;
         }
         if (change->ttl == UI_CHANGE_TTL) {
             VDP_setTextPalette(PAL2);
+            char text[10];
             switch (change->type) {
             case MidiChangeType_Program: {
-                char text[7];
-                sprintf(text, "Pr=%-3d", change->value);
+                sprintf(text, "P=%-3d", change->value);
+                draw_text(text, CHANGE_X, MIDI_Y + (chan * 2));
+                break;
+            }
+            case MidiChangeType_CC: {
+                sprintf(text, "CC%02X=%02X", change->key, change->value);
                 draw_text(text, CHANGE_X, MIDI_Y + (chan * 2));
                 break;
             }
