@@ -15,9 +15,6 @@
 #include "scheduler.h"
 #include "settings.h"
 
-#define RIGHTED_TEXT_X(text) (MAX_EFFECTIVE_X - (sizeof(text) - 1) + 1)
-#define CENTRED_TEXT_X(text) ((MAX_EFFECTIVE_X - (sizeof(text) - 1)) / 2)
-
 #define DEVICE_X 1
 #define FM_DEVICE_Y 3
 #define PSG_DEVICE_Y 14
@@ -61,7 +58,6 @@
 
 #define UI_CHANGE_TTL (50 * 3)
 
-static const char HEADER[] = "Mega Drive MIDI Interface";
 static const char MIDI_CH_TEXT[16][3] = { " 1", " 2", " 3", " 4", " 5", " 6", " 7", " 8", " 9",
     "10", "11", "12", "13", "14", "15", "16" };
 static const char DEV_CH_TEXT[10][2] = { "1", "2", "3", "4", "5", "6", "1", "2", "3", "4" };
@@ -336,8 +332,8 @@ static void set_tile(u16 tileIndex, u8 pal, u16 x, u16 y)
 
 static void print_header(void)
 {
-    draw_text(HEADER, 5, 0);
-    draw_text(BUILD, RIGHTED_TEXT_X(BUILD), 0);
+    draw_text("MDMI", 0, 0);
+    draw_text(BUILD, 5, 0);
 
     VDP_loadTileSet(&ts_borders, TILE_BORDERS_INDEX, DMA);
 
