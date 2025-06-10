@@ -110,17 +110,12 @@ void ui_init(void)
 {
     scheduler_addFrameHandler(update);
     midi_register_change_callback(midi_change_callback);
+
     SPR_init();
-
-    // 0x0000A0 = blue
-    // 0xe0ffff = light blue / white
-    // 0x3b2dee = purple blue
-
     VDP_loadFont(custom_font.tileset, DMA);
     VDP_setBackgroundColor(BG_COLOUR_INDEX);
     PAL_setColors((PAL0 * 16), pal_0.data, pal_0.length, CPU);
     PAL_setColors((PAL2 * 16), pal_2.data, pal_2.length, CPU);
-
     PAL_setColor(PALETTE_INDEX(PAL3, 1), RGB24_TO_VDPCOLOR(0x808080));
     PAL_setColor(PALETTE_INDEX(PAL3, 2), RGB24_TO_VDPCOLOR(0x3b2dee));
     print_header();
