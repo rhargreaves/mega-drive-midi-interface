@@ -3,6 +3,22 @@
 #include "mocks/mock_midi.h"
 #include "utils.h"
 
+static FmChannel create_fm_channel_from_preset(const FmPreset* preset)
+{
+    FmChannel fmChannel;
+    fmChannel.algorithm = preset->algorithm;
+    fmChannel.feedback = preset->feedback;
+    fmChannel.ams = preset->ams;
+    fmChannel.fms = preset->fms;
+    fmChannel.stereo = STEREO_MODE_CENTRE;
+    fmChannel.octave = 4;
+    fmChannel.freqNumber = 0x284;
+    for (u8 i = 0; i < MAX_FM_OPERATORS; i++) {
+        fmChannel.operators[i] = preset->operators[i];
+    }
+    return fmChannel;
+}
+
 void test_midi_triggers_synth_note_on(UNUSED void** state)
 {
     for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
@@ -369,9 +385,14 @@ void test_midi_sets_fm_preset(UNUSED void** state)
     const u8 program = 1;
     const u8 chan = 0;
 
+    const u8 disable_feedback_sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_MIDI_FEEDBACK_CONTROL, 0x00 };
+    __real_midi_sysex(disable_feedback_sequence, sizeof(disable_feedback_sequence));
+
     const FmPreset M_BANK_0_INST_1_BRIGHTPIANO = { 5, 7, 0, 0,
         { { 4, 2, 27, 1, 9, 0, 11, 5, 6, 33, 0 }, { 4, 5, 27, 1, 9, 0, 7, 9, 7, 18, 0 },
             { 1, 2, 27, 1, 5, 1, 10, 5, 6, 8, 0 }, { 6, 5, 27, 1, 9, 0, 3, 8, 7, 9, 0 } } };
+
     expect_synth_preset(chan, &M_BANK_0_INST_1_BRIGHTPIANO);
 
     __real_midi_program(chan, program);
@@ -507,12 +528,17 @@ void test_midi_switching_program_retains_pan_setting(UNUSED void** state)
     const u8 program = 1;
     const u8 chan = 0;
 
+    const u8 disable_feedback_sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_MIDI_FEEDBACK_CONTROL, 0x00 };
+    __real_midi_sysex(disable_feedback_sequence, sizeof(disable_feedback_sequence));
+
     expect_synth_stereo(chan, 1);
     __real_midi_cc(0, CC_PAN, 127);
 
     const FmPreset M_BANK_0_INST_1_BRIGHTPIANO = { 5, 7, 0, 0,
         { { 4, 2, 27, 1, 9, 0, 11, 5, 6, 33, 0 }, { 4, 5, 27, 1, 9, 0, 7, 9, 7, 18, 0 },
             { 1, 2, 27, 1, 5, 1, 10, 5, 6, 8, 0 }, { 6, 5, 27, 1, 9, 0, 3, 8, 7, 9, 0 } } };
+
     expect_synth_preset(chan, &M_BANK_0_INST_1_BRIGHTPIANO);
 
     __real_midi_program(chan, program);

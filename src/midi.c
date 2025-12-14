@@ -44,6 +44,14 @@ typedef struct MidiChannel {
 
 typedef enum MappingMode { MappingMode_Static, MappingMode_Dynamic, MappingMode_Auto } MappingMode;
 
+typedef struct MidiConfig {
+    MappingMode mappingModePref;
+    bool disableNonGeneralMidiCCs;
+    bool stickToDeviceType;
+    bool invertTotalLevel;
+    bool feedbackEnabled;
+} MidiConfig;
+
 static const VTable PSG_VTable = { midi_psg_note_on, midi_psg_note_off, midi_psg_channel_volume,
     midi_psg_program, midi_psg_all_notes_off, midi_psg_pan, midi_psg_pitch };
 
@@ -69,19 +77,11 @@ static const u16 portaTimeToInterval[128]
           24, 23, 22, 21, 20, 19, 18, 17, 16, 16, 15, 14, 13, 13, 12, 12, 11, 10, 10, 9, 9, 9, 8, 8,
           7, 7, 7, 6, 6, 6, 5, 5, 5, 5, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 1 };
 
+static MidiConfig config;
+static bool dynamicMode = false;
 static DeviceChannel deviceChannels[DEV_CHANS];
 static MidiChannel midiChannels[MIDI_CHANNELS];
-static bool dynamicMode;
-static void (*changeCallback)(MidiChangeEvent);
-
-typedef struct MidiConfig {
-    MappingMode mappingModePref;
-    bool disableNonGeneralMidiCCs;
-    bool stickToDeviceType;
-    bool invertTotalLevel;
-} MidiConfig;
-
-static MidiConfig config;
+static void (*changeCallback)(MidiChangeEvent) = NULL;
 
 static void all_notes_off(u8 ch);
 static void general_midi_reset(void);
@@ -90,6 +90,7 @@ static void send_pong(const u8* data, u16 length);
 static void set_invert_total_level(const u8* data, u16 length);
 static void set_dynamic_mode(MappingMode mode);
 static void set_operator_total_level(u8 chan, u8 op, u8 value);
+static void set_midi_tx_feedback(const u8* data, u16 length);
 static void update_device_channel_from_associated_midi_channel(DeviceChannel* devChan);
 static DeviceChannel* deviceChannelByMidiChannel(u8 midiChannel);
 static void reset_channels(void);
@@ -125,6 +126,7 @@ static void reset(void)
         .disableNonGeneralMidiCCs = false,
         .stickToDeviceType = false,
         .invertTotalLevel = false,
+        .feedbackEnabled = true,
     };
     dynamicMode = config.mappingModePref == MappingMode_Dynamic;
     reset_channels();
@@ -556,8 +558,36 @@ void midi_program(u8 chan, u8 program)
 {
     MidiChannel* midiChannel = &midiChannels[chan];
     midiChannel->program = program;
-    FOREACH_DEV_CHAN_WITH_MIDI(chan, state) {
-        update_program(midiChannel, state);
+    bool feedbackSent = false;
+
+    FOREACH_DEV_CHAN_WITH_MIDI(chan, devChan) {
+        update_program(midiChannel, devChan);
+
+        if (config.feedbackEnabled && !feedbackSent && devChan->ops == &FM_VTable) {
+            const FmChannel* fmChan = synth_channel_parameters(devChan->num);
+            midi_tx_send_cc(chan, CC_GENMDM_FM_ALGORITHM, fmChan->algorithm * (128 / 8));
+            midi_tx_send_cc(chan, CC_GENMDM_FM_FEEDBACK, fmChan->feedback * (128 / 8));
+            midi_tx_send_cc(chan, CC_GENMDM_AMS, fmChan->ams * (128 / 4));
+            midi_tx_send_cc(chan, CC_GENMDM_FMS, fmChan->fms * (128 / 8));
+
+            for (u8 o = 0; o < MAX_FM_OPERATORS; o++) {
+                const Operator* op = &fmChan->operators[o];
+                midi_tx_send_cc(chan, CC_GENMDM_TOTAL_LEVEL_OP1 + o, op->totalLevel);
+                midi_tx_send_cc(chan, CC_GENMDM_MULTIPLE_OP1 + o, op->multiple * (128 / 16));
+                midi_tx_send_cc(chan, CC_GENMDM_DETUNE_OP1 + o, op->detune * (128 / 8));
+                midi_tx_send_cc(chan, CC_GENMDM_RATE_SCALING_OP1 + o, op->rateScaling * (128 / 4));
+                midi_tx_send_cc(chan, CC_GENMDM_ATTACK_RATE_OP1 + o, op->attackRate * (128 / 32));
+                midi_tx_send_cc(chan, CC_GENMDM_DECAY_RATE_OP1 + o, op->decayRate * (128 / 32));
+                midi_tx_send_cc(chan, CC_GENMDM_SUSTAIN_RATE_OP1 + o, op->sustainRate * (128 / 32));
+                midi_tx_send_cc(
+                    chan, CC_GENMDM_SUSTAIN_LEVEL_OP1 + o, op->sustainLevel * (128 / 16));
+                midi_tx_send_cc(chan, CC_GENMDM_RELEASE_RATE_OP1 + o, op->releaseRate * (128 / 16));
+                midi_tx_send_cc(chan, CC_GENMDM_AMPLITUDE_MODULATION_OP1 + o,
+                    op->amplitudeModulation ? 127 : 0);
+                midi_tx_send_cc(chan, CC_GENMDM_SSG_EG_OP1 + o, op->ssgEg * (128 / 16));
+            }
+            feedbackSent = true;
+        }
     }
 
     if (changeCallback != NULL) {
@@ -799,6 +829,11 @@ static void dump_preset_request(const u8* data, u16 length)
     }
 }
 
+static void set_midi_tx_feedback(const u8* data, u16 length)
+{
+    config.feedbackEnabled = data[0];
+}
+
 typedef struct SysexCommand {
     u8 command;
     void (*handler)(const u8* data, u16 length);
@@ -824,6 +859,7 @@ static const SysexCommand SYSEX_COMMANDS[] = {
     { SYSEX_COMMAND_PRESET_DATA, NULL, 0, false },
     { SYSEX_COMMAND_DUMP_CHANNEL, dump_channel_request, 2, true },
     { SYSEX_COMMAND_CHANNEL_DATA, NULL, 0, false },
+    { SYSEX_COMMAND_MIDI_FEEDBACK_CONTROL, set_midi_tx_feedback, 1, true },
 };
 
 void midi_sysex(const u8* data, u16 length)

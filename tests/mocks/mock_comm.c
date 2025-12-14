@@ -270,6 +270,13 @@ void _expect_usb_sent_byte(u8 value, const char* file, const int line)
     expect_value_with_pos(__wrap_comm_everdrive_write, data, value, file, line);
 }
 
+void _expect_usb_sent_cc(u8 midiChannel, u8 controller, u8 value, const char* file, const int line)
+{
+    _expect_usb_sent_byte(0xB0 | midiChannel, file, line);
+    _expect_usb_sent_byte(controller, file, line);
+    _expect_usb_sent_byte(value, file, line);
+}
+
 void _stub_comm_read_returns_midi_event(
     u8 status, u8 data, u8 data2, const char* file, const int line)
 {

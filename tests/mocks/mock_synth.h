@@ -117,11 +117,17 @@ void _expect_synth_direct_write_ym2612(
     u8 part, u8 reg, u8 data, const char* const file, const int line);
 void _expect_synth_preset(
     u8 channel, const FmPreset* preset, const char* const file, const int line);
+void _expect_synth_channel_parameters(
+    u8 channel, const FmChannel* fmChannel, const char* const file, const int line);
 void _expect_synth_extract_preset(
     u8 channel, FmPreset* preset, const char* const file, const int line);
 
 #define expect_synth_preset(channel, preset)                                                       \
     _expect_synth_preset(channel, preset, __FILE__, __LINE__)
+#define expect_synth_channel_parameters(channel, fmChannel)                                        \
+    _expect_synth_channel_parameters(channel, fmChannel, __FILE__, __LINE__)
+#define expect_synth_extract_preset(channel, preset)                                               \
+    _expect_synth_extract_preset(channel, preset, __FILE__, __LINE__)
 #define expect_synth_algorithm(channel, algorithm)                                                 \
     _expect_synth_algorithm(channel, algorithm, __FILE__, __LINE__)
 #define expect_synth_pitch(channel, octave, freqNumber)                                            \
@@ -172,5 +178,3 @@ void _expect_synth_extract_preset(
     _expect_synth_set_special_mode(enable, __FILE__, __LINE__)
 #define expect_synth_direct_write_ym2612(part, reg, data)                                          \
     _expect_synth_direct_write_ym2612(part, reg, data, __FILE__, __LINE__)
-#define expect_synth_extract_preset(channel, preset)                                               \
-    _expect_synth_extract_preset(channel, preset, __FILE__, __LINE__)

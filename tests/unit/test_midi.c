@@ -236,6 +236,10 @@ void test_midi_calls_change_callback_on_program_change(UNUSED void** state)
     callback_channel = 0;
     callback_program = 0;
 
+    const u8 disable_feedback_sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_MIDI_FEEDBACK_CONTROL, 0x00 };
+    __real_midi_sysex(disable_feedback_sequence, sizeof(disable_feedback_sequence));
+
     midi_register_change_callback(test_change_callback);
 
     u8 expected_channel = MIDI_CHANNEL_1;

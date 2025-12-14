@@ -1,4 +1,3 @@
-#include "cmocka_inc.h"
 #include "test_e2e.h"
 
 #define e2e_test(test) cmocka_unit_test_setup(test, test_e2e_setup)
@@ -29,6 +28,7 @@ int main(void)
         e2e_test(test_midi_portamento_glides_note),
         e2e_test(test_dump_preset_to_callee),
         e2e_test(test_dump_channel_parameters_to_callee),
+        e2e_test(test_midi_feedback_on_program_change),
         // WIP: e2e_test(test_midi_pitch_bend_range_configurable_per_channel),
         // clang-format on
     };

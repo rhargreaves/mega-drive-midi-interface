@@ -24,3 +24,4 @@ void test_pitch_bends_ch3_special_mode_operators(void** state);
 void test_midi_pitch_bend_range_configurable_per_channel(void** state);
 void test_dump_preset_to_callee(void** state);
 void test_dump_channel_parameters_to_callee(void** state);
+void test_midi_feedback_on_program_change(void** state);

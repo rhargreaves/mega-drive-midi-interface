@@ -98,6 +98,8 @@ MOCKS=midi_process \
 	midi_psg_tick \
 	midi_psg_load_envelope \
 	midi_reset \
+	midi_tx_send_cc \
+	midi_tx_send_sysex \
 	log_init \
 	log_info \
 	log_warn \

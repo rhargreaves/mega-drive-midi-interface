@@ -182,6 +182,9 @@ int main(void)
         midi_test(test_midi_cc_stores_program),
         midi_test(test_midi_sysex_validates_remap_channel_bounds),
         midi_test(test_midi_sysex_validates_dump_channel_bounds),
+        midi_test(test_midi_sysex_enables_midi_feedback),
+        midi_test(test_midi_sysex_disables_midi_feedback),
+        midi_test(test_midi_feedback_enabled_by_default_after_reset),
         midi_test(
             test_midi_fm_note_on_percussion_channel_sets_percussion_preset),
         midi_test(test_midi_switching_program_retains_pan_setting),

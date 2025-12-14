@@ -2,6 +2,7 @@
 #include "test_midi.h"
 #include "mocks/mock_synth.h"
 #include "mocks/mock_sram.h"
+#include "mocks/mock_midi_tx.h"
 
 #define SRAM_PRESET_LENGTH 36
 #define SRAM_PRESET_START 32
@@ -12,6 +13,55 @@ static void remapChannel(u8 midiChannel, u8 deviceChannel)
         SYSEX_COMMAND_REMAP, midiChannel, deviceChannel };
 
     __real_midi_sysex(sequence, sizeof(sequence));
+}
+
+static void expect_comprehensive_midi_feedback(u8 midiChannel, const FmPreset* fmPreset)
+{
+    expect_midi_tx_send_cc(midiChannel, CC_GENMDM_FM_ALGORITHM, fmPreset->algorithm * (128 / 8));
+    expect_midi_tx_send_cc(midiChannel, CC_GENMDM_FM_FEEDBACK, fmPreset->feedback * (128 / 8));
+    expect_midi_tx_send_cc(midiChannel, CC_GENMDM_AMS, fmPreset->ams * (128 / 4));
+    expect_midi_tx_send_cc(midiChannel, CC_GENMDM_FMS, fmPreset->fms * (128 / 8));
+
+    for (u8 op = 0; op < 4; op++) {
+        expect_midi_tx_send_cc(
+            midiChannel, CC_GENMDM_TOTAL_LEVEL_OP1 + op, fmPreset->operators[op].totalLevel);
+        expect_midi_tx_send_cc(midiChannel, CC_GENMDM_MULTIPLE_OP1 + op,
+            fmPreset->operators[op].multiple * (128 / 16));
+        expect_midi_tx_send_cc(
+            midiChannel, CC_GENMDM_DETUNE_OP1 + op, fmPreset->operators[op].detune * (128 / 8));
+        expect_midi_tx_send_cc(midiChannel, CC_GENMDM_RATE_SCALING_OP1 + op,
+            fmPreset->operators[op].rateScaling * (128 / 4));
+        expect_midi_tx_send_cc(midiChannel, CC_GENMDM_ATTACK_RATE_OP1 + op,
+            fmPreset->operators[op].attackRate * (128 / 32));
+        expect_midi_tx_send_cc(midiChannel, CC_GENMDM_DECAY_RATE_OP1 + op,
+            fmPreset->operators[op].decayRate * (128 / 32));
+        expect_midi_tx_send_cc(midiChannel, CC_GENMDM_SUSTAIN_RATE_OP1 + op,
+            fmPreset->operators[op].sustainRate * (128 / 32));
+        expect_midi_tx_send_cc(midiChannel, CC_GENMDM_SUSTAIN_LEVEL_OP1 + op,
+            fmPreset->operators[op].sustainLevel * (128 / 16));
+        expect_midi_tx_send_cc(midiChannel, CC_GENMDM_RELEASE_RATE_OP1 + op,
+            fmPreset->operators[op].releaseRate * (128 / 16));
+        expect_midi_tx_send_cc(midiChannel, CC_GENMDM_AMPLITUDE_MODULATION_OP1 + op,
+            fmPreset->operators[op].amplitudeModulation ? 127 : 0);
+        expect_midi_tx_send_cc(
+            midiChannel, CC_GENMDM_SSG_EG_OP1 + op, fmPreset->operators[op].ssgEg * (128 / 16));
+    }
+}
+
+static FmChannel create_fm_channel_from_preset(const FmPreset* preset)
+{
+    FmChannel fmChannel;
+    fmChannel.algorithm = preset->algorithm;
+    fmChannel.feedback = preset->feedback;
+    fmChannel.ams = preset->ams;
+    fmChannel.fms = preset->fms;
+    fmChannel.stereo = STEREO_MODE_CENTRE;
+    fmChannel.octave = 4;
+    fmChannel.freqNumber = 0x284;
+    for (u8 i = 0; i < MAX_FM_OPERATORS; i++) {
+        fmChannel.operators[i] = preset->operators[i];
+    }
+    return fmChannel;
 }
 
 void test_midi_sysex_sends_all_notes_off(UNUSED void** state)
@@ -302,10 +352,14 @@ void test_midi_sysex_stores_program(UNUSED void** state)
 {
     mock_log_enable_checks();
 
+    const u8 disable_feedback_sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_MIDI_FEEDBACK_CONTROL, 0x00 };
+    __real_midi_sysex(disable_feedback_sequence, sizeof(disable_feedback_sequence));
+
     const u8 program = 0x05;
 
     FmPreset fmPreset = { 0 };
-    memcpy(&fmPreset, &TEST_M_BANK_0_INST_0_GRANDPIANO, sizeof(FmChannel));
+    memcpy(&fmPreset, &TEST_M_BANK_0_INST_0_GRANDPIANO, sizeof(FmPreset));
     fmPreset.algorithm = 0x07;
 
     u8 msg[STORE_PROGRAM_MESSAGE_LENGTH];
@@ -317,6 +371,7 @@ void test_midi_sysex_stores_program(UNUSED void** state)
     expect_synth_preset(FM_CH1, &fmPreset);
     __real_midi_program(MIDI_CHANNEL_1, program);
 
+    // check that the preset was stored to SRAM
     const u8 EXPECTED_SRAM_DATA[SRAM_PRESET_LENGTH]
         = { /* magic number */ 0x9E, 0x1D, /* version */ 0x01,
               /* preset */ 0xE0, 0x00, 0x11, 0xA4, 0xE7, 0x20, 0xA7, 0x00, 0x4D, 0x85, 0x26, 0x4B,
@@ -351,6 +406,10 @@ void test_midi_sysex_logs_warning_if_program_store_type_is_incorrect(UNUSED void
 
 void test_midi_sysex_clears_program(UNUSED void** state)
 {
+    const u8 disable_feedback_sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_MIDI_FEEDBACK_CONTROL, 0x00 };
+    __real_midi_sysex(disable_feedback_sequence, sizeof(disable_feedback_sequence));
+
     const u8 program = 0x01;
 
     FmPreset fmPreset = { 0 };
@@ -399,6 +458,10 @@ void test_midi_sysex_logs_warning_if_program_clear_type_is_incorrect(UNUSED void
 
 void test_midi_sysex_clears_all_programs(UNUSED void** state)
 {
+    const u8 disable_feedback_sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_MIDI_FEEDBACK_CONTROL, 0x00 };
+    __real_midi_sysex(disable_feedback_sequence, sizeof(disable_feedback_sequence));
+
     const u8 program1 = 0x00;
     const u8 program2 = 0x01;
 
@@ -443,6 +506,10 @@ void test_midi_sysex_logs_warning_if_clear_all_programs_type_is_incorrect(UNUSED
 
 void test_midi_loads_presets_from_sram(UNUSED void** state)
 {
+    const u8 disable_feedback_sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_MIDI_FEEDBACK_CONTROL, 0x00 };
+    __real_midi_sysex(disable_feedback_sequence, sizeof(disable_feedback_sequence));
+
     // store a preset to SRAM
     const u8 program = 0x01;
 
@@ -461,6 +528,9 @@ void test_midi_loads_presets_from_sram(UNUSED void** state)
     __real_midi_reset();
     mock_synth_enable_checks();
 
+    // disable feedback again after reset since reset re-enables it
+    __real_midi_sysex(disable_feedback_sequence, sizeof(disable_feedback_sequence));
+
     // check that the preset was loaded
     expect_synth_preset(FM_CH1, &fmPreset);
     __real_midi_program(MIDI_CHANNEL_1, program);
@@ -475,6 +545,10 @@ void test_midi_sysex_does_not_display_loaded_msg_if_no_presets_are_loaded(UNUSED
 
 void test_midi_cc_stores_program(UNUSED void** state)
 {
+    const u8 disable_feedback_sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_MIDI_FEEDBACK_CONTROL, 0x00 };
+    __real_midi_sysex(disable_feedback_sequence, sizeof(disable_feedback_sequence));
+
     const u8 program = 0x01;
 
     expect_synth_algorithm(FM_CH1, 0x06);
@@ -498,9 +572,9 @@ void test_midi_cc_stores_program(UNUSED void** state)
     // check that the preset was stored to SRAM
     const u8 EXPECTED_SRAM_DATA[SRAM_PRESET_LENGTH]
         = { /* magic number */ 0x9E, 0x1D, /* version */ 0x01,
-              /* preset */ 0xC0, 0x00, 0x11, 0xA4, 0xE7, 0x20, 0xA7, 0x00, 0x4D, 0x85, 0x26, 0x4B,
+              /* preset */ 0xE0, 0x00, 0x11, 0xA4, 0xE7, 0x20, 0xA7, 0x00, 0x4D, 0x85, 0x26, 0x4B,
               0xA4, 0x00, 0x2F, 0xFE, 0xE9, 0x78, 0x84, 0x00, 0x17, 0xB8, 0x8A, 0x23, 0x02, 0x00,
-              /* reserved */ 0x00, 0x00, 0x00, 0x00, 0x00, /* checksum */ 0x87, 0x77 };
+              /* reserved */ 0x00, 0x00, 0x00, 0x00, 0x00, /* checksum */ 0x40, 0x47 };
 
     u16 offset = SRAM_PRESET_START + (program * SRAM_PRESET_LENGTH);
     assert_memory_equal(mock_sram_data(offset), EXPECTED_SRAM_DATA, SRAM_PRESET_LENGTH);
@@ -564,4 +638,57 @@ void test_midi_sysex_validates_dump_channel_bounds(UNUSED void** state)
 
     expect_log_warn("Invalid MIDI channel: %d");
     __real_midi_sysex(unassigned_midi_chan_seq, sizeof(unassigned_midi_chan_seq));
+}
+
+void test_midi_sysex_enables_midi_feedback(UNUSED void** state)
+{
+    const u8 disable_sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_MIDI_FEEDBACK_CONTROL, 0x00 };
+
+    __real_midi_sysex(disable_sequence, sizeof(disable_sequence));
+
+    const u8 enable_sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_MIDI_FEEDBACK_CONTROL, 0x01 };
+
+    __real_midi_sysex(enable_sequence, sizeof(enable_sequence));
+
+    remapChannel(MIDI_CHANNEL_1, FM_CH1);
+
+    static FmChannel testFmChannel;
+    testFmChannel = create_fm_channel_from_preset(&TEST_M_BANK_0_INST_1_BRIGHTPIANO);
+
+    expect_synth_preset(FM_CH1, &TEST_M_BANK_0_INST_1_BRIGHTPIANO);
+    expect_synth_channel_parameters(FM_CH1, &testFmChannel);
+    expect_comprehensive_midi_feedback(MIDI_CHANNEL_1, &TEST_M_BANK_0_INST_1_BRIGHTPIANO);
+
+    __real_midi_program(MIDI_CHANNEL_1, 1);
+}
+
+void test_midi_sysex_disables_midi_feedback(UNUSED void** state)
+{
+    const u8 disable_sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
+        SYSEX_COMMAND_MIDI_FEEDBACK_CONTROL, 0x00 };
+
+    __real_midi_sysex(disable_sequence, sizeof(disable_sequence));
+
+    expect_synth_preset(FM_CH1, &TEST_M_BANK_0_INST_1_BRIGHTPIANO);
+    __real_midi_program(MIDI_CHANNEL_1, 1);
+}
+
+void test_midi_feedback_enabled_by_default_after_reset(UNUSED void** state)
+{
+    mock_synth_disable_checks();
+    __real_midi_reset();
+    mock_synth_enable_checks();
+
+    remapChannel(MIDI_CHANNEL_1, FM_CH1);
+
+    static FmChannel testFmChannel;
+    testFmChannel = create_fm_channel_from_preset(&TEST_M_BANK_0_INST_1_BRIGHTPIANO);
+
+    expect_synth_preset(FM_CH1, &TEST_M_BANK_0_INST_1_BRIGHTPIANO);
+    expect_synth_channel_parameters(FM_CH1, &testFmChannel);
+    expect_comprehensive_midi_feedback(MIDI_CHANNEL_1, &TEST_M_BANK_0_INST_1_BRIGHTPIANO);
+
+    __real_midi_program(MIDI_CHANNEL_1, 1);
 }

@@ -14,6 +14,38 @@
 #include "ym2612_regs.h"
 #include "test_helpers.h"
 
+static void expect_comprehensive_midi_feedback(u8 midiChannel, const FmPreset* fmPreset)
+{
+    expect_usb_sent_cc(midiChannel, CC_GENMDM_FM_ALGORITHM, fmPreset->algorithm * (128 / 8));
+    expect_usb_sent_cc(midiChannel, CC_GENMDM_FM_FEEDBACK, fmPreset->feedback * (128 / 8));
+    expect_usb_sent_cc(midiChannel, CC_GENMDM_AMS, fmPreset->ams * (128 / 4));
+    expect_usb_sent_cc(midiChannel, CC_GENMDM_FMS, fmPreset->fms * (128 / 8));
+
+    for (u8 op = 0; op < 4; op++) {
+        const Operator* operator= & fmPreset->operators[op];
+
+        expect_usb_sent_cc(midiChannel, CC_GENMDM_TOTAL_LEVEL_OP1 + op, operator->totalLevel);
+        expect_usb_sent_cc(
+            midiChannel, CC_GENMDM_MULTIPLE_OP1 + op, operator->multiple *(128 / 16));
+        expect_usb_sent_cc(midiChannel, CC_GENMDM_DETUNE_OP1 + op, operator->detune *(128 / 8));
+        expect_usb_sent_cc(
+            midiChannel, CC_GENMDM_RATE_SCALING_OP1 + op, operator->rateScaling *(128 / 4));
+        expect_usb_sent_cc(
+            midiChannel, CC_GENMDM_ATTACK_RATE_OP1 + op, operator->attackRate *(128 / 32));
+        expect_usb_sent_cc(
+            midiChannel, CC_GENMDM_DECAY_RATE_OP1 + op, operator->decayRate *(128 / 32));
+        expect_usb_sent_cc(
+            midiChannel, CC_GENMDM_SUSTAIN_RATE_OP1 + op, operator->sustainRate *(128 / 32));
+        expect_usb_sent_cc(
+            midiChannel, CC_GENMDM_SUSTAIN_LEVEL_OP1 + op, operator->sustainLevel *(128 / 16));
+        expect_usb_sent_cc(
+            midiChannel, CC_GENMDM_RELEASE_RATE_OP1 + op, operator->releaseRate *(128 / 16));
+        expect_usb_sent_cc(midiChannel,
+            CC_GENMDM_AMPLITUDE_MODULATION_OP1 + op, operator->amplitudeModulation ? 127 : 0);
+        expect_usb_sent_cc(midiChannel, CC_GENMDM_SSG_EG_OP1 + op, operator->ssgEg *(128 / 16));
+    }
+}
+
 int test_e2e_setup(void** state)
 {
     mock_sgdk_disable_checks();
@@ -352,6 +384,8 @@ void test_midi_changing_program_retains_pan(void** state)
         expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_TOTAL_LEVEL, op));
         expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_SSG_EG, op));
     }
+
+    expect_comprehensive_midi_feedback(MIDI_CHANNEL_1, M_BANK_0[1]);
     midi_rx_read();
 }
 
@@ -380,6 +414,8 @@ void test_midi_changing_program_retains_volume(void** state)
             chan, YM_REG3(YM_BASE_TOTAL_LEVEL, op), op == YM_OP1 ? 0x21 : YM_TOTAL_LEVEL_SILENCE);
         expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_SSG_EG, op));
     }
+
+    expect_comprehensive_midi_feedback(MIDI_CHANNEL_1, M_BANK_0[1]);
     midi_rx_read();
 }
 
@@ -511,6 +547,32 @@ void test_dump_channel_parameters_to_callee(void** state)
     for (u16 i = 0; i < sizeof(dumpChannelResponseSeq); i++) {
         expect_usb_sent_byte(dumpChannelResponseSeq[i]);
     }
+
+    midi_rx_read();
+}
+
+void test_midi_feedback_on_program_change(void** state)
+{
+    stub_everdrive_as_present();
+
+    const u8 chan = YM_CH1;
+    const u8 midiChannel = MIDI_CHANNEL_1;
+
+    stub_usb_receive_program(midiChannel, 1);
+    expect_ym2612_write_channel_any_data(chan, YM_BASE_ALGORITHM_FEEDBACK);
+    expect_ym2612_write_channel_any_data(chan, YM_BASE_STEREO_AMS_PMS);
+
+    for (u8 op = YM_OP1; op <= YM_OP4; op++) {
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_MULTIPLE_DETUNE, op));
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_ATTACK_RATE_SCALING_RATE, op));
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_DECAY_RATE_AM_ENABLE, op));
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_SUSTAIN_RATE, op));
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_RELEASE_RATE_SUSTAIN_LEVEL, op));
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_TOTAL_LEVEL, op));
+        expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_SSG_EG, op));
+    }
+
+    expect_comprehensive_midi_feedback(midiChannel, M_BANK_0[1]);
 
     midi_rx_read();
 }

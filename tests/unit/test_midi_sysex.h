@@ -30,3 +30,6 @@ void test_midi_sysex_does_not_display_loaded_msg_if_no_presets_are_loaded(UNUSED
 void test_midi_cc_stores_program(UNUSED void** state);
 void test_midi_sysex_validates_remap_channel_bounds(UNUSED void** state);
 void test_midi_sysex_validates_dump_channel_bounds(UNUSED void** state);
+void test_midi_sysex_enables_midi_feedback(UNUSED void** state);
+void test_midi_sysex_disables_midi_feedback(UNUSED void** state);
+void test_midi_feedback_enabled_by_default_after_reset(UNUSED void** state);

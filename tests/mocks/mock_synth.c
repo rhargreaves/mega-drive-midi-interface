@@ -198,7 +198,8 @@ void __wrap_synth_extract_preset(u8 channel, FmPreset* preset)
 
 const FmChannel* __wrap_synth_channel_parameters(u8 channel)
 {
-    return NULL;
+    check_expected(channel);
+    return (const FmChannel*)mock();
 }
 
 const Global* __wrap_synth_global_parameters()
@@ -492,6 +493,13 @@ void _expect_synth_preset(
 {
     expect_value_with_pos(__wrap_synth_preset, channel, channel, file, line);
     expect_check_with_pos(__wrap_synth_preset, preset, fmpreset_equality_check, preset, file, line);
+}
+
+void _expect_synth_channel_parameters(
+    u8 channel, const FmChannel* fmChannel, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_synth_channel_parameters, channel, channel, file, line);
+    will_return(__wrap_synth_channel_parameters, fmChannel);
 }
 
 void _expect_synth_extract_preset(
