@@ -1,7 +1,7 @@
 # Mega Drive MIDI Interface
 [![Build & Release](https://github.com/rhargreaves/mega-drive-midi-interface/actions/workflows/build.yml/badge.svg)](https://github.com/rhargreaves/mega-drive-midi-interface/actions/workflows/build.yml) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/rhargreaves/mega-drive-midi-interface?style=plastic)](https://github.com/rhargreaves/mega-drive-midi-interface/releases)
 
-Control the Yamaha YM2612 and PSG of the Sega Mega Drive via MIDI.
+Control the Yamaha YM2612 and PSG of the Sega Mega Drive / Genesis via MIDI.
 
 <p align="center">
     <img src="https://github.com/rhargreaves/mega-drive-midi-interface/raw/main/docs/blastem_chan.png" width="600" />
