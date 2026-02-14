@@ -1,5 +1,5 @@
+#pragma once
 #include "types.h"
-#include "samples.h"
 
 typedef struct PcmSample {
     const u8* data;

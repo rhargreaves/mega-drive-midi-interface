@@ -3,16 +3,16 @@
 #include "envelopes.h"
 #include "midi.h"
 #include "midi_rx.h"
+#include "mocks/mock_comm.h"
+#include "mocks/mock_log.h"
+#include "mocks/mock_psg.h"
+#include "mocks/mock_sgdk.h"
+#include "mocks/mock_synth.h"
+#include "mocks/mock_ym2612.h"
 #include "presets.h"
 #include "scheduler.h"
-#include "mocks/mock_ym2612.h"
-#include "mocks/mock_synth.h"
-#include "mocks/mock_comm.h"
-#include "mocks/mock_sgdk.h"
-#include "mocks/mock_psg.h"
-#include "mocks/mock_log.h"
-#include "ym2612_regs.h"
 #include "test_helpers.h"
+#include "ym2612_regs.h"
 
 int test_e2e_setup(void** state)
 {
@@ -169,7 +169,7 @@ void test_pong_received_after_ping_sent()
     midi_rx_read();
 }
 
-void test_loads_psg_envelope()
+void test_loads_psg_envelope(void** state)
 {
     const u8 sysExPingSequence[] = { SYSEX_START, SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
         SYSEX_MANU_ID, SYSEX_COMMAND_LOAD_PSG_ENVELOPE, 0x06, 0x06, SYSEX_END };
@@ -336,12 +336,14 @@ void test_midi_changing_program_retains_pan(void** state)
     const u8 chan = YM_CH1;
 
     stub_usb_receive_cc(MIDI_CHANNEL_1, CC_PAN, 0); // left
-    expect_ym2612_write_channel(chan, YM_BASE_STEREO_AMS_PMS, 0x80); // pan, alg, fb
+    expect_ym2612_write_channel(chan, YM_BASE_STEREO_AMS_PMS,
+        0x80); // pan, alg, fb
     midi_rx_read();
 
     stub_usb_receive_program(MIDI_CHANNEL_1, 1);
     expect_ym2612_write_channel_any_data(chan, YM_BASE_ALGORITHM_FEEDBACK);
-    expect_ym2612_write_channel(chan, YM_BASE_STEREO_AMS_PMS, 0x80); // pan, alg, fb
+    expect_ym2612_write_channel(chan, YM_BASE_STEREO_AMS_PMS,
+        0x80); // pan, alg, fb
 
     for (u8 op = YM_OP1; op <= YM_OP4; op++) {
         expect_ym2612_write_channel_any_data(chan, YM_REG3(YM_BASE_MULTIPLE_DETUNE, op));

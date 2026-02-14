@@ -1,4 +1,5 @@
 #include "pcm_sample.h"
+#include "samples.h"
 #include "snd/sound.h"
 #include "snd/pcm/snd_pcm.h"
 
