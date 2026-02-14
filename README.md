@@ -35,23 +35,30 @@ Head over to the [Wiki](https://github.com/rhargreaves/mega-drive-midi-interface
 
 Unit & system tests are compiled and ran as x86 binaries using CMocka. Mega Drive interfaces are mocked.
 
-There are two flavours of ROM:
+There are three flavours of ROM:
 
-- **Standard**: for EverDrives or other flash cart.
+- **EverDrive**: for genuine Mega EverDrives.
+- **Generic**: for other generic flash carts.
 - **MegaWiFi**: for use with the BlastEm emulator or MegaWiFi hardware.
 
 ### Docker:
 
-Build Standard ROM:
+Build EverDrive ROM (default):
 
 ```sh
 ./docker-make release
 ```
 
+Build Generic ROM:
+
+```sh
+ROM_TYPE=GENERIC ./docker-make release
+```
+
 Build MegaWiFi ROM:
 
 ```sh
-./docker-make release ROM_TYPE=MEGAWIFI
+ROM_TYPE=MEGAWIFI ./docker-make release
 ```
 
 ### Linux without Docker
