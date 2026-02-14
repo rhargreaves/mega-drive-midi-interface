@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+CLANG_VERSION=21
+
+apt-get update && apt-get install -y lsb-release software-properties-common
+wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key > /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+add-apt-repository "deb http://apt.llvm.org/$(lsb_release -cs)/ llvm-toolchain-$(lsb_release -cs)-$CLANG_VERSION main"
+apt-get update && apt-get -y install clangd-$CLANG_VERSION clang-format-$CLANG_VERSION
+
+update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-$CLANG_VERSION 100
+update-alternatives --set clangd /usr/bin/clangd-$CLANG_VERSION
+update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-$CLANG_VERSION 100
+update-alternatives --set clang-format /usr/bin/clang-format-$CLANG_VERSION

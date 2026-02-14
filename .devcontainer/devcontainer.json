@@ -1,18 +1,16 @@
 {
-    "name": "MDMI",
-    "build": {
-        "context": "..",
-        "dockerfile": "../Dockerfile"
-    },
-    "customizations": {
-        "vscode": {
-            "extensions": [
-                "ms-vscode.cpptools",
-                "EditorConfig.EditorConfig"
-            ]
-        }
-    },
-    "postCreateCommand": {
-        "editorconfig": "apt -y install npm nodejs && npm install -g editorconfig"
+  "name": "MDMI",
+  "build": {
+    "context": "..",
+    "dockerfile": "../Dockerfile"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "EditorConfig.EditorConfig",
+        "llvm-vs-code-extensions.vscode-clangd"
+      ]
     }
+  },
+  "postCreateCommand": "bash .devcontainer/post-create"
 }

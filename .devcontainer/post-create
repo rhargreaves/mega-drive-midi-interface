@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+SCRIPT_DIR="$(dirname "$0")"
+
+apt -y install npm nodejs && npm install -g editorconfig
+
+"$SCRIPT_DIR/install-clangd"

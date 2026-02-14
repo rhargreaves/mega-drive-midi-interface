@@ -1,0 +1,9 @@
+-I./src
+-I./res
+-I./tests/build/deps/cmocka/include
+-I./tests/unit
+-I./tests/system
+-I./tests/mocks
+-I./tests
+-I/sgdk/inc
+-I/sgdk/res
