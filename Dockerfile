@@ -1,4 +1,5 @@
-FROM ghcr.io/rhargreaves/docker-sgdk:v2.00-mw-bs
+ARG BASE_IMAGE_SUFFIX=-mw-bs
+FROM ghcr.io/rhargreaves/docker-sgdk:v2.00${BASE_IMAGE_SUFFIX}
 USER root
 RUN apt-get -y update && \
     apt-get -y install \

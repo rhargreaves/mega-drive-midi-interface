@@ -2,7 +2,15 @@
 set -euo pipefail
 
 IMAGE_NAME=mega-drive-midi-interface
-docker build -t $IMAGE_NAME .
+
+if [ "${ROM_TYPE:-}" = "GENERIC" ]; then
+  BASE_IMAGE_SUFFIX="-mw"
+else
+  BASE_IMAGE_SUFFIX="-mw-bs"
+fi
+docker build --build-arg BASE_IMAGE_SUFFIX=$BASE_IMAGE_SUFFIX \
+    -t $IMAGE_NAME .
+
 if [ -t 1 ] ; then
     TTY_PARAM=-t
 else
@@ -13,6 +21,7 @@ docker run \
     --privileged \
     -p 2345:2345 \
     -e BUILD \
+    -e ROM_TYPE \
     -e CMOCKA_MESSAGE_OUTPUT \
     -e CMOCKA_XML_FILE \
     -e ENABLE_SANITISE_CHECKS \

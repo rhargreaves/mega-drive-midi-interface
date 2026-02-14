@@ -4,8 +4,10 @@
 __attribute__((externally_visible)) const ROMHeader rom_header = {
 #if MEGAWIFI
     .console        = "SEGA MEGAWIFI   ",
-#else
+#elif (ENABLE_BANK_SWITCH != 0)
     .console        = "SEGA SSF        ",
+#else
+    .console        = "SEGA MEGA DRIVE ",
 #endif
     .copyright      = "(C)ROB H. GPLv3 ",
     .title_local    = "MEGA DRIVE MIDI INTERFACE                       ",
@@ -14,11 +16,7 @@ __attribute__((externally_visible)) const ROMHeader rom_header = {
     .checksum       = 0x000,
     .IOSupport      = "JD              ",
     .rom_start      = 0x00000000,
-#if (ENABLE_BANK_SWITCH != 0)
     .rom_end        = 0x003FFFFF,
-#else
-    .rom_end        = 0x000FFFFF,
-#endif
     .ram_start      = 0xE0FF0000,
     .ram_end        = 0xE0FFFFFF,
     .sram_sig       = "RA",

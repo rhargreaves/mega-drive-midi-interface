@@ -1,12 +1,33 @@
 #!/bin/bash
-set -euxo pipefail
+set -euo pipefail
 
 export BUILD=$(git describe --tags --abbrev=0)
+echo "Build: $BUILD"
 
+check_rom_header() {
+  local file="$1"
+  local expected="$2"
+  local actual
+  actual=$(dd if="$file" bs=1 skip=256 count=16 status=none)
+  if [ "$actual" != "$expected" ]; then
+    echo "Header check failed: $file (expected '$expected', got '$actual')"
+    return 1
+  fi
+}
+
+echo "Building Everdrive ROM..."
 ./docker-make clean all
-mv out/rom.bin out/rom_standard.bin
+mv out/rom.bin out/rom_everdrive.bin
+check_rom_header out/rom_everdrive.bin "SEGA SSF        "
 
-./docker-make clean all ROM_TYPE=MEGAWIFI
+echo "Building MegaWiFi ROM..."
+ROM_TYPE=MEGAWIFI ./docker-make clean all
 mv out/rom.bin out/rom_megawifi.bin
+check_rom_header out/rom_megawifi.bin  "SEGA MEGAWIFI   "
+
+echo "Building Generic ROM..."
+ROM_TYPE=GENERIC ./docker-make clean all
+mv out/rom.bin out/rom_generic.bin
+check_rom_header out/rom_generic.bin   "SEGA MEGA DRIVE "
 
 echo $BUILD > out/version.txt
