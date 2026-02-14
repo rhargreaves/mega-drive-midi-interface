@@ -2,7 +2,7 @@
 set -eu
 
 cd ~/Projects/mega-drive/serialmidi
-source bin/activate
+source .venv/bin/activate
 
 python3 serialmidi.py \
     --serial_name=/dev/cu.usbserial-A105J2JO \
