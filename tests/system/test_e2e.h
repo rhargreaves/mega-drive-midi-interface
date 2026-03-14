@@ -9,7 +9,7 @@ void test_general_midi_reset_sysex_stops_all_notes(void** state);
 void test_remap_midi_channel_1_to_psg_channel_1();
 void test_set_device_for_midi_channel_1_to_psg();
 void test_pong_received_after_ping_sent();
-void test_loads_psg_envelope();
+void test_loads_psg_envelope(void** state);
 void test_enables_ch3_special_mode(void** state);
 void test_sets_separate_ch3_operator_frequencies(void** state);
 void test_write_directly_to_ym2612_regs_via_sysex(void** state);

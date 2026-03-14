@@ -4,7 +4,6 @@
 #include "midi.h"
 #include "midi_rx.h"
 #include "mocks/mock_comm.h"
-#include "mocks/mock_log.h"
 #include "mocks/mock_psg.h"
 #include "mocks/mock_sgdk.h"
 #include "mocks/mock_synth.h"
