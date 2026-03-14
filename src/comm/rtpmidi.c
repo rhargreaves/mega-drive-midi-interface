@@ -2,6 +2,7 @@
 #include "applemidi.h"
 #include "comm_megawifi.h"
 #include "utils.h"
+#include "log.h"
 
 #define MIDI_SYSEX_START 0xF0
 #define MIDI_SYSEX_END 0xF7
@@ -77,6 +78,9 @@ enum mw_err rtpmidi_processRtpMidiPacket(char* buffer, u16 length, u16* lastSeqN
 {
     (void)length; // TODO: Probably shouldn't ignore length...
     u16 seqNum = sequence_number(buffer);
+#if DEBUG_MEGAWIFI_RECV == 1
+    log_info("MW: rtpmidi: len=%d seqNum=%d", length, seqNum);
+#endif
     u8* commandSection = (u8*)&buffer[RTP_MIDI_HEADER_LEN];
     bool longHeader = is_long_header(commandSection);
     u16 midiLength = longHeader ? twelve_bit_midi_length(commandSection)

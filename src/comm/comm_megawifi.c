@@ -234,7 +234,7 @@ static void recv_complete_cb(enum lsd_status stat, uint8_t ch, char* data, uint1
         log_info("MW: Remote=%s:%u", remote_ip_str, udp->remote_port);
 #endif
         persist_remote_endpoint(ch, udp->remote_ip, udp->remote_port);
-        process_udp_data(ch, udp->payload, len);
+        process_udp_data(ch, udp->payload, len - REUSE_PAYLOAD_HEADER_LEN);
     } else {
         log_warn("MW: recv_complete_cb() = %d", stat);
     }
