@@ -49,3 +49,13 @@ void test_note_priority_returns_size(UNUSED void** state)
     note_priority_push(&testStack, 2);
     assert_int_equal(note_priority_count(&testStack), 2);
 }
+
+void test_note_priority_pop_returns_0_when_empty(UNUSED void** state)
+{
+    assert_int_equal(note_priority_pop(&testStack), 0);
+    assert_int_equal(note_priority_pop(&testStack), 0);
+
+    note_priority_push(&testStack, 1);
+    assert_int_equal(note_priority_pop(&testStack), 1);
+    assert_int_equal(note_priority_pop(&testStack), 0);
+}

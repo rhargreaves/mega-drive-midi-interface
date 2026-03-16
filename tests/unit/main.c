@@ -432,7 +432,9 @@ int main(void)
         ring_buf_test(test_ring_buf_read_returns_error_with_null_pointer),
 
         note_priority_test(test_note_priority_ignores_push_when_full),
+        note_priority_test(test_note_priority_returns_size),
         note_priority_test(test_note_priority_indicates_when_full),
+        note_priority_test(test_note_priority_pop_returns_0_when_empty),
 
         midi_portamento_test(test_midi_portamento_glides_note_up),
         midi_portamento_test(test_midi_portamento_glides_note_down),
