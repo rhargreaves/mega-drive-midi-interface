@@ -30,3 +30,5 @@ void test_midi_dynamic_sticks_to_assigned_psg_device_type_for_midi_channels(UNUS
 void test_midi_assign_channel_to_psg_device(UNUSED void** state);
 void test_midi_assign_channel_to_fm_device_only(UNUSED void** state);
 void test_midi_assign_channel_to_psg_noise(UNUSED void** state);
+void test_midi_static_mode_limits_midi_channel_to_two_fm_channels(UNUSED void** state);
+void test_midi_static_mode_plays_correct_note_off_after_multiple_notes_played(UNUSED void** state);

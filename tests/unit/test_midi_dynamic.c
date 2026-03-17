@@ -1,4 +1,6 @@
 #include "test_midi_dynamic.h"
+#include "mock_midi.h"
+#include "test_helpers.h"
 #include "test_midi.h"
 #include "mocks/mock_psg.h"
 
@@ -544,6 +546,37 @@ void test_midi_dynamic_sticks_to_assigned_psg_device_type_for_midi_channels(UNUS
     __real_midi_note_on(MIDI_CHANNEL, MIDI_PITCH_B6, MAX_MIDI_VOLUME);
 }
 
+void test_midi_static_mode_limits_midi_channel_to_two_fm_channels(UNUSED void** state)
+{
+    const u8 sequence[] = {
+        SYSEX_MANU_EXTENDED,
+        SYSEX_MANU_REGION,
+        SYSEX_MANU_ID,
+        SYSEX_COMMAND_DYNAMIC,
+        SYSEX_DYNAMIC_DISABLED,
+    };
+
+    __real_midi_sysex(sequence, sizeof(sequence));
+
+    midi_remap_channel(MIDI_CHANNEL_1, FM_CH1);
+    midi_remap_channel(MIDI_CHANNEL_1, FM_CH2);
+
+    expect_synth_pitch_any();
+    expect_synth_volume_any();
+    expect_synth_note_on(FM_CH1);
+    __real_midi_note_on(MIDI_CHANNEL_1, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
+
+    expect_synth_pitch_any();
+    expect_synth_volume_any();
+    expect_synth_note_on(FM_CH2);
+    __real_midi_note_on(MIDI_CHANNEL_1, MIDI_PITCH_B6, MAX_MIDI_VOLUME);
+
+    expect_synth_pitch_any();
+    expect_synth_volume_any();
+    expect_synth_note_on(FM_CH1);
+    __real_midi_note_on(MIDI_CHANNEL_1, MIDI_PITCH_C5, MAX_MIDI_VOLUME);
+}
+
 void test_midi_assign_channel_to_psg_device(UNUSED void** state)
 {
     const u8 MIDI_CHANNEL = 0;
@@ -589,4 +622,39 @@ void test_midi_assign_channel_to_psg_noise(UNUSED void** state)
     expect_any_psg_tone_on_channel(PSG_NOISE_CHANNEL);
     expect_psg_attenuation(PSG_NOISE_CHANNEL, PSG_ATTENUATION_LOUDEST);
     __real_midi_note_on(MIDI_CHANNEL, 60, MAX_MIDI_VOLUME);
+}
+
+void test_midi_static_mode_plays_correct_note_off_after_multiple_notes_played(UNUSED void** state)
+{
+    const u8 sequence[] = {
+        SYSEX_MANU_EXTENDED,
+        SYSEX_MANU_REGION,
+        SYSEX_MANU_ID,
+        SYSEX_COMMAND_DYNAMIC,
+        SYSEX_DYNAMIC_DISABLED,
+    };
+
+    __real_midi_sysex(sequence, sizeof(sequence));
+
+    midi_remap_channel(MIDI_CHANNEL_1, FM_CH1);
+    midi_remap_channel(MIDI_CHANNEL_1, FM_CH2);
+    midi_remap_channel(MIDI_CHANNEL_1, FM_CH3);
+
+    expect_synth_pitch_any();
+    expect_synth_volume_any();
+    expect_synth_note_on(FM_CH1);
+    __real_midi_note_on(MIDI_CHANNEL_1, MIDI_PITCH_AS6, MAX_MIDI_VOLUME);
+
+    expect_synth_pitch_any();
+    expect_synth_volume_any();
+    expect_synth_note_on(FM_CH2);
+    __real_midi_note_on(MIDI_CHANNEL_1, MIDI_PITCH_B6, MAX_MIDI_VOLUME);
+
+    expect_synth_pitch_any();
+    expect_synth_volume_any();
+    expect_synth_note_on(FM_CH3);
+    __real_midi_note_on(MIDI_CHANNEL_1, MIDI_PITCH_C5, MAX_MIDI_VOLUME);
+
+    expect_synth_note_off(FM_CH3);
+    __real_midi_note_off(MIDI_CHANNEL_1, MIDI_PITCH_C5);
 }

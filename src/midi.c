@@ -297,6 +297,14 @@ static DeviceChannel* findFreeChannel(u8 incomingMidiChan)
     if (chan != NULL) {
         return chan;
     }
+    if (!dynamicMode) {
+        DeviceChannel* chan = deviceChannelByMidiChannel(incomingMidiChan);
+        if (chan != NULL) {
+            return chan;
+        }
+        return NULL;
+    }
+
     chan = findFreePsgChannelForSquareWaveVoices(incomingMidiChan);
     if (chan != NULL) {
         return chan;
@@ -389,7 +397,7 @@ static void update_device_channel_from_associated_midi_channel(DeviceChannel* de
 
 static DeviceChannel* findSuitableDeviceChannel(u8 midiChan)
 {
-    return dynamicMode ? findFreeChannel(midiChan) : deviceChannelByMidiChannel(midiChan);
+    return findFreeChannel(midiChan);
 }
 
 static PitchCents effectivePitchCents(DeviceChannel* devChan)
@@ -461,21 +469,36 @@ void midi_note_on(u8 midiChan, u8 pitch, u8 velocity)
     set_downstream_note_on(devChan, velocity);
 }
 
+static bool isSingleVoiceChannel(u8 midiChan)
+{
+    u8 playingCount = 0;
+    FOREACH_DEV_CHAN_WITH_MIDI(midiChan, devChan) {
+        if (devChan->noteOn) {
+            playingCount++;
+        }
+    }
+    return playingCount == 1;
+}
+
 void midi_note_off(u8 chan, u8 pitch)
 {
     MidiChannel* midiChannel = &midiChannels[chan];
     note_priority_remove(&midiChannel->notePriority, pitch);
 
+    u8 nextMostRecentPitch = note_priority_pop(&midiChannel->notePriority);
+    bool handledRetrigger = false;
+    bool singleVoice = isSingleVoiceChannel(chan);
+
     FOREACH_DEV_CHAN_WITH_MIDI(chan, devChan) {
         if (isChannelPlayingNote(devChan, pitch)) {
-            u8 nextMostRecentPitch = note_priority_pop(&midiChannel->notePriority);
-            if (!dynamicMode && nextMostRecentPitch != 0) {
+            if (!handledRetrigger && singleVoice && nextMostRecentPitch != 0) {
                 if (midiChannel->portamento) {
                     note_priority_push(&midiChannel->notePriority, nextMostRecentPitch);
                     devChan->glideTargetPitch = nextMostRecentPitch;
                 } else {
                     dev_chan_note_on(devChan, nextMostRecentPitch, midiChannel->lastVelocity);
                 }
+                handledRetrigger = true;
             } else {
                 dev_chan_note_off(devChan, pitch);
             }
