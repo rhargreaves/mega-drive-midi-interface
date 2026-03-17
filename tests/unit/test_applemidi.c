@@ -19,8 +19,8 @@ void test_applemidi_parses_rtpmidi_packet_with_single_midi_event(UNUSED void** s
     expect_midi_emit(0x48);
     expect_midi_emit(0x6f);
 
-    mw_err err = applemidi_processSessionMidiPacket(rtp_packet, len);
-    assert_int_equal(err, MW_ERR_NONE);
+    midi_pkt_result result = applemidi_processSessionMidiPacket(rtp_packet, len);
+    assert_int_equal(result, MIDI_PKT_OK);
 }
 
 void test_applemidi_parses_rtpmidi_packet_with_single_2_byte_midi_event(UNUSED void** state)
@@ -38,8 +38,8 @@ void test_applemidi_parses_rtpmidi_packet_with_single_2_byte_midi_event(UNUSED v
         expect_midi_emit(status);
         expect_midi_emit(0x01);
 
-        mw_err err = applemidi_processSessionMidiPacket(rtp_packet, len);
-        assert_int_equal(err, MW_ERR_NONE);
+        midi_pkt_result result = applemidi_processSessionMidiPacket(rtp_packet, len);
+        assert_int_equal(result, MIDI_PKT_OK);
     }
 }
 
@@ -60,8 +60,8 @@ void test_applemidi_parses_rtpmidi_packet_with_multiple_2_byte_midi_events(UNUSE
         expect_midi_emit(status);
         expect_midi_emit(0x01);
 
-        mw_err err = applemidi_processSessionMidiPacket(rtp_packet, len);
-        assert_int_equal(err, MW_ERR_NONE);
+        midi_pkt_result result = applemidi_processSessionMidiPacket(rtp_packet, len);
+        assert_int_equal(result, MIDI_PKT_OK);
     }
 }
 
@@ -78,8 +78,8 @@ void test_applemidi_parses_rtpmidi_packet_with_single_midi_event_long_header(UNU
     expect_midi_emit(0x48);
     expect_midi_emit(0x6f);
 
-    mw_err err = applemidi_processSessionMidiPacket(rtp_packet, len);
-    assert_int_equal(err, MW_ERR_NONE);
+    midi_pkt_result result = applemidi_processSessionMidiPacket(rtp_packet, len);
+    assert_int_equal(result, MIDI_PKT_OK);
 }
 
 void test_applemidi_parses_rtpmidi_packet_with_two_midi_events(UNUSED void** state)
@@ -98,8 +98,8 @@ void test_applemidi_parses_rtpmidi_packet_with_two_midi_events(UNUSED void** sta
     expect_midi_emit(0x51);
     expect_midi_emit(0x7c);
 
-    mw_err err = applemidi_processSessionMidiPacket(rtp_packet, len);
-    assert_int_equal(err, MW_ERR_NONE);
+    midi_pkt_result result = applemidi_processSessionMidiPacket(rtp_packet, len);
+    assert_int_equal(result, MIDI_PKT_OK);
 }
 
 void test_applemidi_parses_rtpmidi_packet_with_multiple_midi_events(UNUSED void** state)
@@ -122,8 +122,8 @@ void test_applemidi_parses_rtpmidi_packet_with_multiple_midi_events(UNUSED void*
     expect_midi_emit(0x48);
     expect_midi_emit(0x6f);
 
-    mw_err err = applemidi_processSessionMidiPacket(rtp_packet, len);
-    assert_int_equal(err, MW_ERR_NONE);
+    midi_pkt_result result = applemidi_processSessionMidiPacket(rtp_packet, len);
+    assert_int_equal(result, MIDI_PKT_OK);
 }
 
 void test_applemidi_parses_rtpmidi_packet_with_sysex(UNUSED void** state)
@@ -141,8 +141,8 @@ void test_applemidi_parses_rtpmidi_packet_with_sysex(UNUSED void** state)
     expect_midi_emit(0x56);
     expect_midi_emit(0xF7);
 
-    mw_err err = applemidi_processSessionMidiPacket(rtpPacket, len);
-    assert_int_equal(err, MW_ERR_NONE);
+    midi_pkt_result result = applemidi_processSessionMidiPacket(rtpPacket, len);
+    assert_int_equal(result, MIDI_PKT_OK);
 }
 
 void test_applemidi_parses_rtpmidi_packet_with_sysex_ending_with_F0(UNUSED void** state)
@@ -160,8 +160,8 @@ void test_applemidi_parses_rtpmidi_packet_with_sysex_ending_with_F0(UNUSED void*
     expect_midi_emit(0x56);
     expect_midi_emit(0xF7);
 
-    mw_err err = applemidi_processSessionMidiPacket(rtpPacket, len);
-    assert_int_equal(err, MW_ERR_NONE);
+    midi_pkt_result result = applemidi_processSessionMidiPacket(rtpPacket, len);
+    assert_int_equal(result, MIDI_PKT_OK);
 }
 
 void test_applemidi_parses_rtpmidi_packet_with_sysex_with_0xF7_at_end(UNUSED void** state)
@@ -179,8 +179,8 @@ void test_applemidi_parses_rtpmidi_packet_with_sysex_with_0xF7_at_end(UNUSED voi
     expect_midi_emit(0x56);
     expect_midi_emit(0xF7);
 
-    mw_err err = applemidi_processSessionMidiPacket(rtpPacket, len);
-    assert_int_equal(err, MW_ERR_NONE);
+    midi_pkt_result result = applemidi_processSessionMidiPacket(rtpPacket, len);
+    assert_int_equal(result, MIDI_PKT_OK);
 }
 
 void test_applemidi_parses_rtpmidi_packet_with_multiple_different_midi_events(UNUSED void** state)
@@ -204,8 +204,8 @@ void test_applemidi_parses_rtpmidi_packet_with_multiple_different_midi_events(UN
     expect_midi_emit(0x48);
     expect_midi_emit(0x6f);
 
-    mw_err err = applemidi_processSessionMidiPacket(rtp_packet, len);
-    assert_int_equal(err, MW_ERR_NONE);
+    midi_pkt_result result = applemidi_processSessionMidiPacket(rtp_packet, len);
+    assert_int_equal(result, MIDI_PKT_OK);
 }
 
 void test_applemidi_parses_rtpmidi_packet_with_system_reset(UNUSED void** state)
@@ -217,8 +217,8 @@ void test_applemidi_parses_rtpmidi_packet_with_system_reset(UNUSED void** state)
     size_t len = sizeof(rtp_packet);
     expect_midi_emit(0xff);
 
-    mw_err err = applemidi_processSessionMidiPacket(rtp_packet, len);
-    assert_int_equal(err, MW_ERR_NONE);
+    midi_pkt_result result = applemidi_processSessionMidiPacket(rtp_packet, len);
+    assert_int_equal(result, MIDI_PKT_OK);
 }
 
 void test_applemidi_parses_notes_sysex_cc_in_one_packet(UNUSED void** state)
@@ -264,8 +264,8 @@ void test_applemidi_parses_notes_sysex_cc_in_one_packet(UNUSED void** state)
     expect_midi_emit_trio(0xb7, 0x00, 0x00);
     expect_midi_emit_trio(0xe9, 0x00, 0x00);
 
-    mw_err err = applemidi_processSessionMidiPacket(rtp_packet, len);
-    assert_int_equal(err, MW_ERR_NONE);
+    midi_pkt_result result = applemidi_processSessionMidiPacket(rtp_packet, len);
+    assert_int_equal(result, MIDI_PKT_OK);
 }
 
 void test_applemidi_ignores_middle_sysex_segments(UNUSED void** state)
@@ -288,8 +288,8 @@ void test_applemidi_ignores_middle_sysex_segments(UNUSED void** state)
         expect_midi_emit_trio(0x90, 0x60, 0x61);
         expect_midi_emit_trio(0x90, 0x60, 0x61);
 
-        mw_err err = applemidi_processSessionMidiPacket(rtp_packet, len);
-        assert_int_equal(err, MW_ERR_NONE);
+        midi_pkt_result result = applemidi_processSessionMidiPacket(rtp_packet, len);
+        assert_int_equal(result, MIDI_PKT_OK);
     }
 }
 
@@ -309,8 +309,8 @@ void test_applemidi_processes_multiple_sysex_segments(UNUSED void** state)
     expect_midi_emit_trio(0xF0, 0x01, 0xF7);
     expect_midi_emit_trio(0xF0, 0x02, 0xF7);
 
-    mw_err err = applemidi_processSessionMidiPacket(rtp_packet, len);
-    assert_int_equal(err, MW_ERR_NONE);
+    midi_pkt_result result = applemidi_processSessionMidiPacket(rtp_packet, len);
+    assert_int_equal(result, MIDI_PKT_OK);
 }
 
 void test_applemidi_processes_ccs(UNUSED void** state)
@@ -344,8 +344,8 @@ void test_applemidi_processes_ccs(UNUSED void** state)
     expect_midi_emit_trio(0xb1, 0x64, 0x00);
     expect_midi_emit_trio(0xb1, 0x65, 0x00);
 
-    mw_err err = applemidi_processSessionMidiPacket(rtp_packet, len);
-    assert_int_equal(err, MW_ERR_NONE);
+    midi_pkt_result result = applemidi_processSessionMidiPacket(rtp_packet, len);
+    assert_int_equal(result, MIDI_PKT_OK);
 }
 
 void test_applemidi_sets_last_sequence_number(UNUSED void** state)
@@ -361,8 +361,8 @@ void test_applemidi_sets_last_sequence_number(UNUSED void** state)
     expect_midi_emit(0x48);
     expect_midi_emit(0x6f);
 
-    mw_err err = applemidi_processSessionMidiPacket(rtp_packet, len);
-    assert_int_equal(err, MW_ERR_NONE);
+    midi_pkt_result result = applemidi_processSessionMidiPacket(rtp_packet, len);
+    assert_int_equal(result, MIDI_PKT_OK);
 
     u16 seqNum = applemidi_lastSequenceNumber();
     assert_int_equal(seqNum, 0x8c24);
@@ -381,8 +381,8 @@ void test_applemidi_sends_receiver_feedback(UNUSED void** state)
     expect_midi_emit(0x48);
     expect_midi_emit(0x6f);
 
-    mw_err err = applemidi_processSessionMidiPacket(rtp_packet, len);
-    assert_int_equal(err, MW_ERR_NONE);
+    midi_pkt_result result = applemidi_processSessionMidiPacket(rtp_packet, len);
+    assert_int_equal(result, MIDI_PKT_OK);
 
     const u8 receiverFeedbackPacket[] = { 0xff, 0xff, 'R', 'S',
         /* SSRC */ 0x9E, 0x91, 0x51, 0x50, /* sequence number */
@@ -392,7 +392,7 @@ void test_applemidi_sends_receiver_feedback(UNUSED void** state)
         __wrap_comm_megawifi_send, data, receiverFeedbackPacket, sizeof(receiverFeedbackPacket));
     expect_value(__wrap_comm_megawifi_send, len, sizeof(receiverFeedbackPacket));
 
-    err = applemidi_sendReceiverFeedback();
+    mw_err err = applemidi_sendReceiverFeedback();
     assert_int_equal(err, MW_ERR_NONE);
 }
 
@@ -409,8 +409,8 @@ void test_applemidi_does_not_read_beyond_length(UNUSED void** state)
 
     expect_midi_emit_trio(0xF0, 0x01, 0xF7);
 
-    mw_err err = applemidi_processSessionMidiPacket(rtp_packet, len);
-    assert_int_equal(err, MW_ERR_NONE);
+    midi_pkt_result result = applemidi_processSessionMidiPacket(rtp_packet, len);
+    assert_int_equal(result, MIDI_PKT_OK);
 
     u16 seqNum = applemidi_lastSequenceNumber();
     assert_int_equal(seqNum, 0x8c24);

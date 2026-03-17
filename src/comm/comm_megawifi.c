@@ -188,17 +188,17 @@ void comm_megawifi_write(u8 data)
 static void process_udp_data(u8 ch, char* buffer, u16 length)
 {
     (void)buffer;
-    enum mw_err err = MW_ERR_NONE;
+    midi_pkt_result result = MIDI_PKT_OK;
     switch (ch) {
     case CH_CONTROL_PORT:
-        err = applemidi_processSessionControlPacket(buffer, length);
+        result = applemidi_processSessionControlPacket(buffer, length);
         break;
     case CH_MIDI_PORT:
-        err = applemidi_processSessionMidiPacket(buffer, length);
+        result = applemidi_processSessionMidiPacket(buffer, length);
         break;
     }
-    if (err != MW_ERR_NONE) {
-        log_warn("MW: processUdpData() = %d", err);
+    if (result != MIDI_PKT_OK) {
+        log_warn("MW: processUdpData() = %d", result);
     }
 }
 

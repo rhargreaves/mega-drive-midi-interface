@@ -74,10 +74,10 @@ static bool is_final_delta_byte(u8 value)
     return !CHECK_BIT(value, 7);
 }
 
-enum mw_err rtpmidi_processRtpMidiPacket(char* buffer, u16 length, u16* lastSeqNum)
+midi_pkt_result rtpmidi_processRtpMidiPacket(char* buffer, u16 length, u16* lastSeqNum)
 {
     if (length < RTP_MIDI_HEADER_LEN + 1) {
-        return MW_ERR_NONE;
+        return MIDI_PKT_RTP_HEADER_TOO_SHORT;
     }
 
     u16 seqNum = sequence_number(buffer);
@@ -91,7 +91,7 @@ enum mw_err rtpmidi_processRtpMidiPacket(char* buffer, u16 length, u16* lastSeqN
 
     u16 headerLen = RTP_MIDI_HEADER_LEN + (longHeader ? 2 : 1);
     if (headerLen + midiLength > length) {
-        return MW_ERR_NONE;
+        return MIDI_PKT_RTP_LENGTH_MISMATCH;
     }
 
     u8* midiStart = &commandSection[longHeader ? 2 : 1];
@@ -122,5 +122,5 @@ enum mw_err rtpmidi_processRtpMidiPacket(char* buffer, u16 length, u16* lastSeqN
     }
 
     *lastSeqNum = seqNum;
-    return MW_ERR_NONE;
+    return MIDI_PKT_OK;
 }

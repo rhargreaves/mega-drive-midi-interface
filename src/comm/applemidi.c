@@ -4,28 +4,28 @@
 #include "comm_megawifi.h"
 #include "settings.h"
 
-static enum mw_err unpack_invitation(char* buffer, u16 length, AppleMidiExchangePacket* invite);
+static midi_pkt_result unpack_invitation(char* buffer, u16 length, AppleMidiExchangePacket* invite);
 static void send_invite_response(u8 ch, AppleMidiExchangePacket* invite);
 
-static enum mw_err process_invitation(u8 ch, char* buffer, u16 length)
+static midi_pkt_result process_invitation(u8 ch, char* buffer, u16 length)
 {
     AppleMidiExchangePacket packet;
-    enum mw_err err = unpack_invitation(buffer, length, &packet);
-    if (err != MW_ERR_NONE) {
-        return err;
+    midi_pkt_result result = unpack_invitation(buffer, length, &packet);
+    if (result != MIDI_PKT_OK) {
+        return result;
     }
 
     if (settings_debug_megawifi_init()) {
         log_info("AM: Session invite on UDP ch %d", ch);
     }
     send_invite_response(ch, &packet);
-    return MW_ERR_NONE;
+    return MIDI_PKT_OK;
 }
 
-static enum mw_err unpack_invitation(char* buffer, u16 length, AppleMidiExchangePacket* invite)
+static midi_pkt_result unpack_invitation(char* buffer, u16 length, AppleMidiExchangePacket* invite)
 {
     if (length < APPLE_MIDI_EXCH_PKT_MIN_LEN) {
-        return ERR_APPLE_MIDI_EXCH_PKT_TOO_SMALL;
+        return MIDI_PKT_EXCH_TOO_SMALL;
     }
 
     u8 index = 0;
@@ -34,10 +34,10 @@ static enum mw_err unpack_invitation(char* buffer, u16 length, AppleMidiExchange
         index++;
     }
     if (invite->signature != APPLE_MIDI_SIGNATURE) {
-        return ERR_INVALID_APPLE_MIDI_SIGNATURE;
+        return MIDI_PKT_INVALID_SIGNATURE;
     }
 
-    return MW_ERR_NONE;
+    return MIDI_PKT_OK;
 }
 
 static void pack_invitation_response(u32 initToken, char* buffer, u16* length)
@@ -64,11 +64,11 @@ static void send_invite_response(u8 ch, AppleMidiExchangePacket* invite)
     comm_megawifi_send(ch, inviteSendBuffer, length);
 }
 
-static enum mw_err unpack_timestamp_sync(
+static midi_pkt_result unpack_timestamp_sync(
     char* buffer, u16 length, AppleMidiTimeSyncPacket* timeSyncPacket)
 {
     if (length < TIMESYNC_PKT_LEN) {
-        return ERR_INVALID_TIMESYNC_PKT_LENGTH;
+        return MIDI_PKT_INVALID_TIMESYNC_LENGTH;
     }
     u8 index = 0;
     while (index < TIMESYNC_PKT_LEN) {
@@ -76,9 +76,9 @@ static enum mw_err unpack_timestamp_sync(
         index++;
     }
     if (timeSyncPacket->signature != APPLE_MIDI_SIGNATURE) {
-        return ERR_INVALID_APPLE_MIDI_SIGNATURE;
+        return MIDI_PKT_INVALID_SIGNATURE;
     }
-    return MW_ERR_NONE;
+    return MIDI_PKT_OK;
 }
 
 static void pack_timestamp_sync(AppleMidiTimeSyncPacket* timeSyncPacket, char* buffer, u16* length)
@@ -99,12 +99,12 @@ static void send_timestamp_sync(AppleMidiTimeSyncPacket* timeSyncPacket)
     comm_megawifi_send(CH_MIDI_PORT, timestampSyncSendBuffer, length);
 }
 
-static enum mw_err process_timestamp_sync(char* buffer, u16 length)
+static midi_pkt_result process_timestamp_sync(char* buffer, u16 length)
 {
     AppleMidiTimeSyncPacket packet;
-    enum mw_err err = unpack_timestamp_sync(buffer, length, &packet);
-    if (err != MW_ERR_NONE) {
-        return err;
+    midi_pkt_result result = unpack_timestamp_sync(buffer, length, &packet);
+    if (result != MIDI_PKT_OK) {
+        return result;
     }
     if (packet.count == 0) {
         packet.count = 1;
@@ -117,7 +117,7 @@ static enum mw_err process_timestamp_sync(char* buffer, u16 length)
         send_timestamp_sync(&packet);
     }
 
-    return MW_ERR_NONE;
+    return MIDI_PKT_OK;
 }
 
 static bool has_apple_midi_signature(char* buffer, u16 length)
@@ -138,22 +138,22 @@ static bool is_timestamp_sync_command(char* command)
     return command[0] == 'C' && command[1] == 'K';
 }
 
-enum mw_err applemidi_processSessionControlPacket(char* buffer, u16 length)
+midi_pkt_result applemidi_processSessionControlPacket(char* buffer, u16 length)
 {
     if (!has_apple_midi_signature(buffer, length)) {
-        return ERR_INVALID_APPLE_MIDI_SIGNATURE;
+        return MIDI_PKT_INVALID_SIGNATURE;
     }
     char* command = &buffer[2];
     if (is_invitation_command(command)) {
         return process_invitation(CH_CONTROL_PORT, buffer, length);
     }
 
-    return MW_ERR_NONE;
+    return MIDI_PKT_UNSUPPORTED_COMMAND;
 }
 
 static u16 lastSeqNum = 0;
 
-enum mw_err applemidi_processSessionMidiPacket(char* buffer, u16 length)
+midi_pkt_result applemidi_processSessionMidiPacket(char* buffer, u16 length)
 {
     if (has_apple_midi_signature(buffer, length)) {
         char* command = &buffer[2];
@@ -164,12 +164,13 @@ enum mw_err applemidi_processSessionMidiPacket(char* buffer, u16 length)
         } else {
             char text[100];
             sprintf(text, "Unknown event %s", command);
+            return MIDI_PKT_UNSUPPORTED_COMMAND;
         }
     } else {
         return rtpmidi_processRtpMidiPacket(buffer, length, &lastSeqNum);
     }
 
-    return MW_ERR_NONE;
+    return MIDI_PKT_OK;
 }
 
 u16 applemidi_lastSequenceNumber(void)

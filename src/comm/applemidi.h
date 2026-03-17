@@ -2,6 +2,16 @@
 #include "genesis.h"
 #include "utils.h"
 
+typedef enum {
+    MIDI_PKT_OK = 0,
+    MIDI_PKT_INVALID_SIGNATURE,
+    MIDI_PKT_EXCH_TOO_SMALL,
+    MIDI_PKT_INVALID_TIMESYNC_LENGTH,
+    MIDI_PKT_RTP_HEADER_TOO_SHORT,
+    MIDI_PKT_RTP_LENGTH_MISMATCH,
+    MIDI_PKT_UNSUPPORTED_COMMAND,
+} midi_pkt_result;
+
 #define ERR_BASE 100
 #define ERR_INVALID_APPLE_MIDI_SIGNATURE ERR_BASE;
 #define ERR_UNEXPECTED_CHANNEL (ERR_BASE + 1)
@@ -57,7 +67,7 @@ union PACK_BIG_ENDIAN AppleMidiExchangePacket {
 
 typedef union AppleMidiExchangePacket AppleMidiExchangePacket;
 
-enum mw_err applemidi_processSessionControlPacket(char* buffer, u16 length);
-enum mw_err applemidi_processSessionMidiPacket(char* buffer, u16 length);
+midi_pkt_result applemidi_processSessionControlPacket(char* buffer, u16 length);
+midi_pkt_result applemidi_processSessionMidiPacket(char* buffer, u16 length);
 u16 applemidi_lastSequenceNumber(void);
 enum mw_err applemidi_sendReceiverFeedback(void);
