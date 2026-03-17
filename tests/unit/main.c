@@ -21,6 +21,7 @@
 #include "test_ring_buf.h"
 #include "test_serial.h"
 #include "test_crc.h"
+#include "test_rtpmidi.h"
 
 #define midi_test(test) cmocka_unit_test_setup(test, test_midi_setup)
 #define midi_pcm_test(test) cmocka_unit_test_setup(test, test_midi_setup)
@@ -476,6 +477,9 @@ int main(void)
 
         crc_test(test_crc_calculate_crc16),
         crc_test(test_crc_calculate_another_crc16),
+
+        cmocka_unit_test(test_rtpmidi_does_not_read_beyond_buffer_length),
+        cmocka_unit_test(test_rtpmidi_returns_when_header_too_short),
         // clang-format on
     };
 

@@ -76,7 +76,10 @@ static bool is_final_delta_byte(u8 value)
 
 enum mw_err rtpmidi_processRtpMidiPacket(char* buffer, u16 length, u16* lastSeqNum)
 {
-    (void)length; // TODO: Probably shouldn't ignore length...
+    if (length < RTP_MIDI_HEADER_LEN + 1) {
+        return MW_ERR_NONE;
+    }
+
     u16 seqNum = sequence_number(buffer);
 #if DEBUG_MEGAWIFI_RECV == 1
     log_info("MW: rtpmidi: len=%d seqNum=%d", length, seqNum);
@@ -85,6 +88,12 @@ enum mw_err rtpmidi_processRtpMidiPacket(char* buffer, u16 length, u16* lastSeqN
     bool longHeader = is_long_header(commandSection);
     u16 midiLength = longHeader ? twelve_bit_midi_length(commandSection)
                                 : four_bit_midi_length(commandSection);
+
+    u16 headerLen = RTP_MIDI_HEADER_LEN + (longHeader ? 2 : 1);
+    if (headerLen + midiLength > length) {
+        return MW_ERR_NONE;
+    }
+
     u8* midiStart = &commandSection[longHeader ? 2 : 1];
     u8* midiEnd = midiStart + (midiLength - 1);
     u8 status = 0;
