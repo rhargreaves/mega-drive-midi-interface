@@ -9,6 +9,12 @@
 #define MIDI_RESET 0xFF
 
 #define STATUS_UPPER(status) (status >> 4)
+#define RTP_MIDI_PAYLOAD_TYPE 0x61
+#define RTP_MIDI_SHORT_LEN_MAX 0x0F
+#define RTP_MIDI_LONG_LEN_MAX 0x0FFF
+
+static u16 sendSeqNum = 0;
+static u32 sendTimestamp = 0;
 
 static bool is_long_header(u8* commandSection)
 {
@@ -124,4 +130,76 @@ midi_pkt_result rtpmidi_processRtpMidiPacket(char* buffer, u16 length)
 
     applemidi_updateLastSeqNum(seqNum);
     return MIDI_PKT_OK;
+}
+
+u16 rtpmidi_packRtpMidiPacket(const u8* midiData, u16 midiDataLength, u8* buffer, u16 bufferLength)
+{
+    if (midiDataLength > 0 && midiData == NULL) {
+        return 0;
+    }
+    if (midiDataLength > RTP_MIDI_LONG_LEN_MAX) {
+        return 0;
+    }
+
+    /*
+     0                   1                   2                   3
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |V=2|P|X|  CC   |M|     PT      |       sequence number         |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                           timestamp                           |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                             SSRC                              |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                     MIDI command section ...                  |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                       Journal section ...                     |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    */
+
+    buffer[0] = 0x80; /* V=2 P=0 X=0 CC=0 */
+    bool marker = midiDataLength > 0; /* M */
+    buffer[1] = (marker ? 0x80 : 0x00) | RTP_MIDI_PAYLOAD_TYPE;
+    buffer[2] = (u8)(sendSeqNum >> 8);
+    buffer[3] = (u8)(sendSeqNum & 0xFF);
+    buffer[4] = (u8)(sendTimestamp >> 24);
+    buffer[5] = (u8)(sendTimestamp >> 16);
+    buffer[6] = (u8)(sendTimestamp >> 8);
+    buffer[7] = (u8)(sendTimestamp & 0xFF);
+    buffer[8] = (u8)(MEGADRIVE_SSRC >> 24);
+    buffer[9] = (u8)(MEGADRIVE_SSRC >> 16);
+    buffer[10] = (u8)(MEGADRIVE_SSRC >> 8);
+    buffer[11] = (u8)(MEGADRIVE_SSRC & 0xFF);
+
+    /*
+    MIDI command section:
+     0                   1                   2                   3
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |B|J|Z|P|LEN... |  MIDI list ...                                |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    */
+
+    bool useLongHeader = midiDataLength > RTP_MIDI_SHORT_LEN_MAX; /* B */
+    u16 commandHeaderLength = useLongHeader ? 2 : 1; /* LEN... */
+    /* Z=0, P=0 */
+    u16 packedLength = RTP_MIDI_HEADER_LEN + commandHeaderLength + midiDataLength;
+    if (packedLength > bufferLength) {
+        return 0;
+    }
+
+    if (useLongHeader) {
+        buffer[12] = 0x80 | (u8)(midiDataLength >> 8);
+        buffer[13] = (u8)(midiDataLength & 0xFF);
+    } else {
+        buffer[12] = (u8)(midiDataLength & 0x0F);
+    }
+
+    if (midiDataLength > 0) {
+        memcpy(&buffer[RTP_MIDI_HEADER_LEN + commandHeaderLength], midiData, midiDataLength);
+    }
+
+    sendSeqNum++;
+    sendTimestamp++;
+    return packedLength;
 }

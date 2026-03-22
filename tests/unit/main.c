@@ -331,6 +331,7 @@ int main(void)
         comm_megawifi_test(test_comm_megawifi_reads_midi_message),
         comm_megawifi_test(test_comm_megawifi_logs_if_buffer_full),
         comm_megawifi_test(test_comm_megawifi_returns_zero_when_buffer_empty),
+        comm_megawifi_test(test_comm_megawifi_write_sends_sysex_over_udp_reuse_send),
 
         dynamic_midi_test(test_midi_dynamic_uses_all_channels),
         dynamic_midi_test(test_midi_routing_switches_to_dynamic_on_gm_reset),
@@ -472,6 +473,9 @@ int main(void)
         cmocka_unit_test(test_rtpmidi_parses_packet_with_sysex_with_0xF7_at_end),
         cmocka_unit_test(test_rtpmidi_does_not_read_beyond_length),
         cmocka_unit_test(test_rtpmidi_parses_packet_with_system_reset),
+        cmocka_unit_test(test_rtpmidi_pack_packet_with_short_header),
+        cmocka_unit_test(test_rtpmidi_pack_packet_with_long_header),
+        cmocka_unit_test(test_rtpmidi_pack_packet_returns_zero_when_buffer_too_small),
         // clang-format on
     };
 

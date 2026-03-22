@@ -6,3 +6,4 @@ alwaysApply: true
 - Make any changes using TDD
 - Run the tests after every code change by running `make test`
 - Remember to add any new tests to the main.c file so they actually run
+- When adding mock/wrap functions, add them to the Makefile so they are wrapped in the tests

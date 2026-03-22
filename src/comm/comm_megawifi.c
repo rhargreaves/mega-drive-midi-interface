@@ -15,26 +15,55 @@
 #define MAX_UDP_DATA_LENGTH MW_BUFLEN
 #define REUSE_PAYLOAD_HEADER_LEN 6
 #define RECEIVER_FEEDBACK_FRAME_FREQUENCY 10
+#define SEND_RTP_MIDI_PACKET_BUFFER_LEN 256
 #define FPS 60
 #define MS_TO_FRAMES(ms) (((ms) * FPS / 500 + 1) / 2)
 
 static u16 cmd_buf[MW_BUFLEN];
-static bool recvData = false;
-static bool listening = false;
-static bool connected = false;
-static u16 frame = 0;
-static u16 lastSeqNum = 0;
+static bool recvData;
+static bool listening;
+static bool connected;
+static u16 frame;
+static u16 lastSeqNum;
 
 static char recvBuffer[MAX_UDP_DATA_LENGTH];
 static char sendBuffer[MAX_UDP_DATA_LENGTH];
-static bool awaitingRecv = false;
-static bool awaitingSend = false;
+static bool awaitingRecv;
+static bool awaitingSend;
 
-static u32 remoteIp = 0;
-static u16 remoteControlPort = 0;
-static u16 remoteMidiPort = 0;
+static u32 remoteIp;
+static u16 remoteControlPort;
+static u16 remoteMidiPort;
 
+static void init_mega_wifi(void);
 static void recv_complete_cb(enum lsd_status stat, uint8_t ch, char* data, uint16_t len, void* ctx);
+
+void comm_megawifi_init(void)
+{
+    memset(cmd_buf, 0, sizeof(cmd_buf));
+    recvData = false;
+    listening = false;
+    connected = false;
+    frame = 0;
+    lastSeqNum = 0;
+    memset(recvBuffer, 0, sizeof(recvBuffer));
+    memset(sendBuffer, 0, sizeof(sendBuffer));
+    awaitingRecv = false;
+    awaitingSend = false;
+    remoteIp = 0;
+    remoteControlPort = 0;
+    remoteMidiPort = 0;
+
+    scheduler_addTickHandler(comm_megawifi_tick);
+    scheduler_addFrameHandler(comm_megawifi_vsync);
+
+    if (comm_megawifi_is_present()) {
+        scheduler_yield();
+        init_mega_wifi();
+    } else {
+        scheduler_yield();
+    }
+}
 
 static bool has_apple_midi_signature(char* buffer, u16 length)
 {
@@ -147,21 +176,6 @@ static void init_mega_wifi(void)
     scheduler_yield();
 }
 
-void comm_megawifi_init(void)
-{
-    listening = false;
-    connected = false;
-    scheduler_addTickHandler(comm_megawifi_tick);
-    scheduler_addFrameHandler(comm_megawifi_vsync);
-
-    if (comm_megawifi_is_present()) {
-        scheduler_yield();
-        init_mega_wifi();
-    } else {
-        scheduler_yield();
-    }
-}
-
 bool comm_megawifi_is_present(void)
 {
     return mw_uart_is_present();
@@ -191,13 +205,17 @@ u8 comm_megawifi_read(void)
 
 u8 comm_megawifi_write_ready(void)
 {
-    return 0;
+    return true;
 }
 
 void comm_megawifi_write(const u8* data, u16 length)
 {
-    (void)data;
-    (void)length;
+    u8 buffer[SEND_RTP_MIDI_PACKET_BUFFER_LEN + length];
+    u16 packedLength = rtpmidi_packRtpMidiPacket(data, length, buffer, sizeof(buffer));
+    if (packedLength == 0) {
+        return;
+    }
+    comm_megawifi_send(CH_MIDI_PORT, (char*)buffer, packedLength);
 }
 
 static void process_udp_data(u8 ch, char* buffer, u16 length)
@@ -316,9 +334,16 @@ void send_complete_cb(enum lsd_status stat, void* ctx)
 
 void comm_megawifi_send(u8 ch, char* data, u16 len)
 {
-    struct mw_reuse_payload* udp = (struct mw_reuse_payload*)sendBuffer;
-    restore_remote_endpoint(ch, &udp->remote_ip, &udp->remote_port);
-    memcpy(udp->payload, data, len);
+    u32 ip;
+    u16 port;
+    restore_remote_endpoint(ch, &ip, &port);
+    sendBuffer[0] = (u8)(ip >> 24);
+    sendBuffer[1] = (u8)(ip >> 16);
+    sendBuffer[2] = (u8)(ip >> 8);
+    sendBuffer[3] = (u8)(ip & 0xFF);
+    sendBuffer[4] = (u8)(port >> 8);
+    sendBuffer[5] = (u8)(port & 0xFF);
+    memcpy(&sendBuffer[REUSE_PAYLOAD_HEADER_LEN], data, len);
 
     if (!connected) {
         log_info("MW: Session connected");
@@ -332,8 +357,8 @@ void comm_megawifi_send(u8 ch, char* data, u16 len)
 #endif
 
     awaitingSend = true;
-    enum lsd_status stat
-        = mw_udp_reuse_send(ch, udp, len + REUSE_PAYLOAD_HEADER_LEN, NULL, send_complete_cb);
+    enum lsd_status stat = mw_udp_reuse_send(ch, (struct mw_reuse_payload*)sendBuffer,
+        len + REUSE_PAYLOAD_HEADER_LEN, NULL, send_complete_cb);
     if (stat < 0) {
         log_warn("MW: mw_udp_reuse_send() = %d", stat);
         awaitingSend = false;

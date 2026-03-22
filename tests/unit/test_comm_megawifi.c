@@ -1,6 +1,5 @@
 #include "test_comm_megawifi.h"
 #include "comm/applemidi.h"
-#include "comm/comm_megawifi.h"
 #include "ext/mw/megawifi.h"
 #include "ext/mw/lsd.h"
 #include "comm/ring_buf.h"
@@ -104,4 +103,30 @@ void test_comm_megawifi_returns_zero_when_buffer_empty(UNUSED void** state)
     u8 data = __real_comm_megawifi_read();
 
     assert_int_equal(data, 0);
+}
+
+void test_comm_megawifi_write_sends_sysex_over_udp_reuse_send(UNUSED void** state)
+{
+    megawifi_init();
+
+    const u8 sysex[] = { 0xF0, 0x7E, 0x00, 0xF7 };
+
+    char expectedPacket[] = { /* remote IP */ 0x00, 0x00, 0x00, 0x00,
+        /* remote port */ 0x00, 0x00,
+        /* V P X CC | M PT */ 0x80, 0xE1,
+        /* sequence number */ 0x00, 0x00,
+        /* timestamp */ 0x00, 0x00, 0x00, 0x00,
+        /* SSRC */ 0x9E, 0x91, 0x51, 0x50,
+        /* MIDI command section: B J Z P LEN... */ 0x04,
+        /* MIDI list */ 0xF0, 0x7E, 0x00, 0xF7 };
+
+    expect_value(__wrap_lsd_send, ch, CH_MIDI_PORT);
+    expect_memory(__wrap_lsd_send, data, expectedPacket, sizeof(expectedPacket));
+    expect_value(__wrap_lsd_send, len, sizeof(expectedPacket));
+    expect_value(__wrap_lsd_send, ctx, NULL);
+    expect_any(__wrap_lsd_send, send_cb);
+    will_return(__wrap_lsd_send, LSD_STAT_COMPLETE);
+    expect_log_info("MW: Session connected");
+
+    __real_comm_megawifi_write(sysex, sizeof(sysex));
 }

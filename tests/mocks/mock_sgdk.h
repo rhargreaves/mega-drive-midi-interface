@@ -72,4 +72,6 @@ mw_err __wrap_mw_sock_conn_wait(uint8_t ch, int tout_frames);
 enum lsd_status __wrap_lsd_recv(char* buf, int16_t len, void* ctx, lsd_recv_cb recv_cb);
 enum lsd_status __wrap_lsd_send(
     uint8_t ch, const char* data, int16_t len, void* ctx, lsd_send_cb send_cb);
+enum lsd_status __wrap_mw_udp_reuse_send(
+    uint8_t ch, struct mw_reuse_payload* data, uint16_t len, void* ctx, lsd_send_cb send_cb);
 int16_t __wrap_mw_def_ap_cfg_get(void);

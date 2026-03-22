@@ -20,3 +20,6 @@ void test_rtpmidi_processes_multiple_sysex_segments(UNUSED void** state);
 void test_rtpmidi_processes_ccs(UNUSED void** state);
 void test_rtpmidi_sets_last_sequence_number(UNUSED void** state);
 void test_rtpmidi_does_not_read_beyond_length(UNUSED void** state);
+void test_rtpmidi_pack_packet_with_short_header(UNUSED void** state);
+void test_rtpmidi_pack_packet_with_long_header(UNUSED void** state);
+void test_rtpmidi_pack_packet_returns_zero_when_buffer_too_small(UNUSED void** state);
