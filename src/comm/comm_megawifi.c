@@ -1,5 +1,6 @@
 #include "comm_megawifi.h"
 #include "applemidi.h"
+#include "rtpmidi.h"
 #include "log.h"
 #include "mw_uart.h"
 #include "settings.h"
@@ -24,6 +25,14 @@ static char recvBuffer[MAX_UDP_DATA_LENGTH];
 static char sendBuffer[MAX_UDP_DATA_LENGTH];
 static bool awaitingRecv = false;
 static bool awaitingSend = false;
+
+static bool has_apple_midi_signature(char* buffer, u16 length)
+{
+    if (length < 2) {
+        return false;
+    }
+    return (u8)buffer[0] == 0xFF && (u8)buffer[1] == 0xFF;
+}
 
 #define FPS 60
 #define MS_TO_FRAMES(ms) (((ms) * FPS / 500 + 1) / 2)
@@ -195,7 +204,11 @@ static void process_udp_data(u8 ch, char* buffer, u16 length)
         result = applemidi_processSessionControlPacket(buffer, length);
         break;
     case CH_MIDI_PORT:
-        result = applemidi_processSessionMidiPacket(buffer, length);
+        if (has_apple_midi_signature(buffer, length)) {
+            result = applemidi_processSessionMidiPacket(buffer, length);
+        } else {
+            result = rtpmidi_processRtpMidiPacket(buffer, length);
+        }
         break;
     }
     if (result != MIDI_PKT_OK) {

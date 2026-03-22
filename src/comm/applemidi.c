@@ -1,5 +1,4 @@
 #include "applemidi.h"
-#include "rtpmidi.h"
 #include "log.h"
 #include "comm_megawifi.h"
 #include "settings.h"
@@ -155,27 +154,29 @@ midi_pkt_result applemidi_processSessionControlPacket(char* buffer, u16 length)
 
 midi_pkt_result applemidi_processSessionMidiPacket(char* buffer, u16 length)
 {
-    if (has_apple_midi_signature(buffer, length)) {
-        char* command = &buffer[2];
-        if (is_invitation_command(command)) {
-            return process_invitation(CH_MIDI_PORT, buffer, length);
-        } else if (is_timestamp_sync_command(command)) {
-            return process_timestamp_sync(buffer, length);
-        } else {
-            char text[100];
-            sprintf(text, "Unknown event %s", command);
-            return MIDI_PKT_UNSUPPORTED_COMMAND;
-        }
-    } else {
-        return rtpmidi_processRtpMidiPacket(buffer, length, &lastSeqNum);
+    if (!has_apple_midi_signature(buffer, length)) {
+        return MIDI_PKT_INVALID_SIGNATURE;
     }
-
-    return MIDI_PKT_OK;
+    char* command = &buffer[2];
+    if (is_invitation_command(command)) {
+        return process_invitation(CH_MIDI_PORT, buffer, length);
+    } else if (is_timestamp_sync_command(command)) {
+        return process_timestamp_sync(buffer, length);
+    } else {
+        char text[100];
+        sprintf(text, "Unknown event %s", command);
+        return MIDI_PKT_UNSUPPORTED_COMMAND;
+    }
 }
 
 u16 applemidi_lastSequenceNumber(void)
 {
     return lastSeqNum;
+}
+
+void applemidi_updateLastSeqNum(u16 seqNum)
+{
+    lastSeqNum = seqNum;
 }
 
 enum mw_err applemidi_sendReceiverFeedback(void)

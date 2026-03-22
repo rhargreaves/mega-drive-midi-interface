@@ -64,4 +64,5 @@ typedef union AppleMidiExchangePacket AppleMidiExchangePacket;
 midi_pkt_result applemidi_processSessionControlPacket(char* buffer, u16 length);
 midi_pkt_result applemidi_processSessionMidiPacket(char* buffer, u16 length);
 u16 applemidi_lastSequenceNumber(void);
+void applemidi_updateLastSeqNum(u16 seqNum);
 enum mw_err applemidi_sendReceiverFeedback(void);

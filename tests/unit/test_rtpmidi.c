@@ -1,7 +1,6 @@
 #include "test_rtpmidi.h"
 #include "comm/rtpmidi.h"
 #include "mocks/mock_midi.h"
-#include "mocks/mock_sgdk.h"
 
 void test_rtpmidi_does_not_read_beyond_buffer_length(UNUSED void** state)
 {
@@ -14,8 +13,7 @@ void test_rtpmidi_does_not_read_beyond_buffer_length(UNUSED void** state)
     size_t fullLen = sizeof(rtp_packet);
     size_t truncatedLen = fullLen - 2;
 
-    u16 lastSeqNum = 0;
-    midi_pkt_result result = rtpmidi_processRtpMidiPacket(rtp_packet, truncatedLen, &lastSeqNum);
+    midi_pkt_result result = rtpmidi_processRtpMidiPacket(rtp_packet, truncatedLen);
     assert_int_equal(result, MIDI_PKT_RTP_LENGTH_MISMATCH);
 }
 
@@ -25,7 +23,24 @@ void test_rtpmidi_returns_when_header_too_short(UNUSED void** state)
 
     size_t len = sizeof(rtp_packet);
 
-    u16 lastSeqNum = 0;
-    midi_pkt_result result = rtpmidi_processRtpMidiPacket(rtp_packet, len, &lastSeqNum);
+    midi_pkt_result result = rtpmidi_processRtpMidiPacket(rtp_packet, len);
     assert_int_equal(result, MIDI_PKT_RTP_HEADER_TOO_SHORT);
+}
+
+void test_rtpmidi_updates_applemidi_last_sequence_number(UNUSED void** state)
+{
+    applemidi_updateLastSeqNum(0);
+
+    char rtp_packet[] = { 0x80, 0x61, 0x8c, 0x24, 0x00, 0x58, 0xbb, 0x40, 0xac, 0x67, 0xe1, 0x08,
+        0x03, 0x90, 0x48, 0x6f };
+
+    size_t len = sizeof(rtp_packet);
+
+    expect_midi_emit(0x90);
+    expect_midi_emit(0x48);
+    expect_midi_emit(0x6f);
+
+    midi_pkt_result result = rtpmidi_processRtpMidiPacket(rtp_packet, len);
+    assert_int_equal(result, MIDI_PKT_OK);
+    assert_int_equal(applemidi_lastSequenceNumber(), 0x8c24);
 }

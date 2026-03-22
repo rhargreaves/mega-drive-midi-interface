@@ -74,7 +74,7 @@ static bool is_final_delta_byte(u8 value)
     return !CHECK_BIT(value, 7);
 }
 
-midi_pkt_result rtpmidi_processRtpMidiPacket(char* buffer, u16 length, u16* lastSeqNum)
+midi_pkt_result rtpmidi_processRtpMidiPacket(char* buffer, u16 length)
 {
     if (length < RTP_MIDI_HEADER_LEN + 1) {
         return MIDI_PKT_RTP_HEADER_TOO_SHORT;
@@ -121,6 +121,6 @@ midi_pkt_result rtpmidi_processRtpMidiPacket(char* buffer, u16 length, u16* last
         cursor++;
     }
 
-    *lastSeqNum = seqNum;
+    applemidi_updateLastSeqNum(seqNum);
     return MIDI_PKT_OK;
 }

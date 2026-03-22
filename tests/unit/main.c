@@ -480,6 +480,7 @@ int main(void)
 
         cmocka_unit_test(test_rtpmidi_does_not_read_beyond_buffer_length),
         cmocka_unit_test(test_rtpmidi_returns_when_header_too_short),
+        cmocka_unit_test(test_rtpmidi_updates_applemidi_last_sequence_number),
         // clang-format on
     };
 
