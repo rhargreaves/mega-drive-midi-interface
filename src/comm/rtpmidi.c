@@ -58,6 +58,7 @@ static void process_sysex(u8** cursor)
 
 static void process_middle_sysex(u8** cursor)
 {
+    log_warn("rtpmidi: ignoring middle sysex");
     // we're ignoring these for now...
     do {
         (*cursor)++;
@@ -82,7 +83,7 @@ midi_pkt_result rtpmidi_processRtpMidiPacket(char* buffer, u16 length)
 
     u16 seqNum = sequence_number(buffer);
 #if DEBUG_MEGAWIFI_RECV == 1
-    log_info("MW: rtpmidi: len=%d seqNum=%d", length, seqNum);
+    log_info("rtpmidi: len=%d seqNum=%d", length, seqNum);
 #endif
     u8* commandSection = (u8*)&buffer[RTP_MIDI_HEADER_LEN];
     bool longHeader = is_long_header(commandSection);
