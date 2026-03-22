@@ -6,9 +6,10 @@ void __wrap_comm_init(void)
 {
 }
 
-void __wrap_comm_write(u8 data)
+void __wrap_comm_write(const u8* data, u16 length)
 {
-    check_expected(data);
+    check_expected_ptr(data);
+    check_expected(length);
 }
 
 bool __wrap_comm_read_ready(void)
@@ -63,9 +64,10 @@ u8 __wrap_comm_serial_write_ready(void)
     return mock_type(u8);
 }
 
-void __wrap_comm_serial_write(u8 data)
+void __wrap_comm_serial_write(const u8* data, u16 length)
 {
-    check_expected(data);
+    check_expected_ptr(data);
+    check_expected(length);
 }
 
 void __wrap_comm_everdrive_init(void)
@@ -92,9 +94,10 @@ u8 __wrap_comm_everdrive_write_ready(void)
     return mock_type(u8);
 }
 
-void __wrap_comm_everdrive_write(u8 data)
+void __wrap_comm_everdrive_write(const u8* data, u16 length)
 {
-    check_expected(data);
+    check_expected_ptr(data);
+    check_expected(length);
 }
 
 void __wrap_comm_everdrive_pro_init(void)
@@ -121,9 +124,10 @@ u8 __wrap_comm_everdrive_pro_write_ready(void)
     return mock_type(u8);
 }
 
-void __wrap_comm_everdrive_pro_write(u8 data)
+void __wrap_comm_everdrive_pro_write(const u8* data, u16 length)
 {
-    check_expected(data);
+    check_expected_ptr(data);
+    check_expected(length);
 }
 
 void __wrap_comm_demo_init(void)
@@ -150,8 +154,10 @@ u8 __wrap_comm_demo_write_ready(void)
     return mock_type(u8);
 }
 
-void __wrap_comm_demo_write(u8 data)
+void __wrap_comm_demo_write(const u8* data, u16 length)
 {
+    (void)data;
+    (void)length;
 }
 
 void __wrap_comm_demo_vsync(void)
@@ -179,9 +185,10 @@ u8 __wrap_comm_megawifi_write_ready(void)
     return mock_type(u8);
 }
 
-void __wrap_comm_megawifi_write(u8 data)
+void __wrap_comm_megawifi_write(const u8* data, u16 length)
 {
-    check_expected(data);
+    check_expected_ptr(data);
+    check_expected(length);
 }
 
 void __wrap_comm_megawifi_tick(void)
@@ -267,7 +274,8 @@ void _stub_usb_receive_pitch_bend(u8 chan, u16 bend, const char* file, const int
 void _expect_usb_sent_byte(u8 value, const char* file, const int line)
 {
     will_return_with_pos(__wrap_comm_everdrive_write_ready, 1, file, line);
-    expect_value_with_pos(__wrap_comm_everdrive_write, data, value, file, line);
+    expect_any_with_pos(__wrap_comm_everdrive_write, data, file, line);
+    expect_value_with_pos(__wrap_comm_everdrive_write, length, 1, file, line);
 }
 
 void _stub_comm_read_returns_midi_event(

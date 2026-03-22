@@ -180,9 +180,10 @@ u8 comm_megawifi_write_ready(void)
     return 0;
 }
 
-void comm_megawifi_write(u8 data)
+void comm_megawifi_write(const u8* data, u16 length)
 {
     (void)data;
+    (void)length;
 }
 
 static void process_udp_data(u8 ch, char* buffer, u16 length)

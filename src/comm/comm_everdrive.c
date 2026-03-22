@@ -50,7 +50,9 @@ u8 comm_everdrive_write_ready(void)
     return mem_read_u16(SSF_REG16(REG_STE)) & STE_USB_WR_RDY;
 }
 
-void comm_everdrive_write(u8 data)
+void comm_everdrive_write(const u8* data, u16 length)
 {
-    mem_write_u16(SSF_REG16(REG_USB), data);
+    for (u16 i = 0; i < length; i++) {
+        mem_write_u16(SSF_REG16(REG_USB), data[i]);
+    }
 }

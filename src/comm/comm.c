@@ -20,7 +20,7 @@ typedef struct CommVTable {
     u8 (*read_ready)(void);
     u8 (*read)(void);
     u8 (*write_ready)(void);
-    void (*write)(u8 data);
+    void (*write)(const u8* data, u16 length);
 } CommVTable;
 
 static const CommVTable Demo_VTable = { comm_demo_init, comm_demo_is_present, comm_demo_read_ready,
@@ -119,11 +119,13 @@ void comm_reset_counts(void)
     reads = 0;
 }
 
-void comm_write(u8 data)
+void comm_write(const u8* data, u16 length)
 {
-    while (!activeCommType->write_ready())
-        ;
-    activeCommType->write(data);
+    for (u16 i = 0; i < length; i++) {
+        while (!activeCommType->write_ready())
+            ;
+        activeCommType->write(&data[i], 1);
+    }
 }
 
 CommMode comm_mode(void)

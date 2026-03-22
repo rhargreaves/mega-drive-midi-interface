@@ -95,8 +95,7 @@ u8 comm_everdrive_pro_write_ready(void)
     return TRUE;
 }
 
-void comm_everdrive_pro_write(u8 data)
+void comm_everdrive_pro_write(const u8* data, u16 length)
 {
-    bi_cmd_usb_wr(&data, 1);
-    (void)data;
+    bi_cmd_usb_wr((void*)data, length);
 }

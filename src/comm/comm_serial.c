@@ -93,7 +93,9 @@ u8 comm_serial_write_ready(void)
     return serial_readyToSend();
 }
 
-void comm_serial_write(u8 data)
+void comm_serial_write(const u8* data, u16 length)
 {
-    serial_send(data);
+    for (u16 i = 0; i < length; i++) {
+        serial_send(data[i]);
+    }
 }

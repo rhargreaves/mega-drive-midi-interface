@@ -73,9 +73,10 @@ void test_comm_writes_when_ready(UNUSED void** state)
 
     will_return(__wrap_comm_everdrive_write_ready, 0);
     will_return(__wrap_comm_everdrive_write_ready, 1);
-    expect_value(__wrap_comm_everdrive_write, data, test_data);
+    expect_any(__wrap_comm_everdrive_write, data);
+    expect_value(__wrap_comm_everdrive_write, length, 1);
 
-    __real_comm_write(test_data);
+    __real_comm_write(&test_data, 1);
 }
 
 void test_comm_idle_count_is_correct(UNUSED void** state)

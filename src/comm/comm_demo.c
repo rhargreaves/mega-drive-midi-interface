@@ -170,7 +170,8 @@ u8 comm_demo_write_ready(void)
     return false;
 }
 
-void comm_demo_write(u8 data)
+void comm_demo_write(const u8* data, u16 length)
 {
     (void)data;
+    (void)length;
 }
