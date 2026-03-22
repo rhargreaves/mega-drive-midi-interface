@@ -395,33 +395,7 @@ int main(void)
         scheduler_test(
             test_scheduler_passes_delta_given_multiple_vsyncs_to_frame_handlers),
 
-        applemidi_test(
-            test_applemidi_parses_rtpmidi_packet_with_single_midi_event),
-        applemidi_test(
-            test_applemidi_parses_rtpmidi_packet_with_single_midi_event_long_header),
-        applemidi_test(
-            test_applemidi_parses_rtpmidi_packet_with_single_2_byte_midi_event),
-        applemidi_test(
-            test_applemidi_parses_rtpmidi_packet_with_two_midi_events),
-        applemidi_test(
-            test_applemidi_parses_rtpmidi_packet_with_multiple_midi_events),
-        applemidi_test(
-            test_applemidi_parses_rtpmidi_packet_with_multiple_different_midi_events),
-        applemidi_test(
-            test_applemidi_parses_rtpmidi_packet_with_multiple_2_byte_midi_events),
-        applemidi_test(test_applemidi_parses_rtpmidi_packet_with_sysex),
-        applemidi_test(test_applemidi_parses_notes_sysex_cc_in_one_packet),
-        applemidi_test(test_applemidi_ignores_middle_sysex_segments),
-        applemidi_test(test_applemidi_processes_multiple_sysex_segments),
-        applemidi_test(test_applemidi_processes_ccs),
-        applemidi_test(test_applemidi_sets_last_sequence_number),
         applemidi_test(test_applemidi_sends_receiver_feedback),
-        applemidi_test(
-            test_applemidi_parses_rtpmidi_packet_with_sysex_ending_with_F0),
-        applemidi_test(
-            test_applemidi_parses_rtpmidi_packet_with_sysex_with_0xF7_at_end),
-        applemidi_test(test_applemidi_does_not_read_beyond_length),
-        applemidi_test(test_applemidi_parses_rtpmidi_packet_with_system_reset),
 
         ring_buf_test(test_ring_buf_reads_and_writes_single_byte),
         ring_buf_test(test_ring_buf_reads_and_writes_circularly_over_capacity),
@@ -481,6 +455,23 @@ int main(void)
         cmocka_unit_test(test_rtpmidi_does_not_read_beyond_buffer_length),
         cmocka_unit_test(test_rtpmidi_returns_when_header_too_short),
         cmocka_unit_test(test_rtpmidi_updates_applemidi_last_sequence_number),
+        cmocka_unit_test(test_rtpmidi_parses_packet_with_single_midi_event),
+        cmocka_unit_test(test_rtpmidi_parses_packet_with_single_midi_event_long_header),
+        cmocka_unit_test(test_rtpmidi_parses_packet_with_single_2_byte_midi_event),
+        cmocka_unit_test(test_rtpmidi_parses_packet_with_two_midi_events),
+        cmocka_unit_test(test_rtpmidi_parses_packet_with_multiple_midi_events),
+        cmocka_unit_test(test_rtpmidi_parses_packet_with_multiple_different_midi_events),
+        cmocka_unit_test(test_rtpmidi_parses_packet_with_multiple_2_byte_midi_events),
+        cmocka_unit_test(test_rtpmidi_parses_packet_with_sysex),
+        cmocka_unit_test(test_rtpmidi_parses_notes_sysex_cc_in_one_packet),
+        cmocka_unit_test(test_rtpmidi_ignores_middle_sysex_segments),
+        cmocka_unit_test(test_rtpmidi_processes_multiple_sysex_segments),
+        cmocka_unit_test(test_rtpmidi_processes_ccs),
+        cmocka_unit_test(test_rtpmidi_sets_last_sequence_number),
+        cmocka_unit_test(test_rtpmidi_parses_packet_with_sysex_ending_with_F0),
+        cmocka_unit_test(test_rtpmidi_parses_packet_with_sysex_with_0xF7_at_end),
+        cmocka_unit_test(test_rtpmidi_does_not_read_beyond_length),
+        cmocka_unit_test(test_rtpmidi_parses_packet_with_system_reset),
         // clang-format on
     };
 
