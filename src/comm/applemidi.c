@@ -4,6 +4,12 @@
 #include "comm_megawifi.h"
 #include "settings.h"
 
+#define RECEIVER_FEEDBACK_PACKET_LENGTH 12
+
+static u16 lastSeqNum = 0;
+static char timestampSyncSendBuffer[TIMESYNC_PKT_LEN];
+static char inviteSendBuffer[UDP_PKT_BUFFER_LEN];
+
 static midi_pkt_result unpack_invitation(char* buffer, u16 length, AppleMidiExchangePacket* invite);
 static void send_invite_response(u8 ch, AppleMidiExchangePacket* invite);
 
@@ -55,8 +61,6 @@ static void pack_invitation_response(u32 initToken, char* buffer, u16* length)
     }
 }
 
-static char inviteSendBuffer[UDP_PKT_BUFFER_LEN];
-
 static void send_invite_response(u8 ch, AppleMidiExchangePacket* invite)
 {
     u16 length;
@@ -89,8 +93,6 @@ static void pack_timestamp_sync(AppleMidiTimeSyncPacket* timeSyncPacket, char* b
         (*length)++;
     }
 }
-
-char timestampSyncSendBuffer[TIMESYNC_PKT_LEN];
 
 static void send_timestamp_sync(AppleMidiTimeSyncPacket* timeSyncPacket)
 {
@@ -151,8 +153,6 @@ midi_pkt_result applemidi_processSessionControlPacket(char* buffer, u16 length)
     return MIDI_PKT_UNSUPPORTED_COMMAND;
 }
 
-static u16 lastSeqNum = 0;
-
 midi_pkt_result applemidi_processSessionMidiPacket(char* buffer, u16 length)
 {
     if (has_apple_midi_signature(buffer, length)) {
@@ -177,8 +177,6 @@ u16 applemidi_lastSequenceNumber(void)
 {
     return lastSeqNum;
 }
-
-#define RECEIVER_FEEDBACK_PACKET_LENGTH 12
 
 enum mw_err applemidi_sendReceiverFeedback(void)
 {
