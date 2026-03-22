@@ -161,9 +161,7 @@ void test_pong_received_after_ping_sent()
         stub_usb_receive_byte(sysExPingSequence[i]);
     }
 
-    for (u16 i = 0; i < sizeof(sysExPongSequence); i++) {
-        expect_usb_sent_byte(sysExPongSequence[i]);
-    }
+    expect_usb_sent_bytes(sysExPongSequence, sizeof(sysExPongSequence));
 
     midi_rx_read();
 }
@@ -472,9 +470,7 @@ void test_dump_preset_to_callee(void** state)
         0x07, 0x04, 0x01, 0x30, 0x00, 0x01, 0x00, 0x1F, 0x01, 0x07, 0x00, 0x07, 0x04, 0x01, 0x30,
         0x00, 0x01, 0x00, 0x1F, 0x01, 0x07, 0x00, 0x07, 0x04, 0x01, 0x30, 0x00, SYSEX_END };
 
-    for (u16 i = 0; i < sizeof(dumpResponseSeq); i++) {
-        expect_usb_sent_byte(dumpResponseSeq[i]);
-    }
+    expect_usb_sent_bytes(dumpResponseSeq, sizeof(dumpResponseSeq));
 
     midi_rx_read();
 }
@@ -509,9 +505,7 @@ void test_dump_channel_parameters_to_callee(void** state)
         0x09, 0x0F, 0x01, 0x04, 0x00, 0x04, 0x06, 0x18, 0x01, 0x09, 0x00, 0x06, 0x09, 0x07, 0x24,
         0x00, 0x01, 0x03, 0x1B, 0x02, 0x04, 0x00, 0x0A, 0x04, 0x06, 0x02, 0x00, SYSEX_END };
 
-    for (u16 i = 0; i < sizeof(dumpChannelResponseSeq); i++) {
-        expect_usb_sent_byte(dumpChannelResponseSeq[i]);
-    }
+    expect_usb_sent_bytes(dumpChannelResponseSeq, sizeof(dumpChannelResponseSeq));
 
     midi_rx_read();
 }

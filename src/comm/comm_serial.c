@@ -96,6 +96,8 @@ u8 comm_serial_write_ready(void)
 void comm_serial_write(const u8* data, u16 length)
 {
     for (u16 i = 0; i < length; i++) {
+        while (!comm_serial_write_ready())
+            ;
         serial_send(data[i]);
     }
 }

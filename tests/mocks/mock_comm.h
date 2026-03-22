@@ -65,7 +65,7 @@ extern void __real_comm_reset_counts(void);
 
 #define stub_megawifi_as_not_present() _stub_megawifi_as_not_present(__FILE__, __LINE__)
 #define stub_everdrive_as_present() _stub_everdrive_as_present(__FILE__, __LINE__)
-#define expect_usb_sent_byte(value) _expect_usb_sent_byte(value, __FILE__, __LINE__)
+#define expect_usb_sent_bytes(data, length) _expect_usb_sent_bytes(data, length, __FILE__, __LINE__)
 #define stub_usb_receive_nothing() _stub_usb_receive_nothing(__FILE__, __LINE__)
 #define stub_usb_receive_byte(value) _stub_usb_receive_byte(value, __FILE__, __LINE__)
 #define stub_usb_receive_program(chan, program)                                                    \
@@ -85,7 +85,7 @@ extern void __real_comm_reset_counts(void);
 
 void _stub_megawifi_as_not_present(const char* file, const int line);
 void _stub_everdrive_as_present(const char* file, const int line);
-void _expect_usb_sent_byte(u8 value, const char* file, const int line);
+void _expect_usb_sent_bytes(const u8* data, u16 length, const char* file, const int line);
 void _stub_usb_receive_nothing(const char* file, const int line);
 void _stub_usb_receive_byte(u8 value, const char* file, const int line);
 void _stub_usb_receive_program(u8 chan, u8 program, const char* file, const int line);

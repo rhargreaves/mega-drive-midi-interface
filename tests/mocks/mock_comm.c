@@ -96,7 +96,7 @@ u8 __wrap_comm_everdrive_write_ready(void)
 
 void __wrap_comm_everdrive_write(const u8* data, u16 length)
 {
-    check_expected_ptr(data);
+    check_expected(data);
     check_expected(length);
 }
 
@@ -271,11 +271,11 @@ void _stub_usb_receive_pitch_bend(u8 chan, u16 bend, const char* file, const int
     _stub_usb_receive_byte(upper, file, line);
 }
 
-void _expect_usb_sent_byte(u8 value, const char* file, const int line)
+void _expect_usb_sent_bytes(const u8* data, u16 length, const char* file, const int line)
 {
     will_return_with_pos(__wrap_comm_everdrive_write_ready, 1, file, line);
-    expect_any_with_pos(__wrap_comm_everdrive_write, data, file, line);
-    expect_value_with_pos(__wrap_comm_everdrive_write, length, 1, file, line);
+    expect_memory_with_pos(__wrap_comm_everdrive_write, data, data, length, file, line);
+    expect_value_with_pos(__wrap_comm_everdrive_write, length, length, file, line);
 }
 
 void _stub_comm_read_returns_midi_event(

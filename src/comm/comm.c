@@ -121,11 +121,9 @@ void comm_reset_counts(void)
 
 void comm_write(const u8* data, u16 length)
 {
-    for (u16 i = 0; i < length; i++) {
-        while (!activeCommType->write_ready())
-            ;
-        activeCommType->write(&data[i], 1);
-    }
+    while (!activeCommType->write_ready())
+        ;
+    activeCommType->write(data, length);
 }
 
 CommMode comm_mode(void)

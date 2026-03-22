@@ -53,6 +53,8 @@ u8 comm_everdrive_write_ready(void)
 void comm_everdrive_write(const u8* data, u16 length)
 {
     for (u16 i = 0; i < length; i++) {
+        while (!comm_everdrive_write_ready())
+            ;
         mem_write_u16(SSF_REG16(REG_USB), data[i]);
     }
 }
