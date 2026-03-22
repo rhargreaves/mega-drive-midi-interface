@@ -13,18 +13,28 @@
 
 #define MW_BUFLEN 1460
 #define MAX_UDP_DATA_LENGTH MW_BUFLEN
+#define REUSE_PAYLOAD_HEADER_LEN 6
+#define RECEIVER_FEEDBACK_FRAME_FREQUENCY 10
+#define FPS 60
+#define MS_TO_FRAMES(ms) (((ms) * FPS / 500 + 1) / 2)
+
 static u16 cmd_buf[MW_BUFLEN];
 static bool recvData = false;
 static bool listening = false;
 static bool connected = false;
-
-#define REUSE_PAYLOAD_HEADER_LEN 6
-#define RECEIVER_FEEDBACK_FRAME_FREQUENCY 10
+static u16 frame = 0;
+static u16 lastSeqNum = 0;
 
 static char recvBuffer[MAX_UDP_DATA_LENGTH];
 static char sendBuffer[MAX_UDP_DATA_LENGTH];
 static bool awaitingRecv = false;
 static bool awaitingSend = false;
+
+static u32 remoteIp = 0;
+static u16 remoteControlPort = 0;
+static u16 remoteMidiPort = 0;
+
+static void recv_complete_cb(enum lsd_status stat, uint8_t ch, char* data, uint16_t len, void* ctx);
 
 static bool has_apple_midi_signature(char* buffer, u16 length)
 {
@@ -33,11 +43,6 @@ static bool has_apple_midi_signature(char* buffer, u16 length)
     }
     return (u8)buffer[0] == 0xFF && (u8)buffer[1] == 0xFF;
 }
-
-#define FPS 60
-#define MS_TO_FRAMES(ms) (((ms) * FPS / 500 + 1) / 2)
-
-static void recv_complete_cb(enum lsd_status stat, uint8_t ch, char* data, uint16_t len, void* ctx);
 
 static enum mw_err associate_ap(void)
 {
@@ -216,10 +221,6 @@ static void process_udp_data(u8 ch, char* buffer, u16 length)
     }
 }
 
-static u32 remoteIp = 0;
-static u16 remoteControlPort = 0;
-static u16 remoteMidiPort = 0;
-
 static void persist_remote_endpoint(u8 ch, u32 ip, u16 port)
 {
     remoteIp = ip;
@@ -255,14 +256,10 @@ static void recv_complete_cb(enum lsd_status stat, uint8_t ch, char* data, uint1
     awaitingRecv = false;
 }
 
-static u16 frame = 0;
-
 void comm_megawifi_vsync(u16 delta)
 {
     frame += delta;
 }
-
-static u16 lastSeqNum = 0;
 
 static void send_receiver_feedback(void)
 {
