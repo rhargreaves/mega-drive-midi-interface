@@ -101,6 +101,7 @@ static void dev_chan_note_off(DeviceChannel* devChan, u8 pitch);
 static void set_downstream_pitch(DeviceChannel* devChan);
 static bool valid_midi_channel(u8 midiChan);
 static bool valid_device_channel(u8 devChan);
+static bool is_single_voice_channel(u8 midiChan, bool playing);
 
 void midi_init(
     const FmPreset** presets, const PercussionPreset** percussionPresets, const u8** envelopes)
@@ -445,7 +446,7 @@ void midi_note_on(u8 midiChan, u8 pitch, u8 velocity)
     }
 
     MidiChannel* midiChannel = &midiChannels[midiChan];
-    if (!dynamicMode) {
+    if (is_single_voice_channel(midiChan, false)) {
         if (note_priority_isFull(&midiChannel->notePriority)) {
             log_warn("Ch %d: Note priority stack full", midiChan + 1);
             return;
@@ -469,15 +470,15 @@ void midi_note_on(u8 midiChan, u8 pitch, u8 velocity)
     set_downstream_note_on(devChan, velocity);
 }
 
-static bool isSingleVoiceChannel(u8 midiChan)
+static bool is_single_voice_channel(u8 midiChan, bool playing)
 {
-    u8 playingCount = 0;
+    u8 count = 0;
     FOREACH_DEV_CHAN_WITH_MIDI(midiChan, devChan) {
-        if (devChan->noteOn) {
-            playingCount++;
+        if (!(playing && !devChan->noteOn)) {
+            count++;
         }
     }
-    return playingCount == 1;
+    return count == 1;
 }
 
 void midi_note_off(u8 chan, u8 pitch)
@@ -487,7 +488,7 @@ void midi_note_off(u8 chan, u8 pitch)
 
     u8 nextMostRecentPitch = note_priority_pop(&midiChannel->notePriority);
     bool handledRetrigger = false;
-    bool singleVoice = isSingleVoiceChannel(chan);
+    bool singleVoice = is_single_voice_channel(chan, true);
 
     FOREACH_DEV_CHAN_WITH_MIDI(chan, devChan) {
         if (isChannelPlayingNote(devChan, pitch)) {
