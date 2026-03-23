@@ -43,7 +43,6 @@ typedef enum { TX_IDLE, TX_QUEUED, TX_INFLIGHT } tx_state;
 
 static tx_state txState;
 static int txCh;
-static char txData[MAX_UDP_DATA_LENGTH];
 static int txLen;
 
 static void init_mega_wifi(void);
@@ -70,7 +69,6 @@ void comm_megawifi_init(void)
 
     txCh = 0;
     txLen = 0;
-    memset(txData, 0, sizeof(txData));
     txState = TX_IDLE;
 
     scheduler_addTickHandler(comm_megawifi_tick);
@@ -388,7 +386,6 @@ static void send_buffered_packet(void)
     sendBuffer[3] = (u8)(ip & 0xFF);
     sendBuffer[4] = (u8)(port >> 8);
     sendBuffer[5] = (u8)(port & 0xFF);
-    memcpy(&sendBuffer[REUSE_PAYLOAD_HEADER_LEN], txData, txLen);
 
     if (!connected) {
         log_info("MW: Session connected");
@@ -421,5 +418,5 @@ void comm_megawifi_send(u8 ch, char* data, u16 len)
     txState = TX_QUEUED;
     txCh = ch;
     txLen = len;
-    memcpy(txData, data, len);
+    memcpy(&sendBuffer[REUSE_PAYLOAD_HEADER_LEN], data, len);
 }
