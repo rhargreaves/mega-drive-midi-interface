@@ -38,7 +38,9 @@ static int rxCh;
 static char rxData[MAX_UDP_DATA_LENGTH];
 static int rxLen;
 
-static bool txPending;
+typedef enum { TX_IDLE, TX_QUEUED, TX_INFLIGHT } tx_state;
+
+static tx_state txState;
 static int txCh;
 static char txData[MAX_UDP_DATA_LENGTH];
 static int txLen;
@@ -66,10 +68,10 @@ void comm_megawifi_init(void)
     rxLen = 0;
     memset(rxData, 0, sizeof(rxData));
 
-    txPending = false;
     txCh = 0;
     txLen = 0;
     memset(txData, 0, sizeof(txData));
+    txState = TX_IDLE;
 
     scheduler_addTickHandler(comm_megawifi_tick);
     scheduler_addFrameHandler(comm_megawifi_vsync);
@@ -328,11 +330,11 @@ void comm_megawifi_tick(void)
         rxPending = false;
     }
 
-    if (txPending) {
+    if (txState == TX_QUEUED) {
         send_buffered_packet();
     }
 
-    if (!txPending) {
+    if (txState == TX_IDLE) {
         send_receiver_feedback();
     }
 
@@ -363,12 +365,12 @@ void send_complete_cb(enum lsd_status stat, void* ctx)
         log_warn("MW: send_complete_cb() = %d", stat);
     }
 
-    txPending = false;
+    txState = TX_IDLE;
 }
 
 static void send_buffered_packet(void)
 {
-    if (!txPending) {
+    if (txState != TX_QUEUED) {
         return;
     }
 
@@ -394,26 +396,24 @@ static void send_buffered_packet(void)
     log_info("MW: S=%s:%u L=%d C=%d", ip_buf, port, txLen, txCh);
 #endif
 
-    txPending = true;
+    txState = TX_INFLIGHT;
     enum lsd_status stat = mw_udp_reuse_send(txCh, (struct mw_reuse_payload*)sendBuffer,
         txLen + REUSE_PAYLOAD_HEADER_LEN, NULL, send_complete_cb);
     if (stat < 0) {
         log_warn("MW: mw_udp_reuse_send() = %d", stat);
-        txPending = false;
+        txState = TX_IDLE;
         return;
     }
-
-    txPending = false;
 }
 
 void comm_megawifi_send(u8 ch, char* data, u16 len)
 {
-    if (txPending) {
+    if (txState != TX_IDLE) {
         log_warn("MW: Send while TX pending!");
         return;
     }
 
-    txPending = true;
+    txState = TX_QUEUED;
     txCh = ch;
     txLen = len;
     memcpy(txData, data, len);
