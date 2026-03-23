@@ -33,7 +33,9 @@ static u32 remoteIp;
 static u16 remoteControlPort;
 static u16 remoteMidiPort;
 
-static bool rxPending;
+typedef enum { RX_IDLE, RX_ARMED, RX_BUFFERED } rx_state;
+
+static rx_state rxState;
 static int rxCh;
 static char rxData[MAX_UDP_DATA_LENGTH];
 static int rxLen;
@@ -63,7 +65,7 @@ void comm_megawifi_init(void)
     remoteControlPort = 0;
     remoteMidiPort = 0;
 
-    rxPending = false;
+    rxState = RX_IDLE;
     rxCh = 0;
     rxLen = 0;
     memset(rxData, 0, sizeof(rxData));
@@ -279,8 +281,13 @@ static void recv_complete_cb(enum lsd_status stat, uint8_t ch, char* data, uint1
 {
     (void)ctx;
 
+    if (rxState != RX_ARMED) {
+        log_warn("MW: rxCb unexpected state: %d", rxState);
+        return;
+    }
+
     if (LSD_STAT_COMPLETE == stat) {
-        rxPending = true;
+        rxState = RX_BUFFERED;
         rxCh = ch;
         rxLen = len - REUSE_PAYLOAD_HEADER_LEN;
 
@@ -295,6 +302,7 @@ static void recv_complete_cb(enum lsd_status stat, uint8_t ch, char* data, uint1
 #endif
     } else {
         log_warn("MW: rxCb = %d", stat);
+        rxState = RX_IDLE;
     }
 }
 
@@ -325,9 +333,9 @@ void comm_megawifi_tick(void)
 
     mw_process();
 
-    if (rxPending) {
+    if (rxState == RX_BUFFERED) {
         process_udp_data(rxCh, rxData, rxLen);
-        rxPending = false;
+        rxState = RX_IDLE;
     }
 
     if (txState == TX_QUEUED) {
@@ -338,14 +346,14 @@ void comm_megawifi_tick(void)
         send_receiver_feedback();
     }
 
-    if (!rxPending) {
+    if (rxState == RX_IDLE) {
         struct mw_reuse_payload* pkt = (struct mw_reuse_payload* const)recvBuffer;
         enum lsd_status stat = mw_udp_reuse_recv(pkt, MW_BUFLEN, NULL, recv_complete_cb);
         if (stat < 0) {
             log_warn("MW: mw_udp_reuse_recv() = %d", stat);
-            rxPending = false;
             return;
         }
+        rxState = RX_ARMED;
     }
 }
 
