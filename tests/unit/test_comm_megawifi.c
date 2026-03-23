@@ -71,7 +71,7 @@ static void megawifi_init(void)
     expect_log_info("MW: Found v%d.%d");
     expect_scheduler_yield();
     expect_mw_detect();
-    expect_log_info("MW: Ctrl UDP %s:%u");
+    expect_log_info("MW: IP=%s:%u");
     expect_scheduler_yield();
     expect_scheduler_yield();
     expect_ap_connection();
@@ -129,4 +129,13 @@ void test_comm_megawifi_write_sends_sysex_over_udp_reuse_send(UNUSED void** stat
     expect_log_info("MW: Session connected");
 
     __real_comm_megawifi_write(sysex, sizeof(sysex));
+
+    expect_any(__wrap_lsd_recv, buf);
+    expect_any(__wrap_lsd_recv, len);
+    expect_value(__wrap_lsd_recv, ctx, NULL);
+    expect_any(__wrap_lsd_recv, recv_cb);
+    will_return(__wrap_lsd_recv, LSD_STAT_COMPLETE);
+
+    expect_function_call(__wrap_lsd_process);
+    __real_comm_megawifi_tick();
 }

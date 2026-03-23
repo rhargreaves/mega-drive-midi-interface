@@ -28,15 +28,24 @@ static u16 lastSeqNum;
 
 static char recvBuffer[MAX_UDP_DATA_LENGTH];
 static char sendBuffer[MAX_UDP_DATA_LENGTH];
-static bool awaitingRecv;
-static bool awaitingSend;
 
 static u32 remoteIp;
 static u16 remoteControlPort;
 static u16 remoteMidiPort;
 
+static bool rxPending;
+static int rxCh;
+static char rxData[MAX_UDP_DATA_LENGTH];
+static int rxLen;
+
+static bool txPending;
+static int txCh;
+static char txData[MAX_UDP_DATA_LENGTH];
+static int txLen;
+
 static void init_mega_wifi(void);
 static void recv_complete_cb(enum lsd_status stat, uint8_t ch, char* data, uint16_t len, void* ctx);
+static void send_buffered_packet(void);
 
 void comm_megawifi_init(void)
 {
@@ -48,11 +57,19 @@ void comm_megawifi_init(void)
     lastSeqNum = 0;
     memset(recvBuffer, 0, sizeof(recvBuffer));
     memset(sendBuffer, 0, sizeof(sendBuffer));
-    awaitingRecv = false;
-    awaitingSend = false;
     remoteIp = 0;
     remoteControlPort = 0;
     remoteMidiPort = 0;
+
+    rxPending = false;
+    rxCh = 0;
+    rxLen = 0;
+    memset(rxData, 0, sizeof(rxData));
+
+    txPending = false;
+    txCh = 0;
+    txLen = 0;
+    memset(txData, 0, sizeof(txData));
 
     scheduler_addTickHandler(comm_megawifi_tick);
     scheduler_addFrameHandler(comm_megawifi_vsync);
@@ -172,7 +189,7 @@ static void init_mega_wifi(void)
 
     char ip_str[16];
     uint32_to_ip_str(ip, ip_str);
-    log_info("MW: Ctrl UDP %s:%u", ip_str, UDP_CONTROL_PORT);
+    log_info("MW: IP=%s:%u", ip_str, UDP_CONTROL_PORT);
     scheduler_yield();
 }
 
@@ -220,7 +237,6 @@ void comm_megawifi_write(const u8* data, u16 length)
 
 static void process_udp_data(u8 ch, char* buffer, u16 length)
 {
-    (void)buffer;
     midi_pkt_result result = MIDI_PKT_OK;
     switch (ch) {
     case CH_CONTROL_PORT:
@@ -244,7 +260,9 @@ static void persist_remote_endpoint(u8 ch, u32 ip, u16 port)
     remoteIp = ip;
     if (ch == CH_CONTROL_PORT) {
         remoteControlPort = port;
+        remoteMidiPort = port + 1;
     } else if (ch == CH_MIDI_PORT) {
+        remoteControlPort = port - 1;
         remoteMidiPort = port;
     }
 }
@@ -260,18 +278,22 @@ static void recv_complete_cb(enum lsd_status stat, uint8_t ch, char* data, uint1
     (void)ctx;
 
     if (LSD_STAT_COMPLETE == stat) {
+        rxPending = true;
+        rxCh = ch;
+        rxLen = len - REUSE_PAYLOAD_HEADER_LEN;
+
         struct mw_reuse_payload* udp = (struct mw_reuse_payload*)data;
-#if DEBUG_MEGAWIFI_SEND
+        memcpy(rxData, &udp->payload, rxLen);
+        persist_remote_endpoint(ch, udp->remote_ip, udp->remote_port);
+
+#if DEBUG_MEGAWIFI_RECV
         char remote_ip_str[16] = {};
         uint32_to_ip_str(udp->remote_ip, remote_ip_str);
-        log_info("MW: Remote=%s:%u", remote_ip_str, udp->remote_port);
+        log_info("MW: R=%s:%u L=%d C=%d", remote_ip_str, udp->remote_port, rxLen, rxCh);
 #endif
-        persist_remote_endpoint(ch, udp->remote_ip, udp->remote_port);
-        process_udp_data(ch, udp->payload, len - REUSE_PAYLOAD_HEADER_LEN);
     } else {
-        log_warn("MW: recv_complete_cb() = %d", stat);
+        log_warn("MW: rxCb = %d", stat);
     }
-    awaitingRecv = false;
 }
 
 void comm_megawifi_vsync(u16 delta)
@@ -298,19 +320,30 @@ void comm_megawifi_tick(void)
     if (!listening) {
         return;
     }
-    mw_process();
-    if (awaitingRecv || awaitingSend) {
-        return;
-    }
-    send_receiver_feedback();
 
-    awaitingRecv = true;
-    struct mw_reuse_payload* pkt = (struct mw_reuse_payload* const)recvBuffer;
-    enum lsd_status stat = mw_udp_reuse_recv(pkt, MW_BUFLEN, NULL, recv_complete_cb);
-    if (stat < 0) {
-        log_warn("MW: mw_udp_reuse_recv() = %d", stat);
-        awaitingRecv = false;
-        return;
+    mw_process();
+
+    if (rxPending) {
+        process_udp_data(rxCh, rxData, rxLen);
+        rxPending = false;
+    }
+
+    if (txPending) {
+        send_buffered_packet();
+    }
+
+    if (!txPending) {
+        send_receiver_feedback();
+    }
+
+    if (!rxPending) {
+        struct mw_reuse_payload* pkt = (struct mw_reuse_payload* const)recvBuffer;
+        enum lsd_status stat = mw_udp_reuse_recv(pkt, MW_BUFLEN, NULL, recv_complete_cb);
+        if (stat < 0) {
+            log_warn("MW: mw_udp_reuse_recv() = %d", stat);
+            rxPending = false;
+            return;
+        }
     }
 }
 
@@ -326,24 +359,29 @@ void comm_megawifi_midiEmitCallback(u8 data)
 void send_complete_cb(enum lsd_status stat, void* ctx)
 {
     (void)ctx;
-    if (stat < 0) {
+    if (stat < LSD_STAT_COMPLETE) {
         log_warn("MW: send_complete_cb() = %d", stat);
     }
-    awaitingSend = false;
+
+    txPending = false;
 }
 
-void comm_megawifi_send(u8 ch, char* data, u16 len)
+static void send_buffered_packet(void)
 {
+    if (!txPending) {
+        return;
+    }
+
     u32 ip;
     u16 port;
-    restore_remote_endpoint(ch, &ip, &port);
+    restore_remote_endpoint(txCh, &ip, &port);
     sendBuffer[0] = (u8)(ip >> 24);
     sendBuffer[1] = (u8)(ip >> 16);
     sendBuffer[2] = (u8)(ip >> 8);
     sendBuffer[3] = (u8)(ip & 0xFF);
     sendBuffer[4] = (u8)(port >> 8);
     sendBuffer[5] = (u8)(port & 0xFF);
-    memcpy(&sendBuffer[REUSE_PAYLOAD_HEADER_LEN], data, len);
+    memcpy(&sendBuffer[REUSE_PAYLOAD_HEADER_LEN], txData, txLen);
 
     if (!connected) {
         log_info("MW: Session connected");
@@ -353,15 +391,30 @@ void comm_megawifi_send(u8 ch, char* data, u16 len)
 #if DEBUG_MEGAWIFI_SEND == 1
     char ip_buf[16];
     uint32_to_ip_str(remoteIp, ip_buf);
-    log_info("MW: Send IP=%s:%u L=%d C=%d", ip_buf, udp->remote_port, len, ch);
+    log_info("MW: S=%s:%u L=%d C=%d", ip_buf, port, txLen, txCh);
 #endif
 
-    awaitingSend = true;
-    enum lsd_status stat = mw_udp_reuse_send(ch, (struct mw_reuse_payload*)sendBuffer,
-        len + REUSE_PAYLOAD_HEADER_LEN, NULL, send_complete_cb);
+    txPending = true;
+    enum lsd_status stat = mw_udp_reuse_send(txCh, (struct mw_reuse_payload*)sendBuffer,
+        txLen + REUSE_PAYLOAD_HEADER_LEN, NULL, send_complete_cb);
     if (stat < 0) {
         log_warn("MW: mw_udp_reuse_send() = %d", stat);
-        awaitingSend = false;
+        txPending = false;
         return;
     }
+
+    txPending = false;
+}
+
+void comm_megawifi_send(u8 ch, char* data, u16 len)
+{
+    if (txPending) {
+        log_warn("MW: Send while TX pending!");
+        return;
+    }
+
+    txPending = true;
+    txCh = ch;
+    txLen = len;
+    memcpy(txData, data, len);
 }

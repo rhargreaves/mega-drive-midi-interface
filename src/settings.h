@@ -13,6 +13,7 @@ const u8* settings_startup_midi_sequence(size_t* length);
 #define COMM_SERIAL 1
 #define COMM_MEGAWIFI 1
 
+#define DEBUG_SHOW_LOGS 0
 #define DEBUG_MEGAWIFI_SEND 0
 #define DEBUG_MEGAWIFI_INIT 0
 #define DEBUG_MEGAWIFI_RECV 0

@@ -20,9 +20,17 @@
 #define PSG_DEVICE_Y 14
 #define CHAN_Y 2
 #define MIDI_Y (CHAN_Y)
+
+#if DEBUG_SHOW_LOGS == 1
+#define MAX_LOG_LINES 22
+#define LOG_X 5
+#else
 #define MAX_LOG_LINES 2
-#define LOG_Y (MAX_EFFECTIVE_Y - MAX_LOG_LINES - 2)
 #define LOG_X 2
+#endif
+
+#define LOG_Y (MAX_EFFECTIVE_Y - MAX_LOG_LINES - 2)
+
 #define COMM_EXTRA_X 17
 #define PITCH_X 6
 #define CHANGE_X (PITCH_X + 4)
