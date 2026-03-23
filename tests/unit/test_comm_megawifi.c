@@ -139,3 +139,12 @@ void test_comm_megawifi_write_sends_sysex_over_udp_reuse_send(UNUSED void** stat
     expect_function_call(__wrap_lsd_process);
     __real_comm_megawifi_tick();
 }
+
+void test_comm_megawifi_send_logs_and_drops_when_tx_buffer_overflows(UNUSED void** state)
+{
+    megawifi_init();
+
+    const u8 oversizedPayload[1455] = { 0 };
+    expect_log_warn("MW: TX buffer overflow!");
+    __real_comm_megawifi_write(oversizedPayload, sizeof(oversizedPayload));
+}

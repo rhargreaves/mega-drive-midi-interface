@@ -332,6 +332,7 @@ int main(void)
         comm_megawifi_test(test_comm_megawifi_logs_if_buffer_full),
         comm_megawifi_test(test_comm_megawifi_returns_zero_when_buffer_empty),
         comm_megawifi_test(test_comm_megawifi_write_sends_sysex_over_udp_reuse_send),
+        comm_megawifi_test(test_comm_megawifi_send_logs_and_drops_when_tx_buffer_overflows),
 
         dynamic_midi_test(test_midi_dynamic_uses_all_channels),
         dynamic_midi_test(test_midi_routing_switches_to_dynamic_on_gm_reset),

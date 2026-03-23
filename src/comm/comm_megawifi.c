@@ -11,23 +11,19 @@
 #define UDP_CONTROL_PORT 5006
 #define UDP_MIDI_PORT (UDP_CONTROL_PORT + 1)
 
-#define MW_BUFLEN 1460
-#define MAX_UDP_DATA_LENGTH MW_BUFLEN
+#define RX_TX_BUFFER_SIZE 1460
 #define REUSE_PAYLOAD_HEADER_LEN 6
 #define RECEIVER_FEEDBACK_FRAME_FREQUENCY 10
 #define SEND_RTP_MIDI_PACKET_BUFFER_LEN 256
 #define FPS 60
 #define MS_TO_FRAMES(ms) (((ms) * FPS / 500 + 1) / 2)
 
-static u16 cmd_buf[MW_BUFLEN];
+static u16 cmd_buf[MW_MSG_MAX_BUFLEN / sizeof(u16)];
 static bool recvData;
 static bool listening;
 static bool connected;
 static u16 frame;
 static u16 lastSeqNum;
-
-static char recvBuffer[MAX_UDP_DATA_LENGTH];
-static char sendBuffer[MAX_UDP_DATA_LENGTH];
 
 static u32 remoteIp;
 static u16 remoteControlPort;
@@ -38,12 +34,14 @@ typedef enum { RX_IDLE, RX_ARMED, RX_BUFFERED } rx_state;
 static rx_state rxState;
 static int rxCh;
 static int rxLen;
+static char rxBuffer[RX_TX_BUFFER_SIZE];
 
 typedef enum { TX_IDLE, TX_QUEUED, TX_INFLIGHT } tx_state;
 
 static tx_state txState;
 static int txCh;
 static int txLen;
+static char txBuffer[RX_TX_BUFFER_SIZE];
 
 static void init_mega_wifi(void);
 static void recv_complete_cb(enum lsd_status stat, uint8_t ch, char* data, uint16_t len, void* ctx);
@@ -57,8 +55,8 @@ void comm_megawifi_init(void)
     connected = false;
     frame = 0;
     lastSeqNum = 0;
-    memset(recvBuffer, 0, sizeof(recvBuffer));
-    memset(sendBuffer, 0, sizeof(sendBuffer));
+    memset(rxBuffer, 0, sizeof(rxBuffer));
+    memset(txBuffer, 0, sizeof(txBuffer));
     remoteIp = 0;
     remoteControlPort = 0;
     remoteMidiPort = 0;
@@ -158,7 +156,7 @@ static void tasking_init(void)
 
 static void init_mega_wifi(void)
 {
-    enum mw_err err = mw_init(cmd_buf, MW_BUFLEN);
+    enum mw_err err = mw_init(cmd_buf, sizeof(cmd_buf));
     if (err != MW_ERR_NONE) {
         log_warn("MW: Init Error %d", err);
         return;
@@ -329,7 +327,7 @@ void comm_megawifi_tick(void)
     mw_process();
 
     if (rxState == RX_BUFFERED) {
-        process_udp_data(rxCh, recvBuffer + REUSE_PAYLOAD_HEADER_LEN, rxLen);
+        process_udp_data(rxCh, rxBuffer + REUSE_PAYLOAD_HEADER_LEN, rxLen);
         rxState = RX_IDLE;
     }
 
@@ -342,8 +340,8 @@ void comm_megawifi_tick(void)
     }
 
     if (rxState == RX_IDLE) {
-        struct mw_reuse_payload* pkt = (struct mw_reuse_payload* const)recvBuffer;
-        enum lsd_status stat = mw_udp_reuse_recv(pkt, MW_BUFLEN, NULL, recv_complete_cb);
+        struct mw_reuse_payload* pkt = (struct mw_reuse_payload* const)rxBuffer;
+        enum lsd_status stat = mw_udp_reuse_recv(pkt, RX_TX_BUFFER_SIZE, NULL, recv_complete_cb);
         if (stat < 0) {
             log_warn("MW: mw_udp_reuse_recv() = %d", stat);
             return;
@@ -380,12 +378,12 @@ static void send_buffered_packet(void)
     u32 ip;
     u16 port;
     restore_remote_endpoint(txCh, &ip, &port);
-    sendBuffer[0] = (u8)(ip >> 24);
-    sendBuffer[1] = (u8)(ip >> 16);
-    sendBuffer[2] = (u8)(ip >> 8);
-    sendBuffer[3] = (u8)(ip & 0xFF);
-    sendBuffer[4] = (u8)(port >> 8);
-    sendBuffer[5] = (u8)(port & 0xFF);
+    txBuffer[0] = (u8)(ip >> 24);
+    txBuffer[1] = (u8)(ip >> 16);
+    txBuffer[2] = (u8)(ip >> 8);
+    txBuffer[3] = (u8)(ip & 0xFF);
+    txBuffer[4] = (u8)(port >> 8);
+    txBuffer[5] = (u8)(port & 0xFF);
 
     if (!connected) {
         log_info("MW: Session connected");
@@ -399,7 +397,7 @@ static void send_buffered_packet(void)
 #endif
 
     txState = TX_INFLIGHT;
-    enum lsd_status stat = mw_udp_reuse_send(txCh, (struct mw_reuse_payload*)sendBuffer,
+    enum lsd_status stat = mw_udp_reuse_send(txCh, (struct mw_reuse_payload*)txBuffer,
         txLen + REUSE_PAYLOAD_HEADER_LEN, NULL, send_complete_cb);
     if (stat < 0) {
         log_warn("MW: mw_udp_reuse_send() = %d", stat);
@@ -415,8 +413,13 @@ void comm_megawifi_send(u8 ch, char* data, u16 len)
         return;
     }
 
+    if (len + REUSE_PAYLOAD_HEADER_LEN > RX_TX_BUFFER_SIZE) {
+        log_warn("MW: TX buffer overflow!");
+        return;
+    }
+
     txState = TX_QUEUED;
     txCh = ch;
     txLen = len;
-    memcpy(&sendBuffer[REUSE_PAYLOAD_HEADER_LEN], data, len);
+    memcpy(&txBuffer[REUSE_PAYLOAD_HEADER_LEN], data, len);
 }
