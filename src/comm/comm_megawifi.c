@@ -37,7 +37,6 @@ typedef enum { RX_IDLE, RX_ARMED, RX_BUFFERED } rx_state;
 
 static rx_state rxState;
 static int rxCh;
-static char rxData[MAX_UDP_DATA_LENGTH];
 static int rxLen;
 
 typedef enum { TX_IDLE, TX_QUEUED, TX_INFLIGHT } tx_state;
@@ -68,7 +67,6 @@ void comm_megawifi_init(void)
     rxState = RX_IDLE;
     rxCh = 0;
     rxLen = 0;
-    memset(rxData, 0, sizeof(rxData));
 
     txCh = 0;
     txLen = 0;
@@ -292,7 +290,6 @@ static void recv_complete_cb(enum lsd_status stat, uint8_t ch, char* data, uint1
         rxLen = len - REUSE_PAYLOAD_HEADER_LEN;
 
         struct mw_reuse_payload* udp = (struct mw_reuse_payload*)data;
-        memcpy(rxData, &udp->payload, rxLen);
         persist_remote_endpoint(ch, udp->remote_ip, udp->remote_port);
 
 #if DEBUG_MEGAWIFI_RECV
@@ -334,7 +331,7 @@ void comm_megawifi_tick(void)
     mw_process();
 
     if (rxState == RX_BUFFERED) {
-        process_udp_data(rxCh, rxData, rxLen);
+        process_udp_data(rxCh, recvBuffer + REUSE_PAYLOAD_HEADER_LEN, rxLen);
         rxState = RX_IDLE;
     }
 
