@@ -235,21 +235,17 @@ void comm_megawifi_write(const u8* data, u16 length)
 
 static void process_udp_data(u8 ch, char* buffer, u16 length)
 {
-    midi_pkt_result result = MIDI_PKT_OK;
     switch (ch) {
     case CH_CONTROL_PORT:
-        result = applemidi_processSessionControlPacket(buffer, length);
+        applemidi_processSessionControlPacket(buffer, length);
         break;
     case CH_MIDI_PORT:
         if (has_apple_midi_signature(buffer, length)) {
-            result = applemidi_processSessionMidiPacket(buffer, length);
+            applemidi_processSessionMidiPacket(buffer, length);
         } else {
-            result = rtpmidi_processRtpMidiPacket(buffer, length);
+            rtpmidi_processRtpMidiPacket(buffer, length);
         }
         break;
-    }
-    if (result != MIDI_PKT_OK) {
-        log_warn("MW: processUdpData() = %d", result);
     }
 }
 

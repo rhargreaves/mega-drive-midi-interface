@@ -160,6 +160,7 @@ midi_pkt_result applemidi_processSessionControlPacket(char* buffer, u16 length)
         return process_invitation(CH_CONTROL_PORT, buffer, length);
     }
 
+    log_warn("AM: ? ctrl cmd: %c%c", command[0], command[1]);
     return MIDI_PKT_UNSUPPORTED_COMMAND;
 }
 
@@ -174,8 +175,7 @@ midi_pkt_result applemidi_processSessionMidiPacket(char* buffer, u16 length)
     } else if (is_timestamp_sync_command(command)) {
         return process_timestamp_sync(buffer, length);
     } else {
-        char text[100];
-        sprintf(text, "Unknown event %s", command);
+        log_warn("AM: ? midi cmd: %c%c", command[0], command[1]);
         return MIDI_PKT_UNSUPPORTED_COMMAND;
     }
 }

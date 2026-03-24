@@ -90,6 +90,7 @@ static bool is_final_delta_byte(u8 value)
 midi_pkt_result rtpmidi_processRtpMidiPacket(char* buffer, u16 length)
 {
     if (length < RTP_MIDI_HEADER_LEN + 1) {
+        log_warn("rtpmidi: header too short");
         return MIDI_PKT_RTP_HEADER_TOO_SHORT;
     }
 
@@ -104,6 +105,7 @@ midi_pkt_result rtpmidi_processRtpMidiPacket(char* buffer, u16 length)
 
     u16 headerLen = RTP_MIDI_HEADER_LEN + (longHeader ? 2 : 1);
     if (headerLen + midiLength > length) {
+        log_warn("rtpmidi: length mismatch");
         return MIDI_PKT_RTP_LENGTH_MISMATCH;
     }
 
