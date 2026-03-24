@@ -150,6 +150,11 @@ static bool is_timestamp_sync_command(char* command)
     return command[0] == 'C' && command[1] == 'K';
 }
 
+static bool is_receiver_feedback_command(char* command)
+{
+    return command[0] == 'R' && command[1] == 'S';
+}
+
 midi_pkt_result applemidi_processSessionControlPacket(char* buffer, u16 length)
 {
     if (!has_apple_midi_signature(buffer, length)) {
@@ -158,6 +163,8 @@ midi_pkt_result applemidi_processSessionControlPacket(char* buffer, u16 length)
     char* command = &buffer[2];
     if (is_invitation_command(command)) {
         return process_invitation(CH_CONTROL_PORT, buffer, length);
+    } else if (is_receiver_feedback_command(command)) {
+        return MIDI_PKT_OK;
     }
 
     log_warn("AM: ? ctrl cmd: %c%c", command[0], command[1]);

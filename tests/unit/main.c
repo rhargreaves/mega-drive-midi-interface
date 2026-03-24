@@ -399,6 +399,7 @@ int main(void)
             test_scheduler_passes_delta_given_multiple_vsyncs_to_frame_handlers),
 
         applemidi_test(test_applemidi_sends_receiver_feedback),
+        applemidi_test(test_applemidi_accepts_receiver_feedback_packet),
 
         ring_buf_test(test_ring_buf_reads_and_writes_single_byte),
         ring_buf_test(test_ring_buf_reads_and_writes_circularly_over_capacity),
