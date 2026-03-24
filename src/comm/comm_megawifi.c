@@ -11,7 +11,6 @@
 #define UDP_CONTROL_PORT 5006
 #define UDP_MIDI_PORT (UDP_CONTROL_PORT + 1)
 
-#define RX_TX_BUFFER_SIZE 1460
 #define REUSE_PAYLOAD_HEADER_LEN 6
 #define RECEIVER_FEEDBACK_FRAME_FREQUENCY 10
 #define SEND_RTP_MIDI_PACKET_BUFFER_LEN 256
@@ -20,6 +19,8 @@
 
 static u16 cmd_buf[MW_MSG_MAX_BUFLEN / sizeof(u16)];
 static bool recvData;
+static u8 ring_buf_arr[MW_RX_TX_BUFFER_SIZE];
+static ring_buf_t ring_buf;
 static bool listening;
 static bool connected;
 static u16 frame;
@@ -35,12 +36,12 @@ typedef enum { TX_IDLE, TX_QUEUED, TX_INFLIGHT } tx_state;
 static rx_state rxState;
 static int rxCh;
 static int rxLen;
-static char rxBuffer[RX_TX_BUFFER_SIZE];
+static char rxBuffer[MW_RX_TX_BUFFER_SIZE];
 
 static tx_state txState;
 static int txCh;
 static int txLen;
-static char txBuffer[RX_TX_BUFFER_SIZE];
+static char txBuffer[MW_RX_TX_BUFFER_SIZE];
 
 static void init_mega_wifi(void);
 static void recv_complete_cb(enum lsd_status stat, uint8_t ch, char* data, uint16_t len, void* ctx);
@@ -51,6 +52,7 @@ void comm_megawifi_init(void)
     rtpmidi_init();
 
     memset(cmd_buf, 0, sizeof(cmd_buf));
+    ring_buf_init(&ring_buf, ring_buf_arr, sizeof(ring_buf_arr));
     recvData = false;
     listening = false;
     connected = false;
@@ -200,13 +202,13 @@ u8 comm_megawifi_read_ready(void)
 {
     if (!recvData)
         return false;
-    return ring_buf_can_read();
+    return ring_buf_can_read(&ring_buf);
 }
 
 u8 comm_megawifi_read(void)
 {
     u8 data = 0;
-    ring_buf_status_t status = ring_buf_read(&data);
+    ring_buf_status_t status = ring_buf_read(&ring_buf, &data);
     if (status == RING_BUF_OK) {
         return data;
     }
@@ -337,7 +339,7 @@ void comm_megawifi_tick(void)
 
     if (rxState == RX_IDLE) {
         struct mw_reuse_payload* pkt = (struct mw_reuse_payload* const)rxBuffer;
-        enum lsd_status stat = mw_udp_reuse_recv(pkt, RX_TX_BUFFER_SIZE, NULL, recv_complete_cb);
+        enum lsd_status stat = mw_udp_reuse_recv(pkt, MW_RX_TX_BUFFER_SIZE, NULL, recv_complete_cb);
         if (stat < 0) {
             log_warn("MW: mw_udp_reuse_recv() = %d", stat);
             return;
@@ -349,7 +351,7 @@ void comm_megawifi_tick(void)
 void comm_megawifi_midiEmitCallback(u8 data)
 {
     recvData = true;
-    ring_buf_status_t status = ring_buf_write(data);
+    ring_buf_status_t status = ring_buf_write(&ring_buf, data);
     if (status == RING_BUF_FULL) {
         log_warn("MW: MIDI buffer full!");
     }
@@ -409,7 +411,7 @@ void comm_megawifi_send(u8 ch, char* data, u16 len)
         return;
     }
 
-    if (len + REUSE_PAYLOAD_HEADER_LEN > RX_TX_BUFFER_SIZE) {
+    if (len + REUSE_PAYLOAD_HEADER_LEN > MW_RX_TX_BUFFER_SIZE) {
         log_warn("MW: TX buffer overflow!");
         return;
     }

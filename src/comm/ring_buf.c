@@ -1,60 +1,77 @@
 #include "ring_buf.h"
 
-static volatile u16 tail = 0;
-static volatile u16 head = 0;
-static volatile u8 ring_buf[RING_BUF_SIZE];
-
-void ring_buf_init(void)
+void ring_buf_init(ring_buf_t* rb, u8* ringBuf, u16 size)
 {
-    tail = 0;
-    head = 0;
+    if (ringBuf == NULL || rb == NULL || size < 2) {
+        return;
+    }
+    rb->ringBuf = ringBuf;
+    rb->tail = 0;
+    rb->head = 0;
+    rb->size = size;
 }
 
-ring_buf_status_t ring_buf_read(u8* data)
+ring_buf_status_t ring_buf_read(ring_buf_t* rb, u8* data)
 {
-    if (data == NULL) {
+    if (rb == NULL || rb->ringBuf == NULL || rb->size < 2 || data == NULL) {
         return RING_BUF_ERROR;
     }
 
-    if (tail == head) {
+    if (rb->tail == rb->head) {
         return RING_BUF_EMPTY;
     }
 
-    *data = ring_buf[tail];
-    tail = (tail + 1) % RING_BUF_SIZE;
+    *data = rb->ringBuf[rb->tail];
+    rb->tail = (rb->tail + 1) % rb->size;
     return RING_BUF_OK;
 }
 
-ring_buf_status_t ring_buf_write(u8 data)
+ring_buf_status_t ring_buf_write(ring_buf_t* rb, u8 data)
 {
-    u16 nextHead = (head + 1) % RING_BUF_SIZE;
-    if (nextHead == tail) {
+    if (rb == NULL || rb->ringBuf == NULL || rb->size < 2) {
+        return RING_BUF_ERROR;
+    }
+
+    u16 nextHead = (rb->head + 1) % rb->size;
+    if (nextHead == rb->tail) {
         return RING_BUF_FULL;
     }
 
-    ring_buf[head] = data;
-    head = nextHead;
+    rb->ringBuf[rb->head] = data;
+    rb->head = nextHead;
     return RING_BUF_OK;
 }
 
-bool ring_buf_can_read(void)
+bool ring_buf_can_read(ring_buf_t* rb)
 {
-    return tail != head;
+    if (rb == NULL || rb->ringBuf == NULL || rb->size < 2) {
+        return false;
+    }
+    return rb->tail != rb->head;
 }
 
-u16 ring_buf_available(void)
+u16 ring_buf_available(ring_buf_t* rb)
 {
-    if (tail == head) {
-        return RING_BUF_CAPACITY;
-    } else if (tail < head) {
-        return RING_BUF_CAPACITY - (head - tail);
+    if (rb == NULL || rb->ringBuf == NULL || rb->size < 2) {
+        return 0;
+    }
+
+    u16 capacity = rb->size - 1;
+    if (rb->tail == rb->head) {
+        return capacity;
+    } else if (rb->tail < rb->head) {
+        return capacity - (rb->head - rb->tail);
     } else {
-        return tail - head - 1;
+        return rb->tail - rb->head - 1;
     }
 }
 
-bool ring_buf_can_write(void)
+bool ring_buf_can_write(ring_buf_t* rb)
 {
-    u16 nextHead = (head + 1) % RING_BUF_SIZE;
-    return nextHead != tail;
+    if (rb == NULL || rb->ringBuf == NULL || rb->size < 2) {
+        return false;
+    }
+
+    u16 nextHead = (rb->head + 1) % rb->size;
+    return nextHead != rb->tail;
 }

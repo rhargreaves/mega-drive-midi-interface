@@ -1,6 +1,5 @@
 #include "comm_demo.h"
 #include "midi_fm.h"
-#include "log.h"
 #include "scheduler.h"
 #include "midi.h"
 #include "ring_buf.h"
@@ -18,6 +17,8 @@ static u8 program;
 static u16 prev_joy_state;
 static u16 repeat_timer;
 static u16 repeat_button;
+static u8 ring_buf_arr[24];
+static ring_buf_t ring_buf;
 
 #define REPEAT_DELAY 10
 #define INITIAL_DELAY 30
@@ -33,7 +34,7 @@ void comm_demo_init(void)
     repeat_timer = 0;
     repeat_button = 0;
     played_initial_sequence = false;
-    ring_buf_init();
+    ring_buf_init(&ring_buf, ring_buf_arr, sizeof(ring_buf_arr));
 }
 
 bool comm_demo_is_present(void)
@@ -48,13 +49,13 @@ u8 comm_demo_read_ready(void)
             enabled = true;
 
             if (!played_initial_sequence) {
-                ring_buf_write(0xB0);
-                ring_buf_write(CC_SHOW_PARAMETERS_ON_UI);
-                ring_buf_write(0x7F);
+                ring_buf_write(&ring_buf, 0xB0);
+                ring_buf_write(&ring_buf, CC_SHOW_PARAMETERS_ON_UI);
+                ring_buf_write(&ring_buf, 0x7F);
 
-                ring_buf_write(noteOnStatus);
-                ring_buf_write(pitch);
-                ring_buf_write(0x7F);
+                ring_buf_write(&ring_buf, noteOnStatus);
+                ring_buf_write(&ring_buf, pitch);
+                ring_buf_write(&ring_buf, 0x7F);
                 played_initial_sequence = true;
             }
 
@@ -62,13 +63,13 @@ u8 comm_demo_read_ready(void)
             return false;
         }
     }
-    return ring_buf_can_read();
+    return ring_buf_can_read(&ring_buf);
 }
 
 u8 comm_demo_read(void)
 {
     u8 data;
-    if (ring_buf_read(&data) == RING_BUF_OK) {
+    if (ring_buf_read(&ring_buf, &data) == RING_BUF_OK) {
         return data;
     } else {
         return 0;
@@ -77,22 +78,22 @@ u8 comm_demo_read(void)
 
 static void send_note_off(u8 pitch)
 {
-    ring_buf_write(noteOffStatus);
-    ring_buf_write(pitch);
-    ring_buf_write(0);
+    ring_buf_write(&ring_buf, noteOffStatus);
+    ring_buf_write(&ring_buf, pitch);
+    ring_buf_write(&ring_buf, 0);
 }
 
 static void send_note_on(u8 pitch)
 {
-    ring_buf_write(noteOnStatus);
-    ring_buf_write(pitch);
-    ring_buf_write(noteVelocity);
+    ring_buf_write(&ring_buf, noteOnStatus);
+    ring_buf_write(&ring_buf, pitch);
+    ring_buf_write(&ring_buf, noteVelocity);
 }
 
 static void send_program_change(u8 program)
 {
-    ring_buf_write(programChange);
-    ring_buf_write(program);
+    ring_buf_write(&ring_buf, programChange);
+    ring_buf_write(&ring_buf, program);
 }
 
 static bool should_repeat_button(u16 joy_state, u16 button_mask)

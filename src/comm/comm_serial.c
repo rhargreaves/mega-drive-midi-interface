@@ -6,6 +6,8 @@
 #include "user_prefs.h"
 
 static bool recvData = false;
+static u8 ring_buf_arr[512];
+static ring_buf_t ring_buf;
 
 u16 baud_rate(void)
 {
@@ -26,7 +28,7 @@ static void update_buffer(void)
     while (serial_readyToReceive()) {
         recvData = true;
 
-        ring_buf_status_t status = ring_buf_write(serial_receive());
+        ring_buf_status_t status = ring_buf_write(&ring_buf, serial_receive());
         if (status == RING_BUF_FULL) {
             log_warn("Serial: Buffer overflow!");
             break;
@@ -48,7 +50,7 @@ static void flush_rrdy(void)
 
 void comm_serial_init(void)
 {
-    ring_buf_init();
+    ring_buf_init(&ring_buf, ring_buf_arr, sizeof(ring_buf_arr));
     serial_init(COMM_SERIAL_PORT, SCTRL_4800_BPS | SCTRL_SIN | SCTRL_SOUT | SCTRL_RINT);
     serial_setReadyToReceiveCallback(&recv_ready_callback);
     flush_rrdy();
@@ -66,15 +68,15 @@ u8 comm_serial_read_ready(void)
 {
     if (!recvData)
         return false;
-    return ring_buf_can_read();
+    return ring_buf_can_read(&ring_buf);
 }
 
 u8 comm_serial_read(void)
 {
     u8 data = 0;
-    ring_buf_status_t status = ring_buf_read(&data);
+    ring_buf_status_t status = ring_buf_read(&ring_buf, &data);
     if (status == RING_BUF_OK) {
-        u16 bufferAvailable = ring_buf_available();
+        u16 bufferAvailable = ring_buf_available(&ring_buf);
         if (bufferAvailable < 32) {
             log_warn("Serial: Buffer free = %d bytes", bufferAvailable);
         }

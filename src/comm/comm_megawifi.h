@@ -1,6 +1,8 @@
 #pragma once
 #include "genesis.h"
 
+#define MW_RX_TX_BUFFER_SIZE 1460
+
 void comm_megawifi_init(void);
 bool comm_megawifi_is_present(void);
 u8 comm_megawifi_read_ready(void);

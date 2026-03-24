@@ -1,8 +1,8 @@
 #include "test_comm_megawifi.h"
 #include "comm/applemidi.h"
+#include "comm/comm_megawifi.h"
 #include "ext/mw/megawifi.h"
 #include "ext/mw/lsd.h"
-#include "comm/ring_buf.h"
 #include "settings.h"
 #include "comm/ip_util.h"
 #include "mocks/mock_log.h"
@@ -13,7 +13,6 @@
 int test_comm_megawifi_setup(UNUSED void** state)
 {
     log_init();
-    ring_buf_init();
     mock_log_enable_checks();
     return 0;
 }
@@ -88,9 +87,11 @@ void test_comm_megawifi_reads_midi_message(UNUSED void** state)
 
 void test_comm_megawifi_logs_if_buffer_full(UNUSED void** state)
 {
+    megawifi_init();
+
     expect_log_warn("MW: MIDI buffer full!");
 
-    for (u16 i = 0; i < RING_BUF_CAPACITY + 1; i++) {
+    for (u16 i = 0; i < MW_RX_TX_BUFFER_SIZE; i++) {
         __real_comm_megawifi_midiEmitCallback(0x00);
     }
 }
