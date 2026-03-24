@@ -12,6 +12,11 @@ typedef enum {
     MIDI_PKT_UNSUPPORTED_COMMAND,
 } midi_pkt_result;
 
+typedef enum {
+    APPLEMIDI_CTRL_EVENT_NONE = 0,
+    APPLEMIDI_CTRL_EVENT_SESSION_END,
+} applemidi_control_event;
+
 #define MEGADRIVE_SSRC 0x9E915150
 #define CH_CONTROL_PORT 1
 #define CH_MIDI_PORT 2
@@ -61,7 +66,8 @@ union PACK_BIG_ENDIAN AppleMidiExchangePacket {
 
 typedef union AppleMidiExchangePacket AppleMidiExchangePacket;
 
-midi_pkt_result applemidi_processSessionControlPacket(char* buffer, u16 length);
+midi_pkt_result applemidi_processSessionControlPacket(
+    char* buffer, u16 length, applemidi_control_event* event);
 midi_pkt_result applemidi_processSessionMidiPacket(char* buffer, u16 length);
 u16 applemidi_lastSequenceNumber(void);
 void applemidi_updateLastSeqNum(u16 seqNum);

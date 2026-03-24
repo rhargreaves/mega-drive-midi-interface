@@ -155,8 +155,18 @@ static bool is_receiver_feedback_command(char* command)
     return command[0] == 'R' && command[1] == 'S';
 }
 
-midi_pkt_result applemidi_processSessionControlPacket(char* buffer, u16 length)
+static bool is_session_end_command(char* command)
 {
+    return command[0] == 'B' && command[1] == 'Y';
+}
+
+midi_pkt_result applemidi_processSessionControlPacket(
+    char* buffer, u16 length, applemidi_control_event* event)
+{
+    if (event != NULL) {
+        *event = APPLEMIDI_CTRL_EVENT_NONE;
+    }
+
     if (!has_apple_midi_signature(buffer, length)) {
         return MIDI_PKT_INVALID_SIGNATURE;
     }
@@ -164,6 +174,11 @@ midi_pkt_result applemidi_processSessionControlPacket(char* buffer, u16 length)
     if (is_invitation_command(command)) {
         return process_invitation(CH_CONTROL_PORT, buffer, length);
     } else if (is_receiver_feedback_command(command)) {
+        return MIDI_PKT_OK;
+    } else if (is_session_end_command(command)) {
+        if (event != NULL) {
+            *event = APPLEMIDI_CTRL_EVENT_SESSION_END;
+        }
         return MIDI_PKT_OK;
     }
 

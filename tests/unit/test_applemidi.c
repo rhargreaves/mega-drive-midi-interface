@@ -28,9 +28,26 @@ void test_applemidi_accepts_receiver_feedback_packet(UNUSED void** state)
     char receiverFeedbackPacket[] = { 0xff, 0xff, 'R', 'S',
         /* SSRC */ 0x9E, 0x91, 0x51, 0x50,
         /* sequence number */ 0x00, 0x01, 0x00, 0x00 };
+    applemidi_control_event event = APPLEMIDI_CTRL_EVENT_NONE;
 
     midi_pkt_result result = applemidi_processSessionControlPacket(
-        receiverFeedbackPacket, sizeof(receiverFeedbackPacket));
+        receiverFeedbackPacket, sizeof(receiverFeedbackPacket), &event);
 
     assert_int_equal(result, MIDI_PKT_OK);
+    assert_int_equal(event, APPLEMIDI_CTRL_EVENT_NONE);
+}
+
+void test_applemidi_emits_session_end_event(UNUSED void** state)
+{
+    char sessionEndPacket[] = { 0xff, 0xff, 'B', 'Y',
+        /* protocol version */ 0x00, 0x00, 0x00, 0x02,
+        /* init token */ 0x00, 0x00, 0x00, 0x00,
+        /* SSRC */ 0x11, 0x22, 0x33, 0x44 };
+    applemidi_control_event event = APPLEMIDI_CTRL_EVENT_NONE;
+
+    midi_pkt_result result
+        = applemidi_processSessionControlPacket(sessionEndPacket, sizeof(sessionEndPacket), &event);
+
+    assert_int_equal(result, MIDI_PKT_OK);
+    assert_int_equal(event, APPLEMIDI_CTRL_EVENT_SESSION_END);
 }

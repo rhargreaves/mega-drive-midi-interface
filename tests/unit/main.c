@@ -400,6 +400,7 @@ int main(void)
 
         applemidi_test(test_applemidi_sends_receiver_feedback),
         applemidi_test(test_applemidi_accepts_receiver_feedback_packet),
+        applemidi_test(test_applemidi_emits_session_end_event),
 
         ring_buf_test(test_ring_buf_reads_and_writes_single_byte),
         ring_buf_test(test_ring_buf_reads_and_writes_circularly_over_capacity),

@@ -46,6 +46,7 @@ static char txBuffer[MW_RX_TX_BUFFER_SIZE];
 static void init_mega_wifi(void);
 static void recv_complete_cb(enum lsd_status stat, uint8_t ch, char* data, uint16_t len, void* ctx);
 static void send_buffered_packet(void);
+static void reset_remote_endpoint(void);
 
 void comm_megawifi_init(void)
 {
@@ -238,9 +239,15 @@ void comm_megawifi_write(const u8* data, u16 length)
 static void process_udp_data(u8 ch, char* buffer, u16 length)
 {
     switch (ch) {
-    case CH_CONTROL_PORT:
-        applemidi_processSessionControlPacket(buffer, length);
+    case CH_CONTROL_PORT: {
+        applemidi_control_event event = APPLEMIDI_CTRL_EVENT_NONE;
+        applemidi_processSessionControlPacket(buffer, length, &event);
+        if (event == APPLEMIDI_CTRL_EVENT_SESSION_END) {
+            reset_remote_endpoint();
+            log_info("MW: Session ended");
+        }
         break;
+    }
     case CH_MIDI_PORT:
         if (has_apple_midi_signature(buffer, length)) {
             applemidi_processSessionMidiPacket(buffer, length);
@@ -261,6 +268,14 @@ static void persist_remote_endpoint(u8 ch, u32 ip, u16 port)
         remoteControlPort = port - 1;
         remoteMidiPort = port;
     }
+}
+
+static void reset_remote_endpoint(void)
+{
+    remoteIp = 0;
+    remoteControlPort = 0;
+    remoteMidiPort = 0;
+    connected = false;
 }
 
 static void restore_remote_endpoint(u8 ch, u32* ip, u16* port)
