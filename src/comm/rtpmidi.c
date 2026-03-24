@@ -167,7 +167,7 @@ u16 rtpmidi_packRtpMidiPacket(const u8* midiData, u16 midiDataLength, u8* buffer
     applemidi_getLocalTimestamp(&timestampHi, &timestampLo);
 
     buffer[0] = 0x80; /* V=2 P=0 X=0 CC=0 */
-    bool marker = midiDataLength > 0; /* M */
+    const bool marker = false; /* M - needs to be 0 for macOS to receive */
     buffer[1] = (marker ? 0x80 : 0x00) | RTP_MIDI_PAYLOAD_TYPE;
     buffer[2] = (u8)(sendSeqNum >> 8);
     buffer[3] = (u8)(sendSeqNum & 0xFF);

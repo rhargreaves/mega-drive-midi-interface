@@ -383,7 +383,7 @@ void test_rtpmidi_pack_packet_with_short_header(UNUSED void** state)
 
     assert_int_equal(packedLength, RTP_MIDI_HEADER_LEN + 1 + sizeof(midiData));
     assert_int_equal(buffer[0], 0x80);
-    assert_int_equal(buffer[1], 0xE1);
+    assert_int_equal(buffer[1], 0x61);
     assert_int_equal(buffer[12], sizeof(midiData));
     assert_memory_equal(&buffer[13], midiData, sizeof(midiData));
 }
@@ -398,7 +398,7 @@ void test_rtpmidi_pack_packet_with_long_header(UNUSED void** state)
 
     assert_int_equal(packedLength, RTP_MIDI_HEADER_LEN + 2 + sizeof(midiData));
     assert_int_equal(buffer[0], 0x80);
-    assert_int_equal(buffer[1], 0xE1);
+    assert_int_equal(buffer[1], 0x61);
     assert_int_equal(buffer[12], 0x80);
     assert_int_equal(buffer[13], sizeof(midiData));
     assert_memory_equal(&buffer[14], midiData, sizeof(midiData));
