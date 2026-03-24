@@ -44,6 +44,7 @@
 #define pitchcents_test(test) cmocka_unit_test(test)
 #define serial_test(test) cmocka_unit_test_setup(test, test_serial_setup)
 #define crc_test(test) cmocka_unit_test(test)
+#define rtpmidi_test(test) cmocka_unit_test_setup(test, test_rtpmidi_setup)
 
 int main(void)
 {
@@ -454,30 +455,30 @@ int main(void)
         crc_test(test_crc_calculate_crc16),
         crc_test(test_crc_calculate_another_crc16),
 
-        cmocka_unit_test(test_rtpmidi_does_not_read_beyond_buffer_length),
-        cmocka_unit_test(test_rtpmidi_returns_when_header_too_short),
-        cmocka_unit_test(test_rtpmidi_updates_applemidi_last_sequence_number),
-        cmocka_unit_test(test_rtpmidi_parses_packet_with_single_midi_event),
-        cmocka_unit_test(test_rtpmidi_parses_packet_with_single_midi_event_long_header),
-        cmocka_unit_test(test_rtpmidi_parses_packet_with_single_2_byte_midi_event),
-        cmocka_unit_test(test_rtpmidi_parses_packet_with_two_midi_events),
-        cmocka_unit_test(test_rtpmidi_parses_packet_with_multiple_midi_events),
-        cmocka_unit_test(test_rtpmidi_parses_packet_with_multiple_different_midi_events),
-        cmocka_unit_test(test_rtpmidi_parses_packet_with_multiple_2_byte_midi_events),
-        cmocka_unit_test(test_rtpmidi_parses_packet_with_sysex),
-        cmocka_unit_test(test_rtpmidi_parses_notes_sysex_cc_in_one_packet),
-        cmocka_unit_test(test_rtpmidi_ignores_middle_sysex_segments),
-        cmocka_unit_test(test_rtpmidi_processes_multiple_sysex_segments),
-        cmocka_unit_test(test_rtpmidi_processes_ccs),
-        cmocka_unit_test(test_rtpmidi_sets_last_sequence_number),
-        cmocka_unit_test(test_rtpmidi_parses_packet_with_sysex_ending_with_F0),
-        cmocka_unit_test(test_rtpmidi_parses_packet_with_sysex_with_0xF7_at_end),
-        cmocka_unit_test(test_rtpmidi_does_not_read_beyond_length),
-        cmocka_unit_test(test_rtpmidi_parses_packet_with_system_reset),
-        cmocka_unit_test(test_rtpmidi_pack_packet_with_short_header),
-        cmocka_unit_test(test_rtpmidi_pack_packet_with_long_header),
-        cmocka_unit_test(test_rtpmidi_pack_packet_returns_zero_when_buffer_too_small),
-        cmocka_unit_test(test_rtpmidi_pack_packet_sequence_starts_at_zero),
+        rtpmidi_test(test_rtpmidi_does_not_read_beyond_buffer_length),
+        rtpmidi_test(test_rtpmidi_returns_when_header_too_short),
+        rtpmidi_test(test_rtpmidi_updates_applemidi_last_sequence_number),
+        rtpmidi_test(test_rtpmidi_parses_packet_with_single_midi_event),
+        rtpmidi_test(test_rtpmidi_parses_packet_with_single_midi_event_long_header),
+        rtpmidi_test(test_rtpmidi_parses_packet_with_single_2_byte_midi_event),
+        rtpmidi_test(test_rtpmidi_parses_packet_with_two_midi_events),
+        rtpmidi_test(test_rtpmidi_parses_packet_with_multiple_midi_events),
+        rtpmidi_test(test_rtpmidi_parses_packet_with_multiple_different_midi_events),
+        rtpmidi_test(test_rtpmidi_parses_packet_with_multiple_2_byte_midi_events),
+        rtpmidi_test(test_rtpmidi_parses_packet_with_sysex),
+        rtpmidi_test(test_rtpmidi_parses_notes_sysex_cc_in_one_packet),
+        rtpmidi_test(test_rtpmidi_ignores_middle_sysex_segments),
+        rtpmidi_test(test_rtpmidi_processes_multiple_sysex_segments),
+        rtpmidi_test(test_rtpmidi_processes_ccs),
+        rtpmidi_test(test_rtpmidi_sets_last_sequence_number),
+        rtpmidi_test(test_rtpmidi_parses_packet_with_sysex_ending_with_F0),
+        rtpmidi_test(test_rtpmidi_parses_packet_with_sysex_with_0xF7_at_end),
+        rtpmidi_test(test_rtpmidi_does_not_read_beyond_length),
+        rtpmidi_test(test_rtpmidi_parses_packet_with_system_reset),
+        rtpmidi_test(test_rtpmidi_pack_packet_with_short_header),
+        rtpmidi_test(test_rtpmidi_pack_packet_with_long_header),
+        rtpmidi_test(test_rtpmidi_pack_packet_returns_zero_when_buffer_too_small),
+        rtpmidi_test(test_rtpmidi_pack_packet_sequence_starts_at_zero),
         // clang-format on
     };
 

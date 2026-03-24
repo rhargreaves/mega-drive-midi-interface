@@ -2,6 +2,12 @@
 #include "comm/rtpmidi.h"
 #include "mocks/mock_midi.h"
 
+int test_rtpmidi_setup(UNUSED void** state)
+{
+    rtpmidi_init();
+    return 0;
+}
+
 void test_rtpmidi_does_not_read_beyond_buffer_length(UNUSED void** state)
 {
     char rtp_packet[] = { /* V P X CC M PT */ 0x80, 0x61,
@@ -415,11 +421,8 @@ void test_rtpmidi_pack_packet_sequence_starts_at_zero(UNUSED void** state)
     u8 buffer[64] = { 0 };
     u8 resetBuffer[64] = { 0 };
 
-    rtpmidi_resetSendState();
-
     u16 packedLength
         = rtpmidi_packRtpMidiPacket(midiData, sizeof(midiData), buffer, sizeof(buffer));
-
     assert_int_not_equal(packedLength, 0);
     assert_int_equal(buffer[2], 0x00);
     assert_int_equal(buffer[3], 0x01);
@@ -428,7 +431,7 @@ void test_rtpmidi_pack_packet_sequence_starts_at_zero(UNUSED void** state)
     assert_int_equal(buffer[2], 0x00);
     assert_int_equal(buffer[3], 0x02);
 
-    rtpmidi_resetSendState();
+    rtpmidi_init();
     rtpmidi_packRtpMidiPacket(midiData, sizeof(midiData), resetBuffer, sizeof(resetBuffer));
     assert_int_equal(resetBuffer[2], 0x00);
     assert_int_equal(resetBuffer[3], 0x01);

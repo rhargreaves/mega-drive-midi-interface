@@ -30,13 +30,12 @@ static u16 remoteControlPort;
 static u16 remoteMidiPort;
 
 typedef enum { RX_IDLE, RX_ARMED, RX_BUFFERED } rx_state;
+typedef enum { TX_IDLE, TX_QUEUED, TX_INFLIGHT } tx_state;
 
 static rx_state rxState;
 static int rxCh;
 static int rxLen;
 static char rxBuffer[RX_TX_BUFFER_SIZE];
-
-typedef enum { TX_IDLE, TX_QUEUED, TX_INFLIGHT } tx_state;
 
 static tx_state txState;
 static int txCh;
@@ -49,6 +48,8 @@ static void send_buffered_packet(void);
 
 void comm_megawifi_init(void)
 {
+    rtpmidi_init();
+
     memset(cmd_buf, 0, sizeof(cmd_buf));
     recvData = false;
     listening = false;
@@ -64,11 +65,9 @@ void comm_megawifi_init(void)
     rxState = RX_IDLE;
     rxCh = 0;
     rxLen = 0;
-
+    txState = TX_IDLE;
     txCh = 0;
     txLen = 0;
-    txState = TX_IDLE;
-    rtpmidi_resetSendState();
 
     scheduler_addTickHandler(comm_megawifi_tick);
     scheduler_addFrameHandler(comm_megawifi_vsync);

@@ -17,7 +17,7 @@
 
 static u16 sendSeqNum = SEQ_NUM_START;
 
-void rtpmidi_resetSendState(void)
+void rtpmidi_init(void)
 {
     sendSeqNum = SEQ_NUM_START;
 }
