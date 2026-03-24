@@ -23,3 +23,4 @@ void test_rtpmidi_does_not_read_beyond_length(UNUSED void** state);
 void test_rtpmidi_pack_packet_with_short_header(UNUSED void** state);
 void test_rtpmidi_pack_packet_with_long_header(UNUSED void** state);
 void test_rtpmidi_pack_packet_returns_zero_when_buffer_too_small(UNUSED void** state);
+void test_rtpmidi_pack_packet_sequence_starts_at_zero(UNUSED void** state);

@@ -477,6 +477,7 @@ int main(void)
         cmocka_unit_test(test_rtpmidi_pack_packet_with_short_header),
         cmocka_unit_test(test_rtpmidi_pack_packet_with_long_header),
         cmocka_unit_test(test_rtpmidi_pack_packet_returns_zero_when_buffer_too_small),
+        cmocka_unit_test(test_rtpmidi_pack_packet_sequence_starts_at_zero),
         // clang-format on
     };
 

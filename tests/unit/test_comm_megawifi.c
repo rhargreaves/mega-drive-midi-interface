@@ -114,7 +114,7 @@ void test_comm_megawifi_write_sends_sysex_over_udp_reuse_send(UNUSED void** stat
     char expectedPacket[] = { /* remote IP */ 0x00, 0x00, 0x00, 0x00,
         /* remote port */ 0x00, 0x00,
         /* V P X CC | M PT */ 0x80, 0xE1,
-        /* sequence number */ 0x00, 0x00,
+        /* sequence number */ 0x00, 0x01,
         /* timestamp */ 0x00, 0x00, 0x00, 0x00,
         /* SSRC */ 0x9E, 0x91, 0x51, 0x50,
         /* MIDI command section: B J Z P LEN... */ 0x04,

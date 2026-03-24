@@ -47,8 +47,8 @@ void test_rtpmidi_updates_applemidi_last_sequence_number(UNUSED void** state)
 
 void test_rtpmidi_parses_packet_with_single_midi_event(UNUSED void** state)
 {
-    char rtp_packet[1024] = { 0x80, 0x61, 0x8c, 0x24, 0x00, 0x58, 0xbb, 0x40, 0xac, 0x67, 0xe1, 0x08,
-        0x03, 0x90, 0x48, 0x6f };
+    char rtp_packet[1024] = { 0x80, 0x61, 0x8c, 0x24, 0x00, 0x58, 0xbb, 0x40, 0xac, 0x67, 0xe1,
+        0x08, 0x03, 0x90, 0x48, 0x6f };
 
     size_t len = sizeof(rtp_packet);
 
@@ -100,8 +100,8 @@ void test_rtpmidi_parses_packet_with_multiple_2_byte_midi_events(UNUSED void** s
 
 void test_rtpmidi_parses_packet_with_single_midi_event_long_header(UNUSED void** state)
 {
-    char rtp_packet[1024] = { 0x80, 0x61, 0x8c, 0x24, 0x00, 0x58, 0xbb, 0x40, 0xac, 0x67, 0xe1, 0x08,
-        0xC0, 0x03, 0x90, 0x48, 0x6f };
+    char rtp_packet[1024] = { 0x80, 0x61, 0x8c, 0x24, 0x00, 0x58, 0xbb, 0x40, 0xac, 0x67, 0xe1,
+        0x08, 0xC0, 0x03, 0x90, 0x48, 0x6f };
 
     size_t len = sizeof(rtp_packet);
 
@@ -115,8 +115,8 @@ void test_rtpmidi_parses_packet_with_single_midi_event_long_header(UNUSED void**
 
 void test_rtpmidi_parses_packet_with_two_midi_events(UNUSED void** state)
 {
-    char rtp_packet[1024] = { 0x80, 0x61, 0x8c, 0x24, 0x00, 0x58, 0xbb, 0x40, 0xac, 0x67, 0xe1, 0x08,
-        0x06, 0x90, 0x48, 0x6f, 0x00, 0x51, 0x7c };
+    char rtp_packet[1024] = { 0x80, 0x61, 0x8c, 0x24, 0x00, 0x58, 0xbb, 0x40, 0xac, 0x67, 0xe1,
+        0x08, 0x06, 0x90, 0x48, 0x6f, 0x00, 0x51, 0x7c };
 
     size_t len = sizeof(rtp_packet);
 
@@ -133,8 +133,8 @@ void test_rtpmidi_parses_packet_with_two_midi_events(UNUSED void** state)
 
 void test_rtpmidi_parses_packet_with_multiple_midi_events(UNUSED void** state)
 {
-    char rtp_packet[1024] = { 0x80, 0x61, 0x8c, 0x24, 0x00, 0x58, 0xbb, 0x40, 0xac, 0x67, 0xe1, 0x08,
-        0x09, 0x90, 0x48, 0x6f, 0x00, 0x51, 0x6f, 0x00, 0x48, 0x6f };
+    char rtp_packet[1024] = { 0x80, 0x61, 0x8c, 0x24, 0x00, 0x58, 0xbb, 0x40, 0xac, 0x67, 0xe1,
+        0x08, 0x09, 0x90, 0x48, 0x6f, 0x00, 0x51, 0x6f, 0x00, 0x48, 0x6f };
 
     size_t len = sizeof(rtp_packet);
 
@@ -205,8 +205,8 @@ void test_rtpmidi_parses_packet_with_sysex_with_0xF7_at_end(UNUSED void** state)
 
 void test_rtpmidi_parses_packet_with_multiple_different_midi_events(UNUSED void** state)
 {
-    char rtp_packet[1024] = { 0x80, 0x61, 0x8c, 0x24, 0x00, 0x58, 0xbb, 0x40, 0xac, 0x67, 0xe1, 0x08,
-        0x0A, 0x90, 0x48, 0x6f, 0x00, 0x51, 0x6f, 0x00, 0x80, 0x48, 0x6f };
+    char rtp_packet[1024] = { 0x80, 0x61, 0x8c, 0x24, 0x00, 0x58, 0xbb, 0x40, 0xac, 0x67, 0xe1,
+        0x08, 0x0A, 0x90, 0x48, 0x6f, 0x00, 0x51, 0x6f, 0x00, 0x80, 0x48, 0x6f };
 
     size_t len = sizeof(rtp_packet);
 
@@ -226,8 +226,8 @@ void test_rtpmidi_parses_packet_with_multiple_different_midi_events(UNUSED void*
 
 void test_rtpmidi_parses_packet_with_system_reset(UNUSED void** state)
 {
-    char rtp_packet[1024] = { 0x80, 0x61, 0x8c, 0x24, 0x00, 0x58, 0xbb, 0x40, 0xac, 0x67, 0xe1, 0x08,
-        0x01, 0xff };
+    char rtp_packet[1024]
+        = { 0x80, 0x61, 0x8c, 0x24, 0x00, 0x58, 0xbb, 0x40, 0xac, 0x67, 0xe1, 0x08, 0x01, 0xff };
 
     size_t len = sizeof(rtp_packet);
     expect_midi_emit(0xff);
@@ -281,8 +281,9 @@ void test_rtpmidi_ignores_middle_sysex_segments(UNUSED void** state)
 
     for (u8 i = 0; i < 2; i++) {
         const u8 ending = endings[i];
-        char rtp_packet[] = { 0x80, 0x61, 0xe0, 0x19, 0x03, 0x31, 0xdd, 0x6d, 0x09, 0x0f, 0x92, 0xe9,
-            0xc0, cmd_length, 0x90, 0x60, 0x61, 0x00, 0xF7, 0x00, ending, 0x01, 0x90, 0x60, 0x61 };
+        char rtp_packet[]
+            = { 0x80, 0x61, 0xe0, 0x19, 0x03, 0x31, 0xdd, 0x6d, 0x09, 0x0f, 0x92, 0xe9, 0xc0,
+                  cmd_length, 0x90, 0x60, 0x61, 0x00, 0xF7, 0x00, ending, 0x01, 0x90, 0x60, 0x61 };
 
         size_t len = sizeof(rtp_packet);
         expect_midi_emit_trio(0x90, 0x60, 0x61);
@@ -339,8 +340,8 @@ void test_rtpmidi_processes_ccs(UNUSED void** state)
 void test_rtpmidi_sets_last_sequence_number(UNUSED void** state)
 {
     applemidi_updateLastSeqNum(0);
-    char rtp_packet[1024] = { 0x80, 0x61, 0x8c, 0x24, 0x00, 0x58, 0xbb, 0x40, 0xac, 0x67, 0xe1, 0x08,
-        0xC0, 0x03, 0x90, 0x48, 0x6f };
+    char rtp_packet[1024] = { 0x80, 0x61, 0x8c, 0x24, 0x00, 0x58, 0xbb, 0x40, 0xac, 0x67, 0xe1,
+        0x08, 0xC0, 0x03, 0x90, 0x48, 0x6f };
 
     size_t len = sizeof(rtp_packet);
     expect_midi_emit(0x90);
@@ -355,8 +356,8 @@ void test_rtpmidi_sets_last_sequence_number(UNUSED void** state)
 void test_rtpmidi_does_not_read_beyond_length(UNUSED void** state)
 {
     u8 length = 4;
-    char rtp_packet[1024] = { 0x80, 0x61, 0x8c, 0x24, 0x00, 0x58, 0xbb, 0x40, 0xac, 0x67, 0xe1, 0x08,
-        0xC0, length, 0xF0, 0x01, 0xF7, 0x00, 0x00 };
+    char rtp_packet[1024] = { 0x80, 0x61, 0x8c, 0x24, 0x00, 0x58, 0xbb, 0x40, 0xac, 0x67, 0xe1,
+        0x08, 0xC0, length, 0xF0, 0x01, 0xF7, 0x00, 0x00 };
 
     size_t len = sizeof(rtp_packet);
     expect_midi_emit_trio(0xF0, 0x01, 0xF7);
@@ -371,7 +372,8 @@ void test_rtpmidi_pack_packet_with_short_header(UNUSED void** state)
     u8 midiData[] = { 0x90, 0x48, 0x6f };
     u8 buffer[64] = { 0 };
 
-    u16 packedLength = rtpmidi_packRtpMidiPacket(midiData, sizeof(midiData), buffer, sizeof(buffer));
+    u16 packedLength
+        = rtpmidi_packRtpMidiPacket(midiData, sizeof(midiData), buffer, sizeof(buffer));
 
     assert_int_equal(packedLength, RTP_MIDI_HEADER_LEN + 1 + sizeof(midiData));
     assert_int_equal(buffer[0], 0x80);
@@ -385,7 +387,8 @@ void test_rtpmidi_pack_packet_with_long_header(UNUSED void** state)
     u8 midiData[16] = { 0 };
     u8 buffer[64] = { 0 };
 
-    u16 packedLength = rtpmidi_packRtpMidiPacket(midiData, sizeof(midiData), buffer, sizeof(buffer));
+    u16 packedLength
+        = rtpmidi_packRtpMidiPacket(midiData, sizeof(midiData), buffer, sizeof(buffer));
 
     assert_int_equal(packedLength, RTP_MIDI_HEADER_LEN + 2 + sizeof(midiData));
     assert_int_equal(buffer[0], 0x80);
@@ -400,7 +403,33 @@ void test_rtpmidi_pack_packet_returns_zero_when_buffer_too_small(UNUSED void** s
     u8 midiData[] = { 0x90, 0x48, 0x6f };
     u8 buffer[8] = { 0 };
 
-    u16 packedLength = rtpmidi_packRtpMidiPacket(midiData, sizeof(midiData), buffer, sizeof(buffer));
+    u16 packedLength
+        = rtpmidi_packRtpMidiPacket(midiData, sizeof(midiData), buffer, sizeof(buffer));
 
     assert_int_equal(packedLength, 0);
+}
+
+void test_rtpmidi_pack_packet_sequence_starts_at_zero(UNUSED void** state)
+{
+    u8 midiData[] = { 0x90, 0x48, 0x6f };
+    u8 buffer[64] = { 0 };
+    u8 resetBuffer[64] = { 0 };
+
+    rtpmidi_resetSendState();
+
+    u16 packedLength
+        = rtpmidi_packRtpMidiPacket(midiData, sizeof(midiData), buffer, sizeof(buffer));
+
+    assert_int_not_equal(packedLength, 0);
+    assert_int_equal(buffer[2], 0x00);
+    assert_int_equal(buffer[3], 0x01);
+
+    rtpmidi_packRtpMidiPacket(midiData, sizeof(midiData), buffer, sizeof(buffer));
+    assert_int_equal(buffer[2], 0x00);
+    assert_int_equal(buffer[3], 0x02);
+
+    rtpmidi_resetSendState();
+    rtpmidi_packRtpMidiPacket(midiData, sizeof(midiData), resetBuffer, sizeof(resetBuffer));
+    assert_int_equal(resetBuffer[2], 0x00);
+    assert_int_equal(resetBuffer[3], 0x01);
 }

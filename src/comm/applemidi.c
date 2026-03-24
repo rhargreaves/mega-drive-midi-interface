@@ -12,6 +12,15 @@ static char inviteSendBuffer[UDP_PKT_BUFFER_LEN];
 static midi_pkt_result unpack_invitation(char* buffer, u16 length, AppleMidiExchangePacket* invite);
 static void send_invite_response(u8 ch, AppleMidiExchangePacket* invite);
 
+static u32 localTimestampHi = 0;
+static u32 localTimestampLo = 0;
+
+void applemidi_getLocalTimestamp(u32* timestampHi, u32* timestampLo)
+{
+    *timestampHi = localTimestampHi;
+    *timestampLo = localTimestampLo;
+}
+
 static midi_pkt_result process_invitation(u8 ch, char* buffer, u16 length)
 {
     AppleMidiExchangePacket packet;
@@ -109,8 +118,10 @@ static midi_pkt_result process_timestamp_sync(char* buffer, u16 length)
     }
     if (packet.count == 0) {
         packet.count = 1;
-        packet.timestamp2Hi = 0;
-        packet.timestamp2Lo = 0;
+        packet.timestamp2Hi = packet.timestamp1Hi;
+        packet.timestamp2Lo = packet.timestamp1Lo + 10;
+        localTimestampHi = packet.timestamp2Hi;
+        localTimestampLo = packet.timestamp2Lo;
         packet.senderSSRC = MEGADRIVE_SSRC;
 #if DEBUG_MEGAWIFI_SYNC
         log_info("AM: Timestamp Sync");

@@ -68,6 +68,7 @@ void comm_megawifi_init(void)
     txCh = 0;
     txLen = 0;
     txState = TX_IDLE;
+    rtpmidi_resetSendState();
 
     scheduler_addTickHandler(comm_megawifi_tick);
     scheduler_addFrameHandler(comm_megawifi_vsync);

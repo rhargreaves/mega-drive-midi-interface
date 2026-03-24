@@ -66,3 +66,4 @@ midi_pkt_result applemidi_processSessionMidiPacket(char* buffer, u16 length);
 u16 applemidi_lastSequenceNumber(void);
 void applemidi_updateLastSeqNum(u16 seqNum);
 enum mw_err applemidi_sendReceiverFeedback(void);
+void applemidi_getLocalTimestamp(u32* timestampHi, u32* timestampLo);
