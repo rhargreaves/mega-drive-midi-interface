@@ -12,6 +12,7 @@
 #define noteVelocity 127
 
 static bool enabled;
+static bool played_initial_sequence;
 static u8 pitch;
 static u8 program;
 static u16 prev_joy_state;
@@ -31,15 +32,8 @@ void comm_demo_init(void)
     prev_joy_state = 0;
     repeat_timer = 0;
     repeat_button = 0;
+    played_initial_sequence = false;
     ring_buf_init();
-
-    ring_buf_write(0xB0);
-    ring_buf_write(CC_SHOW_PARAMETERS_ON_UI);
-    ring_buf_write(0x7F);
-
-    ring_buf_write(noteOnStatus);
-    ring_buf_write(pitch);
-    ring_buf_write(0x7F);
 }
 
 bool comm_demo_is_present(void)
@@ -52,6 +46,18 @@ u8 comm_demo_read_ready(void)
     if (!enabled) {
         if (JOY_readJoypad(JOY_1) & BUTTON_A) {
             enabled = true;
+
+            if (!played_initial_sequence) {
+                ring_buf_write(0xB0);
+                ring_buf_write(CC_SHOW_PARAMETERS_ON_UI);
+                ring_buf_write(0x7F);
+
+                ring_buf_write(noteOnStatus);
+                ring_buf_write(pitch);
+                ring_buf_write(0x7F);
+                played_initial_sequence = true;
+            }
+
         } else {
             return false;
         }
