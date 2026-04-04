@@ -102,8 +102,7 @@ void test_midi_uses_PAL_frequencies_for_region(UNUSED void** state)
         print_message("Chan %d\n", chan);
         expect_synth_pitch(chan, 4, SYNTH_PAL_C);
         expect_synth_volume_any();
-        expect_value(__wrap_synth_noteOn, channel, chan);
-
+        expect_value(__wrap_synth_note_on, channel, chan);
         __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
     }
 }
