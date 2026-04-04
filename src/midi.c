@@ -832,7 +832,7 @@ typedef struct SysexCommand {
 
 static const SysexCommand SYSEX_COMMANDS[] = {
     { SYSEX_COMMAND_REMAP, midi_remap_channel_sysex, 2, true },
-    { SYSEX_COMMAND_PING, send_pong, 0, true },
+    { SYSEX_COMMAND_PING, send_pong, 0, false },
     { SYSEX_COMMAND_PONG, NULL, 0, true },
     { SYSEX_COMMAND_DYNAMIC, set_dynamic_mode_sysex, 1, true },
     { SYSEX_COMMAND_NON_GENERAL_MIDI_CCS, set_non_general_midi_ccs, 1, true },
@@ -890,10 +890,30 @@ void midi_sysex(const u8* data, u16 length)
 
 static void send_pong(const u8* data, u16 length)
 {
-    const u8 pongSequence[]
-        = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID, SYSEX_COMMAND_PONG };
+    u16 responseLength = 4;
+    if (length >= 1) {
+        responseLength += 1;
+    }
+    if (length >= 3 && data[1] == 0x01) {
+        responseLength += length - 2;
+    }
 
-    midi_tx_send_sysex(pongSequence, sizeof(pongSequence));
+    u8 pongSequence[responseLength];
+    u16 index = 0;
+    pongSequence[index++] = SYSEX_MANU_EXTENDED;
+    pongSequence[index++] = SYSEX_MANU_REGION;
+    pongSequence[index++] = SYSEX_MANU_ID;
+    pongSequence[index++] = SYSEX_COMMAND_PONG;
+
+    if (length >= 1) {
+        pongSequence[index++] = data[0];
+    }
+    if (length >= 3 && data[1] == 0x01) {
+        memcpy(&pongSequence[index], &data[2], length - 2);
+        index += length - 2;
+    }
+
+    midi_tx_send_sysex(pongSequence, index);
 }
 
 static bool valid_midi_channel(u8 midiChan)

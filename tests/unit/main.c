@@ -166,6 +166,10 @@ int main(void)
         // sysex
         midi_test(test_midi_sysex_general_midi_reset_resets_synth_volume),
         midi_test(test_midi_sysex_sends_all_notes_off),
+        midi_test(test_midi_sysex_ping_returns_pong),
+        midi_test(test_midi_sysex_ping_with_id_returns_pong_with_id),
+        midi_test(test_midi_sysex_ping_with_id_and_data_returns_pong_with_id_and_data),
+        midi_test(test_midi_sysex_ping_with_id_and_do_not_echo_data_returns_pong_with_id_only),
         midi_test(test_midi_sysex_ignores_unknown_sysex),
         midi_test(test_midi_sysex_remaps_midi_channel_to_psg),
         midi_test(test_midi_sysex_remaps_midi_channel_to_fm),

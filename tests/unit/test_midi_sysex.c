@@ -6,12 +6,89 @@
 #define SRAM_PRESET_LENGTH 36
 #define SRAM_PRESET_START 32
 
+static const u8 PING_TEST_ID = 0x2A;
+static const u8 PING_ECHO_DATA_DISABLED = 0x00;
+static const u8 PING_ECHO_DATA_ENABLED = 0x01;
+static const u8 PING_TEST_DATA_PACKET_1 = 0x10;
+static const u8 PING_TEST_DATA_PACKET_2 = 0x7F;
+
 static void remapChannel(u8 midiChannel, u8 deviceChannel)
 {
     const u8 sequence[] = { SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION, SYSEX_MANU_ID,
         SYSEX_COMMAND_REMAP, midiChannel, deviceChannel };
 
     __real_midi_sysex(sequence, sizeof(sequence));
+}
+
+void test_midi_sysex_ping_returns_pong(UNUSED void** state)
+{
+    const u8 expectedPongSequence[] = { SYSEX_START, SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
+        SYSEX_MANU_ID, SYSEX_COMMAND_PONG, SYSEX_END };
+    const u8 pingSequence[] = {
+        SYSEX_MANU_EXTENDED,
+        SYSEX_MANU_REGION,
+        SYSEX_MANU_ID,
+        SYSEX_COMMAND_PING,
+    };
+    expect_memory(__wrap_comm_write, data, expectedPongSequence, sizeof(expectedPongSequence));
+    expect_value(__wrap_comm_write, length, sizeof(expectedPongSequence));
+    __real_midi_sysex(pingSequence, sizeof(pingSequence));
+}
+
+void test_midi_sysex_ping_with_id_returns_pong_with_id(UNUSED void** state)
+{
+    const u8 expectedPongSequence[] = { SYSEX_START, SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
+        SYSEX_MANU_ID, SYSEX_COMMAND_PONG, PING_TEST_ID, SYSEX_END };
+    const u8 pingSequence[] = {
+        SYSEX_MANU_EXTENDED,
+        SYSEX_MANU_REGION,
+        SYSEX_MANU_ID,
+        SYSEX_COMMAND_PING,
+        PING_TEST_ID,
+    };
+    expect_memory(__wrap_comm_write, data, expectedPongSequence, sizeof(expectedPongSequence));
+    expect_value(__wrap_comm_write, length, sizeof(expectedPongSequence));
+    __real_midi_sysex(pingSequence, sizeof(pingSequence));
+}
+
+void test_midi_sysex_ping_with_id_and_data_returns_pong_with_id_and_data(UNUSED void** state)
+{
+    const u8 expectedPongSequence[] = { SYSEX_START, SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
+        SYSEX_MANU_ID, SYSEX_COMMAND_PONG, PING_TEST_ID, PING_TEST_DATA_PACKET_1,
+        PING_TEST_DATA_PACKET_2, SYSEX_END };
+    const u8 pingSequence[] = {
+        SYSEX_MANU_EXTENDED,
+        SYSEX_MANU_REGION,
+        SYSEX_MANU_ID,
+        SYSEX_COMMAND_PING,
+        PING_TEST_ID,
+        PING_ECHO_DATA_ENABLED,
+        PING_TEST_DATA_PACKET_1,
+        PING_TEST_DATA_PACKET_2,
+    };
+    expect_memory(__wrap_comm_write, data, expectedPongSequence, sizeof(expectedPongSequence));
+    expect_value(__wrap_comm_write, length, sizeof(expectedPongSequence));
+    __real_midi_sysex(pingSequence, sizeof(pingSequence));
+}
+
+void test_midi_sysex_ping_with_id_and_do_not_echo_data_returns_pong_with_id_only(UNUSED void** state)
+{
+    const u8 expectedPongSequence[] = { SYSEX_START, SYSEX_MANU_EXTENDED, SYSEX_MANU_REGION,
+        SYSEX_MANU_ID, SYSEX_COMMAND_PONG, PING_TEST_ID, SYSEX_END };
+    const u8 pingSequence[] = {
+        SYSEX_MANU_EXTENDED,
+        SYSEX_MANU_REGION,
+        SYSEX_MANU_ID,
+        SYSEX_COMMAND_PING,
+        PING_TEST_ID,
+        PING_ECHO_DATA_DISABLED,
+        PING_ECHO_DATA_ENABLED,
+        PING_TEST_DATA_PACKET_1,
+        PING_TEST_DATA_PACKET_2,
+    };
+    expect_memory(__wrap_comm_write, data, expectedPongSequence, sizeof(expectedPongSequence));
+    expect_value(__wrap_comm_write, length, sizeof(expectedPongSequence));
+    __real_midi_sysex(pingSequence, sizeof(pingSequence));
 }
 
 void test_midi_sysex_sends_all_notes_off(UNUSED void** state)

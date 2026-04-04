@@ -8,7 +8,7 @@ void __wrap_comm_init(void)
 
 void __wrap_comm_write(const u8* data, u16 length)
 {
-    check_expected_ptr(data);
+    check_expected(data);
     check_expected(length);
 }
 

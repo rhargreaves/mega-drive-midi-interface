@@ -30,3 +30,7 @@ void test_midi_sysex_does_not_display_loaded_msg_if_no_presets_are_loaded(UNUSED
 void test_midi_cc_stores_program(UNUSED void** state);
 void test_midi_sysex_validates_remap_channel_bounds(UNUSED void** state);
 void test_midi_sysex_validates_dump_channel_bounds(UNUSED void** state);
+void test_midi_sysex_ping_returns_pong(UNUSED void** state);
+void test_midi_sysex_ping_with_id_returns_pong_with_id(UNUSED void** state);
+void test_midi_sysex_ping_with_id_and_data_returns_pong_with_id_and_data(UNUSED void** state);
+void test_midi_sysex_ping_with_id_and_do_not_echo_data_returns_pong_with_id_only(UNUSED void** state);
