@@ -6,11 +6,15 @@
 #include "sram/midi_fm_sram.h"
 
 static const u8 SEMITONES = 12;
-static const u16 FREQS[] = { 607, // B
+static const u16 FREQS_NTSC[] = { 607, // B
     644, 681, 722, 765, 810, 858, 910, 964, 1021, 1081,
     1146, // A#
     // One more freqNum used for cents calculation
     1214 };
+static const u16 FREQS_PAL[] = { 613, // B
+    649, 688, 729, 772, 818, 867, 918, 973, 1031, 1092,
+    1157, // A#
+    1226 };
 
 typedef struct MidiFmChannel {
     u8 pitch;
@@ -161,7 +165,8 @@ u8 midi_fm_pitch_to_octave(u8 pitch)
 
 static u16 lookup_freq_num(u8 pitch, u8 offset)
 {
-    return FREQS[((u8)(pitch - MIN_MIDI_PITCH) % SEMITONES) + offset];
+    const u16* freqs = SYS_isPAL() ? FREQS_PAL : FREQS_NTSC;
+    return freqs[((u8)(pitch - MIN_MIDI_PITCH) % SEMITONES) + offset];
 }
 
 static u8 pitch_is_out_of_range(u8 pitch)

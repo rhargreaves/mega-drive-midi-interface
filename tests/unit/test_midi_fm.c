@@ -2,6 +2,7 @@
 #include "test_midi.h"
 #include "mocks/mock_midi.h"
 #include "utils.h"
+#include "mocks/mock_sgdk.h"
 
 void test_midi_triggers_synth_note_on(UNUSED void** state)
 {
@@ -90,6 +91,20 @@ void test_midi_triggers_synth_note_off(UNUSED void** state)
 
         expect_value(__wrap_synth_note_off, channel, chan);
         __real_midi_note_off(chan, MIDI_PITCH_C4);
+    }
+}
+
+void test_midi_uses_PAL_frequencies_for_region(UNUSED void** state)
+{
+    mock_sgdk_set_SYS_isPAL(true);
+
+    for (int chan = 0; chan <= MAX_FM_CHAN; chan++) {
+        print_message("Chan %d\n", chan);
+        expect_synth_pitch(chan, 4, SYNTH_PAL_C);
+        expect_synth_volume_any();
+        expect_value(__wrap_synth_noteOn, channel, chan);
+
+        __real_midi_note_on(chan, MIDI_PITCH_C4, MAX_MIDI_VOLUME);
     }
 }
 

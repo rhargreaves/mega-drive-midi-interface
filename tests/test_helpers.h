@@ -83,6 +83,8 @@
 #define FM_CH5 4
 #define FM_CH6 5
 
+#define SYNTH_PAL_C 649 // 0x289
+
 #define SYNTH_NTSC_B 607 // 0x25F
 #define SYNTH_NTSC_C 644 // 0x284
 #define SYNTH_NTSC_CS 681 // 0x2A9

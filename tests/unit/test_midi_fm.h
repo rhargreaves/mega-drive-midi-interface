@@ -4,6 +4,7 @@ void test_midi_triggers_synth_note_on(UNUSED void** state);
 void test_midi_triggers_synth_note_on_with_velocity(UNUSED void** state);
 void test_midi_triggers_synth_note_on_with_velocity_and_channel_volume(UNUSED void** state);
 void test_midi_changing_volume_during_note_on_respects_velocity(UNUSED void** state);
+void test_midi_uses_PAL_frequencies_for_region(UNUSED void** state);
 void test_midi_triggers_synth_note_on_boundary_values(UNUSED void** state);
 void test_midi_does_not_trigger_synth_note_on_out_of_bound_values(UNUSED void** state);
 void test_midi_triggers_synth_note_off(UNUSED void** state);
