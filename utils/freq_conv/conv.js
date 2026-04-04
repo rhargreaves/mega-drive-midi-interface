@@ -6,58 +6,30 @@ NTSC_YM2612_HZ = 7670454;
 PAL_YM2612_HZ = 7600489;
 NTSC_PSG_HZ = 3579545;
 PAL_PSG_HZ = 3546895;
+NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 
 function MIDI_noteToHz(n) {
   return 440 * Math.pow(2, (n - 69) / 12);
 }
 
-function MIDI_HzToNote(hz) {
-  var div = hz / 440.0;
-  return (12 * Math.log(div)) / Math.log(2);
-}
-
-function SN_fnumToHz(clock, fn) {
-  // 3579545 is a good NTSC clock value
-  if (fn <= 0) throw new RangeError("FnumToHz - cannot divide by <= 0");
-  var div = 0.0625,
-    reg = 1 / ((fn & 0x3ff) << 1);
-  return div * reg * clock;
+function MIDI_noteToName(n) {
+  return NOTE_NAMES[n % 12] + (Math.floor(n / 12) - 1);
 }
 
 function SN_hzToFnum(clock, hz) {
-  // 3579545 is a good NTSC clock value
   var div = 0.0625,
     reg = 0.5;
   if (hz <= 0) throw new RangeError("hzToFnum - cannot divide by <= 0");
   return ((div * reg * clock) / hz) | 0; // x|0 is the same as casting as int
 }
 
-function YM_fnumToHz(fn, b) {
-  // defaults to NTSC clock value, 6 channels, 24 as the divisor
-  var rs = 1,
-    clock = NTSC_YM2612_HZ,
-    ch = 6,
-    fm = 24;
-  if (arguments.length > 5) fm = arguments[5];
-  if (arguments.length > 4) ch = arguments[4];
-  if (arguments.length > 3) clock = arguments[3];
-  if (arguments.length > 2) rs = arguments[2];
+function YM_fnumToHz(clock, fn, b, rs = 1, ch = 6, fm = 24) {
   var cl = ch * fm,
     pre = clock / (rs * cl);
   return fn * pre * Math.pow(2, b - 21);
 }
 
-function YM_hzToFnum(hz) {
-  var dp = 4,
-    rs = 1,
-    clock = NTSC_YM2612_HZ,
-    ch = 6,
-    fm = 24;
-  if (arguments.length > 5) fm = arguments[5];
-  if (arguments.length > 4) ch = arguments[4];
-  if (arguments.length > 3) clock = arguments[3];
-  if (arguments.length > 2) rs = arguments[2];
-  if (arguments.length > 1) dp = arguments[1];
+function YM_hzToFnum(clock, hz, dp = 4, rs = 1, ch = 6, fm = 24) {
   var cl = ch * fm,
     pre = clock / (rs * cl),
     t = Math.pow(10, dp);
@@ -65,7 +37,7 @@ function YM_hzToFnum(hz) {
     b = 8;
   while (
     fn < 2048 &&
-    ((hz * t) | 0) / t != ((YM_fnumToHz(fn | 0, b) * t) | 0) / t &&
+    ((hz * t) | 0) / t != ((YM_fnumToHz(clock, fn | 0, b, rs, ch, fm) * t) | 0) / t &&
     --b > 0
   )
     fn *= 2;
@@ -82,10 +54,11 @@ systems.forEach((sys) => {
   console.log("\n" + sys.name + " YM2612 frequency table\n");
   for (var note = 0; note <= 106; note++) {
     hz = MIDI_noteToHz(note);
-    f = YM_hzToFnum(hz, 1, 4, sys.ym2612Hz);
+    f = YM_hzToFnum(sys.ym2612Hz, hz, 1, 4);
     console.log({
       note,
-      hz,
+      name: MIDI_noteToName(note),
+      hz: hz.toFixed(1),
       fnum: f.fnum,
       block: f.block > 0 ? f.block - 1 : f.block,
     });
@@ -99,16 +72,17 @@ systems.forEach((sys) => {
     f = SN_hzToFnum(sys.psgHz, hz);
     console.log({
       note,
-      hz,
+      name: MIDI_noteToName(note),
+      hz: hz.toFixed(1),
       f,
     });
   }
 
-  console.log("static const u16 TONES[NUM_FREQUENCIES] = {");
+  process.stdout.write("static const u16 TONES[NUM_FREQUENCIES] = { ");
   for (var note = 45; note <= 127; note++) {
     hz = MIDI_noteToHz(note);
     f = SN_hzToFnum(sys.psgHz, hz);
-    console.log(f + ", ");
+    process.stdout.write(f + ", ");
   }
-  console.log("};");
+  process.stdout.write("};\n");
 });
