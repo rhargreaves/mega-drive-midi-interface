@@ -15,13 +15,13 @@ Control the Yamaha YM2612 and PSG of the Sega Mega Drive / Genesis via MIDI.
 - Supports MIDI 1.0 CCs & events (e.g. panning, volume, pitch bending)
 - Loading of [user-defined presets](https://github.com/rhargreaves/mega-drive-midi-interface/wiki/FM-Presets) via SysEx
 - Memoisation of a MIDI channel's current FM parameters as a user-defined preset
-- Auto-saving & loading of user-defined presets in SRAM (EverDrive X7 & PRO only)
+- Auto-saving & loading of user-defined presets in SRAM (EverDrive X7, CORE & PRO only)
 - Polyphony via dynamic FM channel mapping
 - Portamento (glide)
 - Experimental DAC support
 - Connectivity via:
   - [Mega EverDrive X7](https://krikzz.com/store/home/33-mega-everdrive-x7.html) USB port.
-  - [Mega EverDrive PRO](https://krikzz.com/store/home/59-mega-everdrive-pro.html) USB port.
+  - [Mega EverDrive CORE & PRO](https://krikzz.com/store/home/59-mega-everdrive-pro.html) USB port.
   - [Controller or ext/modem port via custom USB serial cable](https://github.com/rhargreaves/mega-drive-serial-port#hardware).
   - [MegaWiFi cartridge / BlastEm emulator](https://github.com/rhargreaves/mega-drive-midi-interface/wiki/BlastEm-&-MegaWiFi-Guide) (experimental)
 - Control of YM2612 registers via [GenMDM-style CCs](https://github.com/rhargreaves/mega-drive-midi-interface/wiki/MIDI-CCs-&-Events#control-changes-ccs)
