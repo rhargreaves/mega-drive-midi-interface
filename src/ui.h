@@ -10,3 +10,4 @@
 
 void ui_init(void);
 void ui_draw_text(const char* text, u16 x, u16 y);
+void ui_print_present_devices(void);

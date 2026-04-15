@@ -113,6 +113,8 @@ static MidiUiChange lastMidiChangeEvent[DEV_PHYSICAL_CHANS] = { 0 };
 
 static u16 loadPercentSum = 0;
 static bool commInited = false;
+static CommMode lastCommMode = Unknown;
+static bool lastCh3SpecialMode = false;
 
 void ui_init(void)
 {
@@ -223,14 +225,25 @@ void ui_hide_logs(void)
     showLogs = false;
 }
 
+void ui_print_present_devices(void)
+{
+    if (comm_everdrive_pro_is_present()) {
+        VDP_drawImageEx(BG_A, &img_wait_edpro,
+            TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_WAITING_ED_INDEX), COMM_EXTRA_X,
+            MAX_EFFECTIVE_Y + 1, FALSE, FALSE);
+    } else if (comm_everdrive_is_present()) {
+        VDP_drawImageEx(BG_A, &img_wait_edx7,
+            TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_WAITING_ED_INDEX), COMM_EXTRA_X,
+            MAX_EFFECTIVE_Y + 1, FALSE, FALSE);
+    }
+}
+
 static void print_ticks(void)
 {
     char t[6];
     sprintf(t, "%-5u", scheduler_ticks());
     draw_text(t, 0, 1);
 }
-
-static bool lastCh3SpecialMode = false;
 
 static void print_midi_changes(void)
 {
@@ -434,20 +447,15 @@ static void print_comm_mode(void)
         return;
     }
 
-    if (comm_everdrive_pro_is_present()) {
-        VDP_drawImageEx(BG_A, &img_wait_edpro,
-            TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_WAITING_ED_INDEX), COMM_EXTRA_X,
-            MAX_EFFECTIVE_Y + 1, FALSE, FALSE);
-    } else if (comm_everdrive_is_present()) {
-        VDP_drawImageEx(BG_A, &img_wait_edx7,
-            TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, TILE_WAITING_ED_INDEX), COMM_EXTRA_X,
-            MAX_EFFECTIVE_Y + 1, FALSE, FALSE);
+    if (lastCommMode == comm_mode()) {
+        return;
     }
+    lastCommMode = comm_mode();
 
     const Image* MODES_IMAGES[] = { &img_comm_waiting, &img_comm_ed_usb, &img_comm_ed_pro_usb,
         &img_comm_serial, &img_comm_megawifi, &img_comm_demo, 0 };
     u16 index;
-    switch (comm_mode()) {
+    switch (lastCommMode) {
     case Discovery:
         index = 0;
         break;
