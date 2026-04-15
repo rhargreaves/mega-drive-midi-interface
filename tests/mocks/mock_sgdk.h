@@ -4,6 +4,20 @@
 void mock_sgdk_disable_checks(void);
 void mock_sgdk_enable_checks(void);
 
+/* Z80 expects */
+void _expect_z80_load_driver(u16 driver, bool waitReady, const char* const file, const int line);
+void _expect_z80_request_bus(bool wait, const char* const file, const int line);
+void _expect_z80_get_and_request_bus(
+    bool wait, bool takenAlready, const char* const file, const int line);
+void _expect_z80_release_bus(const char* const file, const int line);
+
+#define expect_z80_load_driver(driver, waitReady)                                                  \
+    _expect_z80_load_driver(driver, waitReady, __FILE__, __LINE__)
+#define expect_z80_request_bus(wait) _expect_z80_request_bus(wait, __FILE__, __LINE__)
+#define expect_z80_get_and_request_bus(wait, takenAlready)                                         \
+    _expect_z80_get_and_request_bus(wait, takenAlready, __FILE__, __LINE__)
+#define expect_z80_release_bus() _expect_z80_release_bus(__FILE__, __LINE__)
+
 /* SDGK wraps */
 void __wrap_VDP_drawText(const char* str, u16 x, u16 y);
 void __wrap_SYS_setVIntCallback(VoidCallback* CB);

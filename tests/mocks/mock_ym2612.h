@@ -36,6 +36,7 @@ void _expect_ym2612_write_frequency(
 void _expect_ym2612_write_frequency_any_data(u8 chan, const char* const file, const int line);
 void _expect_ym2612_write_operator_volumes(
     u8 chan, const u8* volumes, u8 count, const char* const file, const int line);
+void _expect_ym2612_latch_dac_data(const char* const file, const int line);
 
 #define expect_ym2612_write_reg_any_data_at_init(part, reg)                                        \
     _expect_ym2612_write_reg_any_data_at_init(part, reg, __FILE__, __LINE__)
@@ -65,3 +66,4 @@ void _expect_ym2612_write_operator_volumes(
     _expect_ym2612_write_frequency_any_data(chan, __FILE__, __LINE__)
 #define expect_ym2612_write_operator_volumes(chan, volumes, count)                                 \
     _expect_ym2612_write_operator_volumes(chan, volumes, count, __FILE__, __LINE__)
+#define expect_ym2612_latch_dac_data() _expect_ym2612_latch_dac_data(__FILE__, __LINE__)

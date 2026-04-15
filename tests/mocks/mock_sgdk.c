@@ -13,6 +13,29 @@ void mock_sgdk_enable_checks(void)
     disableChecks = false;
 }
 
+void _expect_z80_load_driver(u16 driver, bool waitReady, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_Z80_loadDriver, driver, driver, file, line);
+    expect_value_with_pos(__wrap_Z80_loadDriver, waitReady, waitReady, file, line);
+}
+
+void _expect_z80_request_bus(bool wait, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_Z80_requestBus, wait, wait, file, line);
+}
+
+void _expect_z80_get_and_request_bus(
+    bool wait, bool takenAlready, const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_Z80_getAndRequestBus, wait, wait, file, line);
+    will_return_with_pos(__wrap_Z80_getAndRequestBus, takenAlready, file, line);
+}
+
+void _expect_z80_release_bus(const char* const file, const int line)
+{
+    expect_function_call(__wrap_Z80_releaseBus);
+}
+
 void __wrap_VDP_drawText(const char* str, u16 x, u16 y)
 {
 }

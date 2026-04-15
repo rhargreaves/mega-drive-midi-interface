@@ -1,6 +1,7 @@
 #include "test_synth.h"
 #include "synth.h"
 #include "mocks/mock_comm.h"
+#include "mocks/mock_sgdk.h"
 #include "mocks/mock_synth.h"
 #include "test_midi.h"
 #include "z80_ctrl.h"
@@ -828,40 +829,28 @@ void test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator(UNUSED void*
 
 void test_synth_enables_dac(UNUSED void** state)
 {
-    expect_value(__wrap_Z80_loadDriver, driver, Z80_DRIVER_PCM);
-    expect_value(__wrap_Z80_loadDriver, waitReady, true);
-    expect_value(__wrap_Z80_getAndRequestBus, wait, TRUE);
-    will_return(__wrap_Z80_getAndRequestBus, false);
-    expect_value(__wrap_YM2612_writeReg, part, 0);
-    expect_value(__wrap_YM2612_writeReg, reg, YM_DAC_ENABLE);
-    expect_value(__wrap_YM2612_writeReg, data, 0x80);
-    expect_value(__wrap_YM2612_write, port, 0);
-    expect_value(__wrap_YM2612_write, data, YM_DAC_DATA);
-    expect_function_call(__wrap_Z80_releaseBus);
+    expect_z80_load_driver(Z80_DRIVER_PCM, true);
+    expect_z80_get_and_request_bus(TRUE, false);
+    expect_ym2612_write_reg(0, YM_DAC_ENABLE, 0x80);
+    expect_ym2612_latch_dac_data();
+    expect_z80_release_bus();
 
     __real_synth_enable_dac(true);
 }
 
 void test_synth_disables_dac(UNUSED void** state)
 {
-    expect_value(__wrap_Z80_loadDriver, driver, Z80_DRIVER_PCM);
-    expect_value(__wrap_Z80_loadDriver, waitReady, true);
-    expect_value(__wrap_Z80_getAndRequestBus, wait, TRUE);
-    will_return(__wrap_Z80_getAndRequestBus, false);
-    expect_value(__wrap_YM2612_writeReg, part, 0);
-    expect_value(__wrap_YM2612_writeReg, reg, YM_DAC_ENABLE);
-    expect_value(__wrap_YM2612_writeReg, data, 0x80);
-    expect_value(__wrap_YM2612_write, port, 0);
-    expect_value(__wrap_YM2612_write, data, YM_DAC_DATA);
-    expect_function_call(__wrap_Z80_releaseBus);
+    expect_z80_load_driver(Z80_DRIVER_PCM, true);
+    expect_z80_get_and_request_bus(TRUE, false);
+    expect_ym2612_write_reg(0, YM_DAC_ENABLE, 0x80);
+    expect_ym2612_latch_dac_data();
+    expect_z80_release_bus();
+
     __real_synth_enable_dac(true);
 
-    expect_value(__wrap_Z80_loadDriver, driver, Z80_DRIVER_NULL);
-    expect_value(__wrap_Z80_loadDriver, waitReady, false);
-    expect_value(__wrap_Z80_requestBus, wait, TRUE);
-    expect_value(__wrap_YM2612_writeReg, part, 0);
-    expect_value(__wrap_YM2612_writeReg, reg, YM_DAC_ENABLE);
-    expect_value(__wrap_YM2612_writeReg, data, 0);
+    expect_z80_load_driver(Z80_DRIVER_NULL, false);
+    expect_z80_request_bus(TRUE);
+    expect_ym2612_write_reg(0, YM_DAC_ENABLE, 0);
 
     __real_synth_enable_dac(false);
 }
@@ -877,26 +866,18 @@ void test_writes_without_getting_or_releasing_Z80_bus_when_pcm_driver_unloaded(U
 
 void test_releases_Z80_bus_per_write_when_pcm_driver_loaded(UNUSED void** state)
 {
-    expect_value(__wrap_Z80_loadDriver, driver, Z80_DRIVER_PCM);
-    expect_value(__wrap_Z80_loadDriver, waitReady, true);
-    expect_value(__wrap_Z80_getAndRequestBus, wait, TRUE);
-    will_return(__wrap_Z80_getAndRequestBus, false);
-    expect_value(__wrap_YM2612_writeReg, part, 0);
-    expect_value(__wrap_YM2612_writeReg, reg, YM_DAC_ENABLE);
-    expect_value(__wrap_YM2612_writeReg, data, 0x80);
-    expect_value(__wrap_YM2612_write, port, 0);
-    expect_value(__wrap_YM2612_write, data, YM_DAC_DATA);
-    expect_function_call(__wrap_Z80_releaseBus);
+    expect_z80_load_driver(Z80_DRIVER_PCM, true);
+    expect_z80_get_and_request_bus(TRUE, false);
+    expect_ym2612_write_reg(0, YM_DAC_ENABLE, 0x80);
+    expect_ym2612_latch_dac_data();
+    expect_z80_release_bus();
+
     __real_synth_enable_dac(true);
 
-    expect_value(__wrap_Z80_getAndRequestBus, wait, TRUE);
-    will_return(__wrap_Z80_getAndRequestBus, false);
-    expect_value(__wrap_YM2612_writeReg, part, 0);
-    expect_value(__wrap_YM2612_writeReg, reg, YM_DAC_ENABLE);
-    expect_value(__wrap_YM2612_writeReg, data, 0);
-    expect_value(__wrap_YM2612_write, port, 0);
-    expect_value(__wrap_YM2612_write, data, YM_DAC_DATA);
-    expect_function_call(__wrap_Z80_releaseBus);
+    expect_z80_get_and_request_bus(TRUE, false);
+    expect_ym2612_write_reg(0, YM_DAC_ENABLE, 0);
+    expect_ym2612_latch_dac_data();
+    expect_z80_release_bus();
 
     __real_synth_direct_write_ym2612(0, YM_DAC_ENABLE, 0);
 }

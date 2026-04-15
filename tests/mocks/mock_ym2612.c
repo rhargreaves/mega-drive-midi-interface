@@ -171,3 +171,9 @@ void _expect_ym2612_write_operator_volumes(
         _expect_ym2612_write_operator(chan, op, YM_BASE_TOTAL_LEVEL, volumes[op], file, line);
     }
 }
+
+void _expect_ym2612_latch_dac_data(const char* const file, const int line)
+{
+    expect_value_with_pos(__wrap_YM2612_write, port, 0, file, line);
+    expect_value_with_pos(__wrap_YM2612_write, data, YM_DAC_DATA, file, line);
+}
