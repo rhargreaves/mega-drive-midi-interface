@@ -858,10 +858,10 @@ void test_synth_disables_dac(UNUSED void** state)
 void test_writes_without_getting_or_releasing_Z80_bus_when_pcm_driver_unloaded(UNUSED void** state)
 {
     expect_value(__wrap_YM2612_writeReg, part, 0);
-    expect_value(__wrap_YM2612_writeReg, reg, YM_DAC_ENABLE);
-    expect_value(__wrap_YM2612_writeReg, data, 0);
+    expect_value(__wrap_YM2612_writeReg, reg, YM_LFO_ENABLE);
+    expect_value(__wrap_YM2612_writeReg, data, 0x08);
 
-    __real_synth_direct_write_ym2612(0, YM_DAC_ENABLE, 0);
+    __real_synth_direct_write_ym2612(0, YM_LFO_ENABLE, 0x08);
 }
 
 void test_releases_Z80_bus_per_write_when_pcm_driver_loaded(UNUSED void** state)
@@ -875,9 +875,9 @@ void test_releases_Z80_bus_per_write_when_pcm_driver_loaded(UNUSED void** state)
     __real_synth_enable_dac(true);
 
     expect_z80_get_and_request_bus(TRUE, false);
-    expect_ym2612_write_reg(0, YM_DAC_ENABLE, 0);
+    expect_ym2612_write_reg(0, YM_LFO_ENABLE, 0x08);
     expect_ym2612_latch_dac_data();
     expect_z80_release_bus();
 
-    __real_synth_direct_write_ym2612(0, YM_DAC_ENABLE, 0);
+    __real_synth_direct_write_ym2612(0, YM_LFO_ENABLE, 0x08);
 }
