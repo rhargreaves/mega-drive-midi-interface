@@ -61,9 +61,7 @@ static void preset_to_channel(FmChannel* channel, const FmPreset* preset)
 void synth_init(const FmPreset* initialPreset)
 {
     init_global();
-    Z80_loadDriver(Z80_DRIVER_PCM, true);
-    Z80_requestBus(TRUE);
-    write_dac_reg();
+    synth_enable_dac(false);
     write_special_mode_reg();
     for (u8 chan = 0; chan < MAX_FM_CHANS; chan++) {
         volumes[chan] = MAX_VOLUME;
@@ -75,7 +73,6 @@ void synth_init(const FmPreset* initialPreset)
         update_channel(chan);
     }
     write_global_lfo();
-    release_z80_bus();
 }
 
 static void update_channel(u8 chan)
@@ -473,6 +470,12 @@ void synth_direct_write_ym2612(u8 part, u8 reg, u8 data)
 
 void synth_enable_dac(bool enable)
 {
+    if (enable && !global.dacEnable) {
+        Z80_loadDriver(Z80_DRIVER_PCM, true);
+    } else if (!enable) {
+        Z80_loadDriver(Z80_DRIVER_NULL, FALSE);
+        Z80_requestBus(TRUE);
+    }
     global.dacEnable = enable;
     write_dac_reg();
 }
@@ -480,6 +483,11 @@ void synth_enable_dac(bool enable)
 static void write_reg_safe(u8 part, u8 reg, u8 data)
 {
     debug_message("call: YM2612_writeReg(part=%d, reg=0x%X, data=0x%X)\n", part, reg, data);
+
+    if (!global.dacEnable) {
+        YM2612_writeReg(part, reg, data);
+        return;
+    }
 
     bool takenAlready = Z80_getAndRequestBus(TRUE);
     YM2612_writeReg(part, reg, data);

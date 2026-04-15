@@ -14,6 +14,8 @@ static ParameterUpdated lastParameterUpdated = -1;
 
 static void set_initial_registers(void)
 {
+    expect_value(__wrap_Z80_loadDriver, driver, Z80_DRIVER_NULL);
+    expect_value(__wrap_Z80_loadDriver, waitReady, false);
     expect_value(__wrap_Z80_requestBus, wait, TRUE);
 
     // Global
@@ -267,33 +269,21 @@ static void set_initial_registers(void)
     expect_ym2612_write_reg_at_init(1, 0x9E, 0x0); // #188
     expect_ym2612_write_reg_any_data_at_init(0, 0x22); // #189
 
-    expect_value(__wrap_YM2612_write, port, 0);
-    expect_value(__wrap_YM2612_write, data, YM_DAC_DATA);
-    expect_function_call(__wrap_Z80_releaseBus);
-
     const FmPreset M_BANK_0_INST_0_GRANDPIANO = { 0, 0, 0, 0,
         { { 1, 0, 26, 1, 7, 0, 7, 4, 1, 35, 0 }, { 4, 6, 24, 1, 9, 0, 6, 9, 7, 35, 0 },
             { 2, 7, 31, 3, 23, 0, 9, 15, 1, 35, 0 }, { 1, 3, 27, 2, 4, 0, 10, 4, 6, 35, 0 } } };
     __real_synth_init(&M_BANK_0_INST_0_GRANDPIANO);
 }
 
-static void loads_pcm_driver(void)
-{
-    expect_value(__wrap_Z80_loadDriver, driver, Z80_DRIVER_PCM);
-    expect_value(__wrap_Z80_loadDriver, waitReady, true);
-}
-
 int test_synth_setup(UNUSED void** state)
 {
     updated = false;
-    loads_pcm_driver();
     set_initial_registers();
     return 0;
 }
 
 void test_synth_init_sets_initial_registers(UNUSED void** state)
 {
-    loads_pcm_driver();
     set_initial_registers();
 }
 
@@ -838,42 +828,75 @@ void test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator(UNUSED void*
 
 void test_synth_enables_dac(UNUSED void** state)
 {
-    expect_ym2612_write_reg(0, YM_DAC_ENABLE, 0x80);
+    expect_value(__wrap_Z80_loadDriver, driver, Z80_DRIVER_PCM);
+    expect_value(__wrap_Z80_loadDriver, waitReady, true);
+    expect_value(__wrap_Z80_getAndRequestBus, wait, TRUE);
+    will_return(__wrap_Z80_getAndRequestBus, false);
+    expect_value(__wrap_YM2612_writeReg, part, 0);
+    expect_value(__wrap_YM2612_writeReg, reg, YM_DAC_ENABLE);
+    expect_value(__wrap_YM2612_writeReg, data, 0x80);
+    expect_value(__wrap_YM2612_write, port, 0);
+    expect_value(__wrap_YM2612_write, data, YM_DAC_DATA);
+    expect_function_call(__wrap_Z80_releaseBus);
 
     __real_synth_enable_dac(true);
 }
 
 void test_synth_disables_dac(UNUSED void** state)
 {
-    expect_ym2612_write_reg(0, YM_DAC_ENABLE, 0);
+    expect_value(__wrap_Z80_loadDriver, driver, Z80_DRIVER_PCM);
+    expect_value(__wrap_Z80_loadDriver, waitReady, true);
+    expect_value(__wrap_Z80_getAndRequestBus, wait, TRUE);
+    will_return(__wrap_Z80_getAndRequestBus, false);
+    expect_value(__wrap_YM2612_writeReg, part, 0);
+    expect_value(__wrap_YM2612_writeReg, reg, YM_DAC_ENABLE);
+    expect_value(__wrap_YM2612_writeReg, data, 0x80);
+    expect_value(__wrap_YM2612_write, port, 0);
+    expect_value(__wrap_YM2612_write, data, YM_DAC_DATA);
+    expect_function_call(__wrap_Z80_releaseBus);
+    __real_synth_enable_dac(true);
+
+    expect_value(__wrap_Z80_loadDriver, driver, Z80_DRIVER_NULL);
+    expect_value(__wrap_Z80_loadDriver, waitReady, false);
+    expect_value(__wrap_Z80_requestBus, wait, TRUE);
+    expect_value(__wrap_YM2612_writeReg, part, 0);
+    expect_value(__wrap_YM2612_writeReg, reg, YM_DAC_ENABLE);
+    expect_value(__wrap_YM2612_writeReg, data, 0);
 
     __real_synth_enable_dac(false);
 }
 
-void test_requests_Z80_bus_if_not_already_taken(UNUSED void** state)
+void test_writes_without_getting_or_releasing_Z80_bus_when_pcm_driver_unloaded(UNUSED void** state)
 {
-    expect_value(__wrap_Z80_getAndRequestBus, wait, TRUE);
-    will_return(__wrap_Z80_getAndRequestBus, false);
-
     expect_value(__wrap_YM2612_writeReg, part, 0);
     expect_value(__wrap_YM2612_writeReg, reg, YM_DAC_ENABLE);
     expect_value(__wrap_YM2612_writeReg, data, 0);
-
-    expect_value(__wrap_YM2612_write, port, 0);
-    expect_value(__wrap_YM2612_write, data, YM_DAC_DATA);
-    expect_function_call(__wrap_Z80_releaseBus);
 
     __real_synth_direct_write_ym2612(0, YM_DAC_ENABLE, 0);
 }
 
-void test_does_not_release_Z80_bus_when_taken_prior_to_call(UNUSED void** state)
+void test_releases_Z80_bus_per_write_when_pcm_driver_loaded(UNUSED void** state)
 {
+    expect_value(__wrap_Z80_loadDriver, driver, Z80_DRIVER_PCM);
+    expect_value(__wrap_Z80_loadDriver, waitReady, true);
     expect_value(__wrap_Z80_getAndRequestBus, wait, TRUE);
-    will_return(__wrap_Z80_getAndRequestBus, true);
+    will_return(__wrap_Z80_getAndRequestBus, false);
+    expect_value(__wrap_YM2612_writeReg, part, 0);
+    expect_value(__wrap_YM2612_writeReg, reg, YM_DAC_ENABLE);
+    expect_value(__wrap_YM2612_writeReg, data, 0x80);
+    expect_value(__wrap_YM2612_write, port, 0);
+    expect_value(__wrap_YM2612_write, data, YM_DAC_DATA);
+    expect_function_call(__wrap_Z80_releaseBus);
+    __real_synth_enable_dac(true);
 
+    expect_value(__wrap_Z80_getAndRequestBus, wait, TRUE);
+    will_return(__wrap_Z80_getAndRequestBus, false);
     expect_value(__wrap_YM2612_writeReg, part, 0);
     expect_value(__wrap_YM2612_writeReg, reg, YM_DAC_ENABLE);
     expect_value(__wrap_YM2612_writeReg, data, 0);
+    expect_value(__wrap_YM2612_write, port, 0);
+    expect_value(__wrap_YM2612_write, data, YM_DAC_DATA);
+    expect_function_call(__wrap_Z80_releaseBus);
 
     __real_synth_direct_write_ym2612(0, YM_DAC_ENABLE, 0);
 }

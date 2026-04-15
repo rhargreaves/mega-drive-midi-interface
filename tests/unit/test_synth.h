@@ -44,5 +44,5 @@ void test_synth_handles_out_of_range_ch3_special_mode_operator(UNUSED void** sta
 void test_synth_sets_ch3_special_mode_op_tl_only_if_output_operator(UNUSED void** state);
 void test_synth_enables_dac(UNUSED void** state);
 void test_synth_disables_dac(UNUSED void** state);
-void test_requests_Z80_bus_if_not_already_taken(UNUSED void** state);
-void test_does_not_release_Z80_bus_when_taken_prior_to_call(UNUSED void** state);
+void test_writes_without_getting_or_releasing_Z80_bus_when_pcm_driver_unloaded(UNUSED void** state);
+void test_releases_Z80_bus_per_write_when_pcm_driver_loaded(UNUSED void** state);

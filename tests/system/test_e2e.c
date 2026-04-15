@@ -254,7 +254,16 @@ void test_plays_pcm_sample(void** state)
 {
     stub_everdrive_as_present();
     stub_usb_receive_cc(MIDI_CHANNEL_1, CC_GENMDM_ENABLE_DAC, 127);
-    expect_ym2612_write_reg(0, YM_DAC_ENABLE, 0x80);
+    expect_value(__wrap_Z80_loadDriver, driver, Z80_DRIVER_PCM);
+    expect_value(__wrap_Z80_loadDriver, waitReady, true);
+    expect_value(__wrap_Z80_getAndRequestBus, wait, TRUE);
+    will_return(__wrap_Z80_getAndRequestBus, false);
+    expect_value(__wrap_YM2612_writeReg, part, 0);
+    expect_value(__wrap_YM2612_writeReg, reg, YM_DAC_ENABLE);
+    expect_value(__wrap_YM2612_writeReg, data, 0x80);
+    expect_value(__wrap_YM2612_write, port, 0);
+    expect_value(__wrap_YM2612_write, data, YM_DAC_DATA);
+    expect_function_call(__wrap_Z80_releaseBus);
     midi_rx_read();
 
     stub_usb_receive_note_on(MIDI_CHANNEL_6, MIDI_PITCH_C4, MIDI_VOLUME_MAX);
