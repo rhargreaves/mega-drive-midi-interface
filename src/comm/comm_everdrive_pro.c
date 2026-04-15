@@ -11,6 +11,8 @@
 #define STAT_PRO_PRESENT 0x55A0
 #define CMD_USB_WR 0x22
 
+static bool is_present = false;
+
 static u8 bi_fifo_busy(void)
 {
     return (mem_read_u16(REG_FIFO_STAT) & FIFO_CPU_RXF) ? 1 : 0;
@@ -69,11 +71,12 @@ static void bi_cmd_usb_wr(void* data, u16 len)
 
 void comm_everdrive_pro_init(void)
 {
+    is_present = (mem_read_u16(REG_SYS_STAT) & 0xFFF0) == STAT_PRO_PRESENT;
 }
 
 bool comm_everdrive_pro_is_present(void)
 {
-    return (mem_read_u16(REG_SYS_STAT) & 0xFFF0) == STAT_PRO_PRESENT;
+    return is_present;
 }
 
 u8 comm_everdrive_pro_read_ready(void)

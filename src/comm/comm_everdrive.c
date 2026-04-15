@@ -11,11 +11,9 @@
 #define IO_STATUS_HI_SD 0x00
 #define IO_STATUS_HI_SDHC 0x40
 
-void comm_everdrive_init(void)
-{
-}
+static bool is_present = false;
 
-bool comm_everdrive_is_present(void)
+void comm_everdrive_init(void)
 {
     /* REG_STE values:
     0x3F00 with OpenEmu v2.4.1
@@ -31,7 +29,12 @@ bool comm_everdrive_is_present(void)
     */
 
     u8 status = mem_read_u16(SSF_REG16(REG_STE)) >> 8;
-    return status == IO_STATUS_HI_SD || status == IO_STATUS_HI_SDHC;
+    is_present = status == IO_STATUS_HI_SD || status == IO_STATUS_HI_SDHC;
+}
+
+bool comm_everdrive_is_present(void)
+{
+    return is_present;
 }
 
 u8 comm_everdrive_read_ready(void)
