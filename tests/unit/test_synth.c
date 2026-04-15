@@ -857,9 +857,7 @@ void test_synth_disables_dac(UNUSED void** state)
 
 void test_writes_without_getting_or_releasing_Z80_bus_when_pcm_driver_unloaded(UNUSED void** state)
 {
-    expect_value(__wrap_YM2612_writeReg, part, 0);
-    expect_value(__wrap_YM2612_writeReg, reg, YM_LFO_ENABLE);
-    expect_value(__wrap_YM2612_writeReg, data, 0x08);
+    expect_ym2612_write_reg(0, YM_LFO_ENABLE, 0x08);
 
     __real_synth_direct_write_ym2612(0, YM_LFO_ENABLE, 0x08);
 }
